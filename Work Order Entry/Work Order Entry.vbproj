@@ -1,0 +1,523 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1D25397B-7B64-4565-932F-9E55B3ED9D45}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <StartupObject>WorkOrderEntry.My.MyApplication</StartupObject>
+    <RootNamespace>WorkOrderEntry</RootNamespace>
+    <AssemblyName>Work Order Entry_V4</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <MyType>WindowsForms</MyType>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>14</ApplicationRevision>
+    <ApplicationVersion>4.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DocumentationFile>Work Order Entry_V4.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DocumentationFile>Work Order Entry_V4.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionExplicit>On</OptionExplicit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionCompare>Binary</OptionCompare>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionStrict>Off</OptionStrict>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OptionInfer>On</OptionInfer>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>iconfinder_order_59488.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>My Project\app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.ReportViewer.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="Microsoft.ReportViewer.WinForms, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+  </ItemGroup>
+  <ItemGroup>
+    <Import Include="Microsoft.VisualBasic" />
+    <Import Include="System" />
+    <Import Include="System.Collections" />
+    <Import Include="System.Collections.Generic" />
+    <Import Include="System.Data" />
+    <Import Include="System.Drawing" />
+    <Import Include="System.Diagnostics" />
+    <Import Include="System.Windows.Forms" />
+    <Import Include="System.Linq" />
+    <Import Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ApplicationEvents.vb" />
+    <Compile Include="Class\clsAccountReceivble.vb" />
+    <Compile Include="Class\clsCustomer.vb" />
+    <Compile Include="Class\clsCustomerAcct.vb" />
+    <Compile Include="Class\clsImport.vb" />
+    <Compile Include="Class\clsImportQuotation.vb" />
+    <Compile Include="Class\clsItemLookUp.vb" />
+    <Compile Include="Class\clsOpenWorkOrder.vb" />
+    <Compile Include="Class\clsPickList.vb" />
+    <Compile Include="Class\clsRecall.vb" />
+    <Compile Include="Class\clsSalesRep.vb" />
+    <Compile Include="Class\clsUser.vb" />
+    <Compile Include="Custom Controls\CustomPanel.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Custom Controls\ZoomPictureBox_Main.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Custom Controls\ZoomPictureBox_Public Properties.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Forms\frmCheckWO.Designer.vb">
+      <DependentUpon>frmCheckWO.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmCheckWO.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmImportItems.Designer.vb">
+      <DependentUpon>frmImportItems.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmImportItems.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmPrintType.Designer.vb">
+      <DependentUpon>frmPrintType.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmPrintType.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmRecallSelection.Designer.vb">
+      <DependentUpon>frmRecallSelection.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmRecallSelection.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmStoreSetup.Designer.vb">
+      <DependentUpon>frmStoreSetup.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmStoreSetup.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmCheckStore.Designer.vb">
+      <DependentUpon>frmCheckStore.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmCheckStore.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmCustomer.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmCustomer.Designer.vb">
+      <DependentUpon>frmCustomer.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmCustomerOrders.Designer.vb">
+      <DependentUpon>frmCustomerOrders.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmCustomerOrders.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmForInvoice.Designer.vb">
+      <DependentUpon>frmForInvoice.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmForInvoice.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmItemLookUp.Designer.vb">
+      <DependentUpon>frmItemLookUp.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmItemLookUp.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmLinqLevel.Designer.vb">
+      <DependentUpon>frmLinqLevel.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmLinqLevel.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmLogin.Designer.vb">
+      <DependentUpon>frmLogin.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmLogin.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmPassword.Designer.vb">
+      <DependentUpon>frmPassword.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmPassword.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmRecall.Designer.vb">
+      <DependentUpon>frmRecall.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmRecall.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmPrintWo.Designer.vb">
+      <DependentUpon>frmPrintWo.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmPrintWo.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmSalesRep.Designer.vb">
+      <DependentUpon>frmSalesRep.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmSalesRep.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmPriceLevel.Designer.vb">
+      <DependentUpon>frmPriceLevel.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmPriceLevel.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmSettings.Designer.vb">
+      <DependentUpon>frmSettings.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmSettings.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmUploader.designer.vb">
+      <DependentUpon>frmUploader.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmUploader.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmUser.Designer.vb">
+      <DependentUpon>frmUser.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmUser.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmUserCustType.Designer.vb">
+      <DependentUpon>frmUserCustType.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmUserCustType.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmPrintPicklist.Designer.vb">
+      <DependentUpon>frmPrintPicklist.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmPrintPicklist.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmWebsiteImport.Designer.vb">
+      <DependentUpon>frmWebsiteImport.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmWebsiteImport.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Linq\ItemLookUp.designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ItemLookUp.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="Linq\ItemLookUp.vb">
+      <DependentUpon>ItemLookUp.dbml</DependentUpon>
+    </Compile>
+    <Compile Include="Module\ModConnectDB.vb" />
+    <Compile Include="Module\LocalReportExtensions.vb" />
+    <Compile Include="Module\MySQL_DAL.vb" />
+    <Compile Include="Module\txtBoxValidation.vb" />
+    <Compile Include="My Project\AssemblyInfo.vb" />
+    <Compile Include="My Project\Application.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Application.myapp</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="My Project\Resources.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Settings.Designer.vb">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Custom Controls\ZoomPictureBox_Main.resx">
+      <DependentUpon>ZoomPictureBox_Main.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmCheckWO.resx">
+      <DependentUpon>frmCheckWO.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmImportItems.resx">
+      <DependentUpon>frmImportItems.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmPrintType.resx">
+      <DependentUpon>frmPrintType.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmRecallSelection.resx">
+      <DependentUpon>frmRecallSelection.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmStoreSetup.resx">
+      <DependentUpon>frmStoreSetup.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmCheckStore.resx">
+      <DependentUpon>frmCheckStore.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmCustomer.resx">
+      <DependentUpon>frmCustomer.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmCustomerOrders.resx">
+      <DependentUpon>frmCustomerOrders.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmForInvoice.resx">
+      <DependentUpon>frmForInvoice.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmLogin.resx">
+      <DependentUpon>frmLogin.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmPrintWo.resx">
+      <DependentUpon>frmPrintWo.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmUser.resx">
+      <DependentUpon>frmUser.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmUserCustType.resx">
+      <DependentUpon>frmUserCustType.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmPrintPicklist.resx">
+      <DependentUpon>frmPrintPicklist.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmWebsiteImport.resx">
+      <DependentUpon>frmWebsiteImport.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\rprtOrder.rdlc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Include="App.config" />
+    <None Include="Linq\ItemLookUp.dbml.layout">
+      <DependentUpon>ItemLookUp.dbml</DependentUpon>
+    </None>
+    <EmbeddedResource Include="Forms\frmItemLookUp.resx">
+      <DependentUpon>frmItemLookUp.vb</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmLinqLevel.resx">
+      <DependentUpon>frmLinqLevel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmPassword.resx">
+      <DependentUpon>frmPassword.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmRecall.resx">
+      <DependentUpon>frmRecall.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmSalesRep.resx">
+      <DependentUpon>frmSalesRep.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmPriceLevel.resx">
+      <DependentUpon>frmPriceLevel.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmSettings.resx">
+      <DependentUpon>frmSettings.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmUploader.resx">
+      <DependentUpon>frmUploader.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Resources.resx">
+      <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
+      <CustomToolNamespace>My.Resources</CustomToolNamespace>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="My Project\DataSources\clsOrderedItems.datasource" />
+    <None Include="My Project\DataSources\clsPickList.datasource" />
+    <None Include="My Project\DataSources\SOD_viewWorkOrder.datasource" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Linq\ItemLookUp.dbml">
+      <Generator>MSLinqToSQLGenerator</Generator>
+      <LastGenOutput>ItemLookUp.designer.vb</LastGenOutput>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="My Project\app.manifest">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="My Project\Application.myapp">
+      <Generator>MyApplicationCodeGenerator</Generator>
+      <LastGenOutput>Application.Designer.vb</LastGenOutput>
+    </None>
+    <None Include="My Project\DataSources\SOD_fntbl_WoEntryResult.datasource" />
+    <None Include="My Project\DataSources\SOD_fntbl_WoEntryResult1.datasource" />
+    <None Include="My Project\DataSources\SOD_fntbl_WorkOrderResult.datasource" />
+    <None Include="My Project\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <CustomToolNamespace>My</CustomToolNamespace>
+      <LastGenOutput>Settings.Designer.vb</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ILLink\ILLink.Descriptors.LibraryBuild.xml" />
+    <None Include="bin\Debug\MySql.Data.dll" />
+    <Content Include="filter.ico" />
+    <Content Include="iconfinder_order_59488.ico" />
+    <None Include="packages.config" />
+    <None Include="Resources\icons8-invoice-15.png" />
+    <None Include="Resources\no-image-icon-15.png" />
+    <EmbeddedResource Include="Report\rptPickList.rdlc" />
+    <EmbeddedResource Include="Resources\ICSharpCode.SharpZipLib.dll" />
+    <EmbeddedResource Include="Resources\ExcelDataReader.dll" />
+    <EmbeddedResource Include="Resources\ExcelDataReader.DataSet.dll" />
+    <None Include="Resources\icons8-print-15.png" />
+    <None Include="Resources\icons8-print-13.png" />
+    <None Include="Resources\icons8-print-30.png" />
+    <None Include="Resources\icons8-print-10.png" />
+    <None Include="Resources\image_icon_logout_pic_512x512.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
+  <ItemGroup>
+    <PackageReference Include="ExcelDataReader">
+      <Version>3.7.0</Version>
+    </PackageReference>
+    <PackageReference Include="ExcelDataReader.DataSet">
+      <Version>3.7.0</Version>
+    </PackageReference>
+    <PackageReference Include="MySql.Data">
+      <Version>9.4.0</Version>
+    </PackageReference>
+    <PackageReference Include="NuGet.Frameworks">
+      <Version>6.14.0</Version>
+    </PackageReference>
+    <PackageReference Include="System.Buffers">
+      <Version>4.6.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Configuration.ConfigurationManager">
+      <Version>9.0.6</Version>
+    </PackageReference>
+    <PackageReference Include="System.Diagnostics.DiagnosticSource">
+      <Version>9.0.6</Version>
+    </PackageReference>
+    <PackageReference Include="System.IO.Pipelines">
+      <Version>9.0.6</Version>
+    </PackageReference>
+    <PackageReference Include="System.Memory">
+      <Version>4.6.3</Version>
+    </PackageReference>
+    <PackageReference Include="System.Numerics.Vectors">
+      <Version>4.6.1</Version>
+    </PackageReference>
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe">
+      <Version>6.1.2</Version>
+    </PackageReference>
+    <PackageReference Include="System.Threading.Tasks.Extensions">
+      <Version>4.6.3</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft.Office.Core">
+      <Guid>{2DF8D04C-5BFA-101B-BDE5-00AA0044DE52}</Guid>
+      <VersionMajor>2</VersionMajor>
+      <VersionMinor>8</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="Microsoft.Office.Interop.Excel">
+      <Guid>{00020813-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>9</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="VBIDE">
+      <Guid>{0002E157-0000-0000-C000-000000000046}</Guid>
+      <VersionMajor>5</VersionMajor>
+      <VersionMinor>3</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+  </ItemGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
