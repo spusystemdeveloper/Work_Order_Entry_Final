@@ -660,7 +660,7 @@ Partial Class frmItemLookUp
         Me.txtBarcode.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.txtBarcode.Location = New System.Drawing.Point(6, 290)
         Me.txtBarcode.Name = "txtBarcode"
-        Me.txtBarcode.Size = New System.Drawing.Size(253, 24)
+        Me.txtBarcode.Size = New System.Drawing.Size(301, 24)
         Me.txtBarcode.TabIndex = 27
         '
         'chkBarcode

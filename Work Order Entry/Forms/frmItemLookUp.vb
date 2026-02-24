@@ -283,6 +283,43 @@ Public Class frmItemLookUp
 
     End Sub
 
+    'Make loaded items appear in bold in the grid
+    Private Sub gridItem_CellFormatting(ByVal sender As Object, ByVal e As DataGridViewCellFormattingEventArgs) Handles gridItem.CellFormatting
+        Try
+            'Ignore header row and new row
+            If e.RowIndex < 0 OrElse e.RowIndex >= gridItem.Rows.Count Then Exit Sub
+
+            Dim row As DataGridViewRow = gridItem.Rows(e.RowIndex)
+
+            ' TODO: Adjust this logic to match your own definition of "loaded"
+            ' Example below: treat the item as loaded if "QTY COM" (column 18) is greater than 0
+            Dim isLoaded As Boolean = False
+            Try
+                'Use the column index or name that represents loaded quantity/status
+                Dim qtyComIndex As Integer = 18 ' change if your "loaded" column is different
+                If qtyComIndex >= 0 AndAlso qtyComIndex < row.Cells.Count Then
+                    Dim val = row.Cells(qtyComIndex).Value
+                    If val IsNot Nothing AndAlso IsNumeric(val) AndAlso CDec(val) > 0D Then
+                        isLoaded = True
+                    End If
+                End If
+            Catch
+                'Ignore per-row errors in determining loaded state
+            End Try
+
+            If isLoaded Then
+                'Bold font for loaded items
+                e.CellStyle.Font = New Font(gridItem.Font, FontStyle.Bold)
+            Else
+                'Normal font for not loaded items
+                e.CellStyle.Font = gridItem.Font
+            End If
+
+        Catch
+            'Ignore formatting-time exceptions to avoid breaking the grid
+        End Try
+    End Sub
+
     Private Sub txtSearch_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtSearch.KeyUp
 
         Try
