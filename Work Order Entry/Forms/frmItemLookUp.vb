@@ -283,7 +283,7 @@ Public Class frmItemLookUp
 
     End Sub
 
-    'Make loaded items appear in bold in the grid
+    'Make loaded items appear in bold and larger font in the grid
     Private Sub gridItem_CellFormatting(ByVal sender As Object, ByVal e As DataGridViewCellFormattingEventArgs) Handles gridItem.CellFormatting
         Try
             'Ignore header row and new row
@@ -307,12 +307,42 @@ Public Class frmItemLookUp
                 'Ignore per-row errors in determining loaded state
             End Try
 
+            'Set a larger base font size for the ITEM ROWS only (do not touch the header font)
+            'You can adjust the size (e.g., 11, 12, 13) to whatever you prefer.
+            Dim baseSize As Single = 12.0F
+
+            'Choose a safe base font for cells (fallback if DefaultCellStyle.Font is not set)
+            Dim baseFamily As FontFamily
+            Try
+                'Force Arial for item rows
+                baseFamily = New FontFamily("Calibri")
+            Catch
+                'If Arial is not available for some reason, fall back to the grid's current font family
+                Dim fallbackFont As Font = gridItem.DefaultCellStyle.Font
+                If fallbackFont Is Nothing Then
+                    fallbackFont = gridItem.Font
+                End If
+                If fallbackFont Is Nothing Then
+                    fallbackFont = Me.Font
+                End If
+                baseFamily = fallbackFont.FontFamily
+            End Try
+
+            'All item rows bold in Arial; loaded items a bit bigger and bold
+            Dim normalFont As New Font(baseFamily, baseSize, FontStyle.Bold)
+            Dim loadedFont As New Font(baseFamily, baseSize + 2.0F, FontStyle.Bold)
+
+            'Increase row height a bit more to give extra vertical spacing between rows
+            If gridItem.RowTemplate.Height < 26 Then
+                gridItem.RowTemplate.Height = 26
+            End If
+
             If isLoaded Then
-                'Bold font for loaded items
-                e.CellStyle.Font = New Font(gridItem.Font, FontStyle.Bold)
+                'Bold and clearly larger font for LOADED items (item rows only)
+                e.CellStyle.Font = loadedFont
             Else
-                'Normal font for not loaded items
-                e.CellStyle.Font = gridItem.Font
+                'Normal (but larger) font for NOT loaded items
+                e.CellStyle.Font = normalFont
             End If
 
         Catch
