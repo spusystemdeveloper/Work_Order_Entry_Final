@@ -138,8 +138,6 @@ Partial Class frmItemLookUp
         Me.Update_Timer = New System.Windows.Forms.Timer(Me.components)
         Me.Check_errors = New System.Windows.Forms.Timer(Me.components)
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-        Me.picPanel = New WorkOrderEntry.CustomPanel()
-        Me.picItem = New WorkOrderEntry.ZoomPictureBox()
         Me.BottomStrip.SuspendLayout()
         Me.panelButtons.SuspendLayout()
         Me.panelTotal.SuspendLayout()
@@ -148,6 +146,7 @@ Partial Class frmItemLookUp
         Me.GroupBox4.SuspendLayout()
         Me.panelGrid.SuspendLayout()
         Me.panelItem.SuspendLayout()
+        Me.picPanel.SuspendLayout()
         CType(Me.gridItem, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel4.SuspendLayout()
         Me.Panel5.SuspendLayout()
@@ -156,7 +155,6 @@ Partial Class frmItemLookUp
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.panelSelectItem.SuspendLayout()
         CType(Me.gridSelectItem, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.picPanel.SuspendLayout()
         Me.SuspendLayout()
         '
         'ofdImport
@@ -168,7 +166,7 @@ Partial Class frmItemLookUp
         Me.txtRemarks.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.txtRemarks.Location = New System.Drawing.Point(8, 184)
         Me.txtRemarks.Name = "txtRemarks"
-        Me.txtRemarks.Size = New System.Drawing.Size(326, 27)
+        Me.txtRemarks.Size = New System.Drawing.Size(326, 23)
         Me.txtRemarks.TabIndex = 6
         '
         'lblRemarks
@@ -177,7 +175,7 @@ Partial Class frmItemLookUp
         Me.lblRemarks.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblRemarks.Location = New System.Drawing.Point(5, 167)
         Me.lblRemarks.Name = "lblRemarks"
-        Me.lblRemarks.Size = New System.Drawing.Size(157, 17)
+        Me.lblRemarks.Size = New System.Drawing.Size(125, 13)
         Me.lblRemarks.TabIndex = 61
         Me.lblRemarks.Text = "Comment (e.g. PO#):"
         '
@@ -188,7 +186,7 @@ Partial Class frmItemLookUp
         Me.txtType.Location = New System.Drawing.Point(8, 92)
         Me.txtType.Name = "txtType"
         Me.txtType.ReadOnly = True
-        Me.txtType.Size = New System.Drawing.Size(208, 27)
+        Me.txtType.Size = New System.Drawing.Size(208, 23)
         Me.txtType.TabIndex = 3
         Me.txtType.TabStop = False
         '
@@ -199,7 +197,7 @@ Partial Class frmItemLookUp
         Me.Label5.Location = New System.Drawing.Point(5, 77)
         Me.Label5.Name = "Label5"
         Me.Label5.Padding = New System.Windows.Forms.Padding(0, 0, 27, 0)
-        Me.Label5.Size = New System.Drawing.Size(214, 17)
+        Me.Label5.Size = New System.Drawing.Size(178, 13)
         Me.Label5.TabIndex = 59
         Me.Label5.Text = "Business/Customer Type:"
         '
@@ -209,7 +207,7 @@ Partial Class frmItemLookUp
         Me.txtCustomer.Location = New System.Drawing.Point(6, 49)
         Me.txtCustomer.Name = "txtCustomer"
         Me.txtCustomer.ReadOnly = True
-        Me.txtCustomer.Size = New System.Drawing.Size(281, 27)
+        Me.txtCustomer.Size = New System.Drawing.Size(281, 23)
         Me.txtCustomer.TabIndex = 1
         Me.txtCustomer.TabStop = False
         '
@@ -219,7 +217,7 @@ Partial Class frmItemLookUp
         Me.Label3.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label3.Location = New System.Drawing.Point(5, 34)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(81, 17)
+        Me.Label3.Size = New System.Drawing.Size(65, 13)
         Me.Label3.TabIndex = 61
         Me.Label3.Text = "Customer:"
         '
@@ -229,7 +227,7 @@ Partial Class frmItemLookUp
         Me.txtSales.Location = New System.Drawing.Point(8, 137)
         Me.txtSales.Name = "txtSales"
         Me.txtSales.ReadOnly = True
-        Me.txtSales.Size = New System.Drawing.Size(279, 27)
+        Me.txtSales.Size = New System.Drawing.Size(279, 23)
         Me.txtSales.TabIndex = 4
         Me.txtSales.TabStop = False
         '
@@ -239,7 +237,7 @@ Partial Class frmItemLookUp
         Me.Label2.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label2.Location = New System.Drawing.Point(5, 121)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(79, 17)
+        Me.Label2.Size = New System.Drawing.Size(65, 13)
         Me.Label2.TabIndex = 54
         Me.Label2.Text = "Sales Rep:"
         '
@@ -248,7 +246,7 @@ Partial Class frmItemLookUp
         Me.txtSearch.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.txtSearch.Location = New System.Drawing.Point(5, 261)
         Me.txtSearch.Name = "txtSearch"
-        Me.txtSearch.Size = New System.Drawing.Size(282, 24)
+        Me.txtSearch.Size = New System.Drawing.Size(282, 21)
         Me.txtSearch.TabIndex = 8
         '
         'Label1
@@ -257,7 +255,7 @@ Partial Class frmItemLookUp
         Me.Label1.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label1.Location = New System.Drawing.Point(5, 243)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(237, 17)
+        Me.Label1.Size = New System.Drawing.Size(190, 13)
         Me.Label1.TabIndex = 63
         Me.Label1.Text = "Look Up Item Code/Description: "
         '
@@ -265,10 +263,10 @@ Partial Class frmItemLookUp
         '
         Me.BottomStrip.ImageScalingSize = New System.Drawing.Size(20, 20)
         Me.BottomStrip.Items.AddRange(New System.Windows.Forms.ToolStripItem() {Me.statServer, Me.statDb, Me.ToolStripStatusLabel1, Me.ToolStripStatusLabel3, Me.ToolStripStatusLabel2, Me.lblOrderNo, Me.lblStatItemSelected, Me.lblStatItemCount})
-        Me.BottomStrip.Location = New System.Drawing.Point(0, 757)
+        Me.BottomStrip.Location = New System.Drawing.Point(0, 763)
         Me.BottomStrip.Name = "BottomStrip"
         Me.BottomStrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.ManagerRenderMode
-        Me.BottomStrip.Size = New System.Drawing.Size(1323, 32)
+        Me.BottomStrip.Size = New System.Drawing.Size(1323, 26)
         Me.BottomStrip.SizingGrip = False
         Me.BottomStrip.TabIndex = 21
         Me.BottomStrip.Text = "StatusStrip1"
@@ -282,7 +280,7 @@ Partial Class frmItemLookUp
         Me.statServer.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.statServer.Name = "statServer"
         Me.statServer.Padding = New System.Windows.Forms.Padding(0, 1, 50, 1)
-        Me.statServer.Size = New System.Drawing.Size(131, 26)
+        Me.statServer.Size = New System.Drawing.Size(114, 21)
         Me.statServer.Text = "Location: "
         Me.statServer.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
@@ -295,7 +293,7 @@ Partial Class frmItemLookUp
         Me.statDb.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.statDb.Name = "statDb"
         Me.statDb.Padding = New System.Windows.Forms.Padding(0, 1, 50, 1)
-        Me.statDb.Size = New System.Drawing.Size(132, 26)
+        Me.statDb.Size = New System.Drawing.Size(115, 21)
         Me.statDb.Text = "Database:"
         Me.statDb.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
@@ -303,7 +301,7 @@ Partial Class frmItemLookUp
         '
         Me.ToolStripStatusLabel1.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ToolStripStatusLabel1.Name = "ToolStripStatusLabel1"
-        Me.ToolStripStatusLabel1.Size = New System.Drawing.Size(574, 26)
+        Me.ToolStripStatusLabel1.Size = New System.Drawing.Size(689, 21)
         Me.ToolStripStatusLabel1.Spring = True
         Me.ToolStripStatusLabel1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
@@ -314,7 +312,7 @@ Partial Class frmItemLookUp
             Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom), System.Windows.Forms.ToolStripStatusLabelBorderSides)
         Me.ToolStripStatusLabel3.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ToolStripStatusLabel3.Name = "ToolStripStatusLabel3"
-        Me.ToolStripStatusLabel3.Size = New System.Drawing.Size(83, 26)
+        Me.ToolStripStatusLabel3.Size = New System.Drawing.Size(67, 21)
         Me.ToolStripStatusLabel3.Text = "Register : "
         '
         'ToolStripStatusLabel2
@@ -324,7 +322,7 @@ Partial Class frmItemLookUp
             Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom), System.Windows.Forms.ToolStripStatusLabelBorderSides)
         Me.ToolStripStatusLabel2.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.ToolStripStatusLabel2.Name = "ToolStripStatusLabel2"
-        Me.ToolStripStatusLabel2.Size = New System.Drawing.Size(57, 26)
+        Me.ToolStripStatusLabel2.Size = New System.Drawing.Size(46, 21)
         Me.ToolStripStatusLabel2.Text = "User : "
         '
         'lblOrderNo
@@ -334,7 +332,7 @@ Partial Class frmItemLookUp
             Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom), System.Windows.Forms.ToolStripStatusLabelBorderSides)
         Me.lblOrderNo.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblOrderNo.Name = "lblOrderNo"
-        Me.lblOrderNo.Size = New System.Drawing.Size(70, 26)
+        Me.lblOrderNo.Size = New System.Drawing.Size(57, 21)
         Me.lblOrderNo.Text = "Order #:"
         '
         'lblStatItemSelected
@@ -344,7 +342,7 @@ Partial Class frmItemLookUp
             Or System.Windows.Forms.ToolStripStatusLabelBorderSides.Bottom), System.Windows.Forms.ToolStripStatusLabelBorderSides)
         Me.lblStatItemSelected.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblStatItemSelected.Name = "lblStatItemSelected"
-        Me.lblStatItemSelected.Size = New System.Drawing.Size(119, 26)
+        Me.lblStatItemSelected.Size = New System.Drawing.Size(97, 21)
         Me.lblStatItemSelected.Text = "0 item selected"
         Me.lblStatItemSelected.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
@@ -356,7 +354,7 @@ Partial Class frmItemLookUp
         Me.lblStatItemCount.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblStatItemCount.Name = "lblStatItemCount"
         Me.lblStatItemCount.Padding = New System.Windows.Forms.Padding(50, 0, 0, 0)
-        Me.lblStatItemCount.Size = New System.Drawing.Size(142, 26)
+        Me.lblStatItemCount.Size = New System.Drawing.Size(123, 21)
         Me.lblStatItemCount.Text = "6009 items"
         Me.lblStatItemCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight
         '
@@ -386,7 +384,7 @@ Partial Class frmItemLookUp
         Me.panelButtons.Location = New System.Drawing.Point(1206, 0)
         Me.panelButtons.Name = "panelButtons"
         Me.panelButtons.Padding = New System.Windows.Forms.Padding(3)
-        Me.panelButtons.Size = New System.Drawing.Size(117, 757)
+        Me.panelButtons.Size = New System.Drawing.Size(117, 763)
         Me.panelButtons.TabIndex = 23
         '
         'Button2
@@ -419,7 +417,7 @@ Partial Class frmItemLookUp
         '
         Me.txtAvailable.Location = New System.Drawing.Point(3, 438)
         Me.txtAvailable.Name = "txtAvailable"
-        Me.txtAvailable.Size = New System.Drawing.Size(108, 24)
+        Me.txtAvailable.Size = New System.Drawing.Size(108, 21)
         Me.txtAvailable.TabIndex = 34
         Me.txtAvailable.Visible = False
         '
@@ -427,7 +425,7 @@ Partial Class frmItemLookUp
         '
         Me.txtCreditLimit.Location = New System.Drawing.Point(3, 411)
         Me.txtCreditLimit.Name = "txtCreditLimit"
-        Me.txtCreditLimit.Size = New System.Drawing.Size(108, 24)
+        Me.txtCreditLimit.Size = New System.Drawing.Size(108, 21)
         Me.txtCreditLimit.TabIndex = 33
         Me.txtCreditLimit.Visible = False
         '
@@ -435,7 +433,7 @@ Partial Class frmItemLookUp
         '
         Me.txtOpenWO.Location = New System.Drawing.Point(3, 384)
         Me.txtOpenWO.Name = "txtOpenWO"
-        Me.txtOpenWO.Size = New System.Drawing.Size(108, 24)
+        Me.txtOpenWO.Size = New System.Drawing.Size(108, 21)
         Me.txtOpenWO.TabIndex = 32
         Me.txtOpenWO.Visible = False
         '
@@ -443,7 +441,7 @@ Partial Class frmItemLookUp
         '
         Me.txtAR.Location = New System.Drawing.Point(6, 357)
         Me.txtAR.Name = "txtAR"
-        Me.txtAR.Size = New System.Drawing.Size(108, 24)
+        Me.txtAR.Size = New System.Drawing.Size(108, 21)
         Me.txtAR.TabIndex = 31
         Me.txtAR.Visible = False
         '
@@ -451,7 +449,7 @@ Partial Class frmItemLookUp
         '
         Me.txtCustomerId.Location = New System.Drawing.Point(6, 330)
         Me.txtCustomerId.Name = "txtCustomerId"
-        Me.txtCustomerId.Size = New System.Drawing.Size(108, 24)
+        Me.txtCustomerId.Size = New System.Drawing.Size(108, 21)
         Me.txtCustomerId.TabIndex = 30
         Me.txtCustomerId.Visible = False
         '
@@ -459,7 +457,7 @@ Partial Class frmItemLookUp
         '
         Me.txtPrice.Location = New System.Drawing.Point(6, 303)
         Me.txtPrice.Name = "txtPrice"
-        Me.txtPrice.Size = New System.Drawing.Size(107, 24)
+        Me.txtPrice.Size = New System.Drawing.Size(107, 21)
         Me.txtPrice.TabIndex = 29
         Me.txtPrice.Visible = False
         '
@@ -468,7 +466,7 @@ Partial Class frmItemLookUp
         Me.txtPriceLevel.Enabled = False
         Me.txtPriceLevel.Location = New System.Drawing.Point(4, 276)
         Me.txtPriceLevel.Name = "txtPriceLevel"
-        Me.txtPriceLevel.Size = New System.Drawing.Size(107, 24)
+        Me.txtPriceLevel.Size = New System.Drawing.Size(107, 21)
         Me.txtPriceLevel.TabIndex = 28
         Me.txtPriceLevel.Visible = False
         '
@@ -478,7 +476,7 @@ Partial Class frmItemLookUp
         Me.Button1.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Button1.Image = Global.WorkOrderEntry.My.Resources.Resources.icons8_print_15
         Me.Button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.Button1.Location = New System.Drawing.Point(3, 556)
+        Me.Button1.Location = New System.Drawing.Point(3, 562)
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(111, 33)
         Me.Button1.TabIndex = 17
@@ -491,7 +489,7 @@ Partial Class frmItemLookUp
         Me.cmdOk.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdOk.Image = CType(resources.GetObject("cmdOk.Image"), System.Drawing.Image)
         Me.cmdOk.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdOk.Location = New System.Drawing.Point(3, 589)
+        Me.cmdOk.Location = New System.Drawing.Point(3, 595)
         Me.cmdOk.Name = "cmdOk"
         Me.cmdOk.Size = New System.Drawing.Size(111, 33)
         Me.cmdOk.TabIndex = 20
@@ -517,7 +515,7 @@ Partial Class frmItemLookUp
         Me.cmdRecall.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdRecall.Image = CType(resources.GetObject("cmdRecall.Image"), System.Drawing.Image)
         Me.cmdRecall.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdRecall.Location = New System.Drawing.Point(3, 622)
+        Me.cmdRecall.Location = New System.Drawing.Point(3, 628)
         Me.cmdRecall.Name = "cmdRecall"
         Me.cmdRecall.Size = New System.Drawing.Size(111, 33)
         Me.cmdRecall.TabIndex = 19
@@ -569,7 +567,7 @@ Partial Class frmItemLookUp
         Me.cmdRemove.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdRemove.Image = CType(resources.GetObject("cmdRemove.Image"), System.Drawing.Image)
         Me.cmdRemove.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdRemove.Location = New System.Drawing.Point(3, 655)
+        Me.cmdRemove.Location = New System.Drawing.Point(3, 661)
         Me.cmdRemove.Name = "cmdRemove"
         Me.cmdRemove.Size = New System.Drawing.Size(111, 33)
         Me.cmdRemove.TabIndex = 21
@@ -582,7 +580,7 @@ Partial Class frmItemLookUp
         Me.cmdCancel.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdCancel.Image = CType(resources.GetObject("cmdCancel.Image"), System.Drawing.Image)
         Me.cmdCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdCancel.Location = New System.Drawing.Point(3, 688)
+        Me.cmdCancel.Location = New System.Drawing.Point(3, 694)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.Size = New System.Drawing.Size(111, 33)
         Me.cmdCancel.TabIndex = 22
@@ -595,7 +593,7 @@ Partial Class frmItemLookUp
         Me.cmdClose.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdClose.Image = CType(resources.GetObject("cmdClose.Image"), System.Drawing.Image)
         Me.cmdClose.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdClose.Location = New System.Drawing.Point(3, 721)
+        Me.cmdClose.Location = New System.Drawing.Point(3, 727)
         Me.cmdClose.Name = "cmdClose"
         Me.cmdClose.Size = New System.Drawing.Size(111, 33)
         Me.cmdClose.TabIndex = 23
@@ -662,7 +660,7 @@ Partial Class frmItemLookUp
         Me.txtBarcode.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.txtBarcode.Location = New System.Drawing.Point(6, 290)
         Me.txtBarcode.Name = "txtBarcode"
-        Me.txtBarcode.Size = New System.Drawing.Size(365, 24)
+        Me.txtBarcode.Size = New System.Drawing.Size(365, 21)
         Me.txtBarcode.TabIndex = 27
         '
         'chkBarcode
@@ -671,7 +669,7 @@ Partial Class frmItemLookUp
         Me.chkBarcode.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.chkBarcode.Location = New System.Drawing.Point(236, 294)
         Me.chkBarcode.Name = "chkBarcode"
-        Me.chkBarcode.Size = New System.Drawing.Size(120, 21)
+        Me.chkBarcode.Size = New System.Drawing.Size(98, 17)
         Me.chkBarcode.TabIndex = 26
         Me.chkBarcode.Text = "Barcode [F3]"
         Me.chkBarcode.UseVisualStyleBackColor = True
@@ -688,7 +686,7 @@ Partial Class frmItemLookUp
         Me.panelTotal.Controls.Add(Me.cmdImport)
         Me.panelTotal.Controls.Add(Me.cmdForInvoice)
         Me.panelTotal.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.panelTotal.Location = New System.Drawing.Point(0, 678)
+        Me.panelTotal.Location = New System.Drawing.Point(0, 684)
         Me.panelTotal.Name = "panelTotal"
         Me.panelTotal.Padding = New System.Windows.Forms.Padding(5)
         Me.panelTotal.Size = New System.Drawing.Size(1206, 79)
@@ -700,7 +698,7 @@ Partial Class frmItemLookUp
         Me.chkBoxQtoWo.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.chkBoxQtoWo.Location = New System.Drawing.Point(8, 8)
         Me.chkBoxQtoWo.Name = "chkBoxQtoWo"
-        Me.chkBoxQtoWo.Size = New System.Drawing.Size(209, 21)
+        Me.chkBoxQtoWo.Size = New System.Drawing.Size(168, 17)
         Me.chkBoxQtoWo.TabIndex = 18
         Me.chkBoxQtoWo.Text = "IsQuoteConvertedToWo?"
         Me.chkBoxQtoWo.UseVisualStyleBackColor = True
@@ -723,10 +721,10 @@ Partial Class frmItemLookUp
         '
         Me.txtVat.Dock = System.Windows.Forms.DockStyle.Fill
         Me.txtVat.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtVat.Location = New System.Drawing.Point(3, 23)
+        Me.txtVat.Location = New System.Drawing.Point(3, 19)
         Me.txtVat.Name = "txtVat"
         Me.txtVat.ReadOnly = True
-        Me.txtVat.Size = New System.Drawing.Size(273, 36)
+        Me.txtVat.Size = New System.Drawing.Size(273, 30)
         Me.txtVat.TabIndex = 15
         Me.txtVat.TabStop = False
         Me.txtVat.Text = "0.00"
@@ -749,10 +747,10 @@ Partial Class frmItemLookUp
         '
         Me.txtSub.Dock = System.Windows.Forms.DockStyle.Fill
         Me.txtSub.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtSub.Location = New System.Drawing.Point(3, 23)
+        Me.txtSub.Location = New System.Drawing.Point(3, 19)
         Me.txtSub.Name = "txtSub"
         Me.txtSub.ReadOnly = True
-        Me.txtSub.Size = New System.Drawing.Size(273, 36)
+        Me.txtSub.Size = New System.Drawing.Size(273, 30)
         Me.txtSub.TabIndex = 14
         Me.txtSub.TabStop = False
         Me.txtSub.Text = "0.00"
@@ -775,10 +773,10 @@ Partial Class frmItemLookUp
         '
         Me.txtTotal.Dock = System.Windows.Forms.DockStyle.Fill
         Me.txtTotal.Font = New System.Drawing.Font("Tahoma", 14.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtTotal.Location = New System.Drawing.Point(3, 23)
+        Me.txtTotal.Location = New System.Drawing.Point(3, 19)
         Me.txtTotal.Name = "txtTotal"
         Me.txtTotal.ReadOnly = True
-        Me.txtTotal.Size = New System.Drawing.Size(306, 36)
+        Me.txtTotal.Size = New System.Drawing.Size(306, 30)
         Me.txtTotal.TabIndex = 16
         Me.txtTotal.TabStop = False
         Me.txtTotal.Text = "0.00"
@@ -791,7 +789,7 @@ Partial Class frmItemLookUp
         Me.panelGrid.Dock = System.Windows.Forms.DockStyle.Fill
         Me.panelGrid.Location = New System.Drawing.Point(0, 0)
         Me.panelGrid.Name = "panelGrid"
-        Me.panelGrid.Size = New System.Drawing.Size(1206, 678)
+        Me.panelGrid.Size = New System.Drawing.Size(1206, 684)
         Me.panelGrid.TabIndex = 25
         '
         'panelItem
@@ -803,8 +801,39 @@ Partial Class frmItemLookUp
         Me.panelItem.Location = New System.Drawing.Point(0, 0)
         Me.panelItem.Name = "panelItem"
         Me.panelItem.Padding = New System.Windows.Forms.Padding(10, 0, 10, 0)
-        Me.panelItem.Size = New System.Drawing.Size(1206, 458)
+        Me.panelItem.Size = New System.Drawing.Size(1206, 464)
         Me.panelItem.TabIndex = 18
+        '
+        'picPanel
+        '
+        Me.picPanel.BackColor = System.Drawing.Color.LightSteelBlue
+        Me.picPanel.Controls.Add(Me.picItem)
+        Me.picPanel.Cursor = System.Windows.Forms.Cursors.SizeAll
+        Me.picPanel.Location = New System.Drawing.Point(358, 182)
+        Me.picPanel.Name = "picPanel"
+        Me.picPanel.Padding = New System.Windows.Forms.Padding(10)
+        Me.picPanel.Size = New System.Drawing.Size(250, 250)
+        Me.picPanel.TabIndex = 19
+        Me.picPanel.Visible = False
+        '
+        'picItem
+        '
+        Me.picItem.BackColor = System.Drawing.Color.White
+        Me.picItem.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.picItem.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.picItem.EnableMouseDragging = True
+        Me.picItem.EnableMouseWheelZooming = True
+        Me.picItem.Image = Nothing
+        Me.picItem.ImagePosition = New System.Drawing.Point(0, 0)
+        Me.picItem.Location = New System.Drawing.Point(10, 10)
+        Me.picItem.MaximumZoomFactor = 64.0R
+        Me.picItem.MinimumImageHeight = 10
+        Me.picItem.MinimumImageWidth = 10
+        Me.picItem.MouseWheelDivisor = 500
+        Me.picItem.Name = "picItem"
+        Me.picItem.Size = New System.Drawing.Size(230, 230)
+        Me.picItem.TabIndex = 0
+        Me.picItem.ZoomFactor = 1.15R
         '
         'gridItem
         '
@@ -823,7 +852,7 @@ Partial Class frmItemLookUp
         Me.gridItem.RowHeadersWidth = 51
         Me.gridItem.RowTemplate.DefaultCellStyle.Font = New System.Drawing.Font("Arial", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.gridItem.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.gridItem.Size = New System.Drawing.Size(844, 458)
+        Me.gridItem.Size = New System.Drawing.Size(844, 464)
         Me.gridItem.TabIndex = 0
         Me.gridItem.TabStop = False
         '
@@ -835,7 +864,7 @@ Partial Class frmItemLookUp
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Left
         Me.Panel4.Location = New System.Drawing.Point(10, 0)
         Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(342, 458)
+        Me.Panel4.Size = New System.Drawing.Size(342, 464)
         Me.Panel4.TabIndex = 17
         '
         'Label6
@@ -844,9 +873,9 @@ Partial Class frmItemLookUp
         Me.Label6.AutoSize = True
         Me.Label6.BackColor = System.Drawing.Color.White
         Me.Label6.Font = New System.Drawing.Font("Tahoma", 6.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label6.Location = New System.Drawing.Point(5, 439)
+        Me.Label6.Location = New System.Drawing.Point(5, 445)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(371, 14)
+        Me.Label6.Size = New System.Drawing.Size(305, 11)
         Me.Label6.TabIndex = 67
         Me.Label6.Text = "Press F4 to Remove Recent Search Keyword. F5 to Clear All"
         '
@@ -856,7 +885,7 @@ Partial Class frmItemLookUp
         Me.TreeView1.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.TreeView1.Location = New System.Drawing.Point(0, 343)
         Me.TreeView1.Name = "TreeView1"
-        Me.TreeView1.Size = New System.Drawing.Size(342, 115)
+        Me.TreeView1.Size = New System.Drawing.Size(342, 121)
         Me.TreeView1.TabIndex = 1
         '
         'Panel5
@@ -914,7 +943,7 @@ Partial Class frmItemLookUp
         Me.chkWebsite.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.chkWebsite.Location = New System.Drawing.Point(266, 6)
         Me.chkWebsite.Name = "chkWebsite"
-        Me.chkWebsite.Size = New System.Drawing.Size(85, 21)
+        Me.chkWebsite.Size = New System.Drawing.Size(72, 17)
         Me.chkWebsite.TabIndex = 79
         Me.chkWebsite.Text = "Website"
         Me.chkWebsite.UseVisualStyleBackColor = True
@@ -926,7 +955,7 @@ Partial Class frmItemLookUp
         Me.chkQuote.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.chkQuote.Location = New System.Drawing.Point(172, 6)
         Me.chkQuote.Name = "chkQuote"
-        Me.chkQuote.Size = New System.Drawing.Size(100, 21)
+        Me.chkQuote.Size = New System.Drawing.Size(82, 17)
         Me.chkQuote.TabIndex = 78
         Me.chkQuote.Text = "Quotation"
         Me.chkQuote.UseVisualStyleBackColor = True
@@ -937,9 +966,9 @@ Partial Class frmItemLookUp
         Me.chkShowImage.AutoSize = True
         Me.chkShowImage.BackColor = System.Drawing.SystemColors.Control
         Me.chkShowImage.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.chkShowImage.Location = New System.Drawing.Point(6, 317)
+        Me.chkShowImage.Location = New System.Drawing.Point(6, 321)
         Me.chkShowImage.Name = "chkShowImage"
-        Me.chkShowImage.Size = New System.Drawing.Size(118, 21)
+        Me.chkShowImage.Size = New System.Drawing.Size(96, 17)
         Me.chkShowImage.TabIndex = 24
         Me.chkShowImage.Text = "Show Image"
         Me.chkShowImage.UseVisualStyleBackColor = False
@@ -952,7 +981,7 @@ Partial Class frmItemLookUp
         Me.chkWorkOrder.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.chkWorkOrder.Location = New System.Drawing.Point(80, 7)
         Me.chkWorkOrder.Name = "chkWorkOrder"
-        Me.chkWorkOrder.Size = New System.Drawing.Size(111, 21)
+        Me.chkWorkOrder.Size = New System.Drawing.Size(91, 17)
         Me.chkWorkOrder.TabIndex = 77
         Me.chkWorkOrder.Text = "Work Order"
         Me.chkWorkOrder.UseVisualStyleBackColor = True
@@ -981,7 +1010,7 @@ Partial Class frmItemLookUp
         Me.Label9.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label9.Location = New System.Drawing.Point(5, 7)
         Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(93, 17)
+        Me.Label9.Size = New System.Drawing.Size(74, 13)
         Me.Label9.TabIndex = 71
         Me.Label9.Text = "Entry Type :"
         '
@@ -991,7 +1020,7 @@ Partial Class frmItemLookUp
         Me.rbtnDelivery.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.rbtnDelivery.Location = New System.Drawing.Point(173, 212)
         Me.rbtnDelivery.Name = "rbtnDelivery"
-        Me.rbtnDelivery.Size = New System.Drawing.Size(83, 21)
+        Me.rbtnDelivery.Size = New System.Drawing.Size(72, 17)
         Me.rbtnDelivery.TabIndex = 70
         Me.rbtnDelivery.Text = "Delivery"
         Me.rbtnDelivery.UseVisualStyleBackColor = True
@@ -1003,7 +1032,7 @@ Partial Class frmItemLookUp
         Me.rbtnPickup.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.rbtnPickup.Location = New System.Drawing.Point(99, 212)
         Me.rbtnPickup.Name = "rbtnPickup"
-        Me.rbtnPickup.Size = New System.Drawing.Size(80, 21)
+        Me.rbtnPickup.Size = New System.Drawing.Size(67, 17)
         Me.rbtnPickup.TabIndex = 69
         Me.rbtnPickup.TabStop = True
         Me.rbtnPickup.Text = "Pick-up"
@@ -1015,7 +1044,7 @@ Partial Class frmItemLookUp
         Me.Label8.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label8.Location = New System.Drawing.Point(5, 214)
         Me.Label8.Name = "Label8"
-        Me.Label8.Size = New System.Drawing.Size(107, 17)
+        Me.Label8.Size = New System.Drawing.Size(89, 13)
         Me.Label8.TabIndex = 68
         Me.Label8.Text = "Release Type :"
         '
@@ -1027,7 +1056,7 @@ Partial Class frmItemLookUp
         Me.cboPayment.Items.AddRange(New Object() {"CASH", "CHARGE", "CREDIT CARD", "DEBIT CARD"})
         Me.cboPayment.Location = New System.Drawing.Point(222, 92)
         Me.cboPayment.Name = "cboPayment"
-        Me.cboPayment.Size = New System.Drawing.Size(112, 27)
+        Me.cboPayment.Size = New System.Drawing.Size(112, 24)
         Me.cboPayment.TabIndex = 66
         '
         'Label7
@@ -1038,7 +1067,7 @@ Partial Class frmItemLookUp
         Me.Label7.Location = New System.Drawing.Point(216, 78)
         Me.Label7.Name = "Label7"
         Me.Label7.Padding = New System.Windows.Forms.Padding(0, 0, 27, 0)
-        Me.Label7.Size = New System.Drawing.Size(139, 17)
+        Me.Label7.Size = New System.Drawing.Size(119, 13)
         Me.Label7.TabIndex = 65
         Me.Label7.Text = "Payment Type:"
         '
@@ -1102,7 +1131,7 @@ Partial Class frmItemLookUp
         Me.panelSelectItem.Controls.Add(Me.Label4)
         Me.panelSelectItem.Controls.Add(Me.GroupBox1)
         Me.panelSelectItem.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.panelSelectItem.Location = New System.Drawing.Point(0, 458)
+        Me.panelSelectItem.Location = New System.Drawing.Point(0, 464)
         Me.panelSelectItem.Name = "panelSelectItem"
         Me.panelSelectItem.Padding = New System.Windows.Forms.Padding(10, 0, 10, 11)
         Me.panelSelectItem.Size = New System.Drawing.Size(1206, 220)
@@ -1127,11 +1156,11 @@ Partial Class frmItemLookUp
         DataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
         Me.gridSelectItem.DefaultCellStyle = DataGridViewCellStyle6
         Me.gridSelectItem.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.gridSelectItem.Location = New System.Drawing.Point(10, 33)
+        Me.gridSelectItem.Location = New System.Drawing.Point(10, 29)
         Me.gridSelectItem.Name = "gridSelectItem"
         Me.gridSelectItem.RowHeadersWidth = 51
         Me.gridSelectItem.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.gridSelectItem.Size = New System.Drawing.Size(1186, 176)
+        Me.gridSelectItem.Size = New System.Drawing.Size(1186, 180)
         Me.gridSelectItem.TabIndex = 15
         Me.gridSelectItem.TabStop = False
         '
@@ -1314,7 +1343,7 @@ Partial Class frmItemLookUp
         Me.Label4.Location = New System.Drawing.Point(10, 11)
         Me.Label4.Name = "Label4"
         Me.Label4.Padding = New System.Windows.Forms.Padding(0, 0, 0, 5)
-        Me.Label4.Size = New System.Drawing.Size(116, 22)
+        Me.Label4.Size = New System.Drawing.Size(96, 18)
         Me.Label4.TabIndex = 22
         Me.Label4.Text = "Selected Items:"
         '
@@ -1337,40 +1366,9 @@ Partial Class frmItemLookUp
         Me.Check_errors.Enabled = True
         Me.Check_errors.Interval = 1000
         '
-        'picPanel
-        '
-        Me.picPanel.BackColor = System.Drawing.Color.LightSteelBlue
-        Me.picPanel.Controls.Add(Me.picItem)
-        Me.picPanel.Cursor = System.Windows.Forms.Cursors.SizeAll
-        Me.picPanel.Location = New System.Drawing.Point(358, 182)
-        Me.picPanel.Name = "picPanel"
-        Me.picPanel.Padding = New System.Windows.Forms.Padding(10)
-        Me.picPanel.Size = New System.Drawing.Size(250, 250)
-        Me.picPanel.TabIndex = 19
-        Me.picPanel.Visible = False
-        '
-        'picItem
-        '
-        Me.picItem.BackColor = System.Drawing.Color.White
-        Me.picItem.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.picItem.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.picItem.EnableMouseDragging = True
-        Me.picItem.EnableMouseWheelZooming = True
-        Me.picItem.Image = Nothing
-        Me.picItem.ImagePosition = New System.Drawing.Point(0, 0)
-        Me.picItem.Location = New System.Drawing.Point(10, 10)
-        Me.picItem.MaximumZoomFactor = 64.0R
-        Me.picItem.MinimumImageHeight = 10
-        Me.picItem.MinimumImageWidth = 10
-        Me.picItem.MouseWheelDivisor = 500
-        Me.picItem.Name = "picItem"
-        Me.picItem.Size = New System.Drawing.Size(230, 230)
-        Me.picItem.TabIndex = 0
-        Me.picItem.ZoomFactor = 1.15R
-        '
         'frmItemLookUp
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(10.0!, 18.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 15.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(1323, 789)
         Me.Controls.Add(Me.panelGrid)
@@ -1399,6 +1397,7 @@ Partial Class frmItemLookUp
         Me.GroupBox4.PerformLayout()
         Me.panelGrid.ResumeLayout(False)
         Me.panelItem.ResumeLayout(False)
+        Me.picPanel.ResumeLayout(False)
         CType(Me.gridItem, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel4.ResumeLayout(False)
         Me.Panel4.PerformLayout()
@@ -1410,7 +1409,6 @@ Partial Class frmItemLookUp
         Me.panelSelectItem.ResumeLayout(False)
         Me.panelSelectItem.PerformLayout()
         CType(Me.gridSelectItem, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.picPanel.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

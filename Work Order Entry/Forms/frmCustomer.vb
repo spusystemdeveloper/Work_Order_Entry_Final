@@ -11,8 +11,6 @@
             ErrorCount = ErrorCount + 1
         End Try
 
-        
-
     End Sub
 
     Private Sub gridCustomerWidth()

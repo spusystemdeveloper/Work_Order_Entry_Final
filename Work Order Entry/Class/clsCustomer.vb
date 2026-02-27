@@ -1,21 +1,52 @@
 ﻿Public Class clsCustomer
 
-    Public Shared Function SearchCustomer(ByVal sCompany As String) As Object
+    'Public Shared Function SearchCustomer(ByVal sCompany As String) As Object
+    '    Try
+
+    '        Dim customer = (From c In db.Customers _
+    '                      Where (c.Company.Contains(sCompany)) _
+    '                      Select c.AccountNumber, c.Company, c.PriceLevel, c.Employee, c.Title, c.TaxExempt, c.ID, c.CustomText2, c.CustomText4 Order By _
+    '                      Company).ToList
+    '        Return customer
+    '    Catch ex As Exception
+    '        MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ErrorCount = ErrorCount + 1
+    '        Return Nothing
+    '    End Try
+
+    'End Function
+
+
+    Public Shared Function SearchCustomer(ByVal sSearch As String) As Object
         Try
 
-            Dim customer = (From c In db.Customers _
-                          Where (c.Company.Contains(sCompany)) _
-                          Select c.AccountNumber, c.Company, c.PriceLevel, c.Employee, c.Title, c.TaxExempt, c.ID, c.CustomText2, c.CustomText4 Order By _
-                          Company).ToList
+            Dim customer = (From c In db.Customers
+                            Where c.Company.Contains(sSearch) _
+                           OrElse c.AccountNumber.Contains(sSearch)
+                            Order By c.Company
+                            Select c.AccountNumber,
+                               c.Company,
+                               c.PriceLevel,
+                               c.Employee,
+                               c.Title,
+                               c.TaxExempt,
+                               c.ID,
+                               c.CustomText2,
+                               c.CustomText4).ToList()
+
             Return customer
+
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ErrorCount = ErrorCount + 1
+            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf &
+                        "REASON : " & ex.Message,
+                        "MESSAGE : ERROR 0001",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error)
+            ErrorCount += 1
             Return Nothing
         End Try
-
-
     End Function
+
 
     Public Shared Function getPrimarySalesRepID(ByVal sCompany As Integer) As Integer
         Try
