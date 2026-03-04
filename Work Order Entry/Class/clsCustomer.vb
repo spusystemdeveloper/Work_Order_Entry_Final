@@ -278,7 +278,7 @@
     Public Shared Function getPriceLevel(ByVal sCustomer As String) As Integer
         Try
             Dim price = (From c In db.Customers
-                         Where c.Company.Contains(sCustomer)
+                         Where c.ID.Equals(sCustomer)
                          Select c.PriceLevel).FirstOrDefault()
             Return price
         Catch ex As Exception
@@ -320,10 +320,10 @@
     End Function
 
 
-    Public Shared Function getCustomerID(ByVal sCompany As String) As Integer
+    Public Shared Function getCustomerID(ByVal sCompanyId As String) As Integer
 
         Dim customerid = (From s In db.Customers
-                          Where s.Company.Equals(sCompany)
+                          Where s.Company.Equals(sCompanyId)
                           Select s.ID).SingleOrDefault
 
         Return customerid
