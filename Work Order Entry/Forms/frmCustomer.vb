@@ -19,11 +19,11 @@
 
             gridCustomer.Columns(0).Width = 100
             gridCustomer.Columns(1).Width = 369
-            gridCustomer.Columns(2).Visible = True
+            gridCustomer.Columns(2).Visible = False
             gridCustomer.Columns(3).Visible = False
             gridCustomer.Columns(4).Visible = False
             gridCustomer.Columns(5).Visible = False
-            gridCustomer.Columns(6).Visible = False
+            gridCustomer.Columns(6).Visible = True
             gridCustomer.Columns(7).Visible = False
 
         Catch ex As Exception
@@ -155,7 +155,7 @@
     End Sub
 
     Private Sub gridCustomer_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles gridCustomer.CellDoubleClick
-
+        'comment
         Try
             GetCustomerInfo(iRowCust)
         Catch ex As Exception

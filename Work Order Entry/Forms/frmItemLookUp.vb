@@ -1591,15 +1591,15 @@ Proceed:
 
     'End Sub
     Private Sub cmdSCustomer_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSCustomer.Click
-
-        Try
-            ClearItem()
+        'comment
+        'Try
+        ClearItem()
             ShowCustomer()
             GetCustomerPriceLevel()
-        Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 33", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ErrorCount = ErrorCount + 1
-        End Try
+        'Catch ex As Exception
+        '    MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 33", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        '    ErrorCount = ErrorCount + 1
+        'End Try
 
         'Try
 
@@ -1689,16 +1689,28 @@ Proceed:
 
     Public Sub GetCustomerPriceLevel()
         Try
-            ' Retrieve customer info
-            Dim customerId As String = clsCustomer.getCustomerID(txtCustomer.Text)
-            Dim priceLevelRaw As String = clsCustomer.getPriceLevel(txtCustomer.Text)
-            Dim ar As Decimal = Val(clsAccountReceivable.getCreditLimit(txtCustomer.Text))
-            Dim openWO As Decimal = Val(clsAccountReceivable.getOpenWO(txtCustomer.Text))
-            Dim creditLimit As Decimal = Val(clsAccountReceivable.getCustomerCreditLimit(txtCustomer.Text))
-            Dim available As Decimal = creditLimit - (ar + openWO)
 
+            ' Retrieve customer info
+            'Dim customerId As String = clsCustomer.getCustomerID(txtCustomer.Text)
+            Dim priceLevelRaw As String = clsCustomer.getPriceLevel(iCusID)
+            'Dim ar As Decimal = Val(clsAccountReceivable.getCreditLimit(txtCustomer.Text))
+            Dim ar As Decimal = iCusID
+            'Dim openWO As Decimal = Val(clsAccountReceivable.getOpenWO(txtCustomer.Text))
+            Dim openWO As Decimal = clsAccountReceivable.getOpenWO(iCusID)
+            'Dim creditLimit As Decimal = Val(clsAccountReceivable.getCustomerCreditLimit(txtCustomer.Text))
+            Dim creditLimit As Decimal = Val(clsAccountReceivable.getCustomerCreditLimit(iCusID))
+            Dim available As Decimal = creditLimit - (ar + openWO)
+            'MessageBox.Show("Customer ID: " & iCusID & vbCrLf &
+            '            "Price Level (raw): " & priceLevelRaw & vbCrLf &
+            '            "Accounts Receivable: " & ar.ToString() & vbCrLf &
+            '            "Open Work Orders: " & openWO.ToString() & vbCrLf &
+            '            "Credit Limit: " & creditLimit.ToString() & vbCrLf &
+            '            "Available Credit: " & available.ToString(),
+            '            "Debug Info",
+            '            MessageBoxButtons.OK,
+            '            MessageBoxIcon.Information)
             ' Assign to UI
-            txtCustomerId.Text = customerId
+            txtCustomerId.Text = iCusID
             txtAR.Text = ar.ToString()
             txtOpenWO.Text = openWO.ToString()
             txtCreditLimit.Text = creditLimit.ToString()
@@ -1734,7 +1746,7 @@ Proceed:
     End Sub
 
     Private Sub ShowCustomer()
-
+        'comment
         Try
 
             If gridSelectItem.RowCount > 0 Then
@@ -1785,7 +1797,7 @@ Proceed:
     End Sub
 
     Private Sub txtSales_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtSales.KeyPress
-
+        'comment
         Try
 
             If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
