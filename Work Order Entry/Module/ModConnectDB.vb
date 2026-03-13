@@ -3,10 +3,10 @@ Imports System.Data.SqlClient
 
 Module ModConnectDB
 
-
     Public ErrorCount As Integer = 0
 
     'Public db As New ItemLookUpDataContext("Data Source=localhost;Initial Catalog=MAIN_WHSE_2015_DB;Persist Security Info=True;User ID=sa;Password=starbright24680")
+
     Public db As New ItemLookUpDataContext(DB_Conn("constr"))
     Public dbnew As New ItemLookUpDataContext(DB_Conn("constr"))
     Public dbInitial As New ItemLookUpDataContext(DB_ConnInitial("constr"))
@@ -133,7 +133,6 @@ Module ModConnectDB
     Public sql_ds As DataSet = New DataSet()
     Public sql_dt As DataTable = New DataTable()
 
-
     Public database_location As String = DB_Conn("constr")
 
     Public Sub DatabaseConnection()
@@ -143,7 +142,6 @@ Module ModConnectDB
             MessageBox.Show(ex.Message)
         End Try
     End Sub
-
 
     'QUERY SQL
     Public Sub query(ByVal sql_query As String)

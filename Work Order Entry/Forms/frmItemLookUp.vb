@@ -208,77 +208,77 @@ Public Class frmItemLookUp
 
     Private Sub GridColumnWidth()
 
-        'Try
+        Try
 
-        With gridItem
-            .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            '.Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnsMode.Fill
-            .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(4).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(7).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(18).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+            With gridItem
+                .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+                '.Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnsMode.Fill
+                .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+                .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+                .Columns(4).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+                .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+                .Columns(7).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+                '.Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+                '.Columns(18).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
 
-            .Columns(0).Frozen = True
-            '.Columns(1).MinimumWidth = 450
-            .Columns(1).MinimumWidth = 1000
-            'for column width
-            '.Columns(0).Width = 100
-            '.Columns(1).Width = 400
-            '.Columns(2).Width = 90
-            '.Columns(3).Width = 0
-            '.Columns(4).Width = 90
-            '.Columns(5).Width = 100
-            'for column name
-            .Columns(0).DefaultCellStyle.Font = New Font("Arial", 10, FontStyle.Bold)
-            .Columns(0).HeaderText = "ITEM CODE"
-            .Columns(1).HeaderText = "ITEM NAME"
-            .Columns(2).HeaderText = "ITEM PRICE"
-            .Columns(3).HeaderText = "COST"
-            .Columns(4).HeaderText = "QUANTITY"
-            .Columns(5).HeaderText = "CHILD QTY"
-            .Columns(7).HeaderText = "SKU Level"
-            .Columns(17).HeaderText = "SOH"
-            .Columns(18).HeaderText = "QTY COM"
+                .Columns(0).Frozen = True
+                '.Columns(1).MinimumWidth = 450
+                .Columns(1).MinimumWidth = 1000
+                'for column width
+                '.Columns(0).Width = 100
+                '.Columns(1).Width = 400
+                '.Columns(2).Width = 90
+                '.Columns(3).Width = 0
+                '.Columns(4).Width = 90
+                '.Columns(5).Width = 100
+                'for column name
+                .Columns(0).DefaultCellStyle.Font = New Font("Arial", 10, FontStyle.Bold)
+                .Columns(0).HeaderText = "ITEM CODE"
+                .Columns(1).HeaderText = "ITEM NAME"
+                .Columns(2).HeaderText = "ITEM PRICE"
+                .Columns(3).HeaderText = "COST"
+                .Columns(4).HeaderText = "QUANTITY"
+                .Columns(5).HeaderText = "CHILD QTY"
+                .Columns(7).HeaderText = "SKU Level"
+                .Columns(17).HeaderText = "SOH"
+                .Columns(18).HeaderText = "QTY COM"
 
-            'for format & alignment
-            '.Columns(2).DefaultCellStyle.Format = "##0.00"
-            .Columns(2).DefaultCellStyle.Format = "C"
-            .Columns(3).DefaultCellStyle.Format = "N2"
-            .Columns(4).DefaultCellStyle.Format = "N0"
-            .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
-            .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
-            .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
-            .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-            .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-            .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter
-            .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-            .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-            .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-            .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+                'for format & alignment
+                '.Columns(2).DefaultCellStyle.Format = "##0.00"
+                .Columns(2).DefaultCellStyle.Format = "C"
+                .Columns(3).DefaultCellStyle.Format = "N2"
+                .Columns(4).DefaultCellStyle.Format = "N0"
+                .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+                .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+                .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+                .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter
+                .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
 
 
-            .Columns(3).Visible = False
-            .Columns(5).Visible = False
-            .Columns(6).Visible = False
-            .Columns(7).Visible = False
-            .Columns(8).Visible = False
-            .Columns(9).Visible = False
-            .Columns(10).Visible = False
-            .Columns(11).Visible = False
-            .Columns(12).Visible = False
-            .Columns(13).Visible = False
-            .Columns(14).Visible = False
-            .Columns(15).Visible = False
-            .Columns(16).Visible = False
-        End With
+                .Columns(3).Visible = False
+                .Columns(5).Visible = False
+                .Columns(6).Visible = False
+                .Columns(7).Visible = False
+                .Columns(8).Visible = False
+                .Columns(9).Visible = False
+                .Columns(10).Visible = False
+                .Columns(11).Visible = False
+                .Columns(12).Visible = False
+                .Columns(13).Visible = False
+                .Columns(14).Visible = False
+                .Columns(15).Visible = False
+                .Columns(16).Visible = False
+            End With
 
-        'Catch ex As Exception
-        '    MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        '    ErrorCount = ErrorCount + 1
-        'End Try
+        Catch ex As Exception
+            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ErrorCount = ErrorCount + 1
+        End Try
 
 
     End Sub
@@ -1479,7 +1479,7 @@ Proceed:
     End Sub
 
     Public Function getItem() As DataTable
-        Return load_data("SELECT TOP 500 * FROM SOD_ViewItemsWo WHERE Inactive = 0")
+        Return load_data("SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0")
     End Function
     Private Sub FormatGrid()
 
@@ -4213,16 +4213,16 @@ inputCust:
 
     'comment:
     Private Sub SearchBarcode()
-        Try
-            Dim SearchStrArr() As String = Split(sfilterTxt, ",")
+        'Try
+        Dim SearchStrArr() As String = Split(sfilterTxt, ",")
             'Dim FullDescFilter As String = String.Join("%' AND [FULLDESC] Like '%", SearchStrArr)
             'Dim ItemLookupCodeFilter As String = String.Join("%' OR [ITEMLOOKUPCODE] Like '%", SearchStrArr)
             Dim SubDescription2Filter As String = String.Join("' OR [SUBDESCRIPTION2] = '", SearchStrArr)
             Dim FilterString As String = "[SUBDESCRIPTION2] = '" & SubDescription2Filter & "'"
-            Dim FilterStr = "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
-            ' Dim FilterStr2 = "SELECT ItemLookupCode,Description,Price FROM SOD_VIEWITEMS WHERE Inactive = 0 AND (" & FilterString & ")"
-
-            gridItem.DataSource = load_data(FilterStr)
+        Dim FilterStr = "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
+        ' Dim FilterStr2 = "SELECT ItemLookupCode,Description,Price FROM SOD_VIEWITEMS WHERE Inactive = 0 AND (" & FilterString & ")"
+        'Dim FilterStr As String = "SELECT * FROM SOD_ViewItemsWO a WHERE a.ItemLookupCode = '" & FilterString & "' OR a.Subdescription2 LIKE '%" & FilterString & "%'"
+        gridItem.DataSource = load_data(FilterStr)
             'gridSelectItem.DataSource = load_data(FilterStr2)
 
             GridColumnWidth()
@@ -4251,10 +4251,10 @@ inputCust:
             txtBarcode.Focus()
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
 
-        Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ErrorCount = ErrorCount + 1
-        End Try
+        'Catch ex As Exception
+        '    MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        '    ErrorCount = ErrorCount + 1
+        'End Try
     End Sub
 
     'comment:
@@ -4322,9 +4322,9 @@ inputCust:
     'comment:
     Private Sub txtBarcode_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtBarcode.KeyPress
 
-        Try
-            ' Check if Enter key is pressed
-            If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
+        'Try
+        ' Check if Enter key is pressed
+        If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
                 ' If the barcode field is empty
                 If String.IsNullOrEmpty(txtBarcode.Text) Then
                     MessageBox.Show("Search cannot be empty!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
@@ -4361,11 +4361,11 @@ inputCust:
                 e.Handled = True ' Prevent further processing of the key press
             End If
 
-        Catch ex As Exception
-            ' Handle any exceptions and log them
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0061", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ErrorCount += 1
-        End Try
+        'Catch ex As Exception
+        '    ' Handle any exceptions and log them
+        '    MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0061", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        '    ErrorCount += 1
+        'End Try
     End Sub
 
     'comment:
