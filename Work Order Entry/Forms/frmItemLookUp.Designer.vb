@@ -24,12 +24,12 @@ Partial Class frmItemLookUp
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmItemLookUp))
-        Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.ofdImport = New System.Windows.Forms.OpenFileDialog()
         Me.txtRemarks = New System.Windows.Forms.TextBox()
         Me.lblRemarks = New System.Windows.Forms.Label()
@@ -86,6 +86,8 @@ Partial Class frmItemLookUp
         Me.txtTotal = New System.Windows.Forms.TextBox()
         Me.panelGrid = New System.Windows.Forms.Panel()
         Me.panelItem = New System.Windows.Forms.Panel()
+        Me.picPanel = New WorkOrderEntry.CustomPanel()
+        Me.picItem = New WorkOrderEntry.ZoomPictureBox()
         Me.gridItem = New System.Windows.Forms.DataGridView()
         Me.Panel4 = New System.Windows.Forms.Panel()
         Me.Label6 = New System.Windows.Forms.Label()
@@ -136,8 +138,6 @@ Partial Class frmItemLookUp
         Me.Update_Timer = New System.Windows.Forms.Timer(Me.components)
         Me.Check_errors = New System.Windows.Forms.Timer(Me.components)
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-        Me.picPanel = New WorkOrderEntry.CustomPanel()
-        Me.picItem = New WorkOrderEntry.ZoomPictureBox()
         Me.BottomStrip.SuspendLayout()
         Me.panelButtons.SuspendLayout()
         Me.panelTotal.SuspendLayout()
@@ -146,6 +146,7 @@ Partial Class frmItemLookUp
         Me.GroupBox4.SuspendLayout()
         Me.panelGrid.SuspendLayout()
         Me.panelItem.SuspendLayout()
+        Me.picPanel.SuspendLayout()
         CType(Me.gridItem, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel4.SuspendLayout()
         Me.Panel5.SuspendLayout()
@@ -154,7 +155,6 @@ Partial Class frmItemLookUp
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.panelSelectItem.SuspendLayout()
         CType(Me.gridSelectItem, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.picPanel.SuspendLayout()
         Me.SuspendLayout()
         '
         'ofdImport
@@ -804,13 +804,44 @@ Partial Class frmItemLookUp
         Me.panelItem.Size = New System.Drawing.Size(1206, 464)
         Me.panelItem.TabIndex = 18
         '
+        'picPanel
+        '
+        Me.picPanel.BackColor = System.Drawing.Color.LightSteelBlue
+        Me.picPanel.Controls.Add(Me.picItem)
+        Me.picPanel.Cursor = System.Windows.Forms.Cursors.SizeAll
+        Me.picPanel.Location = New System.Drawing.Point(358, 182)
+        Me.picPanel.Name = "picPanel"
+        Me.picPanel.Padding = New System.Windows.Forms.Padding(10)
+        Me.picPanel.Size = New System.Drawing.Size(250, 250)
+        Me.picPanel.TabIndex = 19
+        Me.picPanel.Visible = False
+        '
+        'picItem
+        '
+        Me.picItem.BackColor = System.Drawing.Color.White
+        Me.picItem.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.picItem.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.picItem.EnableMouseDragging = True
+        Me.picItem.EnableMouseWheelZooming = True
+        Me.picItem.Image = Nothing
+        Me.picItem.ImagePosition = New System.Drawing.Point(0, 0)
+        Me.picItem.Location = New System.Drawing.Point(10, 10)
+        Me.picItem.MaximumZoomFactor = 64.0R
+        Me.picItem.MinimumImageHeight = 10
+        Me.picItem.MinimumImageWidth = 10
+        Me.picItem.MouseWheelDivisor = 500
+        Me.picItem.Name = "picItem"
+        Me.picItem.Size = New System.Drawing.Size(230, 230)
+        Me.picItem.TabIndex = 0
+        Me.picItem.ZoomFactor = 1.15R
+        '
         'gridItem
         '
         Me.gridItem.AllowUserToAddRows = False
         Me.gridItem.AllowUserToDeleteRows = False
         Me.gridItem.AllowUserToOrderColumns = True
-        DataGridViewCellStyle7.BackColor = System.Drawing.Color.Lavender
-        Me.gridItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle7
+        DataGridViewCellStyle1.BackColor = System.Drawing.Color.Lavender
+        Me.gridItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
         Me.gridItem.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight
         Me.gridItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.gridItem.Dock = System.Windows.Forms.DockStyle.Fill
@@ -1111,19 +1142,19 @@ Partial Class frmItemLookUp
         Me.gridSelectItem.AllowUserToAddRows = False
         Me.gridSelectItem.AllowUserToDeleteRows = False
         Me.gridSelectItem.AllowUserToOrderColumns = True
-        DataGridViewCellStyle8.BackColor = System.Drawing.Color.Lavender
-        Me.gridSelectItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle8
+        DataGridViewCellStyle2.BackColor = System.Drawing.Color.Lavender
+        Me.gridSelectItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle2
         Me.gridSelectItem.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight
         Me.gridSelectItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.gridSelectItem.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.ItemCode, Me.ItemName, Me.QTY, Me.Price, Me.DISC, Me.TOTAL, Me.LessV, Me.VSales, Me.DiscP, Me.Cost, Me.Taxable, Me.ItemID, Me.FullPrice, Me.Description, Me.Extended, Me.DiscAmount, Me.OrderEntryID, Me.chkPickLoc, Me.CustPrep, Me.LASTPURCHASEDPRICE})
-        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle12.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.LightBlue
-        DataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.gridSelectItem.DefaultCellStyle = DataGridViewCellStyle12
+        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.LightBlue
+        DataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.gridSelectItem.DefaultCellStyle = DataGridViewCellStyle6
         Me.gridSelectItem.Dock = System.Windows.Forms.DockStyle.Fill
         Me.gridSelectItem.Location = New System.Drawing.Point(10, 29)
         Me.gridSelectItem.Name = "gridSelectItem"
@@ -1152,8 +1183,8 @@ Partial Class frmItemLookUp
         'QTY
         '
         Me.QTY.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        DataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight
-        Me.QTY.DefaultCellStyle = DataGridViewCellStyle9
+        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight
+        Me.QTY.DefaultCellStyle = DataGridViewCellStyle3
         Me.QTY.HeaderText = "QUANTITY"
         Me.QTY.MinimumWidth = 6
         Me.QTY.Name = "QTY"
@@ -1162,10 +1193,10 @@ Partial Class frmItemLookUp
         'Price
         '
         Me.Price.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight
-        DataGridViewCellStyle10.Format = "N2"
-        DataGridViewCellStyle10.NullValue = Nothing
-        Me.Price.DefaultCellStyle = DataGridViewCellStyle10
+        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight
+        DataGridViewCellStyle4.Format = "N2"
+        DataGridViewCellStyle4.NullValue = Nothing
+        Me.Price.DefaultCellStyle = DataGridViewCellStyle4
         Me.Price.HeaderText = "PRICE"
         Me.Price.MinimumWidth = 6
         Me.Price.Name = "Price"
@@ -1182,9 +1213,9 @@ Partial Class frmItemLookUp
         'TOTAL
         '
         Me.TOTAL.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        DataGridViewCellStyle11.Format = "##0.00"
-        DataGridViewCellStyle11.NullValue = Nothing
-        Me.TOTAL.DefaultCellStyle = DataGridViewCellStyle11
+        DataGridViewCellStyle5.Format = "##0.00"
+        DataGridViewCellStyle5.NullValue = Nothing
+        Me.TOTAL.DefaultCellStyle = DataGridViewCellStyle5
         Me.TOTAL.HeaderText = "TOTAL PRICE"
         Me.TOTAL.MinimumWidth = 6
         Me.TOTAL.Name = "TOTAL"
@@ -1335,37 +1366,6 @@ Partial Class frmItemLookUp
         Me.Check_errors.Enabled = True
         Me.Check_errors.Interval = 1000
         '
-        'picPanel
-        '
-        Me.picPanel.BackColor = System.Drawing.Color.LightSteelBlue
-        Me.picPanel.Controls.Add(Me.picItem)
-        Me.picPanel.Cursor = System.Windows.Forms.Cursors.SizeAll
-        Me.picPanel.Location = New System.Drawing.Point(358, 182)
-        Me.picPanel.Name = "picPanel"
-        Me.picPanel.Padding = New System.Windows.Forms.Padding(10)
-        Me.picPanel.Size = New System.Drawing.Size(250, 250)
-        Me.picPanel.TabIndex = 19
-        Me.picPanel.Visible = False
-        '
-        'picItem
-        '
-        Me.picItem.BackColor = System.Drawing.Color.White
-        Me.picItem.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.picItem.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.picItem.EnableMouseDragging = True
-        Me.picItem.EnableMouseWheelZooming = True
-        Me.picItem.Image = Nothing
-        Me.picItem.ImagePosition = New System.Drawing.Point(0, 0)
-        Me.picItem.Location = New System.Drawing.Point(10, 10)
-        Me.picItem.MaximumZoomFactor = 64.0R
-        Me.picItem.MinimumImageHeight = 10
-        Me.picItem.MinimumImageWidth = 10
-        Me.picItem.MouseWheelDivisor = 500
-        Me.picItem.Name = "picItem"
-        Me.picItem.Size = New System.Drawing.Size(230, 230)
-        Me.picItem.TabIndex = 0
-        Me.picItem.ZoomFactor = 1.15R
-        '
         'frmItemLookUp
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 15.0!)
@@ -1397,6 +1397,7 @@ Partial Class frmItemLookUp
         Me.GroupBox4.PerformLayout()
         Me.panelGrid.ResumeLayout(False)
         Me.panelItem.ResumeLayout(False)
+        Me.picPanel.ResumeLayout(False)
         CType(Me.gridItem, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel4.ResumeLayout(False)
         Me.Panel4.PerformLayout()
@@ -1408,7 +1409,6 @@ Partial Class frmItemLookUp
         Me.panelSelectItem.ResumeLayout(False)
         Me.panelSelectItem.PerformLayout()
         CType(Me.gridSelectItem, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.picPanel.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

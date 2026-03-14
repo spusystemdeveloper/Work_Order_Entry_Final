@@ -4254,22 +4254,97 @@ inputCust:
     '        ErrorCount = ErrorCount + 1
     '    End Try
     'End Sub
+    'Private Sub SearchBarcode()
+    '    Try
+    '        Dim SearchStrArr() As String = Split(sfilterTxt, ",")
+
+    '        Dim BarcodeFilter As String = String.Join("%' OR [SUBDESCRIPTION2] LIKE '%", SearchStrArr)
+    '        Dim ItemLookupFilter As String = String.Join("%' OR [ItemLookupCode] LIKE '%", SearchStrArr)
+
+    '        Dim FilterString As String =
+    '        "[SUBDESCRIPTION2] LIKE '%" & BarcodeFilter & "%' OR " &
+    '        "[ItemLookupCode] LIKE '%" & ItemLookupFilter & "%'"
+
+    '        Dim FilterStr As String =
+    '        "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
+
+    '        gridItem.DataSource = load_data(FilterStr)
+
+    '        GridColumnWidth()
+
+    '        If isItemCode(searchStr) = True Then
+
+    '            If iCusID = 0 Then
+    '                MsgBox("Please select customer first!", vbExclamation, "Message")
+    '            Else
+
+    '                Dim availVal = clsItemLookUp.getItemQty(gridItem.Item(0, gridItem.CurrentCell.RowIndex).Value)
+
+    '                If availVal < 1 Then
+    '                    MsgBox("This item is out of stock.", vbExclamation, "Message!")
+    '                    Exit Sub
+    '                Else
+    '                    InsertSelectedItem(gridItem.CurrentCell.RowIndex)
+    '                    gridSelectItem.Focus()
+    '                    gridSelectItem.BeginEdit(True)
+    '                End If
+
+    '                TreeView1.Nodes.Clear()
+
+    '            End If
+
+    '        End If
+
+    '        checkSearch1()
+    '        TreeView1.Nodes.Clear()
+    '        iRow = 0
+    '        txtBarcode.Focus()
+
+    '        lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
+
+    '    Catch ex As Exception
+    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ErrorCount = ErrorCount + 1
+    '    End Try
+    'End Sub
     Private Sub SearchBarcode()
         Try
             Dim SearchStrArr() As String = Split(sfilterTxt, ",")
+            Dim lf As String = Chr(10)
 
-            Dim BarcodeFilter As String = String.Join("%' OR [SUBDESCRIPTION2] LIKE '%", SearchStrArr)
-            Dim ItemLookupFilter As String = String.Join("%' OR [ItemLookupCode] LIKE '%", SearchStrArr)
+            ' Build filter conditions for each search term
+            Dim conditions As New List(Of String)
 
-            Dim FilterString As String =
-            "[SUBDESCRIPTION2] LIKE '%" & BarcodeFilter & "%' OR " &
-            "[ItemLookupCode] LIKE '%" & ItemLookupFilter & "%'"
+            For Each term As String In SearchStrArr
+                Dim t As String = term.Trim().Replace("'", "''")
+
+                ' ItemLookupCode: exact match OR ends-with match
+                Dim itemCodeCondition As String =
+                "([ItemLookupCode] = '" & t & "'" &
+                " OR [ItemLookupCode] LIKE '%" & t & "')"
+
+                ' SubDescription2: exact token match
+                ' Handles newline-separated AND +-separated barcodes
+                Dim subDesc2Condition As String =
+                "([SUBDESCRIPTION2] = '" & t & "'" &
+                " OR [SUBDESCRIPTION2] LIKE '" & t & lf & "%'" &
+                " OR [SUBDESCRIPTION2] LIKE '%" & lf & t & "'" &
+                " OR [SUBDESCRIPTION2] LIKE '%" & lf & t & lf & "%'" &
+                " OR [SUBDESCRIPTION2] LIKE '" & t & "+%'" &
+                " OR [SUBDESCRIPTION2] LIKE '%+" & t & "'" &
+                " OR [SUBDESCRIPTION2] LIKE '%+" & t & "+%')"
+
+                conditions.Add("(" & itemCodeCondition & " OR " & subDesc2Condition & ")")
+            Next
+
+            ' Join multiple search terms with AND (all terms must match somewhere)
+            Dim FilterString As String = String.Join(" AND ", conditions)
 
             Dim FilterStr As String =
-            "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
+            "SELECT TOP 500 * FROM SOD_VIEWITEMSWO " &
+            "WHERE Inactive = 0 AND (" & FilterString & ")"
 
             gridItem.DataSource = load_data(FilterStr)
-
             GridColumnWidth()
 
             If isItemCode(searchStr) = True Then
@@ -4277,7 +4352,6 @@ inputCust:
                 If iCusID = 0 Then
                     MsgBox("Please select customer first!", vbExclamation, "Message")
                 Else
-
                     Dim availVal = clsItemLookUp.getItemQty(gridItem.Item(0, gridItem.CurrentCell.RowIndex).Value)
 
                     If availVal < 1 Then
@@ -4290,7 +4364,6 @@ inputCust:
                     End If
 
                     TreeView1.Nodes.Clear()
-
                 End If
 
             End If
@@ -4303,7 +4376,8 @@ inputCust:
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message,
+                        "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
     End Sub
