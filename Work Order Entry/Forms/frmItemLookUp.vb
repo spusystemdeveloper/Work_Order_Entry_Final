@@ -4455,10 +4455,10 @@ inputCust:
                     txtBarcode.Text = String.Empty ' Clear the barcode
                     Exit Sub
                     ' Check if the barcode contains letters
-                ElseIf txtBarcode.Text.Any(Function(c) Char.IsLetter(c)) Then
-                    MessageBox.Show("Barcode cannot contain letters!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                    txtBarcode.Text = String.Empty ' Clear the barcode
-                    Exit Sub
+                    'ElseIf txtBarcode.Text.Any(Function(c) Char.IsLetter(c)) Then
+                    '    MessageBox.Show("Barcode cannot contain letters!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    '    txtBarcode.Text = String.Empty ' Clear the barcode
+                    '    Exit Sub
                 Else
                     ' Perform the search and other logic
                     FilterText2() ' Assuming this performs filtering
