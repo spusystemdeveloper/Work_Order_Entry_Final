@@ -1354,6 +1354,7 @@ Proceed:
                     txtSearch.Text = ""
                     txtBarcode.Enabled = False
                     txtBarcode.Text = "Press F3 To Scan barcode"
+                    TreeView1.Nodes.Clear()
                     txtSearch.Focus()
                 Else
                     ' If barcode is not checked, check it and enable txtBarcode
@@ -1362,6 +1363,7 @@ Proceed:
                     txtSearch.Text = "Press F3 To Search items"
                     txtBarcode.Enabled = True
                     txtBarcode.Text = ""
+                    TreeView1.Nodes.Clear()
                     txtBarcode.Focus()
                 End If
             End If
@@ -4212,20 +4214,64 @@ inputCust:
     End Sub
 
     'comment:
+    'Private Sub SearchBarcode()
+    '    Try
+    '        Dim SearchStrArr() As String = Split(sfilterTxt, ",")
+    '        Dim SubDescription2Filter As String = String.Join("' OR [SUBDESCRIPTION2] = '", SearchStrArr)
+    '        Dim FilterString As String = "[SUBDESCRIPTION2] = '" & SubDescription2Filter & "'"
+    '        Dim FilterStr = "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
+
+    '        gridItem.DataSource = load_data(FilterStr)
+
+    '        GridColumnWidth()
+    '        If isItemCode(searchStr) = True Then
+
+    '            If iCusID = 0 Then
+    '                MsgBox("Please select customer first!", vbExclamation, "Message")
+    '            Else
+
+    '                Dim availVal = clsItemLookUp.getItemQty(gridItem.Item(0, gridItem.CurrentCell.RowIndex).Value)
+    '                If availVal < 1 Then
+    '                    MsgBox("This item is out of stock.", vbExclamation, "Message!")
+    '                    Exit Sub
+    '                Else
+    '                    InsertSelectedItem(gridItem.CurrentCell.RowIndex)
+    '                    gridSelectItem.Focus()
+    '                    gridSelectItem.BeginEdit(True)
+    '                End If
+    '                TreeView1.Nodes.Clear()
+    '            End If
+
+    '        End If
+    '        checkSearch1()
+    '        TreeView1.Nodes.Clear()
+    '        iRow = 0
+    '        txtBarcode.Focus()
+    '        lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
+
+    '    Catch ex As Exception
+    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ErrorCount = ErrorCount + 1
+    '    End Try
+    'End Sub
     Private Sub SearchBarcode()
-        'Try
-        Dim SearchStrArr() As String = Split(sfilterTxt, ",")
-            'Dim FullDescFilter As String = String.Join("%' AND [FULLDESC] Like '%", SearchStrArr)
-            'Dim ItemLookupCodeFilter As String = String.Join("%' OR [ITEMLOOKUPCODE] Like '%", SearchStrArr)
-            Dim SubDescription2Filter As String = String.Join("' OR [SUBDESCRIPTION2] = '", SearchStrArr)
-            Dim FilterString As String = "[SUBDESCRIPTION2] = '" & SubDescription2Filter & "'"
-        Dim FilterStr = "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
-        ' Dim FilterStr2 = "SELECT ItemLookupCode,Description,Price FROM SOD_VIEWITEMS WHERE Inactive = 0 AND (" & FilterString & ")"
-        'Dim FilterStr As String = "SELECT * FROM SOD_ViewItemsWO a WHERE a.ItemLookupCode = '" & FilterString & "' OR a.Subdescription2 LIKE '%" & FilterString & "%'"
-        gridItem.DataSource = load_data(FilterStr)
-            'gridSelectItem.DataSource = load_data(FilterStr2)
+        Try
+            Dim SearchStrArr() As String = Split(sfilterTxt, ",")
+
+            Dim BarcodeFilter As String = String.Join("%' OR [SUBDESCRIPTION2] LIKE '%", SearchStrArr)
+            Dim ItemLookupFilter As String = String.Join("%' OR [ItemLookupCode] LIKE '%", SearchStrArr)
+
+            Dim FilterString As String =
+            "[SUBDESCRIPTION2] LIKE '%" & BarcodeFilter & "%' OR " &
+            "[ItemLookupCode] LIKE '%" & ItemLookupFilter & "%'"
+
+            Dim FilterStr As String =
+            "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
+
+            gridItem.DataSource = load_data(FilterStr)
 
             GridColumnWidth()
+
             If isItemCode(searchStr) = True Then
 
                 If iCusID = 0 Then
@@ -4233,6 +4279,7 @@ inputCust:
                 Else
 
                     Dim availVal = clsItemLookUp.getItemQty(gridItem.Item(0, gridItem.CurrentCell.RowIndex).Value)
+
                     If availVal < 1 Then
                         MsgBox("This item is out of stock.", vbExclamation, "Message!")
                         Exit Sub
@@ -4241,22 +4288,25 @@ inputCust:
                         gridSelectItem.Focus()
                         gridSelectItem.BeginEdit(True)
                     End If
+
                     TreeView1.Nodes.Clear()
+
                 End If
 
             End If
+
             checkSearch1()
             TreeView1.Nodes.Clear()
             iRow = 0
             txtBarcode.Focus()
+
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
 
-        'Catch ex As Exception
-        '    MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        '    ErrorCount = ErrorCount + 1
-        'End Try
+        Catch ex As Exception
+            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ErrorCount = ErrorCount + 1
+        End Try
     End Sub
-
     'comment:
     Private Sub checkSearch1()
 
@@ -4322,9 +4372,9 @@ inputCust:
     'comment:
     Private Sub txtBarcode_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtBarcode.KeyPress
 
-        'Try
-        ' Check if Enter key is pressed
-        If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
+        Try
+            ' Check if Enter key is pressed
+            If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
                 ' If the barcode field is empty
                 If String.IsNullOrEmpty(txtBarcode.Text) Then
                     MessageBox.Show("Search cannot be empty!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
@@ -4345,7 +4395,7 @@ inputCust:
 
                     ' Get values from grid (ensure valid grid data)
                     If gridItem.CurrentRow IsNot Nothing Then
-                        SelectPrice()
+                        'SelectPrice()
                     Else
                         'MessageBox.Show("No valid row selected in the grid.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                         txtBarcode.Text = String.Empty
@@ -4361,11 +4411,11 @@ inputCust:
                 e.Handled = True ' Prevent further processing of the key press
             End If
 
-        'Catch ex As Exception
-        '    ' Handle any exceptions and log them
-        '    MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0061", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        '    ErrorCount += 1
-        'End Try
+        Catch ex As Exception
+            ' Handle any exceptions and log them
+            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0061", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        ErrorCount += 1
+        End Try
     End Sub
 
     'comment:
