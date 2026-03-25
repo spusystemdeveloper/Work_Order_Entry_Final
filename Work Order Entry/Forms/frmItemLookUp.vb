@@ -206,33 +206,109 @@ Public Class frmItemLookUp
 
     End Sub
 
+    'Private Sub GridColumnWidth()
+
+    '    Try
+
+    '        With gridItem
+    '            .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            '.Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnsMode.Fill
+    '            .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(4).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+
+    '            .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(7).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            '.Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            '.Columns(18).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+
+    '            .Columns(0).Frozen = True
+    '            '.Columns(1).MinimumWidth = 450
+    '            .Columns(1).MinimumWidth = 1000
+    '            'for column width
+    '            '.Columns(0).Width = 100
+    '            '.Columns(1).Width = 400
+    '            '.Columns(2).Width = 90
+    '            '.Columns(3).Width = 0
+    '            '.Columns(4).Width = 90
+    '            '.Columns(5).Width = 100
+    '            'for column name
+    '            .Columns(0).DefaultCellStyle.Font = New Font("Arial", 10, FontStyle.Bold)
+    '            .Columns(0).HeaderText = "ITEM CODE"
+    '            .Columns(1).HeaderText = "ITEM NAME"
+    '            .Columns(2).HeaderText = "ITEM PRICE"
+    '            .Columns(3).HeaderText = "COST"
+    '            .Columns(4).HeaderText = "QUANTITY"
+    '            .Columns(5).HeaderText = "CHILD QTY"
+    '            .Columns(7).HeaderText = "SKU Level"
+    '            .Columns(17).HeaderText = "SOH"
+    '            .Columns(18).HeaderText = "QTY COM"
+
+    '            'for format & alignment
+    '            .Columns(2).DefaultCellStyle.Format = "C"
+    '            .Columns(3).DefaultCellStyle.Format = "N2"
+    '            .Columns(4).DefaultCellStyle.Format = "N0"
+    '            .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+    '            .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+    '            .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+    '            .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter
+    '            .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+
+    '            .Columns(3).Visible = False
+    '            .Columns(5).Visible = False
+    '            .Columns(6).Visible = False
+    '            .Columns(7).Visible = False
+    '            .Columns(8).Visible = False
+    '            .Columns(9).Visible = False
+    '            .Columns(10).Visible = False
+    '            .Columns(11).Visible = False
+    '            .Columns(12).Visible = False
+    '            .Columns(13).Visible = False
+    '            .Columns(14).Visible = False
+    '            .Columns(15).Visible = False
+    '            .Columns(16).Visible = False
+    '        End With
+
+    '    Catch ex As Exception
+    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ErrorCount = ErrorCount + 1
+    '    End Try
+
+
+    'End Sub
+
     Private Sub GridColumnWidth()
 
         Try
 
             With gridItem
+
+                ' Auto size columns
                 .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-                '.Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnsMode.Fill
+                .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill ' ✅ for wrapping
                 .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
                 .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
                 .Columns(4).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
                 .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
                 .Columns(7).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-                '.Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-                '.Columns(18).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
 
+                ' Enable row auto height (IMPORTANT for wrap)
+                .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
+
+                ' Freeze first column
                 .Columns(0).Frozen = True
-                '.Columns(1).MinimumWidth = 450
-                .Columns(1).MinimumWidth = 1000
-                'for column width
-                '.Columns(0).Width = 100
-                '.Columns(1).Width = 400
-                '.Columns(2).Width = 90
-                '.Columns(3).Width = 0
-                '.Columns(4).Width = 90
-                '.Columns(5).Width = 100
-                'for column name
-                .Columns(0).DefaultCellStyle.Font = New Font("Arial", 10, FontStyle.Bold)
+
+                ' Remove this (prevents wrapping)
+                '.Columns(1).MinimumWidth = 1000
+
+                ' Column headers
+                .Columns(0).DefaultCellStyle.Font = New Font("Arial", 12, FontStyle.Bold)
                 .Columns(0).HeaderText = "ITEM CODE"
                 .Columns(1).HeaderText = "ITEM NAME"
                 .Columns(2).HeaderText = "ITEM PRICE"
@@ -243,23 +319,33 @@ Public Class frmItemLookUp
                 .Columns(17).HeaderText = "SOH"
                 .Columns(18).HeaderText = "QTY COM"
 
-                'for format & alignment
-                '.Columns(2).DefaultCellStyle.Format = "##0.00"
+                ' ✅ Wrap + styling for ITEM NAME
+                .Columns(1).DefaultCellStyle.WrapMode = DataGridViewTriState.True
+                .Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft
+                .Columns(1).DefaultCellStyle.Padding = New Padding(5)
+
+                ' Format & alignment
                 .Columns(2).DefaultCellStyle.Format = "C"
                 .Columns(3).DefaultCellStyle.Format = "N2"
                 .Columns(4).DefaultCellStyle.Format = "N0"
+
                 .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
                 .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+
                 .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+
                 .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
                 .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
                 .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter
+
                 .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
                 .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
                 .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
                 .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
 
-
+                ' Hide columns
                 .Columns(3).Visible = False
                 .Columns(5).Visible = False
                 .Columns(6).Visible = False
@@ -273,6 +359,7 @@ Public Class frmItemLookUp
                 .Columns(14).Visible = False
                 .Columns(15).Visible = False
                 .Columns(16).Visible = False
+
             End With
 
         Catch ex As Exception
@@ -280,76 +367,105 @@ Public Class frmItemLookUp
             ErrorCount = ErrorCount + 1
         End Try
 
-
     End Sub
 
-    'Make loaded items appear in bold and larger font in the grid
+    ''Make loaded items appear in bold and larger font in the grid
+    'Private Sub gridItem_CellFormatting(ByVal sender As Object, ByVal e As DataGridViewCellFormattingEventArgs) Handles gridItem.CellFormatting
+    '    Try
+    '        'Ignore header row and new row
+    '        If e.RowIndex < 0 OrElse e.RowIndex >= gridItem.Rows.Count Then Exit Sub
+
+    '        Dim row As DataGridViewRow = gridItem.Rows(e.RowIndex)
+
+    '        ' TODO: Adjust this logic to match your own definition of "loaded"
+    '        ' Example below: treat the item as loaded if "QTY COM" (column 18) is greater than 0
+    '        Dim isLoaded As Boolean = False
+    '        Try
+    '            'Use the column index or name that represents loaded quantity/status
+    '            Dim qtyComIndex As Integer = 18 ' change if your "loaded" column is different
+    '            If qtyComIndex >= 0 AndAlso qtyComIndex < row.Cells.Count Then
+    '                Dim val = row.Cells(qtyComIndex).Value
+    '                If val IsNot Nothing AndAlso IsNumeric(val) AndAlso CDec(val) > 0D Then
+    '                    isLoaded = True
+    '                End If
+    '            End If
+    '        Catch
+    '            'Ignore per-row errors in determining loaded state
+    '        End Try
+
+    '        'Set a larger base font size for the ITEM ROWS only (do not touch the header font)
+    '        'You can adjust the size (e.g., 11, 12, 13) to whatever you prefer.
+    '        Dim baseSize As Single = 12.0F
+
+    '        'Choose a safe base font for cells (fallback if DefaultCellStyle.Font is not set)
+    '        Dim baseFamily As FontFamily
+    '        Try
+    '            'Force Arial for item rows
+    '            baseFamily = New FontFamily("Calibri")
+    '        Catch
+    '            'If Arial is not available for some reason, fall back to the grid's current font family
+    '            Dim fallbackFont As Font = gridItem.DefaultCellStyle.Font
+    '            If fallbackFont Is Nothing Then
+    '                fallbackFont = gridItem.Font
+    '            End If
+    '            If fallbackFont Is Nothing Then
+    '                fallbackFont = Me.Font
+    '            End If
+    '            baseFamily = fallbackFont.FontFamily
+    '        End Try
+
+    '        'All item rows bold in Arial; loaded items a bit bigger and bold
+    '        Dim normalFont As New Font(baseFamily, baseSize, FontStyle.Bold)
+    '        Dim loadedFont As New Font(baseFamily, baseSize + 2.0F, FontStyle.Bold)
+
+    '        'Increase row height a bit more to give extra vertical spacing between rows
+    '        If gridItem.RowTemplate.Height < 26 Then
+    '            gridItem.RowTemplate.Height = 26
+    '        End If
+
+    '        If isLoaded Then
+    '            'Bold and clearly larger font for LOADED items (item rows only)
+    '            e.CellStyle.Font = loadedFont
+    '        Else
+    '            'Normal (but larger) font for NOT loaded items
+    '            e.CellStyle.Font = normalFont
+    '        End If
+
+    '    Catch
+    '        'Ignore formatting-time exceptions to avoid breaking the grid
+    '    End Try
+    'End Sub
     Private Sub gridItem_CellFormatting(ByVal sender As Object, ByVal e As DataGridViewCellFormattingEventArgs) Handles gridItem.CellFormatting
         Try
-            'Ignore header row and new row
             If e.RowIndex < 0 OrElse e.RowIndex >= gridItem.Rows.Count Then Exit Sub
 
             Dim row As DataGridViewRow = gridItem.Rows(e.RowIndex)
 
-            ' TODO: Adjust this logic to match your own definition of "loaded"
-            ' Example below: treat the item as loaded if "QTY COM" (column 18) is greater than 0
+            ' Detect loaded
             Dim isLoaded As Boolean = False
-            Try
-                'Use the column index or name that represents loaded quantity/status
-                Dim qtyComIndex As Integer = 18 ' change if your "loaded" column is different
-                If qtyComIndex >= 0 AndAlso qtyComIndex < row.Cells.Count Then
-                    Dim val = row.Cells(qtyComIndex).Value
-                    If val IsNot Nothing AndAlso IsNumeric(val) AndAlso CDec(val) > 0D Then
-                        isLoaded = True
-                    End If
+            Dim qtyComIndex As Integer = 18
+
+            If qtyComIndex < row.Cells.Count Then
+                Dim val = row.Cells(qtyComIndex).Value
+                If val IsNot Nothing AndAlso IsNumeric(val) AndAlso CDec(val) > 0D Then
+                    isLoaded = True
                 End If
-            Catch
-                'Ignore per-row errors in determining loaded state
-            End Try
-
-            'Set a larger base font size for the ITEM ROWS only (do not touch the header font)
-            'You can adjust the size (e.g., 11, 12, 13) to whatever you prefer.
-            Dim baseSize As Single = 12.0F
-
-            'Choose a safe base font for cells (fallback if DefaultCellStyle.Font is not set)
-            Dim baseFamily As FontFamily
-            Try
-                'Force Arial for item rows
-                baseFamily = New FontFamily("Calibri")
-            Catch
-                'If Arial is not available for some reason, fall back to the grid's current font family
-                Dim fallbackFont As Font = gridItem.DefaultCellStyle.Font
-                If fallbackFont Is Nothing Then
-                    fallbackFont = gridItem.Font
-                End If
-                If fallbackFont Is Nothing Then
-                    fallbackFont = Me.Font
-                End If
-                baseFamily = fallbackFont.FontFamily
-            End Try
-
-            'All item rows bold in Arial; loaded items a bit bigger and bold
-            Dim normalFont As New Font(baseFamily, baseSize, FontStyle.Bold)
-            Dim loadedFont As New Font(baseFamily, baseSize + 2.0F, FontStyle.Bold)
-
-            'Increase row height a bit more to give extra vertical spacing between rows
-            If gridItem.RowTemplate.Height < 26 Then
-                gridItem.RowTemplate.Height = 26
             End If
 
+            ' Base font
+            Dim baseFont As New Font("Arial", 12.0F, FontStyle.Bold)
+            Dim loadedFont As New Font("Arial", 12.0F, FontStyle.Bold)
+
+            ' ✅ APPLY TO WHOLE ROW (not per cell)
             If isLoaded Then
-                'Bold and clearly larger font for LOADED items (item rows only)
-                e.CellStyle.Font = loadedFont
+                row.DefaultCellStyle.Font = loadedFont
             Else
-                'Normal (but larger) font for NOT loaded items
-                e.CellStyle.Font = normalFont
+                row.DefaultCellStyle.Font = baseFont
             End If
 
         Catch
-            'Ignore formatting-time exceptions to avoid breaking the grid
         End Try
     End Sub
-
     Private Sub txtSearch_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtSearch.KeyUp
 
         Try
