@@ -701,7 +701,7 @@ Public Class frmItemLookUp
             End If
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0013", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        ErrorCount = ErrorCount + 1
+            ErrorCount = ErrorCount + 1
         End Try
     End Sub
 
@@ -1596,8 +1596,8 @@ Proceed:
         'comment
         'Try
         ClearItem()
-            ShowCustomer()
-            GetCustomerPriceLevel()
+        ShowCustomer()
+        GetCustomerPriceLevel()
         'Catch ex As Exception
         '    MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 33", MessageBoxButtons.OK, MessageBoxIcon.Error)
         '    ErrorCount = ErrorCount + 1
@@ -4157,7 +4157,7 @@ inputCust:
                 Else
                     FilterText2()
                     txtBarcode.Text = String.Empty
-                   
+
                     'SearchItem()
                     SearchBarcode()
                     'SelectPrice()
@@ -4488,7 +4488,7 @@ inputCust:
         Catch ex As Exception
             ' Handle any exceptions and log them
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0061", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        ErrorCount += 1
+            ErrorCount += 1
         End Try
     End Sub
 
