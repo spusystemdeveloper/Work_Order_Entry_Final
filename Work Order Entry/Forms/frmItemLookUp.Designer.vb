@@ -86,6 +86,8 @@ Partial Class frmItemLookUp
         Me.txtTotal = New System.Windows.Forms.TextBox()
         Me.panelGrid = New System.Windows.Forms.Panel()
         Me.panelItem = New System.Windows.Forms.Panel()
+        Me.picPanel = New WorkOrderEntry.CustomPanel()
+        Me.picItem = New WorkOrderEntry.ZoomPictureBox()
         Me.gridItem = New System.Windows.Forms.DataGridView()
         Me.Panel4 = New System.Windows.Forms.Panel()
         Me.Label6 = New System.Windows.Forms.Label()
@@ -136,8 +138,6 @@ Partial Class frmItemLookUp
         Me.Update_Timer = New System.Windows.Forms.Timer(Me.components)
         Me.Check_errors = New System.Windows.Forms.Timer(Me.components)
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
-        Me.picPanel = New WorkOrderEntry.CustomPanel()
-        Me.picItem = New WorkOrderEntry.ZoomPictureBox()
         Me.BottomStrip.SuspendLayout()
         Me.panelButtons.SuspendLayout()
         Me.panelTotal.SuspendLayout()
@@ -146,6 +146,7 @@ Partial Class frmItemLookUp
         Me.GroupBox4.SuspendLayout()
         Me.panelGrid.SuspendLayout()
         Me.panelItem.SuspendLayout()
+        Me.picPanel.SuspendLayout()
         CType(Me.gridItem, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel4.SuspendLayout()
         Me.Panel5.SuspendLayout()
@@ -154,7 +155,6 @@ Partial Class frmItemLookUp
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.panelSelectItem.SuspendLayout()
         CType(Me.gridSelectItem, System.ComponentModel.ISupportInitialize).BeginInit()
-        Me.picPanel.SuspendLayout()
         Me.SuspendLayout()
         '
         'ofdImport
@@ -804,6 +804,37 @@ Partial Class frmItemLookUp
         Me.panelItem.Size = New System.Drawing.Size(1206, 464)
         Me.panelItem.TabIndex = 18
         '
+        'picPanel
+        '
+        Me.picPanel.BackColor = System.Drawing.Color.LightSteelBlue
+        Me.picPanel.Controls.Add(Me.picItem)
+        Me.picPanel.Cursor = System.Windows.Forms.Cursors.SizeAll
+        Me.picPanel.Location = New System.Drawing.Point(358, 182)
+        Me.picPanel.Name = "picPanel"
+        Me.picPanel.Padding = New System.Windows.Forms.Padding(10)
+        Me.picPanel.Size = New System.Drawing.Size(250, 250)
+        Me.picPanel.TabIndex = 19
+        Me.picPanel.Visible = False
+        '
+        'picItem
+        '
+        Me.picItem.BackColor = System.Drawing.Color.White
+        Me.picItem.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.picItem.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.picItem.EnableMouseDragging = True
+        Me.picItem.EnableMouseWheelZooming = True
+        Me.picItem.Image = Nothing
+        Me.picItem.ImagePosition = New System.Drawing.Point(0, 0)
+        Me.picItem.Location = New System.Drawing.Point(10, 10)
+        Me.picItem.MaximumZoomFactor = 64.0R
+        Me.picItem.MinimumImageHeight = 10
+        Me.picItem.MinimumImageWidth = 10
+        Me.picItem.MouseWheelDivisor = 500
+        Me.picItem.Name = "picItem"
+        Me.picItem.Size = New System.Drawing.Size(230, 230)
+        Me.picItem.TabIndex = 0
+        Me.picItem.ZoomFactor = 1.15R
+        '
         'gridItem
         '
         Me.gridItem.AllowUserToAddRows = False
@@ -1336,37 +1367,6 @@ Partial Class frmItemLookUp
         Me.Check_errors.Enabled = True
         Me.Check_errors.Interval = 1000
         '
-        'picPanel
-        '
-        Me.picPanel.BackColor = System.Drawing.Color.LightSteelBlue
-        Me.picPanel.Controls.Add(Me.picItem)
-        Me.picPanel.Cursor = System.Windows.Forms.Cursors.SizeAll
-        Me.picPanel.Location = New System.Drawing.Point(358, 182)
-        Me.picPanel.Name = "picPanel"
-        Me.picPanel.Padding = New System.Windows.Forms.Padding(10)
-        Me.picPanel.Size = New System.Drawing.Size(250, 250)
-        Me.picPanel.TabIndex = 19
-        Me.picPanel.Visible = False
-        '
-        'picItem
-        '
-        Me.picItem.BackColor = System.Drawing.Color.White
-        Me.picItem.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.picItem.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.picItem.EnableMouseDragging = True
-        Me.picItem.EnableMouseWheelZooming = True
-        Me.picItem.Image = Nothing
-        Me.picItem.ImagePosition = New System.Drawing.Point(0, 0)
-        Me.picItem.Location = New System.Drawing.Point(10, 10)
-        Me.picItem.MaximumZoomFactor = 64.0R
-        Me.picItem.MinimumImageHeight = 10
-        Me.picItem.MinimumImageWidth = 10
-        Me.picItem.MouseWheelDivisor = 500
-        Me.picItem.Name = "picItem"
-        Me.picItem.Size = New System.Drawing.Size(230, 230)
-        Me.picItem.TabIndex = 0
-        Me.picItem.ZoomFactor = 1.15R
-        '
         'frmItemLookUp
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 15.0!)
@@ -1398,6 +1398,7 @@ Partial Class frmItemLookUp
         Me.GroupBox4.PerformLayout()
         Me.panelGrid.ResumeLayout(False)
         Me.panelItem.ResumeLayout(False)
+        Me.picPanel.ResumeLayout(False)
         CType(Me.gridItem, System.ComponentModel.ISupportInitialize).EndInit()
         Me.Panel4.ResumeLayout(False)
         Me.Panel4.PerformLayout()
@@ -1409,7 +1410,6 @@ Partial Class frmItemLookUp
         Me.panelSelectItem.ResumeLayout(False)
         Me.panelSelectItem.PerformLayout()
         CType(Me.gridSelectItem, System.ComponentModel.ISupportInitialize).EndInit()
-        Me.picPanel.ResumeLayout(False)
         Me.ResumeLayout(False)
         Me.PerformLayout()
 

@@ -5469,7 +5469,7 @@ inputCust:
 
             If item Is Nothing Then Continue For
 
-            ' --- Determine minimum price (customer's price level) with $0.00 fallback ---
+            ' --- Determine minimum price (customer's price level) with Php0.00 fallback ---
             Dim minPrice As Decimal ' Only need minimum - no upper limit
 
             Select Case Me.txtPriceLevel.Text
