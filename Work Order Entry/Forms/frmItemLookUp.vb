@@ -817,7 +817,7 @@ Public Class frmItemLookUp
             End If
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0013", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ErrorCount = ErrorCount + 1
+        ErrorCount = ErrorCount + 1
         End Try
     End Sub
 
@@ -5471,6 +5471,7 @@ inputCust:
 
             ' --- Determine minimum price (customer's price level) with Php0.00 fallback ---
             Dim minPrice As Decimal ' Only need minimum - no upper limit
+            MessageBox.Show("Price Level: " & Me.txtPriceLevel.Text)
 
             Select Case Me.txtPriceLevel.Text
                 Case "Price"
@@ -6045,7 +6046,7 @@ inputCust:
             'Dim approver As String = "Unknown"
             Dim approver As String = ""
             Dim cfg = (From c In dbLog.SOD_WO_Confs Select c).FirstOrDefault()
-            Dim iCusPrice As Integer = clsCustomer.getPriceLevel(txtCustomer.Text)
+            Dim iCusPrice As Integer = clsCustomer.getPriceLevel(iCusID)
 
             If cfg IsNot Nothing Then
                 If cfg.Password = inputPass Then
