@@ -1382,7 +1382,7 @@ Partial Class frmItemLookUp
         Me.KeyPreview = True
         Me.Name = "frmItemLookUp"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "Work Order Entry_V7"
+        Me.Text = "Work Order Entry_V7.1_Multi_BC"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         Me.BottomStrip.ResumeLayout(False)
         Me.BottomStrip.PerformLayout()
