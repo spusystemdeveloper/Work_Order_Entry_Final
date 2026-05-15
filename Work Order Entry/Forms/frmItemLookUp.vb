@@ -155,9 +155,14 @@ Public Class frmItemLookUp
 
             'itemData.Filter = FilterStr
             gridItem.DataSource = load_data(FilterStr)
-            txtSearch.Focus()
+
             GridColumnWidth()
+            For Each r As DataGridViewRow In gridItem.Rows
+                r.Height = 60
+            Next
+            txtSearch.Focus()
             checkSearch()
+            gridItem.Refresh()
             iRow = 0
             'searching
             'txtSearch.Focus()
@@ -187,6 +192,7 @@ Public Class frmItemLookUp
 
                     If TreeView1.Nodes.Count = 0 Then
                         gridItem.DataSource = getItem()
+                        gridItem.Refresh()
                     Else
                         SearchItem()
                     End If
@@ -206,149 +212,383 @@ Public Class frmItemLookUp
 
     End Sub
 
+    'Private Sub GridColumnWidth()
+
+    '    Try
+
+    '        With gridItem
+    '            .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            '.Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnsMode.Fill
+    '            .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(4).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+
+    '            .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(7).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            '.Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            '.Columns(18).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+
+    '            .Columns(0).Frozen = True
+    '            '.Columns(1).MinimumWidth = 450
+    '            .Columns(1).MinimumWidth = 1000
+    '            'for column width
+    '            '.Columns(0).Width = 100
+    '            '.Columns(1).Width = 400
+    '            '.Columns(2).Width = 90
+    '            '.Columns(3).Width = 0
+    '            '.Columns(4).Width = 90
+    '            '.Columns(5).Width = 100
+    '            'for column name
+    '            .Columns(0).DefaultCellStyle.Font = New Font("Arial", 10, FontStyle.Bold)
+    '            .Columns(0).HeaderText = "ITEM CODE"
+    '            .Columns(1).HeaderText = "ITEM NAME"
+    '            .Columns(2).HeaderText = "ITEM PRICE"
+    '            .Columns(3).HeaderText = "COST"
+    '            .Columns(4).HeaderText = "QUANTITY"
+    '            .Columns(5).HeaderText = "CHILD QTY"
+    '            .Columns(7).HeaderText = "SKU Level"
+    '            .Columns(17).HeaderText = "SOH"
+    '            .Columns(18).HeaderText = "QTY COM"
+
+    '            'for format & alignment
+    '            .Columns(2).DefaultCellStyle.Format = "C"
+    '            .Columns(3).DefaultCellStyle.Format = "N2"
+    '            .Columns(4).DefaultCellStyle.Format = "N0"
+    '            .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+    '            .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+    '            .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+    '            .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter
+    '            .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+
+    '            .Columns(3).Visible = False
+    '            .Columns(5).Visible = False
+    '            .Columns(6).Visible = False
+    '            .Columns(7).Visible = False
+    '            .Columns(8).Visible = False
+    '            .Columns(9).Visible = False
+    '            .Columns(10).Visible = False
+    '            .Columns(11).Visible = False
+    '            .Columns(12).Visible = False
+    '            .Columns(13).Visible = False
+    '            .Columns(14).Visible = False
+    '            .Columns(15).Visible = False
+    '            .Columns(16).Visible = False
+    '        End With
+
+    '    Catch ex As Exception
+    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ErrorCount = ErrorCount + 1
+    '    End Try
+
+
+    'End Sub
+
+    'Private Sub GridColumnWidth()
+
+    '    Try
+
+    '        With gridItem
+
+    '            ' Auto size columns
+    '            .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill ' ✅ for wrapping
+    '            .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(4).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(7).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+
+    '            ' Enable row auto height (IMPORTANT for wrap)
+    '            .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
+
+    '            ' Freeze first column
+    '            .Columns(0).Frozen = True
+
+    '            ' Remove this (prevents wrapping)
+    '            '.Columns(1).MinimumWidth = 1000
+
+    '            ' Column headers
+    '            .Columns(0).DefaultCellStyle.Font = New Font("Arial", 12, FontStyle.Bold)
+    '            .Columns(0).HeaderText = "ITEM CODE"
+    '            .Columns(1).HeaderText = "ITEM NAME"
+    '            .Columns(2).HeaderText = "ITEM PRICE"
+    '            .Columns(3).HeaderText = "COST"
+    '            .Columns(4).HeaderText = "QUANTITY"
+    '            .Columns(5).HeaderText = "CHILD QTY"
+    '            .Columns(7).HeaderText = "SKU Level"
+    '            .Columns(17).HeaderText = "SOH"
+    '            .Columns(18).HeaderText = "QTY COM"
+
+    '            ' ✅ Wrap + styling for ITEM NAME
+    '            .Columns(1).DefaultCellStyle.WrapMode = DataGridViewTriState.True
+    '            .Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft
+    '            .Columns(1).DefaultCellStyle.Padding = New Padding(5)
+
+    '            ' Format & alignment
+    '            .Columns(2).DefaultCellStyle.Format = "C"
+    '            .Columns(3).DefaultCellStyle.Format = "N2"
+    '            .Columns(4).DefaultCellStyle.Format = "N0"
+
+    '            .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+    '            .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+
+    '            .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+
+    '            .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+    '            .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter
+
+    '            .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+    '            .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+    '            ' Hide columns
+    '            .Columns(3).Visible = False
+    '            .Columns(5).Visible = False
+    '            .Columns(6).Visible = False
+    '            .Columns(7).Visible = False
+    '            .Columns(8).Visible = False
+    '            .Columns(9).Visible = False
+    '            .Columns(10).Visible = False
+    '            .Columns(11).Visible = False
+    '            .Columns(12).Visible = False
+    '            .Columns(13).Visible = False
+    '            .Columns(14).Visible = False
+    '            .Columns(15).Visible = False
+    '            .Columns(16).Visible = False
+
+    '        End With
+
+    '    Catch ex As Exception
+    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ErrorCount = ErrorCount + 1
+    '    End Try
+
+    'End Sub
+
     Private Sub GridColumnWidth()
 
-        'Try
+        Try
+            With gridItem
 
-        With gridItem
-            .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            '.Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnsMode.Fill
-            .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(4).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(7).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-            .Columns(18).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+                .SuspendLayout()
 
-            .Columns(0).Frozen = True
-            '.Columns(1).MinimumWidth = 450
-            .Columns(1).MinimumWidth = 1000
-            'for column width
-            '.Columns(0).Width = 100
-            '.Columns(1).Width = 400
-            '.Columns(2).Width = 90
-            '.Columns(3).Width = 0
-            '.Columns(4).Width = 90
-            '.Columns(5).Width = 100
-            'for column name
-            .Columns(0).DefaultCellStyle.Font = New Font("Arial", 10, FontStyle.Bold)
-            .Columns(0).HeaderText = "ITEM CODE"
-            .Columns(1).HeaderText = "ITEM NAME"
-            .Columns(2).HeaderText = "ITEM PRICE"
-            .Columns(3).HeaderText = "COST"
-            .Columns(4).HeaderText = "QUANTITY"
-            .Columns(5).HeaderText = "CHILD QTY"
-            .Columns(7).HeaderText = "SKU Level"
-            .Columns(17).HeaderText = "SOH"
-            .Columns(18).HeaderText = "QTY COM"
+                '=================================
+                ' PERFORMANCE SETTINGS
+                '=================================
+                .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
+                .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None
+                .AllowUserToResizeRows = False
+                .RowTemplate.Height = 70
 
-            'for format & alignment
-            '.Columns(2).DefaultCellStyle.Format = "##0.00"
-            .Columns(2).DefaultCellStyle.Format = "C"
-            .Columns(3).DefaultCellStyle.Format = "N2"
-            .Columns(4).DefaultCellStyle.Format = "N0"
-            .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
-            .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
-            .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
-            .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-            .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-            .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter
-            .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-            .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-            .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-            .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+                '=================================
+                ' COLUMN WIDTHS
+                '=================================
+                .Columns(0).Width = 120
+                .Columns(1).Width = 400
+                .Columns(2).Width = 100
+                .Columns(3).Width = 100
+                .Columns(4).Width = 90
+                .Columns(5).Width = 90
+                .Columns(7).Width = 90
+                .Columns(17).Width = 80
+                .Columns(18).Width = 80
 
+                ' Fill remaining width with Item Name
+                .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
 
-            .Columns(3).Visible = False
-            .Columns(5).Visible = False
-            .Columns(6).Visible = False
-            .Columns(7).Visible = False
-            .Columns(8).Visible = False
-            .Columns(9).Visible = False
-            .Columns(10).Visible = False
-            .Columns(11).Visible = False
-            .Columns(12).Visible = False
-            .Columns(13).Visible = False
-            .Columns(14).Visible = False
-            .Columns(15).Visible = False
-            .Columns(16).Visible = False
-        End With
+                ' Freeze first column
+                .Columns(0).Frozen = True
 
-        'Catch ex As Exception
-        '    MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        '    ErrorCount = ErrorCount + 1
-        'End Try
+                '=================================
+                ' COLUMN HEADERS
+                '=================================
+                .Columns(0).DefaultCellStyle.Font = New Font("Arial", 10, FontStyle.Bold)
 
+                .Columns(0).HeaderText = "ITEM CODE"
+                .Columns(1).HeaderText = "ITEM NAME"
+                .Columns(2).HeaderText = "ITEM PRICE"
+                .Columns(3).HeaderText = "COST"
+                .Columns(4).HeaderText = "AVAILABLE QTY"
+                .Columns(5).HeaderText = "CHILD QTY"
+                .Columns(7).HeaderText = "SKU Level"
+                .Columns(17).HeaderText = "SOH"
+                .Columns(18).HeaderText = "QTY COM"
+
+                '=================================
+                ' ITEM NAME WRAP
+                '=================================
+                .Columns(1).DefaultCellStyle.WrapMode = DataGridViewTriState.True
+                .Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft
+                .Columns(1).DefaultCellStyle.Padding = New Padding(5)
+
+                '=================================
+                ' FORMATS
+                '=================================
+                .Columns(2).DefaultCellStyle.Format = "C"
+                .Columns(3).DefaultCellStyle.Format = "N2"
+                .Columns(4).DefaultCellStyle.Format = "N0"
+                .Columns(17).DefaultCellStyle.Format = "N0"
+                .Columns(18).DefaultCellStyle.Format = "N0"
+                '=================================
+                ' ALIGNMENTS
+                '=================================
+                .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+                .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+
+                .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+
+                .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+                .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+                .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+                .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+                '=================================
+                ' HIDE COLUMNS
+                '=================================
+                .Columns(3).Visible = False
+                .Columns(5).Visible = False
+                .Columns(6).Visible = False
+                .Columns(7).Visible = False
+                .Columns(8).Visible = False
+                .Columns(9).Visible = False
+                .Columns(10).Visible = False
+                .Columns(11).Visible = False
+                .Columns(12).Visible = False
+                .Columns(13).Visible = False
+                .Columns(14).Visible = False
+                .Columns(15).Visible = False
+                .Columns(16).Visible = False
+
+                .ResumeLayout()
+
+            End With
+
+        Catch ex As Exception
+            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf &
+                        "REASON : " & ex.Message,
+                        "MESSAGE : ERROR 0006",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error)
+
+            ErrorCount += 1
+        End Try
 
     End Sub
 
-    'Make loaded items appear in bold and larger font in the grid
+    ''Make loaded items appear in bold and larger font in the grid
+    'Private Sub gridItem_CellFormatting(ByVal sender As Object, ByVal e As DataGridViewCellFormattingEventArgs) Handles gridItem.CellFormatting
+    '    Try
+    '        'Ignore header row and new row
+    '        If e.RowIndex < 0 OrElse e.RowIndex >= gridItem.Rows.Count Then Exit Sub
+
+    '        Dim row As DataGridViewRow = gridItem.Rows(e.RowIndex)
+
+    '        ' TODO: Adjust this logic to match your own definition of "loaded"
+    '        ' Example below: treat the item as loaded if "QTY COM" (column 18) is greater than 0
+    '        Dim isLoaded As Boolean = False
+    '        Try
+    '            'Use the column index or name that represents loaded quantity/status
+    '            Dim qtyComIndex As Integer = 18 ' change if your "loaded" column is different
+    '            If qtyComIndex >= 0 AndAlso qtyComIndex < row.Cells.Count Then
+    '                Dim val = row.Cells(qtyComIndex).Value
+    '                If val IsNot Nothing AndAlso IsNumeric(val) AndAlso CDec(val) > 0D Then
+    '                    isLoaded = True
+    '                End If
+    '            End If
+    '        Catch
+    '            'Ignore per-row errors in determining loaded state
+    '        End Try
+
+    '        'Set a larger base font size for the ITEM ROWS only (do not touch the header font)
+    '        'You can adjust the size (e.g., 11, 12, 13) to whatever you prefer.
+    '        Dim baseSize As Single = 12.0F
+
+    '        'Choose a safe base font for cells (fallback if DefaultCellStyle.Font is not set)
+    '        Dim baseFamily As FontFamily
+    '        Try
+    '            'Force Arial for item rows
+    '            baseFamily = New FontFamily("Calibri")
+    '        Catch
+    '            'If Arial is not available for some reason, fall back to the grid's current font family
+    '            Dim fallbackFont As Font = gridItem.DefaultCellStyle.Font
+    '            If fallbackFont Is Nothing Then
+    '                fallbackFont = gridItem.Font
+    '            End If
+    '            If fallbackFont Is Nothing Then
+    '                fallbackFont = Me.Font
+    '            End If
+    '            baseFamily = fallbackFont.FontFamily
+    '        End Try
+
+    '        'All item rows bold in Arial; loaded items a bit bigger and bold
+    '        Dim normalFont As New Font(baseFamily, baseSize, FontStyle.Bold)
+    '        Dim loadedFont As New Font(baseFamily, baseSize + 2.0F, FontStyle.Bold)
+
+    '        'Increase row height a bit more to give extra vertical spacing between rows
+    '        If gridItem.RowTemplate.Height < 26 Then
+    '            gridItem.RowTemplate.Height = 26
+    '        End If
+
+    '        If isLoaded Then
+    '            'Bold and clearly larger font for LOADED items (item rows only)
+    '            e.CellStyle.Font = loadedFont
+    '        Else
+    '            'Normal (but larger) font for NOT loaded items
+    '            e.CellStyle.Font = normalFont
+    '        End If
+
+    '    Catch
+    '        'Ignore formatting-time exceptions to avoid breaking the grid
+    '    End Try
+    'End Sub
     Private Sub gridItem_CellFormatting(ByVal sender As Object, ByVal e As DataGridViewCellFormattingEventArgs) Handles gridItem.CellFormatting
         Try
-            'Ignore header row and new row
             If e.RowIndex < 0 OrElse e.RowIndex >= gridItem.Rows.Count Then Exit Sub
 
             Dim row As DataGridViewRow = gridItem.Rows(e.RowIndex)
 
-            ' TODO: Adjust this logic to match your own definition of "loaded"
-            ' Example below: treat the item as loaded if "QTY COM" (column 18) is greater than 0
+            ' Detect loaded
             Dim isLoaded As Boolean = False
-            Try
-                'Use the column index or name that represents loaded quantity/status
-                Dim qtyComIndex As Integer = 18 ' change if your "loaded" column is different
-                If qtyComIndex >= 0 AndAlso qtyComIndex < row.Cells.Count Then
-                    Dim val = row.Cells(qtyComIndex).Value
-                    If val IsNot Nothing AndAlso IsNumeric(val) AndAlso CDec(val) > 0D Then
-                        isLoaded = True
-                    End If
+            Dim qtyComIndex As Integer = 18
+
+            If qtyComIndex < row.Cells.Count Then
+                Dim val = row.Cells(qtyComIndex).Value
+                If val IsNot Nothing AndAlso IsNumeric(val) AndAlso CDec(val) > 0D Then
+                    isLoaded = True
                 End If
-            Catch
-                'Ignore per-row errors in determining loaded state
-            End Try
-
-            'Set a larger base font size for the ITEM ROWS only (do not touch the header font)
-            'You can adjust the size (e.g., 11, 12, 13) to whatever you prefer.
-            Dim baseSize As Single = 12.0F
-
-            'Choose a safe base font for cells (fallback if DefaultCellStyle.Font is not set)
-            Dim baseFamily As FontFamily
-            Try
-                'Force Arial for item rows
-                baseFamily = New FontFamily("Calibri")
-            Catch
-                'If Arial is not available for some reason, fall back to the grid's current font family
-                Dim fallbackFont As Font = gridItem.DefaultCellStyle.Font
-                If fallbackFont Is Nothing Then
-                    fallbackFont = gridItem.Font
-                End If
-                If fallbackFont Is Nothing Then
-                    fallbackFont = Me.Font
-                End If
-                baseFamily = fallbackFont.FontFamily
-            End Try
-
-            'All item rows bold in Arial; loaded items a bit bigger and bold
-            Dim normalFont As New Font(baseFamily, baseSize, FontStyle.Bold)
-            Dim loadedFont As New Font(baseFamily, baseSize + 2.0F, FontStyle.Bold)
-
-            'Increase row height a bit more to give extra vertical spacing between rows
-            If gridItem.RowTemplate.Height < 26 Then
-                gridItem.RowTemplate.Height = 26
             End If
 
+            ' Base font
+            Dim baseFont As New Font("Arial", 12.0F, FontStyle.Bold)
+            Dim loadedFont As New Font("Arial", 12.0F, FontStyle.Bold)
+
+            ' ✅ APPLY TO WHOLE ROW (not per cell)
             If isLoaded Then
-                'Bold and clearly larger font for LOADED items (item rows only)
-                e.CellStyle.Font = loadedFont
+                row.DefaultCellStyle.Font = loadedFont
             Else
-                'Normal (but larger) font for NOT loaded items
-                e.CellStyle.Font = normalFont
+                row.DefaultCellStyle.Font = baseFont
             End If
 
         Catch
-            'Ignore formatting-time exceptions to avoid breaking the grid
         End Try
     End Sub
+
 
     Private Sub txtSearch_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtSearch.KeyUp
 
@@ -360,7 +600,7 @@ Public Class frmItemLookUp
                 lblStatItemCount.Text = gridItem.RowCount & " items"
                 txtSearch.Text = String.Empty
                 Me.ActiveControl = txtSearch
-
+                gridItem.Refresh()
             End If
 
 
@@ -373,6 +613,7 @@ Public Class frmItemLookUp
 
                         If TreeView1.Nodes.Count = 0 Then
                             gridItem.DataSource = getItem()
+                            gridItem.Refresh()
                         Else
                             SearchItem()
                         End If
@@ -778,7 +1019,7 @@ Public Class frmItemLookUp
         txtSearch.Text = String.Empty
         'searching
         'Me.ActiveControl = txtSearch
-
+        gridItem.Refresh()
         Cursor.Current = Cursors.Default
     End Sub
 
@@ -1354,6 +1595,7 @@ Proceed:
                     txtSearch.Text = ""
                     txtBarcode.Enabled = False
                     txtBarcode.Text = "Press F3 To Scan barcode"
+                    TreeView1.Nodes.Clear()
                     txtSearch.Focus()
                 Else
                     ' If barcode is not checked, check it and enable txtBarcode
@@ -1362,6 +1604,7 @@ Proceed:
                     txtSearch.Text = "Press F3 To Search items"
                     txtBarcode.Enabled = True
                     txtBarcode.Text = ""
+                    TreeView1.Nodes.Clear()
                     txtBarcode.Focus()
                 End If
             End If
@@ -1471,7 +1714,7 @@ Proceed:
 
             ' Update_Timer.Start()
             Cursor.Current = Cursors.Default
-
+            gridItem.Refresh()
         Catch ex As Exception
             MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 25", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -1479,7 +1722,7 @@ Proceed:
     End Sub
 
     Public Function getItem() As DataTable
-        Return load_data("SELECT TOP 500 * FROM SOD_ViewItemsWo WHERE Inactive = 0")
+        Return load_data("SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0")
     End Function
     Private Sub FormatGrid()
 
@@ -1594,8 +1837,8 @@ Proceed:
         'comment
         'Try
         ClearItem()
-            ShowCustomer()
-            GetCustomerPriceLevel()
+        ShowCustomer()
+        GetCustomerPriceLevel()
         'Catch ex As Exception
         '    MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 33", MessageBoxButtons.OK, MessageBoxIcon.Error)
         '    ErrorCount = ErrorCount + 1
@@ -2872,7 +3115,7 @@ err_flag:
 
             iRow = 0
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
-
+            gridItem.Refresh()
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0046", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -2929,6 +3172,7 @@ err_flag:
                 txtSearch.Text = String.Empty
                 'searching
                 'Me.ActiveControl = txtSearch
+                gridItem.Refresh()
             End If
 
             If e.KeyCode = Keys.F4 Then
@@ -2940,6 +3184,7 @@ err_flag:
 
                         If TreeView1.Nodes.Count = 0 Then
                             gridItem.DataSource = getItem()
+                            gridItem.Refresh()
                         Else
                             SearchItem()
                         End If
@@ -4155,7 +4400,7 @@ inputCust:
                 Else
                     FilterText2()
                     txtBarcode.Text = String.Empty
-                   
+
                     'SearchItem()
                     SearchBarcode()
                     'SelectPrice()
@@ -4212,27 +4457,146 @@ inputCust:
     End Sub
 
     'comment:
+    'Private Sub SearchBarcode()
+    '    Try
+    '        Dim SearchStrArr() As String = Split(sfilterTxt, ",")
+    '        Dim SubDescription2Filter As String = String.Join("' OR [SUBDESCRIPTION2] = '", SearchStrArr)
+    '        Dim FilterString As String = "[SUBDESCRIPTION2] = '" & SubDescription2Filter & "'"
+    '        Dim FilterStr = "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
+
+    '        gridItem.DataSource = load_data(FilterStr)
+
+    '        GridColumnWidth()
+    '        If isItemCode(searchStr) = True Then
+
+    '            If iCusID = 0 Then
+    '                MsgBox("Please select customer first!", vbExclamation, "Message")
+    '            Else
+
+    '                Dim availVal = clsItemLookUp.getItemQty(gridItem.Item(0, gridItem.CurrentCell.RowIndex).Value)
+    '                If availVal < 1 Then
+    '                    MsgBox("This item is out of stock.", vbExclamation, "Message!")
+    '                    Exit Sub
+    '                Else
+    '                    InsertSelectedItem(gridItem.CurrentCell.RowIndex)
+    '                    gridSelectItem.Focus()
+    '                    gridSelectItem.BeginEdit(True)
+    '                End If
+    '                TreeView1.Nodes.Clear()
+    '            End If
+
+    '        End If
+    '        checkSearch1()
+    '        TreeView1.Nodes.Clear()
+    '        iRow = 0
+    '        txtBarcode.Focus()
+    '        lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
+
+    '    Catch ex As Exception
+    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ErrorCount = ErrorCount + 1
+    '    End Try
+    'End Sub
+    'Private Sub SearchBarcode()
+    '    Try
+    '        Dim SearchStrArr() As String = Split(sfilterTxt, ",")
+
+    '        Dim BarcodeFilter As String = String.Join("%' OR [SUBDESCRIPTION2] LIKE '%", SearchStrArr)
+    '        Dim ItemLookupFilter As String = String.Join("%' OR [ItemLookupCode] LIKE '%", SearchStrArr)
+
+    '        Dim FilterString As String =
+    '        "[SUBDESCRIPTION2] LIKE '%" & BarcodeFilter & "%' OR " &
+    '        "[ItemLookupCode] LIKE '%" & ItemLookupFilter & "%'"
+
+    '        Dim FilterStr As String =
+    '        "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
+
+    '        gridItem.DataSource = load_data(FilterStr)
+
+    '        GridColumnWidth()
+
+    '        If isItemCode(searchStr) = True Then
+
+    '            If iCusID = 0 Then
+    '                MsgBox("Please select customer first!", vbExclamation, "Message")
+    '            Else
+
+    '                Dim availVal = clsItemLookUp.getItemQty(gridItem.Item(0, gridItem.CurrentCell.RowIndex).Value)
+
+    '                If availVal < 1 Then
+    '                    MsgBox("This item is out of stock.", vbExclamation, "Message!")
+    '                    Exit Sub
+    '                Else
+    '                    InsertSelectedItem(gridItem.CurrentCell.RowIndex)
+    '                    gridSelectItem.Focus()
+    '                    gridSelectItem.BeginEdit(True)
+    '                End If
+
+    '                TreeView1.Nodes.Clear()
+
+    '            End If
+
+    '        End If
+
+    '        checkSearch1()
+    '        TreeView1.Nodes.Clear()
+    '        iRow = 0
+    '        txtBarcode.Focus()
+
+    '        lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
+
+    '    Catch ex As Exception
+    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ErrorCount = ErrorCount + 1
+    '    End Try
+    'End Sub
     Private Sub SearchBarcode()
         Try
             Dim SearchStrArr() As String = Split(sfilterTxt, ",")
-            'Dim FullDescFilter As String = String.Join("%' AND [FULLDESC] Like '%", SearchStrArr)
-            'Dim ItemLookupCodeFilter As String = String.Join("%' OR [ITEMLOOKUPCODE] Like '%", SearchStrArr)
-            Dim SubDescription2Filter As String = String.Join("' OR [SUBDESCRIPTION2] = '", SearchStrArr)
-            Dim FilterString As String = "[SUBDESCRIPTION2] = '" & SubDescription2Filter & "'"
-            Dim FilterStr = "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
-            ' Dim FilterStr2 = "SELECT ItemLookupCode,Description,Price FROM SOD_VIEWITEMS WHERE Inactive = 0 AND (" & FilterString & ")"
+            Dim lf As String = Chr(10)
+
+            ' Build filter conditions for each search term
+            Dim conditions As New List(Of String)
+
+            For Each term As String In SearchStrArr
+                Dim t As String = term.Trim().Replace("'", "''")
+
+                ' ItemLookupCode: exact match OR ends-with match
+                Dim itemCodeCondition As String =
+                "([ItemLookupCode] = '" & t & "'" &
+                " OR [ItemLookupCode] LIKE '%" & t & "')"
+
+                ' SubDescription2: exact token match
+                ' Handles newline-separated AND +-separated barcodes
+                Dim subDesc2Condition As String =
+                "([SUBDESCRIPTION2] = '" & t & "'" &
+                " OR [SUBDESCRIPTION2] LIKE '" & t & lf & "%'" &
+                " OR [SUBDESCRIPTION2] LIKE '%" & lf & t & "'" &
+                " OR [SUBDESCRIPTION2] LIKE '%" & lf & t & lf & "%'" &
+                " OR [SUBDESCRIPTION2] LIKE '" & t & "+%'" &
+                " OR [SUBDESCRIPTION2] LIKE '%+" & t & "'" &
+                " OR [SUBDESCRIPTION2] LIKE '%+" & t & "+%')"
+
+                conditions.Add("(" & itemCodeCondition & " OR " & subDesc2Condition & ")")
+            Next
+
+            ' Join multiple search terms with AND (all terms must match somewhere)
+            Dim FilterString As String = String.Join(" AND ", conditions)
+
+            Dim FilterStr As String =
+            "SELECT TOP 500 * FROM SOD_VIEWITEMSWO " &
+            "WHERE Inactive = 0 AND (" & FilterString & ")"
 
             gridItem.DataSource = load_data(FilterStr)
-            'gridSelectItem.DataSource = load_data(FilterStr2)
-
             GridColumnWidth()
+
             If isItemCode(searchStr) = True Then
 
                 If iCusID = 0 Then
                     MsgBox("Please select customer first!", vbExclamation, "Message")
                 Else
-
                     Dim availVal = clsItemLookUp.getItemQty(gridItem.Item(0, gridItem.CurrentCell.RowIndex).Value)
+
                     If availVal < 1 Then
                         MsgBox("This item is out of stock.", vbExclamation, "Message!")
                         Exit Sub
@@ -4241,22 +4605,25 @@ inputCust:
                         gridSelectItem.Focus()
                         gridSelectItem.BeginEdit(True)
                     End If
+
                     TreeView1.Nodes.Clear()
                 End If
 
             End If
+
             checkSearch1()
             TreeView1.Nodes.Clear()
             iRow = 0
             txtBarcode.Focus()
-            lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
 
+            lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
+            gridItem.Refresh()
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message,
+                        "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
     End Sub
-
     'comment:
     Private Sub checkSearch1()
 
@@ -4331,10 +4698,10 @@ inputCust:
                     txtBarcode.Text = String.Empty ' Clear the barcode
                     Exit Sub
                     ' Check if the barcode contains letters
-                ElseIf txtBarcode.Text.Any(Function(c) Char.IsLetter(c)) Then
-                    MessageBox.Show("Barcode cannot contain letters!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                    txtBarcode.Text = String.Empty ' Clear the barcode
-                    Exit Sub
+                    'ElseIf txtBarcode.Text.Any(Function(c) Char.IsLetter(c)) Then
+                    '    MessageBox.Show("Barcode cannot contain letters!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    '    txtBarcode.Text = String.Empty ' Clear the barcode
+                    '    Exit Sub
                 Else
                     ' Perform the search and other logic
                     FilterText2() ' Assuming this performs filtering
@@ -4345,7 +4712,7 @@ inputCust:
 
                     ' Get values from grid (ensure valid grid data)
                     If gridItem.CurrentRow IsNot Nothing Then
-                        SelectPrice()
+                        'SelectPrice()
                     Else
                         'MessageBox.Show("No valid row selected in the grid.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                         txtBarcode.Text = String.Empty
@@ -5229,8 +5596,9 @@ inputCust:
 
             If item Is Nothing Then Continue For
 
-            ' --- Determine minimum price (customer's price level) with $0.00 fallback ---
+            ' --- Determine minimum price (customer's price level) with Php0.00 fallback ---
             Dim minPrice As Decimal ' Only need minimum - no upper limit
+            'MessageBox.Show("Price Level: " & Me.txtPriceLevel.Text)
 
             Select Case Me.txtPriceLevel.Text
                 Case "Price"
@@ -5805,7 +6173,7 @@ inputCust:
             'Dim approver As String = "Unknown"
             Dim approver As String = ""
             Dim cfg = (From c In dbLog.SOD_WO_Confs Select c).FirstOrDefault()
-            Dim iCusPrice As Integer = clsCustomer.getPriceLevel(txtCustomer.Text)
+            Dim iCusPrice As Integer = clsCustomer.getPriceLevel(iCusID)
 
             If cfg IsNot Nothing Then
                 If cfg.Password = inputPass Then

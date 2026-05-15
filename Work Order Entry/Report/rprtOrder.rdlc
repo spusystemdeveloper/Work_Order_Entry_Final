@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Report xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner" xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition">
-  <AutoRefresh>0</AutoRefresh>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+	<AutoRefresh>0</AutoRefresh>
   <DataSources>
     <DataSource Name="ItemLookUp">
       <ConnectionProperties>
@@ -287,8 +287,8 @@ Order Taker</Value>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>1.1441in</Top>
-            <Left>0.28833in</Left>
+            <Top>1.1941in</Top>
+            <Left>0.28694in</Left>
             <Height>0.33333in</Height>
             <Width>0.69098in</Width>
             <ZIndex>6</ZIndex>
@@ -308,7 +308,6 @@ Order Taker</Value>
                   <TextRun>
                     <Value>Sub Total      :   </Value>
                     <Style>
-                      <FontSize>8pt</FontSize>
                       <FontWeight>Bold</FontWeight>
                     </Style>
                   </TextRun>
@@ -322,7 +321,6 @@ Order Taker</Value>
                   <TextRun>
                     <Value>Sales Tax      :   </Value>
                     <Style>
-                      <FontSize>8pt</FontSize>
                       <FontWeight>Bold</FontWeight>
                     </Style>
                   </TextRun>
@@ -334,7 +332,13 @@ Order Taker</Value>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Total      :   </Value>
+                    <Value>Total      :  </Value>
+                    <Style>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value xml:space="preserve"> </Value>
                     <Style>
                       <FontSize>8pt</FontSize>
                       <FontWeight>Bold</FontWeight>
@@ -347,8 +351,8 @@ Order Taker</Value>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>2.10083in</Top>
-            <Left>6.04167in</Left>
+            <Top>2.10869in</Top>
+            <Left>5.76111in</Left>
             <Height>0.57291in</Height>
             <Width>1.18056in</Width>
             <ZIndex>7</ZIndex>
@@ -370,7 +374,6 @@ Order Taker</Value>
                   <TextRun>
                     <Value>=iif((Parameters!paramType.Value="Work Order"),"Picked By : ________________________","Picked By : ________________________")</Value>
                     <Style>
-                      <FontSize>8pt</FontSize>
                       <FontWeight>Bold</FontWeight>
                     </Style>
                   </TextRun>
@@ -381,10 +384,10 @@ Order Taker</Value>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>3.02604in</Top>
+            <Top>3.06354in</Top>
             <Left>0.28834in</Left>
             <Height>0.17708in</Height>
-            <Width>2.625in</Width>
+            <Width>3.04118in</Width>
             <ZIndex>8</ZIndex>
             <Style>
               <Border>
@@ -404,7 +407,6 @@ Order Taker</Value>
                   <TextRun>
                     <Value>=iif((Parameters!paramType.Value="Work Order"),"Checked By : ________________________","Checked By : ________________________")</Value>
                     <Style>
-                      <FontSize>8pt</FontSize>
                       <FontWeight>Bold</FontWeight>
                     </Style>
                   </TextRun>
@@ -415,8 +417,8 @@ Order Taker</Value>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>3.02604in</Top>
-            <Left>3.03646in</Left>
+            <Top>3.06354in</Top>
+            <Left>3.39896in</Left>
             <Height>0.17708in</Height>
             <Width>3.04166in</Width>
             <ZIndex>9</ZIndex>
@@ -438,7 +440,6 @@ Order Taker</Value>
                   <TextRun>
                     <Value>=iif((Parameters!paramType.Value="Work Order"),"Packed By : ________________________","Packed By : ________________________")</Value>
                     <Style>
-                      <FontSize>8pt</FontSize>
                       <FontWeight>Bold</FontWeight>
                     </Style>
                   </TextRun>
@@ -449,7 +450,7 @@ Order Taker</Value>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>3.50521in</Top>
+            <Top>3.54271in</Top>
             <Left>0.28834in</Left>
             <Height>0.17708in</Height>
             <Width>3.04166in</Width>
@@ -497,7 +498,6 @@ Order Taker</Value>
                                 <TextRun>
                                   <Value>Item Code</Value>
                                   <Style>
-                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -538,7 +538,6 @@ Order Taker</Value>
                                 <TextRun>
                                   <Value>Description</Value>
                                   <Style>
-                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -577,7 +576,6 @@ Order Taker</Value>
                                 <TextRun>
                                   <Value>Qty. Order</Value>
                                   <Style>
-                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -625,7 +623,6 @@ Order Taker</Value>
                                 <TextRun>
                                   <Value>Price</Value>
                                   <Style>
-                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -673,7 +670,6 @@ Order Taker</Value>
                                 <TextRun>
                                   <Value>Extended</Value>
                                   <Style>
-                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -725,9 +721,7 @@ Order Taker</Value>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!Itemcode.Value</Value>
-                                  <Style>
-                                    <FontSize>8pt</FontSize>
-                                  </Style>
+                                  <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style>
@@ -759,9 +753,7 @@ Order Taker</Value>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!ItemDesc.Value</Value>
-                                  <Style>
-                                    <FontSize>8pt</FontSize>
-                                  </Style>
+                                  <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style />
@@ -791,9 +783,7 @@ Order Taker</Value>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!QtyOrder.Value</Value>
-                                  <Style>
-                                    <FontSize>8pt</FontSize>
-                                  </Style>
+                                  <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style>
@@ -825,9 +815,7 @@ Order Taker</Value>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!Price.Value</Value>
-                                  <Style>
-                                    <FontSize>8pt</FontSize>
-                                  </Style>
+                                  <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style>
@@ -859,9 +847,7 @@ Order Taker</Value>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!Extended.Value</Value>
-                                  <Style>
-                                    <FontSize>8pt</FontSize>
-                                  </Style>
+                                  <Style />
                                 </TextRun>
                               </TextRuns>
                               <Style>
@@ -907,7 +893,7 @@ Order Taker</Value>
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>ItemWoEntry</DataSetName>
-            <Top>1.54687in</Top>
+            <Top>1.58437in</Top>
             <Left>0.28834in</Left>
             <Height>0.44792in</Height>
             <Width>7.75333in</Width>
@@ -928,13 +914,12 @@ Order Taker</Value>
                   <TextRun>
                     <Value>=Parameters!paramSubtotal.Value</Value>
                     <Style>
-                      <FontSize>8pt</FontSize>
                       <FontWeight>Bold</FontWeight>
                     </Style>
                   </TextRun>
                 </TextRuns>
                 <Style>
-                  <TextAlign>Left</TextAlign>
+                  <TextAlign>Right</TextAlign>
                 </Style>
               </Paragraph>
               <Paragraph>
@@ -942,13 +927,12 @@ Order Taker</Value>
                   <TextRun>
                     <Value>=Parameters!paramSalesTax.Value</Value>
                     <Style>
-                      <FontSize>8pt</FontSize>
                       <FontWeight>Bold</FontWeight>
                     </Style>
                   </TextRun>
                 </TextRuns>
                 <Style>
-                  <TextAlign>Left</TextAlign>
+                  <TextAlign>Right</TextAlign>
                 </Style>
               </Paragraph>
               <Paragraph>
@@ -956,21 +940,20 @@ Order Taker</Value>
                   <TextRun>
                     <Value>=Parameters!paramTotal.Value</Value>
                     <Style>
-                      <FontSize>8pt</FontSize>
                       <FontWeight>Bold</FontWeight>
                     </Style>
                   </TextRun>
                 </TextRuns>
                 <Style>
-                  <TextAlign>Left</TextAlign>
+                  <TextAlign>Right</TextAlign>
                 </Style>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>2.10083in</Top>
-            <Left>7.22223in</Left>
+            <Top>2.11889in</Top>
+            <Left>6.60382in</Left>
             <Height>0.57291in</Height>
-            <Width>0.81942in</Width>
+            <Width>1.48782in</Width>
             <ZIndex>12</ZIndex>
             <Style>
               <Border>
@@ -1107,7 +1090,7 @@ Order Taker</Value>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>1.1441in</Top>
+            <Top>1.1941in</Top>
             <Left>0.90639in</Left>
             <Height>0.33333in</Height>
             <Width>7.13525in</Width>
@@ -1295,7 +1278,7 @@ Order Taker</Value>
             </Style>
           </Textbox>
           <Line Name="Line1">
-            <Top>2.10083in</Top>
+            <Top>2.13833in</Top>
             <Left>0.30918in</Left>
             <Height>0in</Height>
             <Width>7.73249in</Width>
@@ -1320,19 +1303,22 @@ Order Taker</Value>
                     </Style>
                   </TextRun>
                 </TextRuns>
-                <Style />
+                <Style>
+                  <TextAlign>Left</TextAlign>
+                </Style>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox4</rd:DefaultName>
             <Top>1.02235in</Top>
             <Left>0.2732in</Left>
             <Height>0.25in</Height>
-            <Width>0.57417in</Width>
+            <Width>0.61584in</Width>
             <ZIndex>19</ZIndex>
             <Style>
               <Border>
                 <Style>None</Style>
               </Border>
+              <VerticalAlign>Middle</VerticalAlign>
               <PaddingLeft>2pt</PaddingLeft>
               <PaddingRight>2pt</PaddingRight>
               <PaddingTop>2pt</PaddingTop>
@@ -1357,8 +1343,8 @@ Order Taker</Value>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox22</rd:DefaultName>
-            <Top>1.02235in</Top>
-            <Left>0.89126in</Left>
+            <Top>1.03485in</Top>
+            <Left>0.87876in</Left>
             <Height>0.25in</Height>
             <Width>4.89917in</Width>
             <ZIndex>20</ZIndex>
@@ -1389,10 +1375,10 @@ Order Taker</Value>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox18</rd:DefaultName>
-            <Top>1.02235in</Top>
-            <Left>0.97237in</Left>
+            <Top>1.04735in</Top>
+            <Left>0.97931in</Left>
             <Height>0.25in</Height>
-            <Width>4.81806in</Width>
+            <Width>7.06233in</Width>
             <ZIndex>21</ZIndex>
             <Style>
               <Border>

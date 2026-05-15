@@ -168,7 +168,7 @@ Partial Class frmPriceLevel
         Me.MinimizeBox = False
         Me.Name = "frmPriceLevel"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "Price Level Selection test"
+        Me.Text = "Price Level Selection"
         Me.TopMost = True
         CType(Me.gridLevel, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)

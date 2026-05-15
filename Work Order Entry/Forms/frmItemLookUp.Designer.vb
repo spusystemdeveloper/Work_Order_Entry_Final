@@ -164,7 +164,7 @@ Partial Class frmItemLookUp
         'txtRemarks
         '
         Me.txtRemarks.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtRemarks.Location = New System.Drawing.Point(8, 184)
+        Me.txtRemarks.Location = New System.Drawing.Point(8, 167)
         Me.txtRemarks.Name = "txtRemarks"
         Me.txtRemarks.Size = New System.Drawing.Size(326, 23)
         Me.txtRemarks.TabIndex = 6
@@ -173,7 +173,7 @@ Partial Class frmItemLookUp
         '
         Me.lblRemarks.AutoSize = True
         Me.lblRemarks.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblRemarks.Location = New System.Drawing.Point(5, 167)
+        Me.lblRemarks.Location = New System.Drawing.Point(5, 150)
         Me.lblRemarks.Name = "lblRemarks"
         Me.lblRemarks.Size = New System.Drawing.Size(125, 13)
         Me.lblRemarks.TabIndex = 61
@@ -183,7 +183,7 @@ Partial Class frmItemLookUp
         '
         Me.txtType.BackColor = System.Drawing.SystemColors.Control
         Me.txtType.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtType.Location = New System.Drawing.Point(8, 92)
+        Me.txtType.Location = New System.Drawing.Point(8, 86)
         Me.txtType.Name = "txtType"
         Me.txtType.ReadOnly = True
         Me.txtType.Size = New System.Drawing.Size(208, 23)
@@ -194,7 +194,7 @@ Partial Class frmItemLookUp
         '
         Me.Label5.AutoSize = True
         Me.Label5.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label5.Location = New System.Drawing.Point(5, 77)
+        Me.Label5.Location = New System.Drawing.Point(5, 71)
         Me.Label5.Name = "Label5"
         Me.Label5.Padding = New System.Windows.Forms.Padding(0, 0, 27, 0)
         Me.Label5.Size = New System.Drawing.Size(178, 13)
@@ -204,7 +204,7 @@ Partial Class frmItemLookUp
         'txtCustomer
         '
         Me.txtCustomer.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtCustomer.Location = New System.Drawing.Point(6, 49)
+        Me.txtCustomer.Location = New System.Drawing.Point(6, 45)
         Me.txtCustomer.Name = "txtCustomer"
         Me.txtCustomer.ReadOnly = True
         Me.txtCustomer.Size = New System.Drawing.Size(281, 23)
@@ -215,7 +215,7 @@ Partial Class frmItemLookUp
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(5, 34)
+        Me.Label3.Location = New System.Drawing.Point(5, 32)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(65, 13)
         Me.Label3.TabIndex = 61
@@ -224,7 +224,7 @@ Partial Class frmItemLookUp
         'txtSales
         '
         Me.txtSales.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtSales.Location = New System.Drawing.Point(8, 137)
+        Me.txtSales.Location = New System.Drawing.Point(8, 127)
         Me.txtSales.Name = "txtSales"
         Me.txtSales.ReadOnly = True
         Me.txtSales.Size = New System.Drawing.Size(279, 23)
@@ -235,7 +235,7 @@ Partial Class frmItemLookUp
         '
         Me.Label2.AutoSize = True
         Me.Label2.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(5, 121)
+        Me.Label2.Location = New System.Drawing.Point(5, 111)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(65, 13)
         Me.Label2.TabIndex = 54
@@ -244,7 +244,7 @@ Partial Class frmItemLookUp
         'txtSearch
         '
         Me.txtSearch.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.txtSearch.Location = New System.Drawing.Point(5, 261)
+        Me.txtSearch.Location = New System.Drawing.Point(5, 239)
         Me.txtSearch.Name = "txtSearch"
         Me.txtSearch.Size = New System.Drawing.Size(282, 21)
         Me.txtSearch.TabIndex = 8
@@ -253,7 +253,7 @@ Partial Class frmItemLookUp
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(5, 243)
+        Me.Label1.Location = New System.Drawing.Point(5, 221)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(190, 13)
         Me.Label1.TabIndex = 63
@@ -390,7 +390,7 @@ Partial Class frmItemLookUp
         'Button2
         '
         Me.Button2.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Button2.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Button2.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Button2.Image = CType(resources.GetObject("Button2.Image"), System.Drawing.Image)
         Me.Button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.Button2.Location = New System.Drawing.Point(3, 201)
@@ -403,7 +403,7 @@ Partial Class frmItemLookUp
         'cmdOpenWO
         '
         Me.cmdOpenWO.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdOpenWO.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdOpenWO.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdOpenWO.Image = CType(resources.GetObject("cmdOpenWO.Image"), System.Drawing.Image)
         Me.cmdOpenWO.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdOpenWO.Location = New System.Drawing.Point(3, 168)
@@ -499,7 +499,7 @@ Partial Class frmItemLookUp
         'cmdSettings
         '
         Me.cmdSettings.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdSettings.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdSettings.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdSettings.Image = CType(resources.GetObject("cmdSettings.Image"), System.Drawing.Image)
         Me.cmdSettings.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdSettings.Location = New System.Drawing.Point(3, 135)
@@ -525,7 +525,7 @@ Partial Class frmItemLookUp
         'cmdPriceLevel
         '
         Me.cmdPriceLevel.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdPriceLevel.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdPriceLevel.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdPriceLevel.Image = CType(resources.GetObject("cmdPriceLevel.Image"), System.Drawing.Image)
         Me.cmdPriceLevel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdPriceLevel.Location = New System.Drawing.Point(3, 102)
@@ -538,7 +538,7 @@ Partial Class frmItemLookUp
         'cmdInterStore
         '
         Me.cmdInterStore.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdInterStore.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdInterStore.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdInterStore.Image = CType(resources.GetObject("cmdInterStore.Image"), System.Drawing.Image)
         Me.cmdInterStore.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdInterStore.Location = New System.Drawing.Point(3, 69)
@@ -551,7 +551,7 @@ Partial Class frmItemLookUp
         'cmdRefresh
         '
         Me.cmdRefresh.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdRefresh.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdRefresh.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdRefresh.Image = CType(resources.GetObject("cmdRefresh.Image"), System.Drawing.Image)
         Me.cmdRefresh.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdRefresh.Location = New System.Drawing.Point(3, 36)
@@ -603,7 +603,7 @@ Partial Class frmItemLookUp
         'cmdSelect
         '
         Me.cmdSelect.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdSelect.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdSelect.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdSelect.Image = CType(resources.GetObject("cmdSelect.Image"), System.Drawing.Image)
         Me.cmdSelect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdSelect.Location = New System.Drawing.Point(3, 3)
@@ -658,7 +658,7 @@ Partial Class frmItemLookUp
         Me.txtBarcode.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtBarcode.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.txtBarcode.Location = New System.Drawing.Point(6, 290)
+        Me.txtBarcode.Location = New System.Drawing.Point(6, 268)
         Me.txtBarcode.Name = "txtBarcode"
         Me.txtBarcode.Size = New System.Drawing.Size(221, 21)
         Me.txtBarcode.TabIndex = 27
@@ -667,7 +667,7 @@ Partial Class frmItemLookUp
         '
         Me.chkBarcode.AutoSize = True
         Me.chkBarcode.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.chkBarcode.Location = New System.Drawing.Point(236, 294)
+        Me.chkBarcode.Location = New System.Drawing.Point(236, 272)
         Me.chkBarcode.Name = "chkBarcode"
         Me.chkBarcode.Size = New System.Drawing.Size(98, 17)
         Me.chkBarcode.TabIndex = 26
@@ -851,6 +851,7 @@ Partial Class frmItemLookUp
         Me.gridItem.ReadOnly = True
         Me.gridItem.RowHeadersWidth = 51
         Me.gridItem.RowTemplate.DefaultCellStyle.Font = New System.Drawing.Font("Arial", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.gridItem.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
         Me.gridItem.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
         Me.gridItem.Size = New System.Drawing.Size(844, 464)
         Me.gridItem.TabIndex = 0
@@ -883,9 +884,9 @@ Partial Class frmItemLookUp
         '
         Me.TreeView1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.TreeView1.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.TreeView1.Location = New System.Drawing.Point(0, 343)
+        Me.TreeView1.Location = New System.Drawing.Point(0, 324)
         Me.TreeView1.Name = "TreeView1"
-        Me.TreeView1.Size = New System.Drawing.Size(342, 121)
+        Me.TreeView1.Size = New System.Drawing.Size(342, 140)
         Me.TreeView1.TabIndex = 1
         '
         'Panel5
@@ -925,7 +926,7 @@ Partial Class frmItemLookUp
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel5.Location = New System.Drawing.Point(0, 0)
         Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(342, 343)
+        Me.Panel5.Size = New System.Drawing.Size(342, 324)
         Me.Panel5.TabIndex = 0
         '
         'PictureBox3
@@ -966,7 +967,7 @@ Partial Class frmItemLookUp
         Me.chkShowImage.AutoSize = True
         Me.chkShowImage.BackColor = System.Drawing.SystemColors.Control
         Me.chkShowImage.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.chkShowImage.Location = New System.Drawing.Point(6, 321)
+        Me.chkShowImage.Location = New System.Drawing.Point(6, 302)
         Me.chkShowImage.Name = "chkShowImage"
         Me.chkShowImage.Size = New System.Drawing.Size(96, 17)
         Me.chkShowImage.TabIndex = 24
@@ -998,7 +999,7 @@ Partial Class frmItemLookUp
         'PictureBox2
         '
         Me.PictureBox2.BackColor = System.Drawing.SystemColors.ButtonShadow
-        Me.PictureBox2.Location = New System.Drawing.Point(7, 235)
+        Me.PictureBox2.Location = New System.Drawing.Point(7, 218)
         Me.PictureBox2.Name = "PictureBox2"
         Me.PictureBox2.Size = New System.Drawing.Size(327, 1)
         Me.PictureBox2.TabIndex = 75
@@ -1018,7 +1019,7 @@ Partial Class frmItemLookUp
         '
         Me.rbtnDelivery.AutoSize = True
         Me.rbtnDelivery.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.rbtnDelivery.Location = New System.Drawing.Point(173, 212)
+        Me.rbtnDelivery.Location = New System.Drawing.Point(173, 195)
         Me.rbtnDelivery.Name = "rbtnDelivery"
         Me.rbtnDelivery.Size = New System.Drawing.Size(72, 17)
         Me.rbtnDelivery.TabIndex = 70
@@ -1030,7 +1031,7 @@ Partial Class frmItemLookUp
         Me.rbtnPickup.AutoSize = True
         Me.rbtnPickup.Checked = True
         Me.rbtnPickup.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.rbtnPickup.Location = New System.Drawing.Point(99, 212)
+        Me.rbtnPickup.Location = New System.Drawing.Point(99, 195)
         Me.rbtnPickup.Name = "rbtnPickup"
         Me.rbtnPickup.Size = New System.Drawing.Size(67, 17)
         Me.rbtnPickup.TabIndex = 69
@@ -1042,7 +1043,7 @@ Partial Class frmItemLookUp
         '
         Me.Label8.AutoSize = True
         Me.Label8.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label8.Location = New System.Drawing.Point(5, 214)
+        Me.Label8.Location = New System.Drawing.Point(5, 197)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(89, 13)
         Me.Label8.TabIndex = 68
@@ -1054,7 +1055,7 @@ Partial Class frmItemLookUp
         Me.cboPayment.Font = New System.Drawing.Font("Tahoma", 9.75!)
         Me.cboPayment.FormattingEnabled = True
         Me.cboPayment.Items.AddRange(New Object() {"CASH", "CHARGE", "CREDIT CARD", "DEBIT CARD"})
-        Me.cboPayment.Location = New System.Drawing.Point(222, 92)
+        Me.cboPayment.Location = New System.Drawing.Point(222, 86)
         Me.cboPayment.Name = "cboPayment"
         Me.cboPayment.Size = New System.Drawing.Size(112, 24)
         Me.cboPayment.TabIndex = 66
@@ -1064,7 +1065,7 @@ Partial Class frmItemLookUp
         Me.Label7.AutoSize = True
         Me.Label7.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Label7.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
-        Me.Label7.Location = New System.Drawing.Point(216, 78)
+        Me.Label7.Location = New System.Drawing.Point(216, 72)
         Me.Label7.Name = "Label7"
         Me.Label7.Padding = New System.Windows.Forms.Padding(0, 0, 27, 0)
         Me.Label7.Size = New System.Drawing.Size(119, 13)
@@ -1076,7 +1077,7 @@ Partial Class frmItemLookUp
         Me.cmdSSales.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdSSales.Image = CType(resources.GetObject("cmdSSales.Image"), System.Drawing.Image)
         Me.cmdSSales.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdSSales.Location = New System.Drawing.Point(293, 136)
+        Me.cmdSSales.Location = New System.Drawing.Point(293, 126)
         Me.cmdSSales.Name = "cmdSSales"
         Me.cmdSSales.Size = New System.Drawing.Size(41, 25)
         Me.cmdSSales.TabIndex = 5
@@ -1090,7 +1091,7 @@ Partial Class frmItemLookUp
         Me.cmdSCustomer.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdSCustomer.Image = CType(resources.GetObject("cmdSCustomer.Image"), System.Drawing.Image)
         Me.cmdSCustomer.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdSCustomer.Location = New System.Drawing.Point(293, 48)
+        Me.cmdSCustomer.Location = New System.Drawing.Point(293, 45)
         Me.cmdSCustomer.Name = "cmdSCustomer"
         Me.cmdSCustomer.Size = New System.Drawing.Size(41, 25)
         Me.cmdSCustomer.TabIndex = 2
@@ -1103,7 +1104,7 @@ Partial Class frmItemLookUp
         Me.cmdSearch.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.cmdSearch.Image = CType(resources.GetObject("cmdSearch.Image"), System.Drawing.Image)
         Me.cmdSearch.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdSearch.Location = New System.Drawing.Point(297, 259)
+        Me.cmdSearch.Location = New System.Drawing.Point(297, 237)
         Me.cmdSearch.Name = "cmdSearch"
         Me.cmdSearch.Size = New System.Drawing.Size(41, 25)
         Me.cmdSearch.TabIndex = 9
@@ -1113,14 +1114,14 @@ Partial Class frmItemLookUp
         '
         'pnl1Barcode
         '
-        Me.pnl1Barcode.Location = New System.Drawing.Point(3, 288)
+        Me.pnl1Barcode.Location = New System.Drawing.Point(3, 266)
         Me.pnl1Barcode.Name = "pnl1Barcode"
         Me.pnl1Barcode.Size = New System.Drawing.Size(227, 27)
         Me.pnl1Barcode.TabIndex = 81
         '
         'pnl2TextSearch
         '
-        Me.pnl2TextSearch.Location = New System.Drawing.Point(3, 259)
+        Me.pnl2TextSearch.Location = New System.Drawing.Point(3, 237)
         Me.pnl2TextSearch.Name = "pnl2TextSearch"
         Me.pnl2TextSearch.Size = New System.Drawing.Size(288, 25)
         Me.pnl2TextSearch.TabIndex = 82
@@ -1381,7 +1382,7 @@ Partial Class frmItemLookUp
         Me.KeyPreview = True
         Me.Name = "frmItemLookUp"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
-        Me.Text = "Work Order Entry_V7"
+        Me.Text = "Work Order Entry_V7.1_Multi_BC"
         Me.WindowState = System.Windows.Forms.FormWindowState.Maximized
         Me.BottomStrip.ResumeLayout(False)
         Me.BottomStrip.PerformLayout()

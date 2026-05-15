@@ -99,7 +99,7 @@
             Return orders
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003.1", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -134,7 +134,7 @@
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -158,7 +158,7 @@
             updateQueuingError = False
 
         Catch ex As Exception
-            MessageBox.Show("WORK ORDER NOT FOUND! " & vbCrLf & vbCrLf & "FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("WORK ORDER NOT FOUND! " & vbCrLf & vbCrLf & "FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             updateQueuingError = True
         End Try
@@ -181,7 +181,7 @@
 
           
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             updateQueuingError = True
             Return Nothing
@@ -277,12 +277,13 @@
     '----------Additional function to get the Pricelevel per Customer
     Public Shared Function getPriceLevel(ByVal sCustomer As String) As Integer
         Try
+
             Dim price = (From c In db.Customers
                          Where c.ID.Equals(sCustomer)
                          Select c.PriceLevel).FirstOrDefault()
             Return price
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0008", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount += 1
             Return Nothing
         End Try
@@ -313,7 +314,7 @@
                 Return 0 ' Or handle as needed
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount += 1
             Return 0
         End Try
