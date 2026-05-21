@@ -111,31 +111,55 @@ Public Class frmItemLookUp
         End Try
 
     End Sub
+    Private Sub RebuildFilterTextFromTree()
+
+        Dim txt As String = String.Empty
+        lastFilterTxt = String.Empty
+
+        For Each n As TreeNode In TreeView1.Nodes
+            txt = txt + n.Text + ","
+            lastFilterTxt = n.Name
+        Next
+
+        If txt.Length > 0 Then
+            sfilterTxt = txt.Substring(0, txt.Length - 1)
+        Else
+            sfilterTxt = String.Empty
+        End If
+
+    End Sub
+
+    Private Function RemoveLastSearchNode() As Boolean
+
+        If String.IsNullOrEmpty(lastFilterTxt) Then
+            Return False
+        End If
+
+        Dim node() As TreeNode = TreeView1.Nodes.Find(lastFilterTxt, True)
+
+        If node Is Nothing OrElse node.Length = 0 Then
+            Return False
+        End If
+
+        TreeView1.Nodes.Remove(node(0))
+        RebuildFilterTextFromTree()
+        Return True
+
+    End Function
+
     Private Sub FilterText()
 
         Try
 
-            Dim nodes As TreeNodeCollection = TreeView1.Nodes
-            Dim root = New TreeNode(txtSearch.Text)
-            root.Name = txtSearch.Text
+            Dim keyword As String = txtSearch.Text.Trim()
 
-            Dim node As TreeNodeCollection = TreeView1.Nodes
-            Dim txt As String = String.Empty
-
-            If txtSearch.Text <> String.Empty Then
+            If keyword <> String.Empty Then
+                Dim root = New TreeNode(keyword)
+                root.Name = keyword
                 TreeView1.Nodes.Add(root)
             End If
 
-            For Each n As TreeNode In TreeView1.Nodes
-                txt = txt + n.Text + ","
-                lastFilterTxt = n.Name
-            Next
-
-            Try
-                sfilterTxt = txt.Substring(0, txt.Length - 1)
-            Catch ex As Exception
-
-            End Try
+            RebuildFilterTextFromTree()
 
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -144,9 +168,19 @@ Public Class frmItemLookUp
 
     End Sub
 
-    Private Sub SearchItem()
+    Private Sub SearchItem(Optional ByVal suppressNoItemsMessage As Boolean = False)
 
         Try
+            If String.IsNullOrWhiteSpace(sfilterTxt) Then
+                gridItem.DataSource = getItem()
+                GridColumnWidth()
+                txtSearch.Focus()
+                gridItem.Refresh()
+                iRow = 0
+                lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
+                Exit Sub
+            End If
+
             Dim SearchStrArr() As String = Split(sfilterTxt, ",")
             Dim FilterString As String = ""
             FilterString = String.Join("%' AND [FULLDESC] Like '%", SearchStrArr)
@@ -155,9 +189,38 @@ Public Class frmItemLookUp
 
             'itemData.Filter = FilterStr
             gridItem.DataSource = load_data(FilterStr)
-            txtSearch.Focus()
+
             GridColumnWidth()
-            checkSearch()
+            For Each r As DataGridViewRow In gridItem.Rows
+                r.Height = 60
+            Next
+
+            If gridItem.RowCount = 0 Then
+                If suppressNoItemsMessage = False Then
+                    MessageBox.Show("No Items Found!", "Message Error !", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                End If
+
+                If RemoveLastSearchNode() Then
+                    If TreeView1.Nodes.Count = 0 Then
+                        gridItem.DataSource = getItem()
+                        GridColumnWidth()
+                    Else
+                        SearchItem(True)
+                    End If
+                Else
+                    gridItem.DataSource = getItem()
+                    GridColumnWidth()
+                End If
+
+                txtSearch.Focus()
+                gridItem.Refresh()
+                iRow = 0
+                lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
+                Exit Sub
+            End If
+
+            txtSearch.Focus()
+            gridItem.Refresh()
             iRow = 0
             'searching
             'txtSearch.Focus()
@@ -178,22 +241,11 @@ Public Class frmItemLookUp
             If gridItem.RowCount = 0 Then
 
                 MessageBox.Show("No Items Found!", "Message Error !", MessageBoxButtons.OK, MessageBoxIcon.Error)
-
-
-                Try
-                    Dim node() As TreeNode = TreeView1.Nodes.Find(lastFilterTxt, True)
-                    TreeView1.Nodes.Remove(node(0))
-                    FilterText()
-
-                    If TreeView1.Nodes.Count = 0 Then
-                        gridItem.DataSource = getItem()
-                    Else
-                        SearchItem()
-                    End If
-
-                Catch ex As Exception
-
-                End Try
+                RemoveLastSearchNode()
+                If TreeView1.Nodes.Count = 0 Then
+                    gridItem.DataSource = getItem()
+                End If
+                gridItem.Refresh()
                 'searching
                 'Me.ActiveControl = txtSearch
 
@@ -283,61 +335,186 @@ Public Class frmItemLookUp
 
     'End Sub
 
+    'Private Sub GridColumnWidth()
+
+    '    Try
+
+    '        With gridItem
+
+    '            ' Auto size columns
+    '            .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill ' ✅ for wrapping
+    '            .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(4).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+    '            .Columns(7).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+
+    '            ' Enable row auto height (IMPORTANT for wrap)
+    '            .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
+
+    '            ' Freeze first column
+    '            .Columns(0).Frozen = True
+
+    '            ' Remove this (prevents wrapping)
+    '            '.Columns(1).MinimumWidth = 1000
+
+    '            ' Column headers
+    '            .Columns(0).DefaultCellStyle.Font = New Font("Arial", 12, FontStyle.Bold)
+    '            .Columns(0).HeaderText = "ITEM CODE"
+    '            .Columns(1).HeaderText = "ITEM NAME"
+    '            .Columns(2).HeaderText = "ITEM PRICE"
+    '            .Columns(3).HeaderText = "COST"
+    '            .Columns(4).HeaderText = "QUANTITY"
+    '            .Columns(5).HeaderText = "CHILD QTY"
+    '            .Columns(7).HeaderText = "SKU Level"
+    '            .Columns(17).HeaderText = "SOH"
+    '            .Columns(18).HeaderText = "QTY COM"
+
+    '            ' ✅ Wrap + styling for ITEM NAME
+    '            .Columns(1).DefaultCellStyle.WrapMode = DataGridViewTriState.True
+    '            .Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft
+    '            .Columns(1).DefaultCellStyle.Padding = New Padding(5)
+
+    '            ' Format & alignment
+    '            .Columns(2).DefaultCellStyle.Format = "C"
+    '            .Columns(3).DefaultCellStyle.Format = "N2"
+    '            .Columns(4).DefaultCellStyle.Format = "N0"
+
+    '            .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+    '            .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+
+    '            .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+
+    '            .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+    '            .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter
+
+    '            .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+    '            .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+    '            .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+    '            ' Hide columns
+    '            .Columns(3).Visible = False
+    '            .Columns(5).Visible = False
+    '            .Columns(6).Visible = False
+    '            .Columns(7).Visible = False
+    '            .Columns(8).Visible = False
+    '            .Columns(9).Visible = False
+    '            .Columns(10).Visible = False
+    '            .Columns(11).Visible = False
+    '            .Columns(12).Visible = False
+    '            .Columns(13).Visible = False
+    '            .Columns(14).Visible = False
+    '            .Columns(15).Visible = False
+    '            .Columns(16).Visible = False
+
+    '        End With
+
+    '    Catch ex As Exception
+    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    '        ErrorCount = ErrorCount + 1
+    '    End Try
+
+    'End Sub
+
+    Private Sub ApplyGridItemLayout()
+
+        If gridItem Is Nothing OrElse gridItem.Columns.Count < 19 Then
+            Exit Sub
+        End If
+
+        GridColumnWidth()
+        gridItem.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders)
+        gridItem.Refresh()
+
+    End Sub
+
     Private Sub GridColumnWidth()
 
         Try
-
             With gridItem
 
-                ' Auto size columns
-                .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-                .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill ' ✅ for wrapping
-                .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-                .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-                .Columns(4).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-                .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-                .Columns(7).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
+                If .Columns.Count < 19 Then
+                    Exit Sub
+                End If
 
-                ' Enable row auto height (IMPORTANT for wrap)
-                .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
+                .SuspendLayout()
+
+                '=================================
+                ' PERFORMANCE SETTINGS
+                '=================================
+                .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
+                .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None
+                .AllowUserToResizeRows = False
+                .RowTemplate.Height = 70
+                .ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+                .ColumnHeadersHeight = 32
+
+                '=================================
+                ' COLUMN WIDTHS
+                '=================================
+                .Columns(0).Width = 120
+                .Columns(1).MinimumWidth = 320
+                .Columns(2).Width = 100
+                .Columns(3).Width = 100
+                .Columns(4).Width = 90
+                .Columns(5).Width = 90
+                .Columns(7).Width = 90
+                .Columns(17).Width = 80
+                .Columns(18).Width = 80
+
+                ' Fill remaining width with Item Name
+                .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                .Columns(1).FillWeight = 1.0!
 
                 ' Freeze first column
                 .Columns(0).Frozen = True
 
-                ' Remove this (prevents wrapping)
-                '.Columns(1).MinimumWidth = 1000
+                '=================================
+                ' COLUMN HEADERS
+                '=================================
+                .Columns(0).DefaultCellStyle.Font = New Font("Arial", 10, FontStyle.Bold)
 
-                ' Column headers
-                .Columns(0).DefaultCellStyle.Font = New Font("Arial", 12, FontStyle.Bold)
                 .Columns(0).HeaderText = "ITEM CODE"
                 .Columns(1).HeaderText = "ITEM NAME"
                 .Columns(2).HeaderText = "ITEM PRICE"
                 .Columns(3).HeaderText = "COST"
-                .Columns(4).HeaderText = "QUANTITY"
+                .Columns(4).HeaderText = "AVAILABLE QTY"
                 .Columns(5).HeaderText = "CHILD QTY"
                 .Columns(7).HeaderText = "SKU Level"
                 .Columns(17).HeaderText = "SOH"
                 .Columns(18).HeaderText = "QTY COM"
 
-                ' ✅ Wrap + styling for ITEM NAME
+                '=================================
+                ' ITEM NAME WRAP
+                '=================================
                 .Columns(1).DefaultCellStyle.WrapMode = DataGridViewTriState.True
                 .Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft
                 .Columns(1).DefaultCellStyle.Padding = New Padding(5)
 
-                ' Format & alignment
+                '=================================
+                ' FORMATS
+                '=================================
                 .Columns(2).DefaultCellStyle.Format = "C"
                 .Columns(3).DefaultCellStyle.Format = "N2"
                 .Columns(4).DefaultCellStyle.Format = "N0"
 
-                .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+                '=================================
+                ' ALIGNMENTS
+                '=================================
+                .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
                 .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
 
-                .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+                .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
 
                 .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
                 .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
 
-                .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter
+                .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
 
                 .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
                 .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
@@ -345,7 +522,12 @@ Public Class frmItemLookUp
                 .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
                 .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
 
-                ' Hide columns
+                .DefaultCellStyle.WrapMode = DataGridViewTriState.False
+                .RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
+
+                '=================================
+                ' HIDE COLUMNS
+                '=================================
                 .Columns(3).Visible = False
                 .Columns(5).Visible = False
                 .Columns(6).Visible = False
@@ -360,11 +542,38 @@ Public Class frmItemLookUp
                 .Columns(15).Visible = False
                 .Columns(16).Visible = False
 
+                .ResumeLayout()
+
             End With
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ErrorCount = ErrorCount + 1
+            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf &
+                        "REASON : " & ex.Message,
+                        "MESSAGE : ERROR 0006",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Error)
+
+            ErrorCount += 1
+        End Try
+
+    End Sub
+
+    Private Sub gridItem_DataBindingComplete(ByVal sender As Object, ByVal e As DataGridViewBindingCompleteEventArgs) Handles gridItem.DataBindingComplete
+
+        Try
+            ApplyGridItemLayout()
+        Catch ex As Exception
+        End Try
+
+    End Sub
+
+    Private Sub frmItemLookUp_Shown(ByVal sender As Object, ByVal e As EventArgs) Handles Me.Shown
+
+        Try
+            If gridItem.Columns.Count > 0 Then
+                ApplyGridItemLayout()
+            End If
+        Catch ex As Exception
         End Try
 
     End Sub
@@ -466,6 +675,8 @@ Public Class frmItemLookUp
         Catch
         End Try
     End Sub
+
+
     Private Sub txtSearch_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtSearch.KeyUp
 
         Try
@@ -476,19 +687,18 @@ Public Class frmItemLookUp
                 lblStatItemCount.Text = gridItem.RowCount & " items"
                 txtSearch.Text = String.Empty
                 Me.ActiveControl = txtSearch
-
+                gridItem.Refresh()
             End If
 
 
             If e.KeyCode = Keys.F4 Then
                 If txtSearch.Text = String.Empty Then
                     Try
-                        Dim node() As TreeNode = TreeView1.Nodes.Find(lastFilterTxt, True)
-                        TreeView1.Nodes.Remove(node(0))
-                        FilterText()
+                        RemoveLastSearchNode()
 
                         If TreeView1.Nodes.Count = 0 Then
                             gridItem.DataSource = getItem()
+                            gridItem.Refresh()
                         Else
                             SearchItem()
                         End If
@@ -817,8 +1027,9 @@ Public Class frmItemLookUp
             End If
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0013", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        ErrorCount = ErrorCount + 1
+            ErrorCount = ErrorCount + 1
         End Try
+
     End Sub
 
     Public Sub convertToWorkOrder()
@@ -894,7 +1105,7 @@ Public Class frmItemLookUp
         txtSearch.Text = String.Empty
         'searching
         'Me.ActiveControl = txtSearch
-
+        gridItem.Refresh()
         Cursor.Current = Cursors.Default
     End Sub
 
@@ -1589,7 +1800,7 @@ Proceed:
 
             ' Update_Timer.Start()
             Cursor.Current = Cursors.Default
-
+            gridItem.Refresh()
         Catch ex As Exception
             MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 25", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -2990,7 +3201,7 @@ err_flag:
 
             iRow = 0
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
-
+            gridItem.Refresh()
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0046", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -3047,6 +3258,7 @@ err_flag:
                 txtSearch.Text = String.Empty
                 'searching
                 'Me.ActiveControl = txtSearch
+                gridItem.Refresh()
             End If
 
             If e.KeyCode = Keys.F4 Then
@@ -3058,6 +3270,7 @@ err_flag:
 
                         If TreeView1.Nodes.Count = 0 Then
                             gridItem.DataSource = getItem()
+                            gridItem.Refresh()
                         Else
                             SearchItem()
                         End If
@@ -4490,7 +4703,7 @@ inputCust:
             txtBarcode.Focus()
 
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
-
+            gridItem.Refresh()
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message,
                         "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -5471,7 +5684,7 @@ inputCust:
 
             ' --- Determine minimum price (customer's price level) with Php0.00 fallback ---
             Dim minPrice As Decimal ' Only need minimum - no upper limit
-            MessageBox.Show("Price Level: " & Me.txtPriceLevel.Text)
+            'MessageBox.Show("Price Level: " & Me.txtPriceLevel.Text)
 
             Select Case Me.txtPriceLevel.Text
                 Case "Price"
