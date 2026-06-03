@@ -116,19 +116,30 @@
 
 
     Private Sub insertItem()
+        Dim selectedPriceLevel As String = String.Empty
+        Dim selectedPrice As Double
+
+        If gridLevel.CurrentRow IsNot Nothing AndAlso gridLevel.CurrentRow.Cells(0).Value IsNot Nothing Then
+            selectedPriceLevel = gridLevel.CurrentRow.Cells(0).Value.ToString().Trim()
+        End If
+
+        If gridLevel.CurrentRow Is Nothing OrElse Not Double.TryParse(gridLevel.Item(1, gridLevel.CurrentRow.Index).Value.ToString(), selectedPrice) Then
+            Exit Sub
+        End If
 
         If bInsert = True Then
+            frmItemLookUp.txtPriceLevel.Text = selectedPriceLevel
             Me.DialogResult = Windows.Forms.DialogResult.OK
 
             frmItemLookUp.InsertSelectedItem(frmItemLookUp.gridItem.CurrentRow.Index)
             frmItemLookUp.lblStatItemSelected.Text = frmItemLookUp.gridSelectItem.RowCount & " item" & IIf(frmItemLookUp.gridSelectItem.RowCount > 1, "s", "") & " selected"
         Else
-            frmItemLookUp.gridSelectItem.Item(3, frmItemLookUp.gridSelectItem.CurrentRow.Index).Value = gridLevel.Item(1, gridLevel.CurrentRow.Index).Value
-            frmItemLookUp.gridSelectItem.Item(5, frmItemLookUp.gridSelectItem.CurrentRow.Index).Value = frmItemLookUp.gridSelectItem.Item(2, frmItemLookUp.gridSelectItem.CurrentRow.Index).Value * gridLevel.Item(1, gridLevel.CurrentRow.Index).Value
-
+            frmItemLookUp.ApplySelectedPriceLevel(selectedPriceLevel, selectedPrice)
         End If
 
-        frmItemLookUp.UpdateAmt()
+        If bInsert = True Then
+            frmItemLookUp.UpdateAmt()
+        End If
 
     End Sub
 

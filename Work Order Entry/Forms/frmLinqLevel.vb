@@ -65,10 +65,14 @@
     'End Sub
 
     Private Sub UpdateSelectedItemPrice(ByVal selectedPrice As Double)
-        ' Only update the price in gridSelectItem
-        frmItemLookUp.gridSelectItem.Item(3, frmItemLookUp.gridSelectItem.CurrentRow.Index).Value = selectedPrice
+        Dim selectedPriceLevel As String = String.Empty
+
+        If gridLevel.CurrentRow IsNot Nothing AndAlso gridLevel.CurrentRow.Cells(0).Value IsNot Nothing Then
+            selectedPriceLevel = gridLevel.CurrentRow.Cells(0).Value.ToString().Trim()
+        End If
+
+        frmItemLookUp.ApplySelectedPriceLevel(selectedPriceLevel, selectedPrice)
         Me.Dispose()
-        ' No change to quantity, so skip any related updates
     End Sub
 
 
@@ -95,10 +99,6 @@
             ' Get the selected price from gridLevel's current row
             Dim selectedPrice As Double = Convert.ToDouble(gridLevel.CurrentRow.Cells(1).Value)
 
-            ' Call a method in frmItemLookUp to update the price
-            frmItemLookUp.UpdatePriceFromPriceLevel(selectedPrice)
-
-            ' Update only the price in gridSelectItem without modifying the quantity
             UpdateSelectedItemPrice(selectedPrice)
         End If
     End Sub
