@@ -109,6 +109,7 @@
     <Compile Include="Class\clsAccountReceivble.vb" />
     <Compile Include="Class\clsCustomer.vb" />
     <Compile Include="Class\clsCustomerAcct.vb" />
+    <Compile Include="Class\clsWorkOrderDraft.vb" />
     <Compile Include="Class\clsImport.vb" />
     <Compile Include="Class\clsImportQuotation.vb" />
     <Compile Include="Class\clsItemLookUp.vb" />

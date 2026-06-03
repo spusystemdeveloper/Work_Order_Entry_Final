@@ -31,6 +31,7 @@ Public Class frmItemLookUp
 
 
     Private previousPrice As Decimal
+    Private gridItemLayoutApplied As Boolean = False
 
     'comment:
     Dim searchStr As String = ""
@@ -172,8 +173,7 @@ Public Class frmItemLookUp
 
         Try
             If String.IsNullOrWhiteSpace(sfilterTxt) Then
-                gridItem.DataSource = getItem()
-                GridColumnWidth()
+                BindGridItemSource(getItem())
                 txtSearch.Focus()
                 gridItem.Refresh()
                 iRow = 0
@@ -188,12 +188,7 @@ Public Class frmItemLookUp
             'Dim FilterStr = "SELECT ITEMLOOKUPCODE AS ITEMCODE,DESCRIPTION AS 'ITEM NAME',PRICE AS 'ITEM PRICE',COST,AVAILABLE,ParentQuantity,SKULEVEL FROM SOD_VIEWITEMS  WHERE Inactive = 0 AND FULLDESC Like '%" & FilterString & "%'"
 
             'itemData.Filter = FilterStr
-            gridItem.DataSource = load_data(FilterStr)
-
-            GridColumnWidth()
-            For Each r As DataGridViewRow In gridItem.Rows
-                r.Height = 60
-            Next
+            BindGridItemSource(load_data(FilterStr))
 
             If gridItem.RowCount = 0 Then
                 If suppressNoItemsMessage = False Then
@@ -202,14 +197,12 @@ Public Class frmItemLookUp
 
                 If RemoveLastSearchNode() Then
                     If TreeView1.Nodes.Count = 0 Then
-                        gridItem.DataSource = getItem()
-                        GridColumnWidth()
+                        BindGridItemSource(getItem())
                     Else
                         SearchItem(True)
                     End If
                 Else
-                    gridItem.DataSource = getItem()
-                    GridColumnWidth()
+                    BindGridItemSource(getItem())
                 End If
 
                 txtSearch.Focus()
@@ -428,8 +421,23 @@ Public Class frmItemLookUp
         End If
 
         GridColumnWidth()
-        gridItem.AutoResizeRows(DataGridViewAutoSizeRowsMode.AllCellsExceptHeaders)
         gridItem.Refresh()
+
+    End Sub
+
+    Private Sub BindGridItemSource(ByVal dataSource As Object)
+
+        gridItem.DataSource = dataSource
+
+        If gridItem.Columns.Count < 19 Then
+            gridItemLayoutApplied = False
+            Exit Sub
+        End If
+
+        If gridItemLayoutApplied = False OrElse gridItem.Columns(0).Width <= 10 Then
+            ApplyGridItemLayout()
+            gridItemLayoutApplied = True
+        End If
 
     End Sub
 
@@ -452,20 +460,22 @@ Public Class frmItemLookUp
                 .AllowUserToResizeRows = False
                 .RowTemplate.Height = 70
                 .ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-                .ColumnHeadersHeight = 32
+                .ColumnHeadersHeight = 28
+                .ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False
+                .ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
 
                 '=================================
                 ' COLUMN WIDTHS
                 '=================================
                 .Columns(0).Width = 120
                 .Columns(1).MinimumWidth = 320
-                .Columns(2).Width = 100
+                .Columns(2).Width = 108
                 .Columns(3).Width = 100
-                .Columns(4).Width = 90
+                .Columns(4).Width = 96
                 .Columns(5).Width = 90
                 .Columns(7).Width = 90
-                .Columns(17).Width = 80
-                .Columns(18).Width = 80
+                .Columns(17).Width = 64
+                .Columns(18).Width = 78
 
                 ' Fill remaining width with Item Name
                 .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
@@ -483,9 +493,9 @@ Public Class frmItemLookUp
                 .Columns(1).HeaderText = "ITEM NAME"
                 .Columns(2).HeaderText = "ITEM PRICE"
                 .Columns(3).HeaderText = "COST"
-                .Columns(4).HeaderText = "AVAILABLE QTY"
+                .Columns(4).HeaderText = "AVAIL QTY"
                 .Columns(5).HeaderText = "CHILD QTY"
-                .Columns(7).HeaderText = "SKU Level"
+                .Columns(7).HeaderText = "SKU LEVEL"
                 .Columns(17).HeaderText = "SOH"
                 .Columns(18).HeaderText = "QTY COM"
 
@@ -561,7 +571,10 @@ Public Class frmItemLookUp
     Private Sub gridItem_DataBindingComplete(ByVal sender As Object, ByVal e As DataGridViewBindingCompleteEventArgs) Handles gridItem.DataBindingComplete
 
         Try
-            ApplyGridItemLayout()
+            If gridItemLayoutApplied = False OrElse gridItem.Columns(0).Width <= 10 Then
+                ApplyGridItemLayout()
+                gridItemLayoutApplied = True
+            End If
         Catch ex As Exception
         End Try
 
@@ -572,6 +585,7 @@ Public Class frmItemLookUp
         Try
             If gridItem.Columns.Count > 0 Then
                 ApplyGridItemLayout()
+                gridItemLayoutApplied = True
             End If
         Catch ex As Exception
         End Try
@@ -1034,8 +1048,8 @@ Public Class frmItemLookUp
 
     Public Sub convertToWorkOrder()
 
-        gridSelectItem.Columns(17).Visible = True
-        gridSelectItem.Columns(18).Visible = True
+        gridSelectItem.Columns(17).Visible = False
+        gridSelectItem.Columns(18).Visible = False
         cboPayment.Enabled = True
         chkQuote.Checked = False
         chkWorkOrder.Checked = True
@@ -1624,6 +1638,32 @@ Proceed:
         End Try
 
     End Sub
+    Private Sub ResetSelectedItems()
+        If WoRecallType = 1 Then
+            For Each row As DataGridViewRow In gridSelectItem.Rows
+                If row.IsNewRow Then
+                    Continue For
+                End If
+
+                Dim orderEntryIdValue As Object = row.Cells(16).Value
+                Dim orderEntryId As Integer
+
+                If orderEntryIdValue IsNot Nothing AndAlso Integer.TryParse(orderEntryIdValue.ToString(), orderEntryId) Then
+                    If orderEntryId > 0 AndAlso Not delitems.Contains(orderEntryId) Then
+                        delitems.Add(orderEntryId)
+                    End If
+                End If
+            Next
+        End If
+
+        gridSelectItem.Rows.Clear()
+        lblStatItemSelected.Text = gridSelectItem.RowCount & " item" & IIf(gridSelectItem.RowCount > 1, "s", "") & " selected"
+        dTotalTSales = 0
+        dTotalVSales = 0
+        dTotalSales = 0
+        UpdateAmt()
+    End Sub
+
     Private Sub ClearItem()
 
         Try
@@ -1633,16 +1673,7 @@ Proceed:
             If gridSelectItem.RowCount > 0 Then
                 iReturnValue = MsgBox("Do you want to clear all selected items?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
                 If iReturnValue = MsgBoxResult.Yes Then
-                    gridSelectItem.Rows.Clear()
-
-                    lblStatItemSelected.Text = gridSelectItem.RowCount & " item" & IIf(gridSelectItem.RowCount > 1, "s", "") & " selected"
-                End If
-
-                If gridSelectItem.Rows.Count = 0 Then
-                    dTotalTSales = 0
-                    dTotalVSales = 0
-                    dTotalSales = 0
-                    'txtSearch.Focus()
+                    ResetSelectedItems()
                 End If
             End If
 
@@ -1787,9 +1818,7 @@ Proceed:
 
             clsItemLookUp.getItemtoGrid()
             'itemData.DataSource = load_data("Select * FROM SOD_ViewItems"
-            gridItem.DataSource = getItem()
-
-            GridColumnWidth()
+            BindGridItemSource(getItem())
             ' SearchItem()
             iRow = 0
             'searching
@@ -1842,6 +1871,8 @@ Proceed:
                 .Columns(19).DefaultCellStyle.Format = "C"
                 '.Columns(19).Width = 160
                 .Columns(19).FillWeight = 50
+                .Columns(17).Visible = False
+                .Columns(18).Visible = False
 
 
             End With
@@ -1922,7 +1953,6 @@ Proceed:
     Private Sub cmdSCustomer_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSCustomer.Click
         'comment
         'Try
-        ClearItem()
         ShowCustomer()
         GetCustomerPriceLevel()
         'Catch ex As Exception
@@ -2077,18 +2107,21 @@ Proceed:
     Private Sub ShowCustomer()
         'comment
         Try
+            Dim hasSelectedItems As Boolean = gridSelectItem.RowCount > 0
 
-            If gridSelectItem.RowCount > 0 Then
+            If hasSelectedItems Then
                 If IsNumeric(Split(lblOrderNo.Text, " ")(1)) Or Not txtCustomer.Text = Nothing Then
 
-                    If MsgBox("Do you want to change the Customer of this Order ? " & vbCrLf & vbCrLf & "The Price of Selected Item will be Reset . " & vbCrLf & vbCrLf & "Please Recheck the price after Changing the Customer", vbInformation + vbYesNo, "Message!") = vbYes Then
-                        frmCustomer.ShowDialog()
+                    Dim prompt As String = "Do you want to change the customer of this order?" & vbCrLf & vbCrLf &
+                                           "All selected items will be removed."
 
-                        For Each row As DataGridViewRow In gridSelectItem.Rows
-                            row.Cells(3).Value = "-"
-                        Next
+                    If MsgBox(prompt,
+                              vbInformation + vbYesNo, "Message!") = vbYes Then
+                        ResetSelectedItems()
+                        frmCustomer.ShowDialog()
                     End If
                 Else
+                    ResetSelectedItems()
                     frmCustomer.ShowDialog()
                 End If
 
@@ -2237,8 +2270,8 @@ Proceed:
             'txtSearch.Focus()
 
             chkWorkOrder.Checked = True
-            gridSelectItem.Columns(17).Visible = True
-            gridSelectItem.Columns(18).Visible = True
+            gridSelectItem.Columns(17).Visible = False
+            gridSelectItem.Columns(18).Visible = False
 
             chkWorkOrder.Enabled = True
             chkQuote.Enabled = True
@@ -3193,11 +3226,10 @@ err_flag:
 
             Dim importeditems = "(" & String.Join(",", clsImport.importedItemCode.ToArray) & ")"
             Dim FilterStr = "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND ItemLookupcode in " & importeditems
-            gridItem.DataSource = load_data(FilterStr)
+            BindGridItemSource(load_data(FilterStr))
 
             checkSearch()
             txtSearch.Focus()
-            GridColumnWidth()
 
             iRow = 0
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
@@ -4898,8 +4930,18 @@ inputCust:
             '------Para mu update pud ang SubTotal ug VAT ug Total mao ni ang function para muupdate sya ---------------------'
 
             UpdateAmt()
+            ValidatePriceRow(gridSelectItem.CurrentRow.Index, 3, If(WoRecallType = 1, 1, 0))
+            gridSelectItem.Refresh()
 
         End If
+    End Sub
+
+    Public Sub ApplySelectedPriceLevel(ByVal selectedPriceLevel As String, ByVal newPrice As Double)
+        If Not String.IsNullOrWhiteSpace(selectedPriceLevel) Then
+            txtPriceLevel.Text = selectedPriceLevel.Trim()
+        End If
+
+        UpdatePriceFromPriceLevel(newPrice)
     End Sub
 
 
@@ -5682,44 +5724,7 @@ inputCust:
 
             If item Is Nothing Then Continue For
 
-            ' --- Determine minimum price (customer's price level) with Php0.00 fallback ---
-            Dim minPrice As Decimal ' Only need minimum - no upper limit
-            'MessageBox.Show("Price Level: " & Me.txtPriceLevel.Text)
-
-            Select Case Me.txtPriceLevel.Text
-                Case "Price"
-                    minPrice = item.Price
-
-                Case "PriceA"
-                    If item.PriceA > 0 Then
-                        minPrice = item.PriceA
-                    Else
-                        minPrice = item.Price
-                    End If
-
-                Case "PriceB"
-                    If item.PriceB > 0 Then
-                        minPrice = item.PriceB
-                    ElseIf item.PriceA > 0 Then
-                        minPrice = item.PriceA
-                    Else
-                        minPrice = item.Price
-                    End If
-
-                Case "PriceC"
-                    If item.PriceC > 0 Then
-                        minPrice = item.PriceC
-                    ElseIf item.PriceB > 0 Then
-                        minPrice = item.PriceB
-                    ElseIf item.PriceA > 0 Then
-                        minPrice = item.PriceA
-                    Else
-                        minPrice = item.Price
-                    End If
-
-                Case Else
-                    minPrice = item.Price
-            End Select
+            Dim minPrice As Decimal = GetApprovedMinPrice(item)
 
             Dim requiresOverride As Boolean = False
 
@@ -5782,6 +5787,49 @@ inputCust:
 
         SaveOrder()
         Return True
+    End Function
+
+    Private Function ResolvePriceLevelIndex() As Integer
+        Select Case txtPriceLevel.Text.Trim().ToUpperInvariant()
+            Case "PRICE", "PRICE (RETAIL)"
+                Return 0
+            Case "PRICEA", "PRICE A", "PRICE A (WHOLESALE)"
+                Return 1
+            Case "PRICEB", "PRICE B", "PRICE B (D1)"
+                Return 2
+            Case "PRICEC", "PRICE C", "PRICE C (D2)"
+                Return 3
+            Case "COST"
+                Return 4
+            Case Else
+                Return 0
+        End Select
+
+    End Function
+
+    Private Function GetApprovedMinPrice(ByVal item As Item) As Decimal
+
+        Dim level As Integer = ResolvePriceLevelIndex()
+
+        Select Case level
+            Case 1
+                If item.PriceA > 0 Then Return item.PriceA
+                Return item.Price
+            Case 2
+                If item.PriceB > 0 Then Return item.PriceB
+                If item.PriceA > 0 Then Return item.PriceA
+                Return item.Price
+            Case 3
+                If item.PriceC > 0 Then Return item.PriceC
+                If item.PriceB > 0 Then Return item.PriceB
+                If item.PriceA > 0 Then Return item.PriceA
+                Return item.Price
+            Case 4
+                Return item.Cost
+            Case Else
+                Return item.Price
+        End Select
+
     End Function
 
     'Public Sub ValidatePriceRow(rowIndex As Integer, columnIndex As Integer, type As Integer)
@@ -6077,49 +6125,7 @@ inputCust:
 
             If item Is Nothing Then Exit Sub
 
-            ' --- Step 3: Determine minimum price (customer's price level) with $0.00 fallback ---
-            Dim minPrice As Decimal ' Only need minimum - no upper limit
-
-            Select Case txtPriceLevel.Text
-                Case "Price"
-                    minPrice = item.Price
-
-                Case "PriceA"
-                    If item.PriceA > 0 Then
-                        minPrice = item.PriceA
-                    Else
-                        ' PriceA not set, fall back to base Price
-                        minPrice = item.Price
-                    End If
-
-                Case "PriceB"
-                    If item.PriceB > 0 Then
-                        minPrice = item.PriceB
-                    ElseIf item.PriceA > 0 Then
-                        ' PriceB not set, fall back to PriceA
-                        minPrice = item.PriceA
-                    Else
-                        ' Neither PriceB nor PriceA set, fall back to base Price
-                        minPrice = item.Price
-                    End If
-
-                Case "PriceC"
-                    If item.PriceC > 0 Then
-                        minPrice = item.PriceC
-                    ElseIf item.PriceB > 0 Then
-                        ' PriceC not set, fall back to PriceB
-                        minPrice = item.PriceB
-                    ElseIf item.PriceA > 0 Then
-                        ' PriceC and PriceB not set, fall back to PriceA
-                        minPrice = item.PriceA
-                    Else
-                        ' No discount tiers set, fall back to base Price
-                        minPrice = item.Price
-                    End If
-
-                Case Else
-                    minPrice = item.Price
-            End Select
+            Dim minPrice As Decimal = GetApprovedMinPrice(item)
 
             Dim highlight As Boolean = False
 
@@ -6316,28 +6322,15 @@ inputCust:
 
 
     Public Function IsPriceBelowAllowed(itemCode As Integer, currentPrice As Decimal) As Boolean
-        Dim allowedPrice As Decimal? = Nothing
-
         Dim item = (From a In db.Items
                     Where a.ID.Equals(itemCode)
                     Select a).FirstOrDefault()
-        Dim lowerPrice As Decimal = item.Price
-        Dim upperPrice As Decimal = item.PriceC
 
-        If item IsNot Nothing Then
-            Select Case Me.txtPriceLevel.Text
-                Case "Price" : allowedPrice = item.Price
-                Case "PriceA" : allowedPrice = item.PriceA
-                Case "PriceB" : allowedPrice = item.PriceB
-                Case "PriceC" : allowedPrice = item.PriceC
-            End Select
+        If item Is Nothing Then
+            Return False
         End If
 
-        If allowedPrice.HasValue AndAlso currentPrice < allowedPrice.Value Then
-            Return True
-        End If
-
-        Return False
+        Return currentPrice < GetApprovedMinPrice(item)
 
     End Function
 

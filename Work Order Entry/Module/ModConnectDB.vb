@@ -11,6 +11,18 @@ Module ModConnectDB
     Public dbnew As New ItemLookUpDataContext(DB_Conn("constr"))
     Public dbInitial As New ItemLookUpDataContext(DB_ConnInitial("constr"))
 
+    Public Function GetDB() As ItemLookUpDataContext
+        Return New ItemLookUpDataContext(DB_Conn("constr"))
+    End Function
+
+    Public Function GetDBNew() As ItemLookUpDataContext
+        Return New ItemLookUpDataContext(DB_Conn("constr"))
+    End Function
+
+    Public Function GetDBInitial() As ItemLookUpDataContext
+        Return New ItemLookUpDataContext(DB_ConnInitial("constr"))
+    End Function
+
     Public sConnectDB As String
     Public sAcctNum As String
     Public sTitle As String

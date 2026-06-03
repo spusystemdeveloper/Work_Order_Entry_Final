@@ -37,7 +37,7 @@ Public Class clsWorkOrderDraft
 
     Public Shared Sub EnsureTables()
         Try
-            Using db As New ItemLookUpDataContext(DB_Conn("constr"))
+            Using db = GetDB()
                 db.SOD_WO_DraftHeaders.Take(1).ToList()
                 db.SOD_WO_DraftDetails.Take(1).ToList()
             End Using
@@ -54,7 +54,7 @@ Public Class clsWorkOrderDraft
         Dim userKey As String = ResolveUserName(userName)
         If userKey = String.Empty Then Return False
 
-        Using db As New ItemLookUpDataContext(DB_Conn("constr"))
+        Using db = GetDB()
             Return (From h In db.SOD_WO_DraftHeaders
                     Where registerKeys.Contains(h.RegisterID) AndAlso h.UserName = userKey
                     Select h.DraftID).Any()
@@ -69,7 +69,7 @@ Public Class clsWorkOrderDraft
         Dim userKey As String = ResolveUserName(userName)
         If userKey = String.Empty Then Return "Unsaved work order"
 
-        Using db As New ItemLookUpDataContext(DB_Conn("constr"))
+        Using db = GetDB()
             Dim summary = (From h In db.SOD_WO_DraftHeaders
                            Where registerKeys.Contains(h.RegisterID) AndAlso h.UserName = userKey
                            Order By h.UpdatedAt Descending
@@ -97,7 +97,7 @@ Public Class clsWorkOrderDraft
         Dim userKey As String = ResolveUserName(userName)
         If userKey = String.Empty Then Exit Sub
 
-        Using db As New ItemLookUpDataContext(DB_Conn("constr"))
+        Using db = GetDB()
             Dim drafts = (From h In db.SOD_WO_DraftHeaders
                           Where registerKeys.Contains(h.RegisterID) AndAlso h.UserName = userKey
                           Select h).ToList()
@@ -130,7 +130,7 @@ Public Class clsWorkOrderDraft
             Exit Sub
         End If
 
-        Using db As New ItemLookUpDataContext(DB_Conn("constr"))
+        Using db = GetDB()
             Dim registerKeys As List(Of String) = ResolveRegisterIDs(registerKey)
             Dim header = (From h In db.SOD_WO_DraftHeaders
                           Where h.RegisterID = registerKey AndAlso h.UserName = userKey
@@ -224,9 +224,9 @@ Public Class clsWorkOrderDraft
         Dim userKey As String = ResolveUserName()
         If userKey = String.Empty Then Exit Sub
 
-        form.BeginDraftRestore()
+        'form.BeginDraftRestore()
         Try
-            Using db As New ItemLookUpDataContext(DB_Conn("constr"))
+            Using db = GetDB()
                 Dim registerKeys As List(Of String) = ResolveRegisterIDs(registerKey)
                 Dim header = (From h In db.SOD_WO_DraftHeaders
                               Where registerKeys.Contains(h.RegisterID) AndAlso h.UserName = userKey
@@ -293,13 +293,13 @@ Public Class clsWorkOrderDraft
                     row.Cells(form.LASTPURCHASEDPRICE.Index).Value = SafeDecimal(detail.LastPurchasedPrice)
                 Next
 
-                form.ApplyDraftReleaseType(SafeText(header.ReleaseType))
-                form.RestoreDraftHiddenFields()
+                'form.ApplyDraftReleaseType(SafeText(header.ReleaseType))
+                'form.RestoreDraftHiddenFields()
 
                 form.UpdateAmt()
             End Using
         Finally
-            form.EndDraftRestore()
+            'form.EndDraftRestore()
         End Try
     End Sub
 

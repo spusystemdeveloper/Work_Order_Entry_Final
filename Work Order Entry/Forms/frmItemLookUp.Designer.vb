@@ -419,7 +419,6 @@ Partial Class frmItemLookUp
         Me.txtAvailable.Name = "txtAvailable"
         Me.txtAvailable.Size = New System.Drawing.Size(108, 21)
         Me.txtAvailable.TabIndex = 34
-        Me.txtAvailable.Visible = False
         '
         'txtCreditLimit
         '
@@ -427,7 +426,6 @@ Partial Class frmItemLookUp
         Me.txtCreditLimit.Name = "txtCreditLimit"
         Me.txtCreditLimit.Size = New System.Drawing.Size(108, 21)
         Me.txtCreditLimit.TabIndex = 33
-        Me.txtCreditLimit.Visible = False
         '
         'txtOpenWO
         '
@@ -435,7 +433,6 @@ Partial Class frmItemLookUp
         Me.txtOpenWO.Name = "txtOpenWO"
         Me.txtOpenWO.Size = New System.Drawing.Size(108, 21)
         Me.txtOpenWO.TabIndex = 32
-        Me.txtOpenWO.Visible = False
         '
         'txtAR
         '
@@ -443,7 +440,6 @@ Partial Class frmItemLookUp
         Me.txtAR.Name = "txtAR"
         Me.txtAR.Size = New System.Drawing.Size(108, 21)
         Me.txtAR.TabIndex = 31
-        Me.txtAR.Visible = False
         '
         'txtCustomerId
         '
@@ -451,7 +447,6 @@ Partial Class frmItemLookUp
         Me.txtCustomerId.Name = "txtCustomerId"
         Me.txtCustomerId.Size = New System.Drawing.Size(108, 21)
         Me.txtCustomerId.TabIndex = 30
-        Me.txtCustomerId.Visible = False
         '
         'txtPrice
         '
@@ -459,7 +454,6 @@ Partial Class frmItemLookUp
         Me.txtPrice.Name = "txtPrice"
         Me.txtPrice.Size = New System.Drawing.Size(107, 21)
         Me.txtPrice.TabIndex = 29
-        Me.txtPrice.Visible = False
         '
         'txtPriceLevel
         '
@@ -468,7 +462,6 @@ Partial Class frmItemLookUp
         Me.txtPriceLevel.Name = "txtPriceLevel"
         Me.txtPriceLevel.Size = New System.Drawing.Size(107, 21)
         Me.txtPriceLevel.TabIndex = 28
-        Me.txtPriceLevel.Visible = False
         '
         'Button1
         '
