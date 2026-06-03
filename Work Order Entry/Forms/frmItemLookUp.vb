@@ -48,6 +48,7 @@ Public Class frmItemLookUp
     Dim fromImport As Boolean
 
     Dim updateSuccess As Boolean = True
+    Private isRestoringDraft As Boolean = False
 
     Public Shared ItemOrderedList As List(Of clsPickList) = New List(Of clsPickList)()
 
@@ -1149,6 +1150,39 @@ Public Class frmItemLookUp
 
     End Function
 
+    Private Sub RecoverDraftIfAvailable()
+        If clsWorkOrderDraft.HasDraft(usrRegister, usrUsername) Then
+            Dim msg As String = "Recover unsaved draft?" & vbCrLf & clsWorkOrderDraft.GetDraftSummary(usrRegister, usrUsername)
+            If MessageBox.Show(msg, "Draft Found", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
+                clsWorkOrderDraft.LoadDraft(Me)
+            Else
+                clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
+            End If
+        End If
+    End Sub
+
+    Public Sub BeginDraftRestore()
+        isRestoringDraft = True
+    End Sub
+
+    Public Sub EndDraftRestore()
+        isRestoringDraft = False
+    End Sub
+
+    Public Sub ApplyDraftReleaseType(ByVal releaseType As String)
+        If releaseType = "Delivery" Then
+            rbtnDelivery.Checked = True
+        Else
+            rbtnPickup.Checked = True
+        End If
+    End Sub
+
+    Public Sub RestoreDraftHiddenFields()
+        If iCusID > 0 Then
+            GetCustomerPriceLevel()
+        End If
+    End Sub
+
     Private Sub InsertEntry()
 
         Try
@@ -1300,6 +1334,7 @@ Proceed:
                 End If
 
                 RefreshDetails(True)
+                clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
 
                 Cursor.Current = Cursors.Default
             End If
@@ -1525,6 +1560,7 @@ Proceed:
                 End If
 
                 RefreshDetails(True)
+                clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
 
             End If
 
@@ -1625,6 +1661,7 @@ Proceed:
 
                 clsRecall.CancelOrder(Split(lblOrderNo.Text, ": ")(1))
                 RefreshDetails(True)
+                clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
 
                 MsgBox("Order was cancelled successfully!", vbInformation, "Message")
 
@@ -1798,6 +1835,7 @@ Proceed:
             FormatGrid()
 
             RefreshDetails(False)
+            RecoverDraftIfAvailable()
 
         Catch ex As Exception
             MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : ERROR 0024", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -4191,6 +4229,16 @@ err_flag:
 
     Private Sub frmItemLookUp_FormClosed(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles MyBase.FormClosed
         Application.Exit()
+    End Sub
+
+    Private Sub frmItemLookUp_FormClosing(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles MyBase.FormClosing
+        If isRestoringDraft Then Exit Sub
+
+        Try
+            clsWorkOrderDraft.SaveDraft(Me)
+        Catch ex As Exception
+            MessageBox.Show("Draft was not saved." & vbCrLf & vbCrLf & "REASON : " & ex.Message, "Draft Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End Try
     End Sub
 
     Private Sub MyInputBox(ByVal Prompt As String, ByVal text As String, ByVal btntext As String)
