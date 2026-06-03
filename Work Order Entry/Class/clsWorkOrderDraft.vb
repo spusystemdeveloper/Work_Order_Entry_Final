@@ -302,6 +302,7 @@ Public Class clsWorkOrderDraft
                 'form.ApplyDraftReleaseType(SafeText(header.ReleaseType))
                 'form.RestoreDraftHiddenFields()
 
+                form.ApplyCustomerTaxStatusToRows()
                 form.UpdateAmt()
             End Using
         Finally

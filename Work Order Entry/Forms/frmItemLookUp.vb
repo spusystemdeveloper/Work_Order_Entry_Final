@@ -854,7 +854,7 @@ Public Class frmItemLookUp
                     newTimeRecord.Cells(VSales.Index).Value = dVSales
                     newTimeRecord.Cells(DiscP.Index).Value = dDisc
                     newTimeRecord.Cells(Cost.Index).Value = gridItem.Item(3, i).Value
-                    newTimeRecord.Cells(Taxable.Index).Value = gridItem.Item(6, i).Value
+                    newTimeRecord.Cells(Taxable.Index).Value = If(bTaxExcempt, 0, gridItem.Item(6, i).Value)
                     newTimeRecord.Cells(ItemID.Index).Value = gridItem.Item(9, i).Value
                     newTimeRecord.Cells(FullPrice.Index).Value = gridItem.Item(8, i).Value
                     newTimeRecord.Cells(Description.Index).Value = gridItem.Item(10, i).Value
@@ -3735,6 +3735,7 @@ err_flag:
 
             lblOrderNo.Text = IIf(iOrderType = 3, "Sales Quotation #: ", "Work Order #: ") & orderid
             lblStatItemSelected.Text = gridSelectItem.Rows.Count & " items selected"
+            ApplyCustomerTaxStatusToRows()
             UpdateAmt()
             GetCustomerPriceLevel()
         Catch ex As Exception
@@ -6417,6 +6418,29 @@ inputCust:
         If item Is Nothing Then Exit Sub
 
         txtPrice.Text = GetApprovedMinPrice(item).ToString("N2")
+    End Sub
+
+    Public Sub ApplyCustomerTaxStatusToRows()
+        If gridSelectItem.Rows.Count = 0 Then Exit Sub
+
+        Using dbx = GetDB()
+            For Each row As DataGridViewRow In gridSelectItem.Rows
+                If row.IsNewRow Then Continue For
+
+                If bTaxExcempt Then
+                    row.Cells(Taxable.Index).Value = 0
+                Else
+                    Dim lookupCode As String = If(row.Cells(ItemCode.Index).Value, "").ToString()
+                    If lookupCode = String.Empty Then Continue For
+
+                    Dim itemTaxable = (From item In dbx.Items
+                                       Where item.ItemLookupCode = lookupCode
+                                       Select item.Taxable).FirstOrDefault()
+
+                    row.Cells(Taxable.Index).Value = itemTaxable
+                End If
+            Next
+        End Using
     End Sub
 
     Public Function ifItemExistInOrder(itemID As Integer, orderID As Integer) As Boolean
