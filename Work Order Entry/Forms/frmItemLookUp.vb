@@ -3621,12 +3621,14 @@ err_flag:
             For Each x In clsRecall.RecallOrder(orderid)
                 sAcctNum = x.AccountNumber
                 iPrice = x.PriceLevel
+                txtPriceLevel.Text = PriceLevelTextFromIndex(iPrice)
                 bEmployee = x.Employee
                 sTitle = x.Title
                 bTaxExcempt = x.TaxExempt
                 iCusID = x.CustID
                 txtCustomer.Text = x.Company
                 txtType.Text = x.CustomText5
+                GetCustomerPriceLevel()
 
                 iSalesID = x.SalesRepID
                 txtSales.Text = x.SaleRepName
@@ -3721,6 +3723,7 @@ err_flag:
 
                 End With
 
+                SetApprovedPriceText(n.ItemLookUpcode)
                 dPrice = n.Price
                 sOldDes = txtSearch.Text
                 gridSelectItem.Rows.Add(newTimeRecord)
@@ -4992,6 +4995,7 @@ inputCust:
     End Sub
 
     Public Sub ApplySelectedPriceLevel(ByVal selectedPriceLevel As String, ByVal newPrice As Double)
+        txtPrice.Text = newPrice.ToString("N2")
         UpdatePriceFromPriceLevel(newPrice)
     End Sub
 
@@ -5776,6 +5780,7 @@ inputCust:
             If item Is Nothing Then Continue For
 
             Dim minPrice As Decimal = GetApprovedMinPrice(item)
+            txtPrice.Text = minPrice.ToString("N2")
 
             Dim requiresOverride As Boolean = False
 
@@ -5853,9 +5858,25 @@ inputCust:
             Case "COST"
                 Return 4
             Case Else
+                If iPrice >= 0 AndAlso iPrice <= 4 Then Return iPrice
                 Return 0
         End Select
 
+    End Function
+
+    Private Function PriceLevelTextFromIndex(ByVal priceLevel As Integer) As String
+        Select Case priceLevel
+            Case 1
+                Return "PriceA"
+            Case 2
+                Return "PriceB"
+            Case 3
+                Return "PriceC"
+            Case 4
+                Return "Cost"
+            Case Else
+                Return "Price"
+        End Select
     End Function
 
     Private Function GetApprovedMinPrice(ByVal item As Item) As Decimal
@@ -6177,6 +6198,7 @@ inputCust:
             If item Is Nothing Then Exit Sub
 
             Dim minPrice As Decimal = GetApprovedMinPrice(item)
+            txtPrice.Text = minPrice.ToString("N2")
 
             Dim highlight As Boolean = False
 
@@ -6384,6 +6406,18 @@ inputCust:
         Return currentPrice < GetApprovedMinPrice(item)
 
     End Function
+
+    Private Sub SetApprovedPriceText(ByVal itemCode As String)
+        If String.IsNullOrWhiteSpace(itemCode) Then Exit Sub
+
+        Dim item = (From a In db.Items
+                    Where a.ItemLookupCode = itemCode
+                    Select a).FirstOrDefault()
+
+        If item Is Nothing Then Exit Sub
+
+        txtPrice.Text = GetApprovedMinPrice(item).ToString("N2")
+    End Sub
 
     Public Function ifItemExistInOrder(itemID As Integer, orderID As Integer) As Boolean
         Try

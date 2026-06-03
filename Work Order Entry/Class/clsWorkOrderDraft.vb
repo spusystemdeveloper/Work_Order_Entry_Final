@@ -49,14 +49,14 @@ Public Class clsWorkOrderDraft
     Public Shared Function HasDraft(ByVal registerID As String, ByVal userName As String) As Boolean
         EnsureTables()
 
-        Dim registerKeys As List(Of String) = ResolveRegisterIDs(registerID)
-        If registerKeys.Count = 0 Then Return False
+        Dim registerKey As String = ResolveRegisterID(registerID)
+        If registerKey = String.Empty Then Return False
         Dim userKey As String = ResolveUserName(userName)
         If userKey = String.Empty Then Return False
 
         Using db = GetDB()
             Return (From h In db.SOD_WO_DraftHeaders
-                    Where registerKeys.Contains(h.RegisterID) AndAlso h.UserName = userKey
+                    Where h.RegisterID = registerKey AndAlso h.UserName = userKey
                     Select h.DraftID).Any()
         End Using
     End Function
@@ -64,14 +64,14 @@ Public Class clsWorkOrderDraft
     Public Shared Function GetDraftSummary(ByVal registerID As String, ByVal userName As String) As String
         EnsureTables()
 
-        Dim registerKeys As List(Of String) = ResolveRegisterIDs(registerID)
-        If registerKeys.Count = 0 Then Return "Unsaved work order"
+        Dim registerKey As String = ResolveRegisterID(registerID)
+        If registerKey = String.Empty Then Return "Unsaved work order"
         Dim userKey As String = ResolveUserName(userName)
         If userKey = String.Empty Then Return "Unsaved work order"
 
         Using db = GetDB()
             Dim summary = (From h In db.SOD_WO_DraftHeaders
-                           Where registerKeys.Contains(h.RegisterID) AndAlso h.UserName = userKey
+                           Where h.RegisterID = registerKey AndAlso h.UserName = userKey
                            Order By h.UpdatedAt Descending
                            Select New With {
                                .UpdatedAt = h.UpdatedAt,
@@ -92,14 +92,14 @@ Public Class clsWorkOrderDraft
     Public Shared Sub DeleteDraft(ByVal registerID As String, ByVal userName As String)
         EnsureTables()
 
-        Dim registerKeys As List(Of String) = ResolveRegisterIDs(registerID)
-        If registerKeys.Count = 0 Then Exit Sub
+        Dim registerKey As String = ResolveRegisterID(registerID)
+        If registerKey = String.Empty Then Exit Sub
         Dim userKey As String = ResolveUserName(userName)
         If userKey = String.Empty Then Exit Sub
 
         Using db = GetDB()
             Dim drafts = (From h In db.SOD_WO_DraftHeaders
-                          Where registerKeys.Contains(h.RegisterID) AndAlso h.UserName = userKey
+                          Where h.RegisterID = registerKey AndAlso h.UserName = userKey
                           Select h).ToList()
 
             If drafts.Count = 0 Then Exit Sub
@@ -131,17 +131,9 @@ Public Class clsWorkOrderDraft
         End If
 
         Using db = GetDB()
-            Dim registerKeys As List(Of String) = ResolveRegisterIDs(registerKey)
             Dim header = (From h In db.SOD_WO_DraftHeaders
                           Where h.RegisterID = registerKey AndAlso h.UserName = userKey
                           Select h).FirstOrDefault()
-
-            If header Is Nothing Then
-                header = (From h In db.SOD_WO_DraftHeaders
-                          Where registerKeys.Contains(h.RegisterID) AndAlso h.UserName = userKey
-                          Order By h.UpdatedAt Descending
-                          Select h).FirstOrDefault()
-            End If
 
             If header Is Nothing Then
                 header = New SOD_WO_DraftHeader With {
@@ -154,6 +146,15 @@ Public Class clsWorkOrderDraft
                 header.RegisterID = registerKey
             End If
 
+            If iCusID > 0 AndAlso SafeText(form.txtPriceLevel.Text) = String.Empty Then
+                form.RestoreDraftHiddenFields()
+            End If
+
+            Dim draftPriceLevel As String = SafeText(form.txtPriceLevel.Text)
+            If draftPriceLevel = String.Empty Then
+                draftPriceLevel = ResolveCustomerPriceLevelText(iCusID)
+            End If
+
             header.EntryType = form.getEntryType()
             header.CustomerID = iCusID
             header.CustomerName = SafeText(form.txtCustomer.Text)
@@ -163,7 +164,7 @@ Public Class clsWorkOrderDraft
             header.SalesRepName = SafeText(form.txtSales.Text)
             header.Remarks = SafeText(form.txtRemarks.Text)
             header.ReleaseType = SafeText(form.getReleaseType())
-            header.PriceLevel = SafeText(form.txtPriceLevel.Text)
+            header.PriceLevel = draftPriceLevel
             header.TaxExempt = bTaxExcempt
             header.ZeroRated = False
             header.UpdatedAt = DateTime.Now
@@ -227,9 +228,8 @@ Public Class clsWorkOrderDraft
         'form.BeginDraftRestore()
         Try
             Using db = GetDB()
-                Dim registerKeys As List(Of String) = ResolveRegisterIDs(registerKey)
                 Dim header = (From h In db.SOD_WO_DraftHeaders
-                              Where registerKeys.Contains(h.RegisterID) AndAlso h.UserName = userKey
+                              Where h.RegisterID = registerKey AndAlso h.UserName = userKey
                               Order By h.UpdatedAt Descending
                               Select h).FirstOrDefault()
 
@@ -244,7 +244,13 @@ Public Class clsWorkOrderDraft
                 form.txtSales.Text = SafeText(header.SalesRepName)
                 form.txtRemarks.Text = SafeText(header.Remarks)
                 form.txtPriceLevel.Text = SafeText(header.PriceLevel)
+                If SafeText(form.txtPriceLevel.Text) = String.Empty Then
+                    form.txtPriceLevel.Text = ResolveCustomerPriceLevelText(iCusID)
+                End If
                 bTaxExcempt = header.TaxExempt
+                If SafeText(form.txtPriceLevel.Text) = String.Empty Then
+                    form.RestoreDraftHiddenFields()
+                End If
 
                 If SafeText(header.ReleaseType) = "Delivery" Then
                     form.rbtnDelivery.Checked = True
@@ -359,6 +365,31 @@ Public Class clsWorkOrderDraft
     Private Shared Function SafeBool(ByVal value As Object) As Boolean
         If value Is Nothing OrElse value Is DBNull.Value Then Return False
         Return Convert.ToBoolean(value)
+    End Function
+
+    Private Shared Function ResolveCustomerPriceLevelText(ByVal customerID As Integer) As String
+        If customerID <= 0 Then Return String.Empty
+
+        Try
+            Dim priceLevelRaw As String = clsCustomer.getPriceLevel(customerID)
+            Dim priceLevel As Integer
+
+            If Integer.TryParse(priceLevelRaw, priceLevel) Then
+                Select Case priceLevel
+                    Case 0
+                        Return "Price"
+                    Case 1
+                        Return "PriceA"
+                    Case 2
+                        Return "PriceB"
+                    Case 3
+                        Return "PriceC"
+                End Select
+            End If
+        Catch
+        End Try
+
+        Return String.Empty
     End Function
 
 End Class

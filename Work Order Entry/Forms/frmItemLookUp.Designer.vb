@@ -24,12 +24,12 @@ Partial Class frmItemLookUp
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmItemLookUp))
-        Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle6 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle7 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle8 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.ofdImport = New System.Windows.Forms.OpenFileDialog()
         Me.txtRemarks = New System.Windows.Forms.TextBox()
         Me.lblRemarks = New System.Windows.Forms.Label()
@@ -419,7 +419,6 @@ Partial Class frmItemLookUp
         Me.txtAvailable.Name = "txtAvailable"
         Me.txtAvailable.Size = New System.Drawing.Size(108, 21)
         Me.txtAvailable.TabIndex = 34
-        Me.txtAvailable.Visible = False
         '
         'txtCreditLimit
         '
@@ -427,7 +426,6 @@ Partial Class frmItemLookUp
         Me.txtCreditLimit.Name = "txtCreditLimit"
         Me.txtCreditLimit.Size = New System.Drawing.Size(108, 21)
         Me.txtCreditLimit.TabIndex = 33
-        Me.txtCreditLimit.Visible = False
         '
         'txtOpenWO
         '
@@ -435,7 +433,6 @@ Partial Class frmItemLookUp
         Me.txtOpenWO.Name = "txtOpenWO"
         Me.txtOpenWO.Size = New System.Drawing.Size(108, 21)
         Me.txtOpenWO.TabIndex = 32
-        Me.txtOpenWO.Visible = False
         '
         'txtAR
         '
@@ -443,7 +440,6 @@ Partial Class frmItemLookUp
         Me.txtAR.Name = "txtAR"
         Me.txtAR.Size = New System.Drawing.Size(108, 21)
         Me.txtAR.TabIndex = 31
-        Me.txtAR.Visible = False
         '
         'txtCustomerId
         '
@@ -451,7 +447,6 @@ Partial Class frmItemLookUp
         Me.txtCustomerId.Name = "txtCustomerId"
         Me.txtCustomerId.Size = New System.Drawing.Size(108, 21)
         Me.txtCustomerId.TabIndex = 30
-        Me.txtCustomerId.Visible = False
         '
         'txtPrice
         '
@@ -459,7 +454,6 @@ Partial Class frmItemLookUp
         Me.txtPrice.Name = "txtPrice"
         Me.txtPrice.Size = New System.Drawing.Size(107, 21)
         Me.txtPrice.TabIndex = 29
-        Me.txtPrice.Visible = False
         '
         'txtPriceLevel
         '
@@ -468,7 +462,6 @@ Partial Class frmItemLookUp
         Me.txtPriceLevel.Name = "txtPriceLevel"
         Me.txtPriceLevel.Size = New System.Drawing.Size(107, 21)
         Me.txtPriceLevel.TabIndex = 28
-        Me.txtPriceLevel.Visible = False
         '
         'Button1
         '
@@ -840,8 +833,8 @@ Partial Class frmItemLookUp
         Me.gridItem.AllowUserToAddRows = False
         Me.gridItem.AllowUserToDeleteRows = False
         Me.gridItem.AllowUserToOrderColumns = True
-        DataGridViewCellStyle1.BackColor = System.Drawing.Color.Lavender
-        Me.gridItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
+        DataGridViewCellStyle7.BackColor = System.Drawing.Color.Lavender
+        Me.gridItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle7
         Me.gridItem.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight
         Me.gridItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.gridItem.Dock = System.Windows.Forms.DockStyle.Fill
@@ -1143,19 +1136,19 @@ Partial Class frmItemLookUp
         Me.gridSelectItem.AllowUserToAddRows = False
         Me.gridSelectItem.AllowUserToDeleteRows = False
         Me.gridSelectItem.AllowUserToOrderColumns = True
-        DataGridViewCellStyle2.BackColor = System.Drawing.Color.Lavender
-        Me.gridSelectItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle2
+        DataGridViewCellStyle8.BackColor = System.Drawing.Color.Lavender
+        Me.gridSelectItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle8
         Me.gridSelectItem.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight
         Me.gridSelectItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.gridSelectItem.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.ItemCode, Me.ItemName, Me.QTY, Me.Price, Me.DISC, Me.TOTAL, Me.LessV, Me.VSales, Me.DiscP, Me.Cost, Me.Taxable, Me.ItemID, Me.FullPrice, Me.Description, Me.Extended, Me.DiscAmount, Me.OrderEntryID, Me.chkPickLoc, Me.CustPrep, Me.LASTPURCHASEDPRICE})
-        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle6.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle6.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle6.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle6.SelectionBackColor = System.Drawing.Color.LightBlue
-        DataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.gridSelectItem.DefaultCellStyle = DataGridViewCellStyle6
+        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle12.BackColor = System.Drawing.SystemColors.Window
+        DataGridViewCellStyle12.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle12.ForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.LightBlue
+        DataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.ControlText
+        DataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.gridSelectItem.DefaultCellStyle = DataGridViewCellStyle12
         Me.gridSelectItem.Dock = System.Windows.Forms.DockStyle.Fill
         Me.gridSelectItem.Location = New System.Drawing.Point(10, 29)
         Me.gridSelectItem.Name = "gridSelectItem"
@@ -1184,8 +1177,8 @@ Partial Class frmItemLookUp
         'QTY
         '
         Me.QTY.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight
-        Me.QTY.DefaultCellStyle = DataGridViewCellStyle3
+        DataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight
+        Me.QTY.DefaultCellStyle = DataGridViewCellStyle9
         Me.QTY.HeaderText = "QUANTITY"
         Me.QTY.MinimumWidth = 6
         Me.QTY.Name = "QTY"
@@ -1194,10 +1187,10 @@ Partial Class frmItemLookUp
         'Price
         '
         Me.Price.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight
-        DataGridViewCellStyle4.Format = "N2"
-        DataGridViewCellStyle4.NullValue = Nothing
-        Me.Price.DefaultCellStyle = DataGridViewCellStyle4
+        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight
+        DataGridViewCellStyle10.Format = "N2"
+        DataGridViewCellStyle10.NullValue = Nothing
+        Me.Price.DefaultCellStyle = DataGridViewCellStyle10
         Me.Price.HeaderText = "PRICE"
         Me.Price.MinimumWidth = 6
         Me.Price.Name = "Price"
@@ -1214,9 +1207,9 @@ Partial Class frmItemLookUp
         'TOTAL
         '
         Me.TOTAL.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        DataGridViewCellStyle5.Format = "##0.00"
-        DataGridViewCellStyle5.NullValue = Nothing
-        Me.TOTAL.DefaultCellStyle = DataGridViewCellStyle5
+        DataGridViewCellStyle11.Format = "##0.00"
+        DataGridViewCellStyle11.NullValue = Nothing
+        Me.TOTAL.DefaultCellStyle = DataGridViewCellStyle11
         Me.TOTAL.HeaderText = "TOTAL PRICE"
         Me.TOTAL.MinimumWidth = 6
         Me.TOTAL.Name = "TOTAL"
