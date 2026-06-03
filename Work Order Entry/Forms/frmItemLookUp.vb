@@ -1154,7 +1154,12 @@ Public Class frmItemLookUp
         If clsWorkOrderDraft.HasDraft(usrRegister, usrUsername) Then
             Dim msg As String = "Recover unsaved draft?" & vbCrLf & clsWorkOrderDraft.GetDraftSummary(usrRegister, usrUsername)
             If MessageBox.Show(msg, "Draft Found", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
-                clsWorkOrderDraft.LoadDraft(Me)
+                BeginDraftRestore()
+                Try
+                    clsWorkOrderDraft.LoadDraft(Me)
+                Finally
+                    EndDraftRestore()
+                End Try
             Else
                 clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
             End If
@@ -2525,6 +2530,8 @@ Proceed:
     End Sub
 
     Private Sub gridSelectItem_CellValueChanged(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles gridSelectItem.CellValueChanged
+
+        If isRestoringDraft Then Exit Sub
 
         If gridSelectItem.RowCount > 0 Then
 
@@ -4985,10 +4992,6 @@ inputCust:
     End Sub
 
     Public Sub ApplySelectedPriceLevel(ByVal selectedPriceLevel As String, ByVal newPrice As Double)
-        If Not String.IsNullOrWhiteSpace(selectedPriceLevel) Then
-            txtPriceLevel.Text = selectedPriceLevel.Trim()
-        End If
-
         UpdatePriceFromPriceLevel(newPrice)
     End Sub
 

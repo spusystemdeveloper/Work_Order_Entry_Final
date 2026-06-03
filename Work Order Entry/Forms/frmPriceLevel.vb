@@ -59,13 +59,56 @@
 
         bLevelFlag = False
 
-        For x = 0 To iPrice
+        Dim maxLevel As Integer = Math.Max(iPrice, GetCustomerPriceLevelIndex())
+        For x = 0 To maxLevel
             clsItemLookUp.LoadLevel(x, txtItemCode.Text, 0)
         Next x
 
-        gridLevel.CurrentCell = gridLevel.Rows(0).Cells(0)
+        SelectCustomerPriceLevel()
         gridLevel.Columns(1).DefaultCellStyle.Format = "C"
 
+    End Sub
+
+    Private Function GetCustomerPriceLevelIndex() As Integer
+        Select Case frmItemLookUp.txtPriceLevel.Text.Trim().ToUpperInvariant()
+            Case "PRICEA", "PRICE A", "PRICE A (WHOLESALE)"
+                Return 1
+            Case "PRICEB", "PRICE B", "PRICE B (D1)"
+                Return 2
+            Case "PRICEC", "PRICE C", "PRICE C (D2)"
+                Return 3
+            Case Else
+                Return 0
+        End Select
+    End Function
+
+    Private Sub SelectCustomerPriceLevel()
+        If gridLevel.RowCount = 0 Then Exit Sub
+
+        Dim levelText As String = frmItemLookUp.txtPriceLevel.Text.Trim().ToUpperInvariant()
+        Dim expectedLabel As String = "PRICE (RETAIL)"
+
+        Select Case levelText
+            Case "PRICE", "PRICE (RETAIL)"
+                expectedLabel = "PRICE (RETAIL)"
+            Case "PRICEA", "PRICE A", "PRICE A (WHOLESALE)"
+                expectedLabel = "PRICE A (WHOLESALE)"
+            Case "PRICEB", "PRICE B", "PRICE B (D1)"
+                expectedLabel = "PRICE B (D1)"
+            Case "PRICEC", "PRICE C", "PRICE C (D2)"
+                expectedLabel = "PRICE C (D2)"
+        End Select
+
+        For Each row As DataGridViewRow In gridLevel.Rows
+            If row.IsNewRow OrElse row.Cells(0).Value Is Nothing Then Continue For
+            If row.Cells(0).Value.ToString().Trim().ToUpperInvariant() = expectedLabel Then
+                gridLevel.CurrentCell = row.Cells(0)
+                row.Selected = True
+                Exit Sub
+            End If
+        Next
+
+        gridLevel.CurrentCell = gridLevel.Rows(0).Cells(0)
     End Sub
 
     Public Sub DisplayPrice(ByVal sPriceType As String, ByVal dPrice As Double)
@@ -128,7 +171,6 @@
         End If
 
         If bInsert = True Then
-            frmItemLookUp.txtPriceLevel.Text = selectedPriceLevel
             Me.DialogResult = Windows.Forms.DialogResult.OK
 
             frmItemLookUp.InsertSelectedItem(frmItemLookUp.gridItem.CurrentRow.Index)
