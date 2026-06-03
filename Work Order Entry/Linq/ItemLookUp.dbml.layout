@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="ItemLookUp">
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 12.125" name="ItemLookUp">
   <DataContextMoniker Name="/ItemLookUpDataContext" />
   <nestedChildShapes>
     <classShape Id="5cc11c8b-9735-4586-8649-6d5c3ce1dbbc" isExpanded="false" absoluteBounds="0.875, 0.5, 2, 0.45">
@@ -158,5 +158,24 @@
         <elementListCompartment Id="5cfe9b63-b1a2-4325-ab1c-b20f34aeed51" absoluteBounds="8.015, 1.71, 1.9700000000000002, 3.3262125651041665" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
+    <classShape Id="13a91c21-11b3-4f54-b146-f6aa1fd08482" absoluteBounds="4.625, 6.5, 2, 4.0785139973958326">
+      <DataClassMoniker Name="/ItemLookUpDataContext/SOD_WO_DraftHeader" />
+      <nestedChildShapes>
+        <elementListCompartment Id="a3b634ca-5175-42e4-bcf9-c8ba69fbba6b" absoluteBounds="4.64, 6.96, 1.9700000000000002, 3.518513997395833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="1954ba5c-fca4-4da3-839a-27b49b70b828" absoluteBounds="1.75, 6.5, 2, 5.4246240234375">
+      <DataClassMoniker Name="/ItemLookUpDataContext/SOD_WO_DraftDetail" />
+      <nestedChildShapes>
+        <elementListCompartment Id="5b7c1615-356d-4c89-bb92-5b69cc3251f0" absoluteBounds="1.7650000000000001, 6.96, 1.9700000000000002, 4.8646240234375" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(4.625 : 8.53925699869792); (3.75 : 8.53925699869792)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/ItemLookUpDataContext/SOD_WO_DraftHeader/SOD_WO_DraftHeader_SOD_WO_DraftDetail" />
+      <nodes>
+        <classShapeMoniker Id="13a91c21-11b3-4f54-b146-f6aa1fd08482" />
+        <classShapeMoniker Id="1954ba5c-fca4-4da3-839a-27b49b70b828" />
+      </nodes>
+    </associationConnector>
   </nestedChildShapes>
 </ordesignerObjectsDiagram>

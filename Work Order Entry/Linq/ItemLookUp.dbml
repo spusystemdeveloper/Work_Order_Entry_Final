@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="DVO_STORE_DB" Class="ItemLookUpDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=MSI;Initial Catalog=DVO_STORE_DB;Integrated Security=True;Connect Timeout=30;Encrypt=True;Trust Server Certificate=True" SettingsObjectName="WorkOrderEntry.My.MySettings" SettingsPropertyName="DVO_STORE_DBConnectionString5" Provider="System.Data.SqlClient" />
+  <Connection Mode="AppSettings" ConnectionString="Data Source=localhost;Initial Catalog=DVO_STORE_DB;Persist Security Info=True;User ID=sa;Encrypt=False;Trust Server Certificate=True" SettingsObjectName="WorkOrderEntry.My.MySettings" SettingsPropertyName="DVO_STORE_DBConnectionString6" Provider="System.Data.SqlClient" />
   <Table Name="dbo.Customer" Member="Customers">
     <Type Name="Customer">
       <Column Name="AccountNumber" Type="System.String" DbType="NVarChar(20) NOT NULL" CanBeNull="false" />
@@ -584,6 +584,57 @@
       <Column Name="timestamp" Type="System.Data.Linq.Binary" DbType="rowversion" CanBeNull="true" IsVersion="true" />
       <Column Name="OrderTaker" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Column Name="CustomerPriceLevel" Type="System.Int32" DbType="Int" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.SOD_WO_DraftHeader" Member="SOD_WO_DraftHeaders">
+    <Type Name="SOD_WO_DraftHeader">
+      <Column Name="DraftID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="RegisterID" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="UserName" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="EntryType" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CustomerID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CustomerName" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="BusinessCustomerType" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
+      <Column Name="PaymentType" Type="System.String" DbType="NVarChar(100)" CanBeNull="true" />
+      <Column Name="SalesRepID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="SalesRepName" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="Remarks" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="ReleaseType" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="PriceLevel" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="TaxExempt" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ZeroRated" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="UpdatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="SOD_WO_DraftHeader_SOD_WO_DraftDetail" Member="SOD_WO_DraftDetails" ThisKey="DraftID" OtherKey="DraftID" Type="SOD_WO_DraftDetail" />
+    </Type>
+  </Table>
+  <Table Name="dbo.SOD_WO_DraftDetail" Member="SOD_WO_DraftDetails">
+    <Type Name="SOD_WO_DraftDetail">
+      <Column Name="DraftDetailID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="DraftID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="[LineNo]" Member="LineNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ItemCode" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="ItemName" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="Qty" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Price" Type="System.Decimal" DbType="Money" CanBeNull="true" />
+      <Column Name="Disc" Type="System.Decimal" DbType="Money" CanBeNull="true" />
+      <Column Name="TotalPrice" Type="System.Decimal" DbType="Money" CanBeNull="true" />
+      <Column Name="LessVat" Type="System.Decimal" DbType="Money" CanBeNull="true" />
+      <Column Name="VatSales" Type="System.Decimal" DbType="Money" CanBeNull="true" />
+      <Column Name="DiscPrice" Type="System.Decimal" DbType="Money" CanBeNull="true" />
+      <Column Name="Cost" Type="System.Decimal" DbType="Money" CanBeNull="true" />
+      <Column Name="Taxable" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ItemID" Type="System.Int64" DbType="BigInt" CanBeNull="true" />
+      <Column Name="FullPrice" Type="System.Decimal" DbType="Money" CanBeNull="true" />
+      <Column Name="Description" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="ExtendedDescription" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="DiscAmount" Type="System.Decimal" DbType="Money" CanBeNull="true" />
+      <Column Name="OrderEntryID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="StoreWhse" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="PreparedQty" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="LastPurchasedPrice" Type="System.Decimal" DbType="Money" CanBeNull="true" />
+      <Column Name="CreatedAt" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Association Name="SOD_WO_DraftHeader_SOD_WO_DraftDetail" Member="SOD_WO_DraftHeader" ThisKey="DraftID" OtherKey="DraftID" Type="SOD_WO_DraftHeader" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
     </Type>
   </Table>
   <Function Name="dbo.SOD_fntbl_CheckExQty" Method="SOD_fntbl_CheckExQty" IsComposable="true">

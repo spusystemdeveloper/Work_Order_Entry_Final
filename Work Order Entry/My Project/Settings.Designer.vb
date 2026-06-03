@@ -15,7 +15,7 @@ Option Explicit On
 Namespace My
     
     <Global.System.Runtime.CompilerServices.CompilerGeneratedAttribute(),  _
-     Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.14.0.0"),  _
+     Global.System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "18.6.0.0"),  _
      Global.System.ComponentModel.EditorBrowsableAttribute(Global.System.ComponentModel.EditorBrowsableState.Advanced)>  _
     Partial Friend NotInheritable Class MySettings
         Inherits Global.System.Configuration.ApplicationSettingsBase
@@ -224,6 +224,17 @@ Namespace My
         Public ReadOnly Property DVO_STORE_DBConnectionString5() As String
             Get
                 Return CType(Me("DVO_STORE_DBConnectionString5"),String)
+            End Get
+        End Property
+        
+        <Global.System.Configuration.ApplicationScopedSettingAttribute(),  _
+         Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+         Global.System.Configuration.SpecialSettingAttribute(Global.System.Configuration.SpecialSetting.ConnectionString),  _
+         Global.System.Configuration.DefaultSettingValueAttribute("Data Source=localhost;Initial Catalog=DVO_STORE_DB;Persist Security Info=True;Use"& _ 
+            "r ID=sa;Password=admin123;Encrypt=False;TrustServerCertificate=True")>  _
+        Public ReadOnly Property DVO_STORE_DBConnectionString6() As String
+            Get
+                Return CType(Me("DVO_STORE_DBConnectionString6"),String)
             End Get
         End Property
     End Class

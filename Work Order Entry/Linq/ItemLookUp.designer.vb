@@ -157,10 +157,22 @@ Partial Public Class ItemLookUpDataContext
     End Sub
   Partial Private Sub DeleteSOD_WO_LOG(instance As SOD_WO_LOG)
     End Sub
+  Partial Private Sub InsertSOD_WO_DraftHeader(instance As SOD_WO_DraftHeader)
+    End Sub
+  Partial Private Sub UpdateSOD_WO_DraftHeader(instance As SOD_WO_DraftHeader)
+    End Sub
+  Partial Private Sub DeleteSOD_WO_DraftHeader(instance As SOD_WO_DraftHeader)
+    End Sub
+  Partial Private Sub InsertSOD_WO_DraftDetail(instance As SOD_WO_DraftDetail)
+    End Sub
+  Partial Private Sub UpdateSOD_WO_DraftDetail(instance As SOD_WO_DraftDetail)
+    End Sub
+  Partial Private Sub DeleteSOD_WO_DraftDetail(instance As SOD_WO_DraftDetail)
+    End Sub
   #End Region
 	
 	Public Sub New()
-		MyBase.New(Global.WorkOrderEntry.My.MySettings.Default.DVO_STORE_DBConnectionString5, mappingSource)
+		MyBase.New(Global.WorkOrderEntry.My.MySettings.Default.DVO_STORE_DBConnectionString6, mappingSource)
 		OnCreated
 	End Sub
 	
@@ -337,6 +349,18 @@ Partial Public Class ItemLookUpDataContext
 	Public ReadOnly Property SOD_WO_LOGs() As System.Data.Linq.Table(Of SOD_WO_LOG)
 		Get
 			Return Me.GetTable(Of SOD_WO_LOG)
+		End Get
+	End Property
+	
+	Public ReadOnly Property SOD_WO_DraftHeaders() As System.Data.Linq.Table(Of SOD_WO_DraftHeader)
+		Get
+			Return Me.GetTable(Of SOD_WO_DraftHeader)
+		End Get
+	End Property
+	
+	Public ReadOnly Property SOD_WO_DraftDetails() As System.Data.Linq.Table(Of SOD_WO_DraftDetail)
+		Get
+			Return Me.GetTable(Of SOD_WO_DraftDetail)
 		End Get
 	End Property
 	
@@ -11712,6 +11736,1053 @@ Partial Public Class SOD_WO_LOG
 				Me._CustomerPriceLevel = value
 				Me.SendPropertyChanged("CustomerPriceLevel")
 				Me.OnCustomerPriceLevelChanged
+			End If
+		End Set
+	End Property
+	
+	Public Event PropertyChanging As PropertyChangingEventHandler Implements System.ComponentModel.INotifyPropertyChanging.PropertyChanging
+	
+	Public Event PropertyChanged As PropertyChangedEventHandler Implements System.ComponentModel.INotifyPropertyChanged.PropertyChanged
+	
+	Protected Overridable Sub SendPropertyChanging()
+		If ((Me.PropertyChangingEvent Is Nothing)  _
+					= false) Then
+			RaiseEvent PropertyChanging(Me, emptyChangingEventArgs)
+		End If
+	End Sub
+	
+	Protected Overridable Sub SendPropertyChanged(ByVal propertyName As [String])
+		If ((Me.PropertyChangedEvent Is Nothing)  _
+					= false) Then
+			RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
+		End If
+	End Sub
+End Class
+
+<Global.System.Data.Linq.Mapping.TableAttribute(Name:="dbo.SOD_WO_DraftHeader")>  _
+Partial Public Class SOD_WO_DraftHeader
+	Implements System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
+	
+	Private Shared emptyChangingEventArgs As PropertyChangingEventArgs = New PropertyChangingEventArgs(String.Empty)
+	
+	Private _DraftID As Integer
+	
+	Private _RegisterID As String
+	
+	Private _UserName As String
+	
+	Private _EntryType As System.Nullable(Of Integer)
+	
+	Private _CustomerID As System.Nullable(Of Integer)
+	
+	Private _CustomerName As String
+	
+	Private _BusinessCustomerType As String
+	
+	Private _PaymentType As String
+	
+	Private _SalesRepID As System.Nullable(Of Integer)
+	
+	Private _SalesRepName As String
+	
+	Private _Remarks As String
+	
+	Private _ReleaseType As String
+	
+	Private _PriceLevel As String
+	
+	Private _TaxExempt As Boolean
+	
+	Private _ZeroRated As Boolean
+	
+	Private _CreatedAt As Date
+	
+	Private _UpdatedAt As Date
+	
+	Private _SOD_WO_DraftDetails As EntitySet(Of SOD_WO_DraftDetail)
+	
+    #Region "Extensibility Method Definitions"
+    Partial Private Sub OnLoaded()
+    End Sub
+    Partial Private Sub OnValidate(action As System.Data.Linq.ChangeAction)
+    End Sub
+    Partial Private Sub OnCreated()
+    End Sub
+    Partial Private Sub OnDraftIDChanging(value As Integer)
+    End Sub
+    Partial Private Sub OnDraftIDChanged()
+    End Sub
+    Partial Private Sub OnRegisterIDChanging(value As String)
+    End Sub
+    Partial Private Sub OnRegisterIDChanged()
+    End Sub
+    Partial Private Sub OnUserNameChanging(value As String)
+    End Sub
+    Partial Private Sub OnUserNameChanged()
+    End Sub
+    Partial Private Sub OnEntryTypeChanging(value As System.Nullable(Of Integer))
+    End Sub
+    Partial Private Sub OnEntryTypeChanged()
+    End Sub
+    Partial Private Sub OnCustomerIDChanging(value As System.Nullable(Of Integer))
+    End Sub
+    Partial Private Sub OnCustomerIDChanged()
+    End Sub
+    Partial Private Sub OnCustomerNameChanging(value As String)
+    End Sub
+    Partial Private Sub OnCustomerNameChanged()
+    End Sub
+    Partial Private Sub OnBusinessCustomerTypeChanging(value As String)
+    End Sub
+    Partial Private Sub OnBusinessCustomerTypeChanged()
+    End Sub
+    Partial Private Sub OnPaymentTypeChanging(value As String)
+    End Sub
+    Partial Private Sub OnPaymentTypeChanged()
+    End Sub
+    Partial Private Sub OnSalesRepIDChanging(value As System.Nullable(Of Integer))
+    End Sub
+    Partial Private Sub OnSalesRepIDChanged()
+    End Sub
+    Partial Private Sub OnSalesRepNameChanging(value As String)
+    End Sub
+    Partial Private Sub OnSalesRepNameChanged()
+    End Sub
+    Partial Private Sub OnRemarksChanging(value As String)
+    End Sub
+    Partial Private Sub OnRemarksChanged()
+    End Sub
+    Partial Private Sub OnReleaseTypeChanging(value As String)
+    End Sub
+    Partial Private Sub OnReleaseTypeChanged()
+    End Sub
+    Partial Private Sub OnPriceLevelChanging(value As String)
+    End Sub
+    Partial Private Sub OnPriceLevelChanged()
+    End Sub
+    Partial Private Sub OnTaxExemptChanging(value As Boolean)
+    End Sub
+    Partial Private Sub OnTaxExemptChanged()
+    End Sub
+    Partial Private Sub OnZeroRatedChanging(value As Boolean)
+    End Sub
+    Partial Private Sub OnZeroRatedChanged()
+    End Sub
+    Partial Private Sub OnCreatedAtChanging(value As Date)
+    End Sub
+    Partial Private Sub OnCreatedAtChanged()
+    End Sub
+    Partial Private Sub OnUpdatedAtChanging(value As Date)
+    End Sub
+    Partial Private Sub OnUpdatedAtChanged()
+    End Sub
+    #End Region
+	
+	Public Sub New()
+		MyBase.New
+		Me._SOD_WO_DraftDetails = New EntitySet(Of SOD_WO_DraftDetail)(AddressOf Me.attach_SOD_WO_DraftDetails, AddressOf Me.detach_SOD_WO_DraftDetails)
+		OnCreated
+	End Sub
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_DraftID", AutoSync:=AutoSync.OnInsert, DbType:="Int NOT NULL IDENTITY", IsPrimaryKey:=true, IsDbGenerated:=true)>  _
+	Public Property DraftID() As Integer
+		Get
+			Return Me._DraftID
+		End Get
+		Set
+			If ((Me._DraftID = value)  _
+						= false) Then
+				Me.OnDraftIDChanging(value)
+				Me.SendPropertyChanging
+				Me._DraftID = value
+				Me.SendPropertyChanged("DraftID")
+				Me.OnDraftIDChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_RegisterID", DbType:="NVarChar(50) NOT NULL", CanBeNull:=false)>  _
+	Public Property RegisterID() As String
+		Get
+			Return Me._RegisterID
+		End Get
+		Set
+			If (String.Equals(Me._RegisterID, value) = false) Then
+				Me.OnRegisterIDChanging(value)
+				Me.SendPropertyChanging
+				Me._RegisterID = value
+				Me.SendPropertyChanged("RegisterID")
+				Me.OnRegisterIDChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_UserName", DbType:="NVarChar(100) NOT NULL", CanBeNull:=false)>  _
+	Public Property UserName() As String
+		Get
+			Return Me._UserName
+		End Get
+		Set
+			If (String.Equals(Me._UserName, value) = false) Then
+				Me.OnUserNameChanging(value)
+				Me.SendPropertyChanging
+				Me._UserName = value
+				Me.SendPropertyChanged("UserName")
+				Me.OnUserNameChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_EntryType", DbType:="Int")>  _
+	Public Property EntryType() As System.Nullable(Of Integer)
+		Get
+			Return Me._EntryType
+		End Get
+		Set
+			If (Me._EntryType.Equals(value) = false) Then
+				Me.OnEntryTypeChanging(value)
+				Me.SendPropertyChanging
+				Me._EntryType = value
+				Me.SendPropertyChanged("EntryType")
+				Me.OnEntryTypeChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_CustomerID", DbType:="Int")>  _
+	Public Property CustomerID() As System.Nullable(Of Integer)
+		Get
+			Return Me._CustomerID
+		End Get
+		Set
+			If (Me._CustomerID.Equals(value) = false) Then
+				Me.OnCustomerIDChanging(value)
+				Me.SendPropertyChanging
+				Me._CustomerID = value
+				Me.SendPropertyChanged("CustomerID")
+				Me.OnCustomerIDChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_CustomerName", DbType:="NVarChar(255)")>  _
+	Public Property CustomerName() As String
+		Get
+			Return Me._CustomerName
+		End Get
+		Set
+			If (String.Equals(Me._CustomerName, value) = false) Then
+				Me.OnCustomerNameChanging(value)
+				Me.SendPropertyChanging
+				Me._CustomerName = value
+				Me.SendPropertyChanged("CustomerName")
+				Me.OnCustomerNameChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_BusinessCustomerType", DbType:="NVarChar(100)")>  _
+	Public Property BusinessCustomerType() As String
+		Get
+			Return Me._BusinessCustomerType
+		End Get
+		Set
+			If (String.Equals(Me._BusinessCustomerType, value) = false) Then
+				Me.OnBusinessCustomerTypeChanging(value)
+				Me.SendPropertyChanging
+				Me._BusinessCustomerType = value
+				Me.SendPropertyChanged("BusinessCustomerType")
+				Me.OnBusinessCustomerTypeChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_PaymentType", DbType:="NVarChar(100)")>  _
+	Public Property PaymentType() As String
+		Get
+			Return Me._PaymentType
+		End Get
+		Set
+			If (String.Equals(Me._PaymentType, value) = false) Then
+				Me.OnPaymentTypeChanging(value)
+				Me.SendPropertyChanging
+				Me._PaymentType = value
+				Me.SendPropertyChanged("PaymentType")
+				Me.OnPaymentTypeChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_SalesRepID", DbType:="Int")>  _
+	Public Property SalesRepID() As System.Nullable(Of Integer)
+		Get
+			Return Me._SalesRepID
+		End Get
+		Set
+			If (Me._SalesRepID.Equals(value) = false) Then
+				Me.OnSalesRepIDChanging(value)
+				Me.SendPropertyChanging
+				Me._SalesRepID = value
+				Me.SendPropertyChanged("SalesRepID")
+				Me.OnSalesRepIDChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_SalesRepName", DbType:="NVarChar(255)")>  _
+	Public Property SalesRepName() As String
+		Get
+			Return Me._SalesRepName
+		End Get
+		Set
+			If (String.Equals(Me._SalesRepName, value) = false) Then
+				Me.OnSalesRepNameChanging(value)
+				Me.SendPropertyChanging
+				Me._SalesRepName = value
+				Me.SendPropertyChanged("SalesRepName")
+				Me.OnSalesRepNameChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_Remarks", DbType:="NVarChar(MAX)")>  _
+	Public Property Remarks() As String
+		Get
+			Return Me._Remarks
+		End Get
+		Set
+			If (String.Equals(Me._Remarks, value) = false) Then
+				Me.OnRemarksChanging(value)
+				Me.SendPropertyChanging
+				Me._Remarks = value
+				Me.SendPropertyChanged("Remarks")
+				Me.OnRemarksChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_ReleaseType", DbType:="NVarChar(50)")>  _
+	Public Property ReleaseType() As String
+		Get
+			Return Me._ReleaseType
+		End Get
+		Set
+			If (String.Equals(Me._ReleaseType, value) = false) Then
+				Me.OnReleaseTypeChanging(value)
+				Me.SendPropertyChanging
+				Me._ReleaseType = value
+				Me.SendPropertyChanged("ReleaseType")
+				Me.OnReleaseTypeChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_PriceLevel", DbType:="NVarChar(50)")>  _
+	Public Property PriceLevel() As String
+		Get
+			Return Me._PriceLevel
+		End Get
+		Set
+			If (String.Equals(Me._PriceLevel, value) = false) Then
+				Me.OnPriceLevelChanging(value)
+				Me.SendPropertyChanging
+				Me._PriceLevel = value
+				Me.SendPropertyChanged("PriceLevel")
+				Me.OnPriceLevelChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_TaxExempt", DbType:="Bit NOT NULL")>  _
+	Public Property TaxExempt() As Boolean
+		Get
+			Return Me._TaxExempt
+		End Get
+		Set
+			If ((Me._TaxExempt = value)  _
+						= false) Then
+				Me.OnTaxExemptChanging(value)
+				Me.SendPropertyChanging
+				Me._TaxExempt = value
+				Me.SendPropertyChanged("TaxExempt")
+				Me.OnTaxExemptChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_ZeroRated", DbType:="Bit NOT NULL")>  _
+	Public Property ZeroRated() As Boolean
+		Get
+			Return Me._ZeroRated
+		End Get
+		Set
+			If ((Me._ZeroRated = value)  _
+						= false) Then
+				Me.OnZeroRatedChanging(value)
+				Me.SendPropertyChanging
+				Me._ZeroRated = value
+				Me.SendPropertyChanged("ZeroRated")
+				Me.OnZeroRatedChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_CreatedAt", DbType:="DateTime NOT NULL")>  _
+	Public Property CreatedAt() As Date
+		Get
+			Return Me._CreatedAt
+		End Get
+		Set
+			If ((Me._CreatedAt = value)  _
+						= false) Then
+				Me.OnCreatedAtChanging(value)
+				Me.SendPropertyChanging
+				Me._CreatedAt = value
+				Me.SendPropertyChanged("CreatedAt")
+				Me.OnCreatedAtChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_UpdatedAt", DbType:="DateTime NOT NULL")>  _
+	Public Property UpdatedAt() As Date
+		Get
+			Return Me._UpdatedAt
+		End Get
+		Set
+			If ((Me._UpdatedAt = value)  _
+						= false) Then
+				Me.OnUpdatedAtChanging(value)
+				Me.SendPropertyChanging
+				Me._UpdatedAt = value
+				Me.SendPropertyChanged("UpdatedAt")
+				Me.OnUpdatedAtChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.AssociationAttribute(Name:="SOD_WO_DraftHeader_SOD_WO_DraftDetail", Storage:="_SOD_WO_DraftDetails", ThisKey:="DraftID", OtherKey:="DraftID")>  _
+	Public Property SOD_WO_DraftDetails() As EntitySet(Of SOD_WO_DraftDetail)
+		Get
+			Return Me._SOD_WO_DraftDetails
+		End Get
+		Set
+			Me._SOD_WO_DraftDetails.Assign(value)
+		End Set
+	End Property
+	
+	Public Event PropertyChanging As PropertyChangingEventHandler Implements System.ComponentModel.INotifyPropertyChanging.PropertyChanging
+	
+	Public Event PropertyChanged As PropertyChangedEventHandler Implements System.ComponentModel.INotifyPropertyChanged.PropertyChanged
+	
+	Protected Overridable Sub SendPropertyChanging()
+		If ((Me.PropertyChangingEvent Is Nothing)  _
+					= false) Then
+			RaiseEvent PropertyChanging(Me, emptyChangingEventArgs)
+		End If
+	End Sub
+	
+	Protected Overridable Sub SendPropertyChanged(ByVal propertyName As [String])
+		If ((Me.PropertyChangedEvent Is Nothing)  _
+					= false) Then
+			RaiseEvent PropertyChanged(Me, New PropertyChangedEventArgs(propertyName))
+		End If
+	End Sub
+	
+	Private Sub attach_SOD_WO_DraftDetails(ByVal entity As SOD_WO_DraftDetail)
+		Me.SendPropertyChanging
+		entity.SOD_WO_DraftHeader = Me
+	End Sub
+	
+	Private Sub detach_SOD_WO_DraftDetails(ByVal entity As SOD_WO_DraftDetail)
+		Me.SendPropertyChanging
+		entity.SOD_WO_DraftHeader = Nothing
+	End Sub
+End Class
+
+<Global.System.Data.Linq.Mapping.TableAttribute(Name:="dbo.SOD_WO_DraftDetail")>  _
+Partial Public Class SOD_WO_DraftDetail
+	Implements System.ComponentModel.INotifyPropertyChanging, System.ComponentModel.INotifyPropertyChanged
+	
+	Private Shared emptyChangingEventArgs As PropertyChangingEventArgs = New PropertyChangingEventArgs(String.Empty)
+	
+	Private _DraftDetailID As Integer
+	
+	Private _DraftID As Integer
+	
+	Private _LineNo As Integer
+	
+	Private _ItemCode As String
+	
+	Private _ItemName As String
+	
+	Private _Qty As System.Nullable(Of Integer)
+	
+	Private _Price As System.Nullable(Of Decimal)
+	
+	Private _Disc As System.Nullable(Of Decimal)
+	
+	Private _TotalPrice As System.Nullable(Of Decimal)
+	
+	Private _LessVat As System.Nullable(Of Decimal)
+	
+	Private _VatSales As System.Nullable(Of Decimal)
+	
+	Private _DiscPrice As System.Nullable(Of Decimal)
+	
+	Private _Cost As System.Nullable(Of Decimal)
+	
+	Private _Taxable As System.Nullable(Of Integer)
+	
+	Private _ItemID As System.Nullable(Of Long)
+	
+	Private _FullPrice As System.Nullable(Of Decimal)
+	
+	Private _Description As String
+	
+	Private _ExtendedDescription As String
+	
+	Private _DiscAmount As System.Nullable(Of Decimal)
+	
+	Private _OrderEntryID As System.Nullable(Of Integer)
+	
+	Private _StoreWhse As Boolean
+	
+	Private _PreparedQty As System.Nullable(Of Integer)
+	
+	Private _LastPurchasedPrice As System.Nullable(Of Decimal)
+	
+	Private _CreatedAt As Date
+	
+	Private _SOD_WO_DraftHeader As EntityRef(Of SOD_WO_DraftHeader)
+	
+    #Region "Extensibility Method Definitions"
+    Partial Private Sub OnLoaded()
+    End Sub
+    Partial Private Sub OnValidate(action As System.Data.Linq.ChangeAction)
+    End Sub
+    Partial Private Sub OnCreated()
+    End Sub
+    Partial Private Sub OnDraftDetailIDChanging(value As Integer)
+    End Sub
+    Partial Private Sub OnDraftDetailIDChanged()
+    End Sub
+    Partial Private Sub OnDraftIDChanging(value As Integer)
+    End Sub
+    Partial Private Sub OnDraftIDChanged()
+    End Sub
+    Partial Private Sub OnLineNoChanging(value As Integer)
+    End Sub
+    Partial Private Sub OnLineNoChanged()
+    End Sub
+    Partial Private Sub OnItemCodeChanging(value As String)
+    End Sub
+    Partial Private Sub OnItemCodeChanged()
+    End Sub
+    Partial Private Sub OnItemNameChanging(value As String)
+    End Sub
+    Partial Private Sub OnItemNameChanged()
+    End Sub
+    Partial Private Sub OnQtyChanging(value As System.Nullable(Of Integer))
+    End Sub
+    Partial Private Sub OnQtyChanged()
+    End Sub
+    Partial Private Sub OnPriceChanging(value As System.Nullable(Of Decimal))
+    End Sub
+    Partial Private Sub OnPriceChanged()
+    End Sub
+    Partial Private Sub OnDiscChanging(value As System.Nullable(Of Decimal))
+    End Sub
+    Partial Private Sub OnDiscChanged()
+    End Sub
+    Partial Private Sub OnTotalPriceChanging(value As System.Nullable(Of Decimal))
+    End Sub
+    Partial Private Sub OnTotalPriceChanged()
+    End Sub
+    Partial Private Sub OnLessVatChanging(value As System.Nullable(Of Decimal))
+    End Sub
+    Partial Private Sub OnLessVatChanged()
+    End Sub
+    Partial Private Sub OnVatSalesChanging(value As System.Nullable(Of Decimal))
+    End Sub
+    Partial Private Sub OnVatSalesChanged()
+    End Sub
+    Partial Private Sub OnDiscPriceChanging(value As System.Nullable(Of Decimal))
+    End Sub
+    Partial Private Sub OnDiscPriceChanged()
+    End Sub
+    Partial Private Sub OnCostChanging(value As System.Nullable(Of Decimal))
+    End Sub
+    Partial Private Sub OnCostChanged()
+    End Sub
+    Partial Private Sub OnTaxableChanging(value As System.Nullable(Of Integer))
+    End Sub
+    Partial Private Sub OnTaxableChanged()
+    End Sub
+    Partial Private Sub OnItemIDChanging(value As System.Nullable(Of Long))
+    End Sub
+    Partial Private Sub OnItemIDChanged()
+    End Sub
+    Partial Private Sub OnFullPriceChanging(value As System.Nullable(Of Decimal))
+    End Sub
+    Partial Private Sub OnFullPriceChanged()
+    End Sub
+    Partial Private Sub OnDescriptionChanging(value As String)
+    End Sub
+    Partial Private Sub OnDescriptionChanged()
+    End Sub
+    Partial Private Sub OnExtendedDescriptionChanging(value As String)
+    End Sub
+    Partial Private Sub OnExtendedDescriptionChanged()
+    End Sub
+    Partial Private Sub OnDiscAmountChanging(value As System.Nullable(Of Decimal))
+    End Sub
+    Partial Private Sub OnDiscAmountChanged()
+    End Sub
+    Partial Private Sub OnOrderEntryIDChanging(value As System.Nullable(Of Integer))
+    End Sub
+    Partial Private Sub OnOrderEntryIDChanged()
+    End Sub
+    Partial Private Sub OnStoreWhseChanging(value As Boolean)
+    End Sub
+    Partial Private Sub OnStoreWhseChanged()
+    End Sub
+    Partial Private Sub OnPreparedQtyChanging(value As System.Nullable(Of Integer))
+    End Sub
+    Partial Private Sub OnPreparedQtyChanged()
+    End Sub
+    Partial Private Sub OnLastPurchasedPriceChanging(value As System.Nullable(Of Decimal))
+    End Sub
+    Partial Private Sub OnLastPurchasedPriceChanged()
+    End Sub
+    Partial Private Sub OnCreatedAtChanging(value As Date)
+    End Sub
+    Partial Private Sub OnCreatedAtChanged()
+    End Sub
+    #End Region
+	
+	Public Sub New()
+		MyBase.New
+		Me._SOD_WO_DraftHeader = CType(Nothing, EntityRef(Of SOD_WO_DraftHeader))
+		OnCreated
+	End Sub
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_DraftDetailID", AutoSync:=AutoSync.OnInsert, DbType:="Int NOT NULL IDENTITY", IsPrimaryKey:=true, IsDbGenerated:=true)>  _
+	Public Property DraftDetailID() As Integer
+		Get
+			Return Me._DraftDetailID
+		End Get
+		Set
+			If ((Me._DraftDetailID = value)  _
+						= false) Then
+				Me.OnDraftDetailIDChanging(value)
+				Me.SendPropertyChanging
+				Me._DraftDetailID = value
+				Me.SendPropertyChanged("DraftDetailID")
+				Me.OnDraftDetailIDChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_DraftID", DbType:="Int NOT NULL")>  _
+	Public Property DraftID() As Integer
+		Get
+			Return Me._DraftID
+		End Get
+		Set
+			If ((Me._DraftID = value)  _
+						= false) Then
+				If Me._SOD_WO_DraftHeader.HasLoadedOrAssignedValue Then
+					Throw New System.Data.Linq.ForeignKeyReferenceAlreadyHasValueException()
+				End If
+				Me.OnDraftIDChanging(value)
+				Me.SendPropertyChanging
+				Me._DraftID = value
+				Me.SendPropertyChanged("DraftID")
+				Me.OnDraftIDChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Name:="[LineNo]", Storage:="_LineNo", DbType:="Int NOT NULL")>  _
+	Public Property LineNo() As Integer
+		Get
+			Return Me._LineNo
+		End Get
+		Set
+			If ((Me._LineNo = value)  _
+						= false) Then
+				Me.OnLineNoChanging(value)
+				Me.SendPropertyChanging
+				Me._LineNo = value
+				Me.SendPropertyChanged("LineNo")
+				Me.OnLineNoChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_ItemCode", DbType:="NVarChar(50) NOT NULL", CanBeNull:=false)>  _
+	Public Property ItemCode() As String
+		Get
+			Return Me._ItemCode
+		End Get
+		Set
+			If (String.Equals(Me._ItemCode, value) = false) Then
+				Me.OnItemCodeChanging(value)
+				Me.SendPropertyChanging
+				Me._ItemCode = value
+				Me.SendPropertyChanged("ItemCode")
+				Me.OnItemCodeChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_ItemName", DbType:="NVarChar(500)")>  _
+	Public Property ItemName() As String
+		Get
+			Return Me._ItemName
+		End Get
+		Set
+			If (String.Equals(Me._ItemName, value) = false) Then
+				Me.OnItemNameChanging(value)
+				Me.SendPropertyChanging
+				Me._ItemName = value
+				Me.SendPropertyChanged("ItemName")
+				Me.OnItemNameChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_Qty", DbType:="Int")>  _
+	Public Property Qty() As System.Nullable(Of Integer)
+		Get
+			Return Me._Qty
+		End Get
+		Set
+			If (Me._Qty.Equals(value) = false) Then
+				Me.OnQtyChanging(value)
+				Me.SendPropertyChanging
+				Me._Qty = value
+				Me.SendPropertyChanged("Qty")
+				Me.OnQtyChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_Price", DbType:="Money")>  _
+	Public Property Price() As System.Nullable(Of Decimal)
+		Get
+			Return Me._Price
+		End Get
+		Set
+			If (Me._Price.Equals(value) = false) Then
+				Me.OnPriceChanging(value)
+				Me.SendPropertyChanging
+				Me._Price = value
+				Me.SendPropertyChanged("Price")
+				Me.OnPriceChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_Disc", DbType:="Money")>  _
+	Public Property Disc() As System.Nullable(Of Decimal)
+		Get
+			Return Me._Disc
+		End Get
+		Set
+			If (Me._Disc.Equals(value) = false) Then
+				Me.OnDiscChanging(value)
+				Me.SendPropertyChanging
+				Me._Disc = value
+				Me.SendPropertyChanged("Disc")
+				Me.OnDiscChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_TotalPrice", DbType:="Money")>  _
+	Public Property TotalPrice() As System.Nullable(Of Decimal)
+		Get
+			Return Me._TotalPrice
+		End Get
+		Set
+			If (Me._TotalPrice.Equals(value) = false) Then
+				Me.OnTotalPriceChanging(value)
+				Me.SendPropertyChanging
+				Me._TotalPrice = value
+				Me.SendPropertyChanged("TotalPrice")
+				Me.OnTotalPriceChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_LessVat", DbType:="Money")>  _
+	Public Property LessVat() As System.Nullable(Of Decimal)
+		Get
+			Return Me._LessVat
+		End Get
+		Set
+			If (Me._LessVat.Equals(value) = false) Then
+				Me.OnLessVatChanging(value)
+				Me.SendPropertyChanging
+				Me._LessVat = value
+				Me.SendPropertyChanged("LessVat")
+				Me.OnLessVatChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_VatSales", DbType:="Money")>  _
+	Public Property VatSales() As System.Nullable(Of Decimal)
+		Get
+			Return Me._VatSales
+		End Get
+		Set
+			If (Me._VatSales.Equals(value) = false) Then
+				Me.OnVatSalesChanging(value)
+				Me.SendPropertyChanging
+				Me._VatSales = value
+				Me.SendPropertyChanged("VatSales")
+				Me.OnVatSalesChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_DiscPrice", DbType:="Money")>  _
+	Public Property DiscPrice() As System.Nullable(Of Decimal)
+		Get
+			Return Me._DiscPrice
+		End Get
+		Set
+			If (Me._DiscPrice.Equals(value) = false) Then
+				Me.OnDiscPriceChanging(value)
+				Me.SendPropertyChanging
+				Me._DiscPrice = value
+				Me.SendPropertyChanged("DiscPrice")
+				Me.OnDiscPriceChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_Cost", DbType:="Money")>  _
+	Public Property Cost() As System.Nullable(Of Decimal)
+		Get
+			Return Me._Cost
+		End Get
+		Set
+			If (Me._Cost.Equals(value) = false) Then
+				Me.OnCostChanging(value)
+				Me.SendPropertyChanging
+				Me._Cost = value
+				Me.SendPropertyChanged("Cost")
+				Me.OnCostChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_Taxable", DbType:="Int")>  _
+	Public Property Taxable() As System.Nullable(Of Integer)
+		Get
+			Return Me._Taxable
+		End Get
+		Set
+			If (Me._Taxable.Equals(value) = false) Then
+				Me.OnTaxableChanging(value)
+				Me.SendPropertyChanging
+				Me._Taxable = value
+				Me.SendPropertyChanged("Taxable")
+				Me.OnTaxableChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_ItemID", DbType:="BigInt")>  _
+	Public Property ItemID() As System.Nullable(Of Long)
+		Get
+			Return Me._ItemID
+		End Get
+		Set
+			If (Me._ItemID.Equals(value) = false) Then
+				Me.OnItemIDChanging(value)
+				Me.SendPropertyChanging
+				Me._ItemID = value
+				Me.SendPropertyChanged("ItemID")
+				Me.OnItemIDChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_FullPrice", DbType:="Money")>  _
+	Public Property FullPrice() As System.Nullable(Of Decimal)
+		Get
+			Return Me._FullPrice
+		End Get
+		Set
+			If (Me._FullPrice.Equals(value) = false) Then
+				Me.OnFullPriceChanging(value)
+				Me.SendPropertyChanging
+				Me._FullPrice = value
+				Me.SendPropertyChanged("FullPrice")
+				Me.OnFullPriceChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_Description", DbType:="NVarChar(500)")>  _
+	Public Property Description() As String
+		Get
+			Return Me._Description
+		End Get
+		Set
+			If (String.Equals(Me._Description, value) = false) Then
+				Me.OnDescriptionChanging(value)
+				Me.SendPropertyChanging
+				Me._Description = value
+				Me.SendPropertyChanged("Description")
+				Me.OnDescriptionChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_ExtendedDescription", DbType:="NVarChar(MAX)")>  _
+	Public Property ExtendedDescription() As String
+		Get
+			Return Me._ExtendedDescription
+		End Get
+		Set
+			If (String.Equals(Me._ExtendedDescription, value) = false) Then
+				Me.OnExtendedDescriptionChanging(value)
+				Me.SendPropertyChanging
+				Me._ExtendedDescription = value
+				Me.SendPropertyChanged("ExtendedDescription")
+				Me.OnExtendedDescriptionChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_DiscAmount", DbType:="Money")>  _
+	Public Property DiscAmount() As System.Nullable(Of Decimal)
+		Get
+			Return Me._DiscAmount
+		End Get
+		Set
+			If (Me._DiscAmount.Equals(value) = false) Then
+				Me.OnDiscAmountChanging(value)
+				Me.SendPropertyChanging
+				Me._DiscAmount = value
+				Me.SendPropertyChanged("DiscAmount")
+				Me.OnDiscAmountChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_OrderEntryID", DbType:="Int")>  _
+	Public Property OrderEntryID() As System.Nullable(Of Integer)
+		Get
+			Return Me._OrderEntryID
+		End Get
+		Set
+			If (Me._OrderEntryID.Equals(value) = false) Then
+				Me.OnOrderEntryIDChanging(value)
+				Me.SendPropertyChanging
+				Me._OrderEntryID = value
+				Me.SendPropertyChanged("OrderEntryID")
+				Me.OnOrderEntryIDChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_StoreWhse", DbType:="Bit NOT NULL")>  _
+	Public Property StoreWhse() As Boolean
+		Get
+			Return Me._StoreWhse
+		End Get
+		Set
+			If ((Me._StoreWhse = value)  _
+						= false) Then
+				Me.OnStoreWhseChanging(value)
+				Me.SendPropertyChanging
+				Me._StoreWhse = value
+				Me.SendPropertyChanged("StoreWhse")
+				Me.OnStoreWhseChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_PreparedQty", DbType:="Int")>  _
+	Public Property PreparedQty() As System.Nullable(Of Integer)
+		Get
+			Return Me._PreparedQty
+		End Get
+		Set
+			If (Me._PreparedQty.Equals(value) = false) Then
+				Me.OnPreparedQtyChanging(value)
+				Me.SendPropertyChanging
+				Me._PreparedQty = value
+				Me.SendPropertyChanged("PreparedQty")
+				Me.OnPreparedQtyChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_LastPurchasedPrice", DbType:="Money")>  _
+	Public Property LastPurchasedPrice() As System.Nullable(Of Decimal)
+		Get
+			Return Me._LastPurchasedPrice
+		End Get
+		Set
+			If (Me._LastPurchasedPrice.Equals(value) = false) Then
+				Me.OnLastPurchasedPriceChanging(value)
+				Me.SendPropertyChanging
+				Me._LastPurchasedPrice = value
+				Me.SendPropertyChanged("LastPurchasedPrice")
+				Me.OnLastPurchasedPriceChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_CreatedAt", DbType:="DateTime NOT NULL")>  _
+	Public Property CreatedAt() As Date
+		Get
+			Return Me._CreatedAt
+		End Get
+		Set
+			If ((Me._CreatedAt = value)  _
+						= false) Then
+				Me.OnCreatedAtChanging(value)
+				Me.SendPropertyChanging
+				Me._CreatedAt = value
+				Me.SendPropertyChanged("CreatedAt")
+				Me.OnCreatedAtChanged
+			End If
+		End Set
+	End Property
+	
+	<Global.System.Data.Linq.Mapping.AssociationAttribute(Name:="SOD_WO_DraftHeader_SOD_WO_DraftDetail", Storage:="_SOD_WO_DraftHeader", ThisKey:="DraftID", OtherKey:="DraftID", IsForeignKey:=true, DeleteOnNull:=true, DeleteRule:="CASCADE")>  _
+	Public Property SOD_WO_DraftHeader() As SOD_WO_DraftHeader
+		Get
+			Return Me._SOD_WO_DraftHeader.Entity
+		End Get
+		Set
+			Dim previousValue As SOD_WO_DraftHeader = Me._SOD_WO_DraftHeader.Entity
+			If ((Object.Equals(previousValue, value) = false)  _
+						OrElse (Me._SOD_WO_DraftHeader.HasLoadedOrAssignedValue = false)) Then
+				Me.SendPropertyChanging
+				If ((previousValue Is Nothing)  _
+							= false) Then
+					Me._SOD_WO_DraftHeader.Entity = Nothing
+					previousValue.SOD_WO_DraftDetails.Remove(Me)
+				End If
+				Me._SOD_WO_DraftHeader.Entity = value
+				If ((value Is Nothing)  _
+							= false) Then
+					value.SOD_WO_DraftDetails.Add(Me)
+					Me._DraftID = value.DraftID
+				Else
+					Me._DraftID = CType(Nothing, Integer)
+				End If
+				Me.SendPropertyChanged("SOD_WO_DraftHeader")
 			End If
 		End Set
 	End Property
