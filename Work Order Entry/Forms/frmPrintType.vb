@@ -2,38 +2,48 @@
 
     Private Sub btnPrint_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnPrint.Click
 
-        If Not txtWO.Text = "" Then
+        Dim orderNumber As Integer
 
-            If clsPickList.orderExist(txtWO.Text) = True Then
+        If Not Integer.TryParse(txtWO.Text.Trim(), orderNumber) Then
+            MessageBox.Show("Input a valid Order Number.", "Message!",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error)
+            txtWO.Focus()
+            Exit Sub
+        End If
 
-                If rbtnPickList.Checked = True Then
+        Dim orderType As Integer? = clsPickList.GetOrderType(orderNumber)
 
-                    frmPrintPicklist.wo = txtWO.Text
-                    frmPrintPicklist.ShowDialog()
+        If Not orderType.HasValue Then
+            MessageBox.Show("Order Number not found!", "Message!",
+                            MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            txtWO.SelectAll()
+            txtWO.Focus()
+            Exit Sub
+        End If
 
-                ElseIf rbtnWo.Checked = True Then
+        If rbtnPickList.Checked Then
+            frmPrintPicklist.wo = orderNumber
+            frmPrintPicklist.ShowDialog()
+        Else
+            Dim templateName As String =
+                OrderPrintRules.GetTemplateName(orderType.Value)
 
-                    frmPrintWo.wo = txtWO.Text
-                    frmPrintWo.Type = "Work Order"
-                    frmPrintWo.ShowDialog()
-
-                ElseIf rbtnQuotes.Checked = True Then
-
-                    frmPrintWo.wo = txtWO.Text
-                    frmPrintWo.Type = "Sales Quotation"
-                    frmPrintWo.ShowDialog()
-
-                End If
-
-                Me.Close()
-
-            Else
-                MessageBox.Show("Order Number not Found!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            If String.IsNullOrEmpty(templateName) Then
+                MessageBox.Show(
+                    "Order Number " & orderNumber &
+                    " has an unsupported order type (" & orderType.Value & ").",
+                    "Unable to Print Order",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Exclamation)
+                Exit Sub
             End If
 
-        Else
-            MessageBox.Show("Input Order Number", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            frmPrintWo.wo = orderNumber
+            frmPrintWo.Type = templateName
+            frmPrintWo.ShowDialog()
         End If
+
+        Me.Close()
     End Sub
 
     Private Sub frmPrintType_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load

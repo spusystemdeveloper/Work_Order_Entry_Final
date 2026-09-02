@@ -1,4 +1,4 @@
-﻿'Public Class frmLogin
+'Public Class frmLogin
 '    Public StoreDb As String = "DVO_STORE_DB"
 '    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
 
@@ -84,9 +84,7 @@ Public Class frmLogin
     Private Sub frmLogin_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Me.ActiveControl = txtUsername
 
-        ' AUTO CONNECT DATABASE on load
         Try
-            ModConnectDB.dbn = StoreDb
             db = New ItemLookUpDataContext(DB_Conn("constr"))
             dbnew = New ItemLookUpDataContext(DB_Conn("constr"))
             database_location = DB_Conn("constr")
@@ -94,68 +92,57 @@ Public Class frmLogin
             MessageBox.Show("Cannot connect to database!" & vbCrLf & ex.Message,
                             "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
-        'For Each p As Process In Process.GetProcesses()
-        '    If Not String.IsNullOrEmpty(p.MainWindowTitle) Then
-        '        MessageBox.Show($"{p.ProcessName} | {p.MainWindowTitle}")
-        '    End If
-        'Next
     End Sub
 
     Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
-
-        ' (1) verify username
-        Dim exist = clsUser.verifyUsername(txtUsername.Text)
-
-        ' (2) Auto connect DB (moved from frmStoreSetup)
         Try
-            ModConnectDB.dbn = StoreDb
-            db = New ItemLookUpDataContext(DB_Conn("constr"))
-            dbnew = New ItemLookUpDataContext(DB_Conn("constr"))
-            database_location = DB_Conn("constr")
+            Dim connectionString = DB_Conn("constr")
+
+            ' Creating a LINQ-to-SQL context does not open the connection.  Test it
+            ' before running any authentication query so connection failures stay
+            ' inside this error boundary.
+            Using connectionTest As New ItemLookUpDataContext(connectionString)
+                connectionTest.Connection.Open()
+                connectionTest.Connection.Close()
+            End Using
+
+            db = New ItemLookUpDataContext(connectionString)
+            dbnew = New ItemLookUpDataContext(connectionString)
+            database_location = connectionString
+
+            If Not clsUser.verifyUsername(txtUsername.Text) Then
+                MessageBox.Show("Username not Registered!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                Exit Sub
+            End If
+
+            If txtPassword.Text <> clsUser.getUsernamePassword(txtUsername.Text) Then
+                MessageBox.Show("Please Check your Credentials!!!!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                Exit Sub
+            End If
+
+            Label3.Text = "Loading Items .. Please Wait"
+            clsUser.getUserDetials(txtUsername.Text)
+
+            Dim userRegister As Integer = CInt(frmItemLookUp.usrRegister)
+            If Not ValidateRegisterRules(userRegister) Then
+                Label3.Text = "Login"
+                Exit Sub
+            End If
+
+            frmItemLookUp.ToolStripStatusLabel3.Text = "Register : " & frmItemLookUp.usrRegister
+            frmItemLookUp.ToolStripStatusLabel2.Text = "User : " & frmItemLookUp.usrFullname
+            frmItemLookUp.usrUsername = txtUsername.Text
+
+            txtUsername.Text = ""
+            txtPassword.Text = ""
+
+            frmItemLookUp.Show()
+            Timer1.Start()
         Catch ex As Exception
             MessageBox.Show("Database connection failed!" & vbCrLf & ex.Message,
                             "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            Exit Sub
-        End Try
-
-        ' (3) If username does not exist
-        If exist = False Then
-            MessageBox.Show("Username not Registered!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-            Exit Sub
-        End If
-
-        ' (4) Validate password
-        If txtPassword.Text <> clsUser.getUsernamePassword(txtUsername.Text) Then
-            MessageBox.Show("Please Check your Credentials!!!!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-            Exit Sub
-        End If
-
-        ' (5) Successful Login - start loading
-        Label3.Text = "Loading Items .. Please Wait"
-
-        ' Load user details (includes UserRegister) for validation + status bar
-        clsUser.getUserDetials(txtUsername.Text)
-
-        ' (6) Validate user register vs RMS registry register number
-        '     and also ensure no RMS apps (SOMANAGER, SOPOSUSER, Inventory Transfer Manager)
-        '     are blocking a register change.
-        Dim userRegister As Integer = CInt(frmItemLookUp.usrRegister)
-        If Not ValidateRegisterRules(userRegister) Then
-            ' Validation failed (registry mismatch while RMS apps running, or registry error)
             Label3.Text = "Login"
-            Exit Sub
-        End If
-
-        ' Continue login
-        frmItemLookUp.ToolStripStatusLabel3.Text = "Register : " & frmItemLookUp.usrRegister
-        frmItemLookUp.ToolStripStatusLabel2.Text = "User : " & frmItemLookUp.usrFullname
-        frmItemLookUp.usrUsername = txtUsername.Text
-
-        txtUsername.Text = ""
-        txtPassword.Text = ""
-
-        frmItemLookUp.Show()
-        Timer1.Start()
+        End Try
 
     End Sub
 

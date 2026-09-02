@@ -23,11 +23,10 @@ Partial Class frmPrintType
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         Me.txtWO = New System.Windows.Forms.TextBox()
-        Me.rbtnWo = New System.Windows.Forms.RadioButton()
+        Me.rbtnOrder = New System.Windows.Forms.RadioButton()
         Me.rbtnPickList = New System.Windows.Forms.RadioButton()
         Me.btnPrint = New System.Windows.Forms.Button()
         Me.Label1 = New System.Windows.Forms.Label()
-        Me.rbtnQuotes = New System.Windows.Forms.RadioButton()
         Me.SuspendLayout()
         '
         'txtWO
@@ -39,24 +38,24 @@ Partial Class frmPrintType
         Me.txtWO.TabIndex = 0
         Me.txtWO.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
         '
-        'rbtnWo
+        'rbtnOrder
         '
-        Me.rbtnWo.AutoSize = True
-        Me.rbtnWo.Checked = True
-        Me.rbtnWo.Font = New System.Drawing.Font("Century Gothic", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.rbtnWo.Location = New System.Drawing.Point(12, 35)
-        Me.rbtnWo.Name = "rbtnWo"
-        Me.rbtnWo.Size = New System.Drawing.Size(100, 20)
-        Me.rbtnWo.TabIndex = 1
-        Me.rbtnWo.TabStop = True
-        Me.rbtnWo.Text = "Work Order"
-        Me.rbtnWo.UseVisualStyleBackColor = True
+        Me.rbtnOrder.AutoSize = True
+        Me.rbtnOrder.Checked = True
+        Me.rbtnOrder.Font = New System.Drawing.Font("Century Gothic", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.rbtnOrder.Location = New System.Drawing.Point(12, 35)
+        Me.rbtnOrder.Name = "rbtnOrder"
+        Me.rbtnOrder.Size = New System.Drawing.Size(116, 20)
+        Me.rbtnOrder.TabIndex = 1
+        Me.rbtnOrder.TabStop = True
+        Me.rbtnOrder.Text = "Order Number"
+        Me.rbtnOrder.UseVisualStyleBackColor = True
         '
         'rbtnPickList
         '
         Me.rbtnPickList.AutoSize = True
         Me.rbtnPickList.Font = New System.Drawing.Font("Century Gothic", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.rbtnPickList.Location = New System.Drawing.Point(211, 35)
+        Me.rbtnPickList.Location = New System.Drawing.Point(150, 35)
         Me.rbtnPickList.Name = "rbtnPickList"
         Me.rbtnPickList.Size = New System.Drawing.Size(76, 20)
         Me.rbtnPickList.TabIndex = 2
@@ -83,29 +82,16 @@ Partial Class frmPrintType
         Me.Label1.TabIndex = 4
         Me.Label1.Text = "Select Template"
         '
-        'rbtnQuotes
-        '
-        Me.rbtnQuotes.AutoSize = True
-        Me.rbtnQuotes.Font = New System.Drawing.Font("Century Gothic", 9.75!, System.Drawing.FontStyle.Bold)
-        Me.rbtnQuotes.Location = New System.Drawing.Point(116, 35)
-        Me.rbtnQuotes.Name = "rbtnQuotes"
-        Me.rbtnQuotes.Size = New System.Drawing.Size(89, 20)
-        Me.rbtnQuotes.TabIndex = 5
-        Me.rbtnQuotes.TabStop = True
-        Me.rbtnQuotes.Text = "Quotation"
-        Me.rbtnQuotes.UseVisualStyleBackColor = True
-        '
         'frmPrintType
         '
         Me.AcceptButton = Me.btnPrint
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 16.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.ClientSize = New System.Drawing.Size(427, 102)
-        Me.Controls.Add(Me.rbtnQuotes)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.btnPrint)
         Me.Controls.Add(Me.rbtnPickList)
-        Me.Controls.Add(Me.rbtnWo)
+        Me.Controls.Add(Me.rbtnOrder)
         Me.Controls.Add(Me.txtWO)
         Me.Font = New System.Drawing.Font("Century Gothic", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
@@ -120,9 +106,8 @@ Partial Class frmPrintType
 
     End Sub
     Friend WithEvents txtWO As System.Windows.Forms.TextBox
-    Friend WithEvents rbtnWo As System.Windows.Forms.RadioButton
+    Friend WithEvents rbtnOrder As System.Windows.Forms.RadioButton
     Friend WithEvents rbtnPickList As System.Windows.Forms.RadioButton
     Friend WithEvents btnPrint As System.Windows.Forms.Button
     Friend WithEvents Label1 As System.Windows.Forms.Label
-    Friend WithEvents rbtnQuotes As RadioButton
 End Class

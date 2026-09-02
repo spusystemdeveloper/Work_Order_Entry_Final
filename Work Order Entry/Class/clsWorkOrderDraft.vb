@@ -35,19 +35,22 @@ Public Class clsWorkOrderDraft
         Return key
     End Function
 
-    Public Shared Sub EnsureTables()
+    Public Shared Function EnsureTables() As Boolean
         Try
             Using db = GetDB()
                 db.SOD_WO_DraftHeaders.Take(1).ToList()
                 db.SOD_WO_DraftDetails.Take(1).ToList()
             End Using
-        Catch ex As Exception
-            Throw New ApplicationException("Draft tables are missing or unavailable. Please run SOD_WO_DraftHeader.sql and SOD_WO_DraftDetail.sql in the Work Order database.", ex)
+            Return True
+        Catch
+            ' Draft recovery is optional. A store that has not deployed the custom
+            ' draft tables must still be able to create, update, and cancel orders.
+            Return False
         End Try
-    End Sub
+    End Function
 
     Public Shared Function HasDraft(ByVal registerID As String, ByVal userName As String) As Boolean
-        EnsureTables()
+        If Not EnsureTables() Then Return False
 
         Dim registerKey As String = ResolveRegisterID(registerID)
         If registerKey = String.Empty Then Return False
@@ -62,7 +65,7 @@ Public Class clsWorkOrderDraft
     End Function
 
     Public Shared Function GetDraftSummary(ByVal registerID As String, ByVal userName As String) As String
-        EnsureTables()
+        If Not EnsureTables() Then Return "Draft recovery is not installed"
 
         Dim registerKey As String = ResolveRegisterID(registerID)
         If registerKey = String.Empty Then Return "Unsaved work order"
@@ -90,7 +93,7 @@ Public Class clsWorkOrderDraft
     End Function
 
     Public Shared Sub DeleteDraft(ByVal registerID As String, ByVal userName As String)
-        EnsureTables()
+        If Not EnsureTables() Then Exit Sub
 
         Dim registerKey As String = ResolveRegisterID(registerID)
         If registerKey = String.Empty Then Exit Sub
@@ -110,7 +113,7 @@ Public Class clsWorkOrderDraft
     End Sub
 
     Public Shared Sub SaveDraft(ByVal form As frmItemLookUp)
-        EnsureTables()
+        If Not EnsureTables() Then Exit Sub
 
         Dim registerKey As String = ResolveRegisterID()
         If String.IsNullOrWhiteSpace(registerKey) Then
@@ -218,7 +221,7 @@ Public Class clsWorkOrderDraft
     End Sub
 
     Public Shared Sub LoadDraft(ByVal form As frmItemLookUp)
-        EnsureTables()
+        If Not EnsureTables() Then Exit Sub
 
         Dim registerKey As String = ResolveRegisterID()
         If String.IsNullOrWhiteSpace(registerKey) Then Exit Sub

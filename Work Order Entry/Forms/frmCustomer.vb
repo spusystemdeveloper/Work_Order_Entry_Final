@@ -93,6 +93,7 @@
             dTotalVSales = 0
             dTotalSales = 0
 
+            Me.DialogResult = DialogResult.OK
             Me.Close()
             frmItemLookUp.txtSearch.Focus()
         Catch ex As Exception
@@ -104,6 +105,7 @@
     End Sub
     Private Sub cmdCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdCancel.Click
 
+        Me.DialogResult = DialogResult.Cancel
         Me.Dispose()
 
     End Sub

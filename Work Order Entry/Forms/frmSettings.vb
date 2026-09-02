@@ -35,11 +35,22 @@
         txtWebRep.Text = My.Settings.ImportDefaultRep
         txtWebShip.Text = My.Settings.ImportDefaultShipping
 
+        chkEnableBranchQueue.Checked = StoreProcessingSettings.QueueingEnabled
+        chkAllowOrderGrouping.Checked = StoreProcessingSettings.AllowOrderGrouping
+        chkShowForInvoice.Checked = StoreProcessingSettings.ShowForInvoiceButton
+        chkShowImportButton.Checked = StoreProcessingSettings.ShowImportButton
+        chkAllowBranchSelection.Checked =
+            StoreProcessingSettings.BranchSelectionEnabled
+        txtExpectedDatabase.Text =
+            StoreProcessingSettings.ExpectedDatabaseName
+        UpdateBranchFunctionControlState()
+        UpdateBranchSelectionControlState()
+
         LoadCustType()
 
     End Sub
 
-  
+
 
 
     Private Sub cmdOK_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdOK.Click
@@ -170,11 +181,78 @@
         'End If
     End Sub
 
- 
+
     Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
 
         frmUser.ShowDialog()
 
+    End Sub
+
+    Private Sub cmdSaveBranchSettings_Click(ByVal sender As System.Object,
+                                            ByVal e As System.EventArgs) Handles cmdSaveBranchSettings.Click
+        Dim expectedDatabaseName As String = txtExpectedDatabase.Text.Trim()
+
+        If Not chkAllowBranchSelection.Checked AndAlso
+           String.IsNullOrWhiteSpace(expectedDatabaseName) Then
+            MessageBox.Show(
+                "Enter the assigned database when branch selection is disabled.",
+                "Assigned Database Required",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Exclamation)
+            txtExpectedDatabase.Focus()
+            Exit Sub
+        End If
+
+        Try
+            StoreProcessingSettings.SaveBranchSettings(
+                chkEnableBranchQueue.Checked,
+                chkAllowOrderGrouping.Checked,
+                chkShowForInvoice.Checked,
+                chkShowImportButton.Checked,
+                chkAllowBranchSelection.Checked,
+                expectedDatabaseName)
+            MessageBox.Show(
+                "Branch settings were saved." & vbCrLf &
+                "Restart the application to apply branch selection changes.",
+                "Branch Settings",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+        Catch ex As UnauthorizedAccessException
+            MessageBox.Show(
+                "Windows did not allow this application to update its configuration file." &
+                vbCrLf & "Run the application with permission to modify its installation folder.",
+                "Unable to Save Branch Settings",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        Catch ex As Exception
+            MessageBox.Show(
+                "Unable to save branch function visibility." & vbCrLf & ex.Message,
+                "Unable to Save Branch Settings",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub chkEnableBranchQueue_CheckedChanged(
+        ByVal sender As System.Object,
+        ByVal e As System.EventArgs) Handles chkEnableBranchQueue.CheckedChanged
+        UpdateBranchFunctionControlState()
+    End Sub
+
+    Private Sub UpdateBranchFunctionControlState()
+        chkAllowOrderGrouping.Enabled = chkEnableBranchQueue.Checked
+        chkShowForInvoice.Enabled = chkEnableBranchQueue.Checked
+    End Sub
+
+    Private Sub chkAllowBranchSelection_CheckedChanged(
+        ByVal sender As System.Object,
+        ByVal e As System.EventArgs) Handles chkAllowBranchSelection.CheckedChanged
+        UpdateBranchSelectionControlState()
+    End Sub
+
+    Private Sub UpdateBranchSelectionControlState()
+        lblAssignedDatabase.Enabled = Not chkAllowBranchSelection.Checked
+        txtExpectedDatabase.Enabled = Not chkAllowBranchSelection.Checked
     End Sub
 
     Private Sub cmdAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdAdd.Click
@@ -213,8 +291,8 @@
         If gridCustType.Rows.Count > 0 Then
 
             Dim check = (From a In db.SOD_WO_CustTypes
-                     Where a.CustType.Equals(txtCustType.Text)
-                     Select a.CustType).Count
+                         Where a.CustType.Equals(txtCustType.Text)
+                         Select a.CustType).Count
 
             Dim custype = gridCustType.Item(1, gridCustType.CurrentRow.Index).Value
 
@@ -255,12 +333,12 @@ addcustype:
         txtCustType.Text = String.Empty
         cmdAdd.Text = "Add"
         gridCustType.DataSource = clsCustomer.GetCustType
-        
+
     End Sub
 
     Private Sub cmdDel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdDel.Click
         If gridCustType.Rows.Count > 0 Then
-            
+
             Dim typeid = gridCustType.Item(0, gridCustType.CurrentRow.Index).Value
 
             clsCustomer.DelCustType(typeid)

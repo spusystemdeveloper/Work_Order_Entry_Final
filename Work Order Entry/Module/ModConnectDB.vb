@@ -196,6 +196,26 @@ Module ModConnectDB
 
     End Function
 
+    Public Function load_data(ByVal sql As String,
+                              ByVal parameters As IEnumerable(Of SqlParameter)) As DataTable
+        Dim result As New DataTable()
+
+        Using connection As New SqlConnection(DB_Conn("constr"))
+            Using command As New SqlCommand(sql, connection)
+                For Each parameter In parameters
+                    command.Parameters.Add(parameter)
+                Next
+
+                Using adapter As New SqlDataAdapter(command)
+                    connection.Open()
+                    adapter.Fill(result)
+                End Using
+            End Using
+        End Using
+
+        Return result
+    End Function
+
 
 
 End Module

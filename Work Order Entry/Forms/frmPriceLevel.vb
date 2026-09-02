@@ -64,7 +64,7 @@
             clsItemLookUp.LoadLevel(x, txtItemCode.Text, 0)
         Next x
 
-        SelectCustomerPriceLevel()
+        SelectTopPriceLevel()
         gridLevel.Columns(1).DefaultCellStyle.Format = "C"
 
     End Sub
@@ -82,33 +82,13 @@
         End Select
     End Function
 
-    Private Sub SelectCustomerPriceLevel()
+    Private Sub SelectTopPriceLevel()
         If gridLevel.RowCount = 0 Then Exit Sub
 
-        Dim levelText As String = frmItemLookUp.txtPriceLevel.Text.Trim().ToUpperInvariant()
-        Dim expectedLabel As String = "PRICE (RETAIL)"
-
-        Select Case levelText
-            Case "PRICE", "PRICE (RETAIL)"
-                expectedLabel = "PRICE (RETAIL)"
-            Case "PRICEA", "PRICE A", "PRICE A (WHOLESALE)"
-                expectedLabel = "PRICE A (WHOLESALE)"
-            Case "PRICEB", "PRICE B", "PRICE B (D1)"
-                expectedLabel = "PRICE B (D1)"
-            Case "PRICEC", "PRICE C", "PRICE C (D2)"
-                expectedLabel = "PRICE C (D2)"
-        End Select
-
-        For Each row As DataGridViewRow In gridLevel.Rows
-            If row.IsNewRow OrElse row.Cells(0).Value Is Nothing Then Continue For
-            If row.Cells(0).Value.ToString().Trim().ToUpperInvariant() = expectedLabel Then
-                gridLevel.CurrentCell = row.Cells(0)
-                row.Selected = True
-                Exit Sub
-            End If
-        Next
-
+        gridLevel.ClearSelection()
         gridLevel.CurrentCell = gridLevel.Rows(0).Cells(0)
+        gridLevel.Rows(0).Selected = True
+        gridLevel.FirstDisplayedScrollingRowIndex = 0
     End Sub
 
     Public Sub DisplayPrice(ByVal sPriceType As String, ByVal dPrice As Double)
@@ -131,7 +111,7 @@
 
         gridLevel.Rows.Add(newTimeRecord)
         gridLevel.AllowUserToAddRows = previousAllowUserToAddRows
-        gridLevel.CurrentCell = gridLevel(1, gridLevel.RowCount - 1)
+        SelectTopPriceLevel()
 
     End Sub
 

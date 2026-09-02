@@ -87,6 +87,7 @@ Public Class frmRecallSelection
     Private Sub frmRecallSelection_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Selection()
         Me.AcceptButton = btnOK ' Pressing Enter triggers btnOK.Click
+        Me.CancelButton = Button1
         Me.KeyPreview = True
     End Sub
 
@@ -129,8 +130,9 @@ Public Class frmRecallSelection
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+        SelectedOption = String.Empty
+        Me.DialogResult = DialogResult.Cancel
         Me.Close()
-        frmRecall.Close()
     End Sub
 
     Private Sub frmRecallSelection_KeyDown(sender As Object, e As KeyEventArgs) Handles MyBase.KeyDown

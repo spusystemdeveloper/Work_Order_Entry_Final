@@ -4,27 +4,77 @@
 
         Try
 
-            Dim usr = (From u In db.SOD_WO_Users
-                   Select u.UserID, u.UserFullName, u.UserName, u.UserRegister).ToList
+            Using dbx = GetDB()
+                Dim usr = (From u In dbx.SOD_WO_Users
+                           Select u.UserID, u.UserFullName, u.UserName, u.UserRegister).ToList
 
-            Return usr
+                Return usr
+            End Using
 
         Catch ex As Exception
             MessageBox.Show(ex.Message)
             Return Nothing
         End Try
-        
+
+
+    End Function
+    Public Shared Function CreateInitialWOUser(ByVal username As String, ByVal pass As String, ByVal register As Integer) As Boolean
+
+        Try
+            If HasAnyWOUsers() Then
+                Return False
+            End If
+
+            Dim query As New SOD_WO_User With {
+                .UserFullName = username,
+                .UserName = username,
+                .UserPass = pass,
+                .UserRegister = register
+            }
+
+            db.SOD_WO_Users.InsertOnSubmit(query)
+            db.SubmitChanges()
+
+            Return True
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+            Return False
+        End Try
 
     End Function
 
+    Public Shared Function HasAnyWOUsers() As Boolean
+
+        Try
+            Dim exist = (From u In db.SOD_WO_Users
+                         Select u).Count
+
+            If exist = 0 Then
+
+                Return False
+
+            Else
+
+                Return True
+
+            End If
+
+        Catch ex As Exception
+            MessageBox.Show(ex.Message)
+            Return False
+        End Try
+
+    End Function
     Public Shared Function viewUserWithPass() As Object
 
         Try
 
-            Dim usr = (From u In db.SOD_WO_Users
-                   Select u.UserID, u.UserFullName, u.UserName, u.UserRegister, u.UserPass).ToList
+            Using dbx = GetDB()
+                Dim usr = (From u In dbx.SOD_WO_Users
+                           Select u.UserID, u.UserFullName, u.UserName, u.UserRegister, u.UserPass).ToList
 
-            Return usr
+                Return usr
+            End Using
 
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -37,16 +87,18 @@
     Public Shared Sub addUsers(ByVal name As String, ByVal username As String, ByVal pass As String, ByVal register As Integer)
 
         Try
-            Dim query As New SOD_WO_User With {
-                .UserFullName = name, _
-                .UserName = username, _
-                .UserPass = pass, _
-                .UserRegister = register
-                }
+            Using dbx = GetDB()
+                Dim query As New SOD_WO_User With {
+                    .UserFullName = name,
+                    .UserName = username,
+                    .UserPass = pass,
+                    .UserRegister = register
+                    }
 
-            db.SOD_WO_Users.InsertOnSubmit(query)
+                dbx.SOD_WO_Users.InsertOnSubmit(query)
 
-            db.SubmitChanges()
+                dbx.SubmitChanges()
+            End Using
 
             MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
@@ -60,15 +112,17 @@
     Public Shared Sub updateUser(ByVal userid As Integer, ByVal name As String, ByVal username As String, ByVal pass As String, ByVal register As Integer)
 
         Try
-            Dim user = (From a In db.SOD_WO_Users Where a.UserID.Equals(userid)
-                         Select a).SingleOrDefault
+            Using dbx = GetDB()
+                Dim user = (From a In dbx.SOD_WO_Users Where a.UserID.Equals(userid)
+                            Select a).SingleOrDefault
 
-            user.UserFullName = name
-            user.UserName = username
-            user.UserPass = pass
-            user.UserRegister = register
+                user.UserFullName = name
+                user.UserName = username
+                user.UserPass = pass
+                user.UserRegister = register
 
-            db.SubmitChanges()
+                dbx.SubmitChanges()
+            End Using
 
             MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
@@ -81,12 +135,14 @@
     Public Shared Sub delUser(ByVal userid As Integer)
 
         Try
-            Dim del = (From a In db.SOD_WO_Users Where a.UserID.Equals(userid)
-                         Select a).SingleOrDefault
+            Using dbx = GetDB()
+                Dim del = (From a In dbx.SOD_WO_Users Where a.UserID.Equals(userid)
+                           Select a).SingleOrDefault
 
-            db.SOD_WO_Users.DeleteOnSubmit(del)
+                dbx.SOD_WO_Users.DeleteOnSubmit(del)
 
-            db.SubmitChanges()
+                dbx.SubmitChanges()
+            End Using
 
             MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
@@ -99,65 +155,73 @@
 
     Public Shared Function verifyUsername(ByVal username As String) As Boolean
 
-        Dim exist = (From u In db.SOD_WO_Users Where u.UserName.Equals(username)
-                     Select u).Count
+        Using dbx = GetDB()
+            Dim exist = (From u In dbx.SOD_WO_Users Where u.UserName.Equals(username)
+                         Select u).Count
 
-        If exist = 0 Then
+            If exist = 0 Then
 
-            Return False
+                Return False
 
-        Else
+            Else
 
-            Return True
+                Return True
 
-        End If
+            End If
+        End Using
 
     End Function
 
     Public Shared Function getUsernamePassword(ByVal username As String) As String
 
-        Dim pass = (From u In db.SOD_WO_Users Where u.UserName.Equals(username)
-                    Select u.UserPass).SingleOrDefault
+        Using dbx = GetDB()
+            Dim pass = (From u In dbx.SOD_WO_Users Where u.UserName.Equals(username)
+                        Select u.UserPass).SingleOrDefault
 
-        Return pass
+            Return pass
+        End Using
 
     End Function
 
     Public Shared Sub getUserDetials(ByVal username As String)
 
         Try
-            Dim pass = (From u In db.SOD_WO_Users Where u.UserName.Equals(username)
-                   Select u).SingleOrDefault
+            Using dbx = GetDB()
+                Dim pass = (From u In dbx.SOD_WO_Users Where u.UserName.Equals(username)
+                            Select u).SingleOrDefault
 
-            frmItemLookUp.usrFullname = pass.UserFullName
-            frmItemLookUp.usrRegister = pass.UserRegister
-            frmItemLookUp.usrID = pass.UserID
+                frmItemLookUp.usrFullname = pass.UserFullName
+                frmItemLookUp.usrRegister = pass.UserRegister
+                frmItemLookUp.usrID = pass.UserID
+            End Using
 
         Catch ex As Exception
 
             MessageBox.Show(ex.Message)
         End Try
-       
+
     End Sub
 
     Public Shared Sub AddCustTypeUsers(ByVal _custypeid As Integer, ByVal _userid As String)
 
         Try
 
-            Dim check = (From a In db.SOD_WO_CustTypeUsers
-                         Where a.CustTypeID.Equals(_custypeid) And a.USERID.Equals(_userid)).Count
+            Using dbx = GetDB()
+                Dim check = (From a In dbx.SOD_WO_CustTypeUsers
+                             Where a.CustTypeID.Equals(_custypeid) And a.USERID.Equals(_userid)).Count
 
-            If check = 0 Then
-                Dim query As New SOD_WO_CustTypeUser With {
-                .CustTypeID = _custypeid, _
-                .USERID = _userid
-                }
+                If check = 0 Then
+                    Dim query As New SOD_WO_CustTypeUser With {
+                    .CustTypeID = _custypeid,
+                    .USERID = _userid
+                    }
 
 
-                db.SOD_WO_CustTypeUsers.InsertOnSubmit(query)
+                    dbx.SOD_WO_CustTypeUsers.InsertOnSubmit(query)
 
-                db.SubmitChanges()
-            End If
+                    dbx.SubmitChanges()
+                End If
+            End Using
 
         Catch ex As Exception
             MessageBox.Show(ex.Message)
@@ -169,13 +233,15 @@
     Public Shared Sub DelCustTypeUser(ByVal _custypeid As Integer, ByVal _userid As String)
 
         Try
-            Dim del = (From a In db.SOD_WO_CustTypeUsers
-                       Where a.CustTypeID.Equals(_custypeid) And a.USERID.Equals(_userid)
-                       Select a).SingleOrDefault
+            Using dbx = GetDB()
+                Dim del = (From a In dbx.SOD_WO_CustTypeUsers
+                           Where a.CustTypeID.Equals(_custypeid) And a.USERID.Equals(_userid)
+                           Select a).SingleOrDefault
 
-            db.SOD_WO_CustTypeUsers.DeleteOnSubmit(del)
+                dbx.SOD_WO_CustTypeUsers.DeleteOnSubmit(del)
 
-            db.SubmitChanges()
+                dbx.SubmitChanges()
+            End Using
 
             MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
 

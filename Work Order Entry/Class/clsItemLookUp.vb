@@ -14,11 +14,13 @@
             'Return item
 
 
-            Dim item = (From i In db.SOD_fntbl_NestedSearchItem(bEmployee, iPrice, sSearch) _
-                        Select i.ItemLookUpCode, i.ItemName, i.MyPrice, i.Cost, i.AvailableQty, i.ParentQuantity, i.TaxID, _
-                        i.SubDescription2, i.Price, i.ID, i.Description, i.ExtendedDescription, i.ItemType, i.Inactive, i.ItemDes, i.SKULevel _
-                        Where Inactive = 0 Order By ItemLookUpCode.Substring(0, 5), SubDescription2).ToList
-            Return item
+            Using dbx = GetDB()
+                Dim item = (From i In dbx.SOD_fntbl_NestedSearchItem(bEmployee, iPrice, sSearch)
+                            Select i.ItemLookUpCode, i.ItemName, i.MyPrice, i.Cost, i.AvailableQty, i.ParentQuantity, i.TaxID,
+                            i.SubDescription2, i.Price, i.ID, i.Description, i.ExtendedDescription, i.ItemType, i.Inactive, i.ItemDes, i.SKULevel
+                            Where Inactive = 0 Order By ItemLookUpCode.Substring(0, 5), SubDescription2).ToList
+                Return item
+            End Using
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -41,13 +43,15 @@
             'Return item
 
 
-            Dim item = (From i In db.SOD_fntbl_NestedSearchItem(bEmployee, iPrice, sSearch) _
-                         Select i _
-                         Where i.Inactive = False _
-                         Order By _
-                         i.Description).Count
+            Using dbx = GetDB()
+                Dim item = (From i In dbx.SOD_fntbl_NestedSearchItem(bEmployee, iPrice, sSearch)
+                            Select i
+                            Where i.Inactive = False
+                            Order By
+                             i.Description).Count
 
-            Return item
+                Return item
+            End Using
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -384,44 +388,46 @@
             dPrice = 0
             sPriceType = ""
 
-            Dim mask = (From c In db.SOD_WO_Confs Select c.PriceLevel).FirstOrDefault
+            Using dbx = GetDB()
+                Dim mask = (From c In dbx.SOD_WO_Confs Select c.PriceLevel).FirstOrDefault
 
-            Dim query = (From L In db.SOD_fntbl_PriceLevel(sCode)
-                         Select L)
-
-
-            For Each Level In query
-
-                If iLevel = 0 Then
-                    sPriceType = "PRICE (RETAIL)"
-                    dPrice = Level.Price
-                ElseIf iLevel = 1 Then
-                    sPriceType = "PRICE A (WHOLESALE)"
-                    dPrice = Level.PriceA
-                ElseIf iLevel = 2 Then
-                    sPriceType = "PRICE B (D1)"
-                    dPrice = Level.PriceB
-                ElseIf iLevel = 3 Then
-                    sPriceType = "PRICE C (D2)"
-                    dPrice = Level.PriceC
-                End If
+                Dim query = (From L In dbx.SOD_fntbl_PriceLevel(sCode)
+                             Select L).ToList
 
 
-                If mask = "PRICE (RETAIL)" Then
-                    dPriceMask = Level.Price
-                ElseIf mask = "PRICE A (WHOLESALE)" Then
-                    dPriceMask = Level.PriceA
-                ElseIf mask = "PRICE B (D1)" Then
-                    dPriceMask = Level.PriceB
-                ElseIf mask = "PRICE C (D2)" Then
-                    dPriceMask = Level.PriceC
-                ElseIf mask = "NONE" Then
-                    'dPriceMask = Level.PriceC
-                End If
+                For Each Level In query
 
-                dLowest = dPriceMask
+                    If iLevel = 0 Then
+                        sPriceType = "PRICE (RETAIL)"
+                        dPrice = Level.Price
+                    ElseIf iLevel = 1 Then
+                        sPriceType = "PRICE A (WHOLESALE)"
+                        dPrice = Level.PriceA
+                    ElseIf iLevel = 2 Then
+                        sPriceType = "PRICE B (D1)"
+                        dPrice = Level.PriceB
+                    ElseIf iLevel = 3 Then
+                        sPriceType = "PRICE C (D2)"
+                        dPrice = Level.PriceC
+                    End If
 
-            Next
+
+                    If mask = "PRICE (RETAIL)" Then
+                        dPriceMask = Level.Price
+                    ElseIf mask = "PRICE A (WHOLESALE)" Then
+                        dPriceMask = Level.PriceA
+                    ElseIf mask = "PRICE B (D1)" Then
+                        dPriceMask = Level.PriceB
+                    ElseIf mask = "PRICE C (D2)" Then
+                        dPriceMask = Level.PriceC
+                    ElseIf mask = "NONE" Then
+                        'dPriceMask = Level.PriceC
+                    End If
+
+                    dLowest = dPriceMask
+
+                Next
+            End Using
 
             Dim sLevel As String
 
@@ -458,13 +464,15 @@
 
             Dim dPriceC As Double
 
-            Dim item = (From i In db.SOD_fntbl_PriceLevel(sItemCode)).ToList
+            Using dbx = GetDB()
+                Dim item = (From i In dbx.SOD_fntbl_PriceLevel(sItemCode)).ToList
 
-            For Each rs In item
+                For Each rs In item
 
-                dPriceC = rs.PriceC
+                    dPriceC = rs.PriceC
 
-            Next
+                Next
+            End Using
 
             Return dPriceC
         Catch ex As Exception
@@ -482,18 +490,20 @@
 
 
 
-            Dim conf = (From c In db.SOD_WO_Confs).ToList()(0)
+            Using dbx = GetDB()
+                Dim conf = (From c In dbx.SOD_WO_Confs).ToList()(0)
 
-            conf.LimitEntry = iLimit
-            conf.PriceLevel = iLevel
-            conf.StoreID = iStoreID
-            conf.AllowPriceChange = allowprice
+                conf.LimitEntry = iLimit
+                conf.PriceLevel = iLevel
+                conf.StoreID = iStoreID
+                conf.AllowPriceChange = allowprice
 
-            Try
-                db.SubmitChanges()
-            Catch ex As Exception
-                MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
-            End Try
+                Try
+                    dbx.SubmitChanges()
+                Catch ex As Exception
+                    MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
+                End Try
+            End Using
 
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -509,15 +519,17 @@
         Try
 
 
-            Dim conf = (From c In db.SOD_WO_Confs).ToList()(0)
+            Using dbx = GetDB()
+                Dim conf = (From c In dbx.SOD_WO_Confs).ToList()(0)
 
-            conf.Password = iPass
+                conf.Password = iPass
 
-            Try
-                db.SubmitChanges()
-            Catch ex As Exception
-                MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
-            End Try
+                Try
+                    dbx.SubmitChanges()
+                Catch ex As Exception
+                    MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
+                End Try
+            End Using
 
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -534,15 +546,17 @@
 
 
 
-            Dim conf = (From c In db.SOD_WO_Confs).ToList()(0)
+            Using dbx = GetDB()
+                Dim conf = (From c In dbx.SOD_WO_Confs).ToList()(0)
 
-            conf.Password2 = iPass2
+                conf.Password2 = iPass2
 
-            Try
-                db.SubmitChanges()
-            Catch ex As Exception
-                MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
-            End Try
+                Try
+                    dbx.SubmitChanges()
+                Catch ex As Exception
+                    MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
+                End Try
+            End Using
 
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -560,15 +574,17 @@
 
 
 
-            Dim conf = (From c In db.SOD_WO_Confs).ToList()(0)
+            Using dbx = GetDB()
+                Dim conf = (From c In dbx.SOD_WO_Confs).ToList()(0)
 
-            conf.Password3 = iPass3
+                conf.Password3 = iPass3
 
-            Try
-                db.SubmitChanges()
-            Catch ex As Exception
-                MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
-            End Try
+                Try
+                    dbx.SubmitChanges()
+                Catch ex As Exception
+                    MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
+                End Try
+            End Using
 
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -581,9 +597,11 @@
 
         Try
 
-            Dim conf = (From c In db.SOD_WO_Confs Where c.Password.Equals(spass) Or c.Password2.Equals(spass) Or c.Password3.Equals(spass)).Count
+            Using dbx = GetDB()
+                Dim conf = (From c In dbx.SOD_WO_Confs Where c.Password.Equals(spass) Or c.Password2.Equals(spass) Or c.Password3.Equals(spass)).Count
 
-            Return conf
+                Return conf
+            End Using
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -598,9 +616,11 @@
         Try
 
 
-            Dim conf = (From i In db.SOD_WO_Confs).ToList
+            Using dbx = GetDB()
+                Dim conf = (From i In dbx.SOD_WO_Confs).ToList
 
-            Return conf
+                Return conf
+            End Using
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -616,10 +636,12 @@
         Try
 
 
-            Dim sType = (From a In db.Items
-                     Where a.ItemLookupCode.Equals(sItemCode)
-                     Select a.ItemType).SingleOrDefault
-            Return sType
+            Using dbx = GetDB()
+                Dim sType = (From a In dbx.Items
+                             Where a.ItemLookupCode.Equals(sItemCode)
+                             Select a.ItemType).SingleOrDefault
+                Return sType
+            End Using
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0012", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -633,9 +655,11 @@
         Try
 
 
-            Dim isAllow = (From a In db.SOD_WO_Confs
-                         Select a.StoreID).SingleOrDefault
-            Return isAllow
+            Using dbx = GetDB()
+                Dim isAllow = (From a In dbx.SOD_WO_Confs
+                               Select a.StoreID).SingleOrDefault
+                Return isAllow
+            End Using
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0013", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -649,17 +673,17 @@
 
         Try
 
-            Dim db3 = New ItemLookUpDataContext(DB_Conn("constr"))
+            Using dbx = GetDB()
+                Dim available = 0
+                Dim qty = (From a In dbx.Items
+                           Where a.ItemLookupCode.Equals(itemid)
+                           Select New With {.Available = a.Quantity - a.QuantityCommitted})
+                For Each x In qty
+                    available = x.Available
+                Next
 
-            Dim available = 0
-            Dim qty = (From a In db3.Items
-                       Where a.ItemLookupCode.Equals(itemid)
-                       Select New With {.Available = a.Quantity - a.QuantityCommitted})
-            For Each x In qty
-                available = x.Available
-            Next
-
-            Return available
+                Return available
+            End Using
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0014", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -673,17 +697,17 @@
 
         Try
 
-            Dim db3 = New ItemLookUpDataContext(DB_Conn("constr"))
+            Using dbx = GetDB()
+                Dim QuantityCommitted = 0
+                Dim qty = (From a In dbx.Items
+                           Where a.ItemLookupCode.Equals(itemid)
+                           Select New With {.Available = a.QuantityCommitted})
+                For Each x In qty
+                    QuantityCommitted = x.Available
+                Next
 
-            Dim QuantityCommitted = 0
-            Dim qty = (From a In db3.Items
-                       Where a.ItemLookupCode.Equals(itemid)
-                       Select New With {.Available = a.QuantityCommitted})
-            For Each x In qty
-                QuantityCommitted = x.Available
-            Next
-
-            Return QuantityCommitted
+                Return QuantityCommitted
+            End Using
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0014", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -692,59 +716,95 @@
 
     End Function
 
-    Public Shared Sub setQuantityCommitted(ByVal itemid As Integer, ByVal qtyCommitted As Integer)
+    Public Shared Sub setQuantityCommitted(ByVal itemid As Integer, ByVal qtyCommitted As Double)
 
         Try
 
-            Dim dbItem = New ItemLookUpDataContext(DB_Conn("constr"))
-
-            Dim committed = (From i In dbItem.Items Where i.ID.Equals(itemid)
-                             Select i).SingleOrDefault
-
-            If Not committed.ItemType = 7 Then
-                committed.QuantityCommitted = committed.QuantityCommitted + qtyCommitted
-            End If
-
-            Try
-                dbItem.SubmitChanges()
-
-            Catch ex As Exception
-                '  MessageBox.Show(ex.Message)
-            End Try
+            Using dbItem = GetDB()
+                ApplyQuantityCommittedDifference(dbItem, itemid, qtyCommitted)
+            End Using
 
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0015", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
+            Throw New InvalidOperationException("Unable to update committed quantity for item " & itemid & ".", ex)
         End Try
     End Sub
 
-    Public Shared Sub SetQuantityCommittedToQoute(ByVal itemId As Integer, ByVal qtyCommitted As Integer)
+    Public Shared Sub SetQuantityCommittedToQoute(ByVal itemId As Integer, ByVal qtyCommitted As Double)
         Try
-            Using dbItem As New ItemLookUpDataContext(DB_Conn("constr"))
-
-                Dim item = dbItem.Items.SingleOrDefault(Function(i) i.ID = itemId)
-                'MessageBox.Show("qtyCommitted " & qtyCommitted)
-                If item IsNot Nothing Then
-                    ' Only commit if not ItemType 7
-                    If item.ItemType <> 7 Then
-                        item.QuantityCommitted += qtyCommitted
-                        'MessageBox.Show("SetQuantityCommitted " & item.QuantityCommitted & " + " & qtyCommitted)
-                    End If
-                    Try
-                        dbItem.SubmitChanges()
-                    Catch ex As Exception
-                    End Try
-                Else
-                    MessageBox.Show("Item with ID " & itemId & " not found.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                End If
-
+            Using dbItem = GetDB()
+                ApplyQuantityCommittedDifference(dbItem, itemId, qtyCommitted)
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class" & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0015", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount += 1
+            Throw New InvalidOperationException("Unable to commit quotation quantity for item " & itemId & ".", ex)
         End Try
+    End Sub
+
+    Public Shared Sub ApplyQuantityCommittedDifference(ByVal dbContext As ItemLookUpDataContext,
+                                                       ByVal itemId As Integer,
+                                                       ByVal quantityDifference As Double)
+        If dbContext Is Nothing Then Throw New ArgumentNullException(NameOf(dbContext))
+        If quantityDifference = 0R Then Exit Sub
+
+        ' SQL performs the arithmetic while holding the row update lock. Concurrent
+        ' users add or subtract their own difference instead of overwriting a value
+        ' that another Work Order transaction has just committed.
+        Dim affectedRows As Integer = dbContext.ExecuteCommand(
+            "UPDATE dbo.Item WITH (ROWLOCK) " &
+            "SET QuantityCommitted = QuantityCommitted + {0} " &
+            "WHERE ID = {1} AND ItemType <> 7 " &
+            "AND QuantityCommitted + {0} >= 0",
+            quantityDifference,
+            itemId)
+
+        If affectedRows = 1 Then Exit Sub
+
+        Dim itemState = (From candidate In dbContext.Items
+                         Where candidate.ID = itemId
+                         Select New With {
+                             candidate.ItemType,
+                             candidate.QuantityCommitted
+                         }).SingleOrDefault()
+
+        If itemState Is Nothing Then
+            Throw New InvalidOperationException(
+                "Item " & itemId & " was not found while updating committed quantity.")
+        End If
+
+        If itemState.ItemType = 7 Then Exit Sub
+
+        Throw New InvalidOperationException(
+            "The committed-quantity adjustment for item " & itemId &
+            " would make QuantityCommitted negative. Current value: " &
+            itemState.QuantityCommitted.ToString() & ", adjustment: " &
+            quantityDifference.ToString() & ".")
+    End Sub
+
+    Public Shared Sub AcquireOrderTransactionLock(ByVal dbContext As ItemLookUpDataContext,
+                                                  ByVal orderId As Integer)
+        If dbContext Is Nothing Then Throw New ArgumentNullException(NameOf(dbContext))
+        If dbContext.Transaction Is Nothing Then
+            Throw New InvalidOperationException(
+                "An active database transaction is required before locking an order.")
+        End If
+
+        Dim lockResource As String = "SOD_WO_ORDER_" & orderId.ToString()
+        Dim lockResult As Integer = dbContext.ExecuteQuery(Of Integer)(
+            "DECLARE @LockResult int; " &
+            "EXEC @LockResult = sys.sp_getapplock " &
+            "@Resource = {0}, @LockMode = 'Exclusive', " &
+            "@LockOwner = 'Transaction', @LockTimeout = 10000; " &
+            "SELECT @LockResult;",
+            lockResource).Single()
+
+        If lockResult < 0 Then
+            Throw New InvalidOperationException(
+                "Order " & orderId &
+                " is currently being changed by another user. Please recall the order and try again.")
+        End If
     End Sub
 
     Public Shared Function getItemtoGrid() As DataTable
@@ -771,27 +831,30 @@
             dt1.Columns.Add("FullDesc", GetType(String))
 
 
-            Dim item = (From a In db.Items Where a.Inactive.Equals(0) Where Not a.Description = String.Empty
+            Dim item
+            Using dbx = GetDB()
+                item = (From a In dbx.Items Where a.Inactive.Equals(0) Where Not a.Description = String.Empty
                         Order By a.ItemLookupCode
-                      Select New With { _
-                          .Itemcode = a.ItemLookupCode, _
-                          .Description = a.Description.ToString() & a.ExtendedDescription.ToString, _
-                          .Price = a.Price, _
-                          .Cost = a.Cost, _
-                          .Available = a.Quantity - a.QuantityCommitted, _
-                          .ParentQty = "", _
-                          .TaxID = a.TaxID, _
-                          .Subdesc = a.SubDescription2, _
-                          .Price1 = a.Price, _
-                          .ID = a.ID, _
-                          .Description1 = a.Description, _
-                          .ExtendedDescription = a.ExtendedDescription, _
-                          .ItemType = a.ItemType, _
-                          .Inactive = a.Inactive, _
-                          .ItemDes = a.Description.ToString() & a.ExtendedDescription.ToString, _
-                          .SKuLevel = a.SubDescription2, _
-                          .FullDesc = a.ItemLookupCode.ToString & " | " & a.Description.ToString() & a.ExtendedDescription.ToString
-                      }).ToList
+                        Select New With {
+                              .Itemcode = a.ItemLookupCode,
+                              .Description = a.Description.ToString() & a.ExtendedDescription.ToString,
+                              .Price = a.Price,
+                              .Cost = a.Cost,
+                              .Available = a.Quantity - a.QuantityCommitted,
+                              .ParentQty = "",
+                              .TaxID = a.TaxID,
+                              .Subdesc = a.SubDescription2,
+                              .Price1 = a.Price,
+                              .ID = a.ID,
+                              .Description1 = a.Description,
+                              .ExtendedDescription = a.ExtendedDescription,
+                              .ItemType = a.ItemType,
+                              .Inactive = a.Inactive,
+                              .ItemDes = a.Description.ToString() & a.ExtendedDescription.ToString,
+                              .SKuLevel = a.SubDescription2,
+                              .FullDesc = a.ItemLookupCode.ToString & " | " & a.Description.ToString() & a.ExtendedDescription.ToString
+                          }).ToList
+            End Using
 
 
             For Each i In item
@@ -855,27 +918,30 @@
             dt2.Columns.Add("FullDesc", GetType(String))
 
 
-            Dim item = (From a In dbnew.Items Where a.Inactive.Equals(0) Where Not a.Description = String.Empty
+            Dim item
+            Using dbx = GetDBNew()
+                item = (From a In dbx.Items Where a.Inactive.Equals(0) Where Not a.Description = String.Empty
                         Order By a.ItemLookupCode
-                      Select New With { _
-                          .Itemcode = a.ItemLookupCode, _
-                          .Description = a.Description.ToString() & a.ExtendedDescription.ToString, _
-                          .Price = a.Price, _
-                          .Cost = a.Cost, _
-                          .Available = a.Quantity - a.QuantityCommitted, _
-                          .ParentQty = "", _
-                          .TaxID = a.TaxID, _
-                          .Subdesc = a.SubDescription2, _
-                          .Price1 = a.Price, _
-                          .ID = a.ID, _
-                          .Description1 = a.Description, _
-                          .ExtendedDescription = a.ExtendedDescription, _
-                          .ItemType = a.ItemType, _
-                          .Inactive = a.Inactive, _
-                          .ItemDes = a.Description.ToString() & a.ExtendedDescription.ToString, _
-                          .SKuLevel = a.SubDescription2, _
-                          .FullDesc = a.ItemLookupCode.ToString & " | " & a.Description.ToString() & a.ExtendedDescription.ToString
-                      }).ToList
+                        Select New With {
+                              .Itemcode = a.ItemLookupCode,
+                              .Description = a.Description.ToString() & a.ExtendedDescription.ToString,
+                              .Price = a.Price,
+                              .Cost = a.Cost,
+                              .Available = a.Quantity - a.QuantityCommitted,
+                              .ParentQty = "",
+                              .TaxID = a.TaxID,
+                              .Subdesc = a.SubDescription2,
+                              .Price1 = a.Price,
+                              .ID = a.ID,
+                              .Description1 = a.Description,
+                              .ExtendedDescription = a.ExtendedDescription,
+                              .ItemType = a.ItemType,
+                              .Inactive = a.Inactive,
+                              .ItemDes = a.Description.ToString() & a.ExtendedDescription.ToString,
+                              .SKuLevel = a.SubDescription2,
+                              .FullDesc = a.ItemLookupCode.ToString & " | " & a.Description.ToString() & a.ExtendedDescription.ToString
+                          }).ToList
+            End Using
 
 
             For Each i In item
@@ -913,10 +979,12 @@
         Try
 
 
-            Dim WoEntry = (From i In db.SOD_fntbl_WoEntry(orderid)
-                           Select i).ToList
+            Using dbx = GetDB()
+                Dim WoEntry = (From i In dbx.SOD_fntbl_WoEntry(orderid)
+                               Select i).ToList
 
-            Return WoEntry
+                Return WoEntry
+            End Using
 
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0018", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -948,22 +1016,24 @@
 
         Try
 
-            Dim WoDetails = (From i In db.SOD_fntbl_WoDetails(woid, woRegister, woCashier)).SingleOrDefault
+            Using dbx = GetDB()
+                Dim WoDetails = (From i In dbx.SOD_fntbl_WoDetails(woid, woRegister, woCashier)).SingleOrDefault
 
-            Branch = WoDetails.Branch
-            Orderid = WoDetails.Orderid
-            AccountNo = WoDetails.AccountNo
-            Company = WoDetails.Company
-            register = WoDetails.Register
-            Cashier = WoDetails.Cashier
-            OrderDate = WoDetails.OrderDate
-            Ordertime = WoDetails.Ordertime
-            Reference = WoDetails.Reference
-            Comment = WoDetails.Comment
-            Subtotal = WoDetails.Subtotal
-            SalesTax = WoDetails.SalesTax
-            Total = WoDetails.Total
-            Address = WoDetails.Address
+                Branch = WoDetails.Branch
+                Orderid = WoDetails.Orderid
+                AccountNo = WoDetails.AccountNo
+                Company = WoDetails.Company
+                Register = WoDetails.Register
+                Cashier = WoDetails.Cashier
+                OrderDate = WoDetails.OrderDate
+                Ordertime = WoDetails.Ordertime
+                Reference = WoDetails.Reference
+                Comment = WoDetails.Comment
+                Subtotal = WoDetails.Subtotal
+                SalesTax = WoDetails.SalesTax
+                Total = WoDetails.Total
+                Address = WoDetails.Address
+            End Using
 
         Catch ex As Exception
             MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0019", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -978,12 +1048,14 @@
 
 
 
-        Dim ordr = (From a In db.SOD_ViewForInvoices Where a.Status.Equals("Prepared") And a.Orders.Contains(search) And a.OPIS.Equals(filter)
-                  Select New With {
-                      .Group = a.groupto,
-                      .Status = a.Status,
-                      .Orders = a.Orders}).ToList
-        Return ordr
+        Using dbx = GetDB()
+            Dim ordr = (From a In dbx.SOD_ViewForInvoices Where a.Status.Equals("Prepared") And a.Orders.Contains(search) And a.OPIS.Equals(filter)
+                        Select New With {
+                          .Group = a.groupto,
+                          .Status = a.Status,
+                          .Orders = a.Orders}).ToList
+            Return ordr
+        End Using
 
     End Function
 
@@ -991,15 +1063,17 @@
 
 
 
-        Dim ordrs = (From c In db.Queueings
-                     Join d In db.QueueingItems On c.id Equals d.QueueingID
-                     Where c.OrderID.Equals(wo) And c.OPIS.Equals(OPIS) And d.Status.Equals("For Invoicing")).Count
+        Using dbx = GetDB()
+            Dim ordrs = (From c In dbx.Queueings
+                         Join d In dbx.QueueingItems On c.id Equals d.QueueingID
+                         Where c.OrderID.Equals(wo) And c.OPIS.Equals(OPIS) And d.Status.Equals("For Invoicing")).Count
 
-        If ordrs > 0 Then
-            Return True
-        Else
-            Return False
-        End If
+            If ordrs > 0 Then
+                Return True
+            Else
+                Return False
+            End If
+        End Using
 
     End Function
 
@@ -1009,16 +1083,18 @@
         Try
 
 
-            Dim upt = (From a In db.QueueingItems
-                Join b In db.Queueings On a.QueueingID Equals b.id
-                Where b.GroupTo.Equals(groupid)
-              Select a).ToList
+            Using dbx = GetDB()
+                Dim upt = (From a In dbx.QueueingItems
+                           Join b In dbx.Queueings On a.QueueingID Equals b.id
+                           Where b.GroupTo.Equals(groupid)
+                           Select a).ToList
 
-            For Each x In upt
-                x.Status = stat
-            Next
+                For Each x In upt
+                    x.Status = stat
+                Next
 
-            db.SubmitChanges()
+                dbx.SubmitChanges()
+            End Using
 
 
         Catch ex As Exception
@@ -1035,14 +1111,16 @@
         Try
 
 
-            Dim upt = (From a In db.SOD_viewTableLastUpdates Where a.TableName.Equals("Item")
-                       Select a.LastUpdate).SingleOrDefault
+            Using dbx = GetDB()
+                Dim upt = (From a In dbx.SOD_viewTableLastUpdates Where a.TableName.Equals("Item")
+                           Select a.LastUpdate).SingleOrDefault
 
-            If upt Is Nothing Then
-                Return frmItemLookUp.db_lastupdate
-            Else
-                Return upt
-            End If
+                If upt Is Nothing Then
+                    Return frmItemLookUp.db_lastupdate
+                Else
+                    Return upt
+                End If
+            End Using
 
 
         Catch ex As Exception
@@ -1079,15 +1157,17 @@
             dt3.Columns.Add("Available", GetType(Integer))
 
 
-            Dim item = (From a In db.SOD_viewLastUpdatedItems
-                        Select a.ItemLookupCode, a.Available).ToList
+            Using dbx = GetDB()
+                Dim item = (From a In dbx.SOD_viewLastUpdatedItems
+                            Select a.ItemLookupCode, a.Available).ToList
 
-            For Each i In item
-                Dim dr As DataRow = dt3.NewRow()
-                dr("Itemcode") = i.ItemLookupCode
-                dr("Available") = i.Available
-                dt3.Rows.Add(dr)
-            Next
+                For Each i In item
+                    Dim dr As DataRow = dt3.NewRow()
+                    dr("Itemcode") = i.ItemLookupCode
+                    dr("Available") = i.Available
+                    dt3.Rows.Add(dr)
+                Next
+            End Using
 
         Catch ex As Exception
             '   MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0022", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -1098,54 +1178,60 @@
 
     Public Shared Function getStoreCode() As Object
 
-        Dim code = (From a In db.Stores _
-                    Select a.StoreCode).ToList()
-        Return code
+        Using dbx = GetDB()
+            Dim code = (From a In dbx.Stores
+                        Select a.StoreCode).ToList()
+            Return code
+        End Using
 
     End Function
 
 
     Public Shared Sub updateQueueStat(ByVal orderid, ByVal itemid)
 
-        Dim x = (From a In db.Queueings
-                    Join b In db.QueueingItems On a.id Equals b.QueueingID
-                    Where (a.OrderID.Equals(orderid) And b.ItemID.Equals(itemid))
-                    Select a, b).Count
+        Using dbx = GetDB()
+            Dim x = (From a In dbx.Queueings
+                     Join b In dbx.QueueingItems On a.id Equals b.QueueingID
+                     Where (a.OrderID.Equals(orderid) And b.ItemID.Equals(itemid))
+                     Select a, b).Count
 
-        If x = 1 Then
+            If x = 1 Then
 
-            Dim stat = (From a In db.Queueings
-                    Join b In db.QueueingItems On a.id Equals b.QueueingID
-                    Where (a.OrderID.Equals(orderid) And b.ItemID.Equals(itemid))
-                    Select a, b).SingleOrDefault
+                Dim stat = (From a In dbx.Queueings
+                            Join b In dbx.QueueingItems On a.id Equals b.QueueingID
+                            Where (a.OrderID.Equals(orderid) And b.ItemID.Equals(itemid))
+                            Select a, b).SingleOrDefault
 
-            stat.b.Picker = "CUST"
-            stat.b.Status = "Prepared"
-        Else
+                stat.b.Picker = "CUST"
+                stat.b.Status = "Prepared"
+            Else
 
-            Dim stat = (From a In db.Queueings
-                    Join b In db.QueueingItems On a.id Equals b.QueueingID
-                    Where (a.OrderID.Equals(orderid) And b.ItemID.Equals(itemid))
-                    Select a, b).ToList
+                Dim stat = (From a In dbx.Queueings
+                            Join b In dbx.QueueingItems On a.id Equals b.QueueingID
+                            Where (a.OrderID.Equals(orderid) And b.ItemID.Equals(itemid))
+                            Select a, b).ToList
 
-            For Each y In stat
-                y.b.Picker = "CUST"
-                y.b.Status = "Prepared"
-            Next
+                For Each y In stat
+                    y.b.Picker = "CUST"
+                    y.b.Status = "Prepared"
+                Next
 
-        End If
+            End If
 
-        db.SubmitChanges()
+            dbx.SubmitChanges()
+        End Using
 
     End Sub
 
     Public Shared Sub updateOrder(ByVal _OrderID As Integer)
 
-        Dim up = (From a In db.Orders Where a.Equals(_OrderID) Select a).SingleOrDefault
+        Using dbx = GetDB()
+            Dim up = (From a In dbx.Orders Where a.Equals(_OrderID) Select a).SingleOrDefault
 
-        up.LastUpdated = Date.Now
+            up.LastUpdated = Date.Now
 
-        db.SubmitChanges()
+            dbx.SubmitChanges()
+        End Using
 
     End Sub
 

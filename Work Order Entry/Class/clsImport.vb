@@ -22,6 +22,7 @@ Public Class clsImport
 
     Public Shared importType_ As Integer
     Public Shared importProceed_ As Boolean = False
+    Public Shared importFileName_ As String = String.Empty
 
     Public Shared importedItems As List(Of String) = New List(Of String)
     Public Shared importedItems_ As List(Of String) = New List(Of String)
@@ -30,48 +31,94 @@ Public Class clsImport
 
     Public Shared Sub importSelectFile()
         Try
-            Dim ofd As OpenFileDialog = New OpenFileDialog() With {.Filter = "Excel Workbook|*.xlsx;*.xls;*.csv"}
+            importProceed_ = False
+            importType_ = ImportFileRules.UnknownImport
+            importFileName_ = String.Empty
+            ImportData = Nothing
+            ImportDataCSV = Nothing
+
+            Dim ofd As New OpenFileDialog() With {
+                .Filter = "Supported Import Files|*.xlsx;*.xls;*.csv|" &
+                          "Excel Workbook|*.xlsx;*.xls|" &
+                          "CSV File|*.csv"
+            }
 
             Using ofd
-                If ofd.ShowDialog() = DialogResult.OK Then
+                If ofd.ShowDialog() <> DialogResult.OK Then Exit Sub
 
-                    If ofd.FileName.Contains("Quotation") Or ofd.FileName.Contains("Sale") Or ofd.FileName.Contains("Transfer") Or ofd.FileName.Contains("Purchase") Then
-                        Using stream As FileStream = File.Open(ofd.FileName, FileMode.Open, FileAccess.Read)
-                            Using reader As IExcelDataReader = ExcelDataReader.ExcelReaderFactory.CreateReader(stream)
-                                Dim conf As New ExcelDataReader.ExcelDataSetConfiguration() With {
-            .ConfigureDataTable = Function(__) New ExcelDataReader.ExcelDataTableConfiguration() With {
-                .UseHeaderRow = True
-            }
-        }
-                                Dim result As DataSet = reader.AsDataSet(conf)
-                                ImportData = result.Tables
-                            End Using
-                        End Using
+                importFileName_ = ofd.FileName
+                importType_ = ImportFileRules.GetImportType(importFileName_)
 
-                        MessageBox.Show("Excel Filename not Valid!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                        Exit Sub
-                    End If
-
-                    importProceed_ = True
-
-                Else
-                    importProceed_ = False
+                If importType_ = ImportFileRules.UnknownImport Then
+                    MessageBox.Show(
+                        "Filename not valid. Include Quotation, Sale, Transfer, " &
+                        "Purchase, or WEBSITE in the filename.",
+                        "Import",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation)
                     Exit Sub
                 End If
 
+                If importType_ = ImportFileRules.TransferOrPurchaseImport AndAlso
+                   ImportFileRules.IsCsv(importFileName_) Then
+                    MessageBox.Show(
+                        "Transfer and Purchase imports require an Excel workbook " &
+                        "with a Contents sheet.",
+                        "Import",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation)
+                    Exit Sub
+                End If
+
+                ' Legacy quotation CSV files are validated by frmUploader.
+                If importType_ = ImportFileRules.QuotationOrSaleImport AndAlso
+                   ImportFileRules.IsCsv(importFileName_) Then
+                    importProceed_ = True
+                    Exit Sub
+                End If
+
+                Using stream As FileStream =
+                    File.Open(importFileName_, FileMode.Open, FileAccess.Read)
+                    Dim reader As IExcelDataReader
+
+                    If ImportFileRules.IsCsv(importFileName_) Then
+                        reader = ExcelReaderFactory.CreateCsvReader(stream)
+                    Else
+                        reader = ExcelReaderFactory.CreateReader(stream)
+                    End If
+
+                    Using reader
+                        Dim conf As New ExcelDataSetConfiguration() With {
+                            .ConfigureDataTable =
+                                Function(__) New ExcelDataTableConfiguration() With {
+                                    .UseHeaderRow = True
+                                }
+                        }
+                        Dim result As DataSet = reader.AsDataSet(conf)
+
+                        If importType_ = ImportFileRules.WebsiteImport Then
+                            If result.Tables.Count = 0 Then
+                                Throw New InvalidDataException(
+                                    "The WEBSITE CSV file contains no data.")
+                            End If
+                            ImportDataCSV = result.Tables(0)
+                        Else
+                            ImportData = result.Tables
+                        End If
+                    End Using
+                End Using
+
+                importProceed_ = True
             End Using
 
-            If ofd.FileName.Contains("Quotation") Or ofd.FileName.Contains("Sale") Then
-                importType_ = 1
-            ElseIf ofd.FileName.Contains("Transfer") Or ofd.FileName.Contains("Purchase") Then
-
-                importType_ = 2
-            ElseIf ofd.FileName.Contains("WEBSITE") And ofd.FileName.Contains("csv") Then
-                importType_ = 3
-            End If
-
         Catch ex As Exception
-            MessageBox.Show("Please Close the Excel File Before Opening !" & ex.Message, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            importProceed_ = False
+            MessageBox.Show(
+                "Unable to open the import file. Close it in Excel and try again." &
+                vbCrLf & vbCrLf & ex.Message,
+                "Import",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Exclamation)
         End Try
 
     End Sub
@@ -150,7 +197,7 @@ Public Class clsImport
 
         importedItemCode.Clear()
         For Each x In Order
-            importedItemCode.Add("'" & x.ItemLookupCode & "'")
+            importedItemCode.Add(x.ItemLookupCode)
         Next
 
         Return Order
@@ -192,7 +239,7 @@ Public Class clsImport
 
         importedItemCode.Clear()
         For Each x In PO
-            importedItemCode.Add("'" & x.ItemLookupCode & "'")
+            importedItemCode.Add(x.ItemLookupCode)
         Next
 
 
@@ -267,7 +314,7 @@ Public Class clsImport
         importedItemCode.Clear()
 
         For Each x In _res
-            importedItemCode.Add("'" & x.ItemLookupCode & "'")
+            importedItemCode.Add(x.ItemLookupCode)
         Next
 
         For Each x In _res

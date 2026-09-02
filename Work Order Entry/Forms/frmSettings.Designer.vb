@@ -57,6 +57,14 @@ Partial Class frmSettings
         Me.txtCustType = New System.Windows.Forms.TextBox()
         Me.gridCustType = New System.Windows.Forms.DataGridView()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
+        Me.cmdSaveBranchSettings = New System.Windows.Forms.Button()
+        Me.chkShowForInvoice = New System.Windows.Forms.CheckBox()
+        Me.chkShowImportButton = New System.Windows.Forms.CheckBox()
+        Me.chkAllowOrderGrouping = New System.Windows.Forms.CheckBox()
+        Me.chkEnableBranchQueue = New System.Windows.Forms.CheckBox()
+        Me.chkAllowBranchSelection = New System.Windows.Forms.CheckBox()
+        Me.lblAssignedDatabase = New System.Windows.Forms.Label()
+        Me.txtExpectedDatabase = New System.Windows.Forms.TextBox()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
         Me.GroupBox7 = New System.Windows.Forms.GroupBox()
         Me.Button3 = New System.Windows.Forms.Button()
@@ -446,14 +454,106 @@ Partial Class frmSettings
         '
         'GroupBox4
         '
+        Me.GroupBox4.Controls.Add(Me.cmdSaveBranchSettings)
+        Me.GroupBox4.Controls.Add(Me.chkShowForInvoice)
+        Me.GroupBox4.Controls.Add(Me.chkShowImportButton)
+        Me.GroupBox4.Controls.Add(Me.chkAllowOrderGrouping)
+        Me.GroupBox4.Controls.Add(Me.chkEnableBranchQueue)
+        Me.GroupBox4.Controls.Add(Me.chkAllowBranchSelection)
+        Me.GroupBox4.Controls.Add(Me.lblAssignedDatabase)
+        Me.GroupBox4.Controls.Add(Me.txtExpectedDatabase)
         Me.GroupBox4.Controls.Add(Me.Button1)
         Me.GroupBox4.Font = New System.Drawing.Font("Century Gothic", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox4.Location = New System.Drawing.Point(9, 376)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(416, 73)
+        Me.GroupBox4.Size = New System.Drawing.Size(416, 140)
         Me.GroupBox4.TabIndex = 15
         Me.GroupBox4.TabStop = False
-        Me.GroupBox4.Text = "Order Takers"
+        Me.GroupBox4.Text = "Branch Functions"
+        '
+        'cmdSaveBranchSettings
+        '
+        Me.cmdSaveBranchSettings.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdSaveBranchSettings.Location = New System.Drawing.Point(332, 50)
+        Me.cmdSaveBranchSettings.Name = "cmdSaveBranchSettings"
+        Me.cmdSaveBranchSettings.Size = New System.Drawing.Size(70, 23)
+        Me.cmdSaveBranchSettings.TabIndex = 14
+        Me.cmdSaveBranchSettings.Text = "Save"
+        Me.cmdSaveBranchSettings.UseVisualStyleBackColor = True
+        '
+        'chkShowForInvoice
+        '
+        Me.chkShowForInvoice.AutoSize = True
+        Me.chkShowForInvoice.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkShowForInvoice.Location = New System.Drawing.Point(175, 86)
+        Me.chkShowForInvoice.Name = "chkShowForInvoice"
+        Me.chkShowForInvoice.Size = New System.Drawing.Size(154, 17)
+        Me.chkShowForInvoice.TabIndex = 13
+        Me.chkShowForInvoice.Text = "Show For Invoicing button"
+        Me.chkShowForInvoice.UseVisualStyleBackColor = True
+        '
+        'chkShowImportButton
+        '
+        Me.chkShowImportButton.AutoSize = True
+        Me.chkShowImportButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkShowImportButton.Location = New System.Drawing.Point(175, 65)
+        Me.chkShowImportButton.Name = "chkShowImportButton"
+        Me.chkShowImportButton.Size = New System.Drawing.Size(121, 17)
+        Me.chkShowImportButton.TabIndex = 17
+        Me.chkShowImportButton.Text = "Show Import button"
+        Me.chkShowImportButton.UseVisualStyleBackColor = True
+        '
+        'chkAllowOrderGrouping
+        '
+        Me.chkAllowOrderGrouping.AutoSize = True
+        Me.chkAllowOrderGrouping.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkAllowOrderGrouping.Location = New System.Drawing.Point(175, 44)
+        Me.chkAllowOrderGrouping.Name = "chkAllowOrderGrouping"
+        Me.chkAllowOrderGrouping.Size = New System.Drawing.Size(126, 17)
+        Me.chkAllowOrderGrouping.TabIndex = 15
+        Me.chkAllowOrderGrouping.Text = "Allow order grouping"
+        Me.chkAllowOrderGrouping.UseVisualStyleBackColor = True
+        '
+        'chkEnableBranchQueue
+        '
+        Me.chkEnableBranchQueue.AutoSize = True
+        Me.chkEnableBranchQueue.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkEnableBranchQueue.Location = New System.Drawing.Point(175, 23)
+        Me.chkEnableBranchQueue.Name = "chkEnableBranchQueue"
+        Me.chkEnableBranchQueue.Size = New System.Drawing.Size(132, 17)
+        Me.chkEnableBranchQueue.TabIndex = 16
+        Me.chkEnableBranchQueue.Text = "Enable Branch Queue"
+        Me.chkEnableBranchQueue.UseVisualStyleBackColor = True
+        '
+        'chkAllowBranchSelection
+        '
+        Me.chkAllowBranchSelection.AutoSize = True
+        Me.chkAllowBranchSelection.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkAllowBranchSelection.Location = New System.Drawing.Point(21, 51)
+        Me.chkAllowBranchSelection.Name = "chkAllowBranchSelection"
+        Me.chkAllowBranchSelection.Size = New System.Drawing.Size(136, 17)
+        Me.chkAllowBranchSelection.TabIndex = 18
+        Me.chkAllowBranchSelection.Text = "Allow Branch Selection"
+        Me.chkAllowBranchSelection.UseVisualStyleBackColor = True
+        '
+        'lblAssignedDatabase
+        '
+        Me.lblAssignedDatabase.AutoSize = True
+        Me.lblAssignedDatabase.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblAssignedDatabase.Location = New System.Drawing.Point(18, 78)
+        Me.lblAssignedDatabase.Name = "lblAssignedDatabase"
+        Me.lblAssignedDatabase.Size = New System.Drawing.Size(104, 13)
+        Me.lblAssignedDatabase.TabIndex = 19
+        Me.lblAssignedDatabase.Text = "Assigned Database:"
+        '
+        'txtExpectedDatabase
+        '
+        Me.txtExpectedDatabase.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
+        Me.txtExpectedDatabase.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtExpectedDatabase.Location = New System.Drawing.Point(21, 98)
+        Me.txtExpectedDatabase.Name = "txtExpectedDatabase"
+        Me.txtExpectedDatabase.Size = New System.Drawing.Size(282, 20)
+        Me.txtExpectedDatabase.TabIndex = 20
         '
         'GroupBox5
         '
@@ -651,7 +751,7 @@ Partial Class frmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(906, 458)
+        Me.ClientSize = New System.Drawing.Size(906, 525)
         Me.Controls.Add(Me.GroupBox5)
         Me.Controls.Add(Me.GroupBox4)
         Me.Controls.Add(Me.GroupBox3)
@@ -672,6 +772,7 @@ Partial Class frmSettings
         Me.GroupBox3.PerformLayout()
         CType(Me.gridCustType, System.ComponentModel.ISupportInitialize).EndInit()
         Me.GroupBox4.ResumeLayout(False)
+        Me.GroupBox4.PerformLayout()
         Me.GroupBox5.ResumeLayout(False)
         Me.GroupBox7.ResumeLayout(False)
         Me.GroupBox7.PerformLayout()
@@ -704,6 +805,14 @@ Partial Class frmSettings
     Friend WithEvents cmdNew As System.Windows.Forms.Button
     Friend WithEvents cmdPass As System.Windows.Forms.Button
     Friend WithEvents GroupBox4 As System.Windows.Forms.GroupBox
+    Friend WithEvents chkShowForInvoice As System.Windows.Forms.CheckBox
+    Friend WithEvents cmdSaveBranchSettings As System.Windows.Forms.Button
+    Friend WithEvents chkAllowOrderGrouping As System.Windows.Forms.CheckBox
+    Friend WithEvents chkEnableBranchQueue As System.Windows.Forms.CheckBox
+    Friend WithEvents chkShowImportButton As System.Windows.Forms.CheckBox
+    Friend WithEvents chkAllowBranchSelection As System.Windows.Forms.CheckBox
+    Friend WithEvents lblAssignedDatabase As System.Windows.Forms.Label
+    Friend WithEvents txtExpectedDatabase As System.Windows.Forms.TextBox
     Friend WithEvents cmdPass2 As System.Windows.Forms.Button
     Friend WithEvents cmbPriceBound As System.Windows.Forms.ComboBox
     Friend WithEvents Label9 As System.Windows.Forms.Label

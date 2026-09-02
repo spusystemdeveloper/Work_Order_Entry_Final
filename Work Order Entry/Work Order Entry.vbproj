@@ -117,6 +117,11 @@
     <Compile Include="Class\clsPickList.vb" />
     <Compile Include="Class\clsRecall.vb" />
     <Compile Include="Class\clsSalesRep.vb" />
+    <Compile Include="Class\StoreProcessingSettings.vb" />
+    <Compile Include="Class\PriceConfirmationRules.vb" />
+    <Compile Include="Class\BranchSelectionRules.vb" />
+    <Compile Include="Class\OrderPrintRules.vb" />
+    <Compile Include="Class\ImportFileRules.vb" />
     <Compile Include="Class\clsUser.vb" />
     <Compile Include="Custom Controls\CustomPanel.vb">
       <SubType>Component</SubType>
@@ -465,6 +470,7 @@
     </PackageReference>
     <PackageReference Include="System.Configuration.ConfigurationManager">
       <Version>9.0.6</Version>
+      <ExcludeAssets>compile</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="System.Diagnostics.DiagnosticSource">
       <Version>9.0.6</Version>
