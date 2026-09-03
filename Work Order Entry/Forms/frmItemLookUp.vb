@@ -17,6 +17,7 @@ Public Class frmItemLookUp
 
     Private Const ManualTaxExemptionReasonCode As String = "701"
     Private Const ManualTaxExemptionReasonType As Integer = 6
+    Private Const MaxItemsPerWorkOrder As Integer = 6
 
     Dim record As Object
     Dim sOldDes As String
@@ -1291,6 +1292,29 @@ Proceed:
 
                 Dim useQueueing As Boolean = UseQueueingForCurrentOrder()
 
+                ' Work Orders with more than MaxItemsPerWorkOrder items are split across
+                ' multiple Work Orders (e.g. 24 items -> 4 Work Orders of 6 items each).
+                Dim rowChunks As New List(Of List(Of Integer))
+                If getEntryType() = 2 AndAlso gridSelectItem.Rows.Count > MaxItemsPerWorkOrder Then
+                    Dim currentChunk As New List(Of Integer)
+                    For r As Integer = 0 To gridSelectItem.Rows.Count - 1
+                        currentChunk.Add(r)
+                        If currentChunk.Count = MaxItemsPerWorkOrder Then
+                            rowChunks.Add(currentChunk)
+                            currentChunk = New List(Of Integer)
+                        End If
+                    Next
+                    If currentChunk.Count > 0 Then rowChunks.Add(currentChunk)
+                Else
+                    Dim allRows As New List(Of Integer)
+                    For r As Integer = 0 To gridSelectItem.Rows.Count - 1
+                        allRows.Add(r)
+                    Next
+                    rowChunks.Add(allRows)
+                End If
+
+                Dim createdOrderIDs As New List(Of Integer)
+
                 Using dbSave = GetDB()
                     If dbSave.Connection.State = ConnectionState.Closed Then dbSave.Connection.Open()
 
@@ -1304,81 +1328,103 @@ Proceed:
                                     "Install the Work Order database migration before using this application.")
                             End If
 
-                            iOrderID = dbSave.SOD_sp_InsertQoute(sReg, iCusID, iSalesID,
-                                                               Double.Parse(txtVat.Text),
-                                                               Double.Parse(txtTotal.Text),
-                                                               orderComment,
-                                                               usrUsername.ToUpper,
-                                                               getEntryType())
-                            EnsureRecallQueueHeader(dbSave, iOrderID)
-                            dbSave.SubmitChanges()
+                            For chunkIndex As Integer = 0 To rowChunks.Count - 1
+                                Dim chunk = rowChunks(chunkIndex)
 
-                            For iRow = 0 To gridSelectItem.Rows.Count - 1
-                                dCost = gridSelectItem.Item(9, iRow).Value
-                                iItemID = gridSelectItem.Item(11, iRow).Value
-                                dFullPrice = gridSelectItem.Item(12, iRow).Value
-                                dPrice = gridSelectItem.Item(3, iRow).Value
-                                dQuantityOnOrder = gridSelectItem.Item(2, iRow).Value
-                                iSalesRepID = iSalesID
+                                Dim dChunkTotal As Double = 0
+                                For Each r In chunk
+                                    dChunkTotal += Convert.ToDouble(gridSelectItem.Item(5, r).Value)
+                                Next
 
+                                Dim dChunkVat As Double
                                 If bTaxExcempt Then
-                                    iTaxable = 0
+                                    dChunkVat = 0
                                 Else
-                                    iTaxable = Convert.ToInt32(gridSelectItem.Item(Taxable.Index, iRow).Value)
+                                    dChunkVat = dChunkTotal - (dChunkTotal / 1.12)
                                 End If
 
-                                sDescription = gridSelectItem.Item(13, iRow).Value
-                                sComment = gridSelectItem.Item(14, iRow).Value
-                                qtyPrep = gridSelectItem.Item(18, iRow).Value
-
-                                Dim ipickLoc As String
-                                If Convert.ToBoolean(gridSelectItem.Item(17, iRow).Value) Then
-                                    ipickLoc = "UP-STORE"
-                                Else
-                                    ipickLoc = "STORE"
+                                Dim chunkComment As String = orderComment
+                                If rowChunks.Count > 1 Then
+                                    chunkComment = orderComment & " (Split " & (chunkIndex + 1) & " of " & rowChunks.Count & ")"
                                 End If
 
-                                dbSave.SOD_sp_InsertQouteEntry(dCost, iOrderID, iItemID, dFullPrice, dPrice,
-                                                               dQuantityOnOrder, iSalesRepID, iTaxable,
-                                                               sDescription, ipickLoc, qtyPrep, getEntryType())
+                                iOrderID = dbSave.SOD_sp_InsertQoute(sReg, iCusID, iSalesID,
+                                                                   dChunkVat,
+                                                                   dChunkTotal,
+                                                                   chunkComment,
+                                                                   usrUsername.ToUpper,
+                                                                   getEntryType())
+                                EnsureRecallQueueHeader(dbSave, iOrderID)
+                                dbSave.SubmitChanges()
+                                createdOrderIDs.Add(iOrderID)
 
-                                Dim item = (From candidate In dbSave.Items
-                                            Where candidate.ID = iItemID
-                                            Select candidate).SingleOrDefault()
+                                For Each iRow In chunk
+                                    dCost = gridSelectItem.Item(9, iRow).Value
+                                    iItemID = gridSelectItem.Item(11, iRow).Value
+                                    dFullPrice = gridSelectItem.Item(12, iRow).Value
+                                    dPrice = gridSelectItem.Item(3, iRow).Value
+                                    dQuantityOnOrder = gridSelectItem.Item(2, iRow).Value
+                                    iSalesRepID = iSalesID
 
-                                If item Is Nothing Then
-                                    Throw New InvalidOperationException("Item " & iItemID & " was not found while saving the order.")
+                                    If bTaxExcempt Then
+                                        iTaxable = 0
+                                    Else
+                                        iTaxable = Convert.ToInt32(gridSelectItem.Item(Taxable.Index, iRow).Value)
+                                    End If
+
+                                    sDescription = gridSelectItem.Item(13, iRow).Value
+                                    sComment = gridSelectItem.Item(14, iRow).Value
+                                    qtyPrep = gridSelectItem.Item(18, iRow).Value
+
+                                    Dim ipickLoc As String
+                                    If Convert.ToBoolean(gridSelectItem.Item(17, iRow).Value) Then
+                                        ipickLoc = "UP-STORE"
+                                    Else
+                                        ipickLoc = "STORE"
+                                    End If
+
+                                    dbSave.SOD_sp_InsertQouteEntry(dCost, iOrderID, iItemID, dFullPrice, dPrice,
+                                                                   dQuantityOnOrder, iSalesRepID, iTaxable,
+                                                                   sDescription, ipickLoc, qtyPrep, getEntryType())
+
+                                    Dim item = (From candidate In dbSave.Items
+                                                Where candidate.ID = iItemID
+                                                Select candidate).SingleOrDefault()
+
+                                    If item Is Nothing Then
+                                        Throw New InvalidOperationException("Item " & iItemID & " was not found while saving the order.")
+                                    End If
+
+                                    If ispriceApproved = 1 AndAlso dPrice < GetApprovedMinPrice(item) Then
+                                        AddPriceLog(dbSave, iOrderID, iItemID, dFullPrice, dPrice,
+                                                    frmPassword.txtPass.Text, "Inserted")
+                                    End If
+
+                                    If getEntryType() = 2 AndAlso item.ItemType <> 7 Then
+                                        clsItemLookUp.ApplyQuantityCommittedDifference(
+                                            dbSave, iItemID, dQuantityOnOrder)
+                                    End If
+
+                                    If useQueueing AndAlso dQuantityOnOrder = qtyPrep Then
+                                        MarkQueueItemPrepared(dbSave, iOrderID, iItemID)
+                                    End If
+                                Next
+
+                                ApplyTaxChangeReasonCode(dbSave, iOrderID)
+
+                                If getEntryType() = 3 OrElse Not useQueueing Then
+                                    If QueueingTablesAvailable(dbSave) Then
+                                        RemoveQueueProcessingItems(dbSave, iOrderID)
+                                    End If
                                 End If
 
-                                If ispriceApproved = 1 AndAlso dPrice < GetApprovedMinPrice(item) Then
-                                    AddPriceLog(dbSave, iOrderID, iItemID, dFullPrice, dPrice,
-                                                frmPassword.txtPass.Text, "Inserted")
+                                If getEntryType() = 2 Then
+                                    dbSave.ExecuteCommand(
+                                        "UPDATE dbo.OrderEntry SET VoucherID = 0 " &
+                                        "WHERE ID = (SELECT TOP 1 ID FROM dbo.OrderEntry WHERE OrderID = {0} ORDER BY ID DESC)",
+                                        iOrderID)
                                 End If
-
-                                If getEntryType() = 2 AndAlso item.ItemType <> 7 Then
-                                    clsItemLookUp.ApplyQuantityCommittedDifference(
-                                        dbSave, iItemID, dQuantityOnOrder)
-                                End If
-
-                                If useQueueing AndAlso dQuantityOnOrder = qtyPrep Then
-                                    MarkQueueItemPrepared(dbSave, iOrderID, iItemID)
-                                End If
-                            Next
-
-                            ApplyTaxChangeReasonCode(dbSave, iOrderID)
-
-                            If getEntryType() = 3 OrElse Not useQueueing Then
-                                If QueueingTablesAvailable(dbSave) Then
-                                    RemoveQueueProcessingItems(dbSave, iOrderID)
-                                End If
-                            End If
-
-                            If getEntryType() = 2 Then
-                                dbSave.ExecuteCommand(
-                                    "UPDATE dbo.OrderEntry SET VoucherID = 0 " &
-                                    "WHERE ID = (SELECT TOP 1 ID FROM dbo.OrderEntry WHERE OrderID = {0} ORDER BY ID DESC)",
-                                    iOrderID)
-                            End If
+                            Next chunkIndex
 
                             dbSave.SubmitChanges()
                             saveTransaction.Commit()
@@ -1391,12 +1437,18 @@ Proceed:
 
                 If getEntryType() = 2 Then
 
-                    MessageBox.Show("Successfully Saved into Work Order !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    If createdOrderIDs.Count > 1 Then
+                        MessageBox.Show("Successfully Saved into " & createdOrderIDs.Count & " Work Orders (item limit is " & MaxItemsPerWorkOrder & " per Work Order) !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Else
+                        MessageBox.Show("Successfully Saved into Work Order !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    End If
 
                     If useQueueing AndAlso StoreProcessingSettings.AllowOrderGrouping Then
-                        checkCustomerGroupWo(iCusID, iOrderID, "Insert")
+                        For Each createdOrderID In createdOrderIDs
+                            checkCustomerGroupWo(iCusID, createdOrderID, "Insert")
+                        Next
                     End If
-                    prompWO(iOrderID)
+                    prompWO(String.Join(", ", createdOrderIDs))
 
                     'removed pick list if mag save ug work order
                     'If rbtnPickup.Checked = True Then

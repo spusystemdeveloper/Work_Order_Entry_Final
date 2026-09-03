@@ -10,7 +10,7 @@
     <OutputType>WinExe</OutputType>
     <StartupObject>WorkOrderEntry.My.MyApplication</StartupObject>
     <RootNamespace>WorkOrderEntry</RootNamespace>
-    <AssemblyName>Work Order Entry_V7.1</AssemblyName>
+    <AssemblyName>Work Order Entry_V8</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>WindowsForms</MyType>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -39,7 +39,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>Work Order Entry_V7.1.xml</DocumentationFile>
+    <DocumentationFile>Work Order Entry_V8.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -50,7 +50,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>Work Order Entry_V7.1.xml</DocumentationFile>
+    <DocumentationFile>Work Order Entry_V8.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
