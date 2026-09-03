@@ -33,6 +33,8 @@ Public Class frmItemLookUp
     Dim FilterStr
     Dim itemImage As Image
     Private isLoadingRecalledOrder As Boolean = False
+    Private isRecalledOrderLocked As Boolean = False
+    Private isSalesRepLockedToCustomer As Boolean = False
     Private previousPrice As Decimal
     Private gridItemLayoutApplied As Boolean = False
 
@@ -1960,7 +1962,7 @@ Proceed:
             ElseIf e.KeyCode = Keys.F9 Then
                 cmdCancel_Click(sender, e)
             ElseIf e.KeyCode = Keys.F7 Then
-                frmSalesRep.ShowDialog()
+                ShowSalesRep()
             ElseIf e.KeyCode = Keys.F8 Then
                 ShowCustomer()
                 'Additional code for Barcode gnome
@@ -2211,7 +2213,7 @@ Proceed:
     Private Sub cmdSSales_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSSales.Click
 
         Try
-            frmSalesRep.ShowDialog()
+            ShowSalesRep()
         Catch ex As Exception
             MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 29", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -2385,8 +2387,46 @@ Proceed:
         End Try
     End Sub
 
+    Public Sub ApplySalesRepCustomerLock()
+        If StoreProcessingSettings.LockSalesRepToCustomerDefault Then
+            isSalesRepLockedToCustomer = True
+            txtSales.Enabled = False
+        End If
+    End Sub
+
+    Private Sub ShowSalesRep()
+        If isRecalledOrderLocked Then
+            MessageBox.Show(
+                "The sales rep is locked for this recalled order.",
+                "Change Sales Rep",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+            Exit Sub
+        End If
+
+        If isSalesRepLockedToCustomer Then
+            MessageBox.Show(
+                "The sales rep is locked to this customer's assigned rep.",
+                "Change Sales Rep",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information)
+            Exit Sub
+        End If
+
+        frmSalesRep.ShowDialog()
+    End Sub
+
     Private Sub ShowCustomer()
         Try
+            If isRecalledOrderLocked Then
+                MessageBox.Show(
+                    "The customer is locked for this recalled order.",
+                    "Change Customer",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Information)
+                Exit Sub
+            End If
+
             Dim hasSelectedItems As Boolean = gridSelectItem.RowCount > 0
 
             If hasSelectedItems Then
@@ -2519,7 +2559,7 @@ Proceed:
         Try
 
             If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
-                frmSalesRep.ShowDialog()
+                ShowSalesRep()
             End If
 
         Catch ex As Exception
@@ -2590,7 +2630,11 @@ Proceed:
             db = New ItemLookUpDataContext(DB_Conn("constr"))
             txtPriceLevel.Text = ""
             txtSales.Text = ""
+            txtSales.Enabled = True
             txtCustomer.Text = ""
+            txtCustomer.Enabled = True
+            isRecalledOrderLocked = False
+            isSalesRepLockedToCustomer = False
             txtSearch.Text = ""
             txtRemarks.Text = String.Empty
             txtType.Text = String.Empty
@@ -4024,6 +4068,12 @@ err_flag:
 
                 iOrderType = x.Type
             Next
+
+            If StoreProcessingSettings.LockCustomerAndSalesRepOnRecall Then
+                isRecalledOrderLocked = True
+                txtCustomer.Enabled = False
+                txtSales.Enabled = False
+            End If
 
             Dim recalledOrderUsesQueueing As Boolean =
                 iOrderType = 2 AndAlso StoreProcessingSettings.QueueingEnabled

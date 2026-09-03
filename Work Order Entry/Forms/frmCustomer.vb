@@ -83,6 +83,7 @@
             iSalesID = iSalesRep
 
             frmItemLookUp.txtSales.Text = clsSalesRep.getPrimarySalesRepName(iSalesRep)
+            frmItemLookUp.ApplySalesRepCustomerLock()
 
             'frmItemLookUp.txtSearch.Text = ""
             'frmItemLookUp.gridSelectItem.Rows.Clear()

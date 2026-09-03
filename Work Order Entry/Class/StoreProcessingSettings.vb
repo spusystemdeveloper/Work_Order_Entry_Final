@@ -59,6 +59,38 @@ Public NotInheritable Class StoreProcessingSettings
         End Get
     End Property
 
+    Public Shared ReadOnly Property LockCustomerAndSalesRepOnRecall As Boolean
+        Get
+            Return ReadBoolean("LockCustomerAndSalesRepOnRecall", False)
+        End Get
+    End Property
+
+    Public Shared Sub SaveLockCustomerAndSalesRepOnRecall(ByVal isLocked As Boolean)
+        Dim configuration = ConfigurationManager.OpenExeConfiguration(
+            ConfigurationUserLevel.None)
+
+        SetBoolean(configuration, "LockCustomerAndSalesRepOnRecall", isLocked)
+
+        configuration.Save(ConfigurationSaveMode.Modified)
+        ConfigurationManager.RefreshSection("appSettings")
+    End Sub
+
+    Public Shared ReadOnly Property LockSalesRepToCustomerDefault As Boolean
+        Get
+            Return ReadBoolean("LockSalesRepToCustomerDefault", False)
+        End Get
+    End Property
+
+    Public Shared Sub SaveLockSalesRepToCustomerDefault(ByVal isLocked As Boolean)
+        Dim configuration = ConfigurationManager.OpenExeConfiguration(
+            ConfigurationUserLevel.None)
+
+        SetBoolean(configuration, "LockSalesRepToCustomerDefault", isLocked)
+
+        configuration.Save(ConfigurationSaveMode.Modified)
+        ConfigurationManager.RefreshSection("appSettings")
+    End Sub
+
     Public Shared Sub SaveShowForInvoiceButton(ByVal isVisible As Boolean)
         SaveBranchSettings(QueueingEnabled, AllowOrderGrouping, isVisible,
                            ShowImportButton)

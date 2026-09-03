@@ -63,6 +63,8 @@ Partial Class frmSettings
         Me.chkAllowOrderGrouping = New System.Windows.Forms.CheckBox()
         Me.chkEnableBranchQueue = New System.Windows.Forms.CheckBox()
         Me.chkAllowBranchSelection = New System.Windows.Forms.CheckBox()
+        Me.chkLockCustomerSalesRepOnRecall = New System.Windows.Forms.CheckBox()
+        Me.chkLockSalesRepToCustomer = New System.Windows.Forms.CheckBox()
         Me.lblAssignedDatabase = New System.Windows.Forms.Label()
         Me.txtExpectedDatabase = New System.Windows.Forms.TextBox()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
@@ -460,13 +462,15 @@ Partial Class frmSettings
         Me.GroupBox4.Controls.Add(Me.chkAllowOrderGrouping)
         Me.GroupBox4.Controls.Add(Me.chkEnableBranchQueue)
         Me.GroupBox4.Controls.Add(Me.chkAllowBranchSelection)
+        Me.GroupBox4.Controls.Add(Me.chkLockCustomerSalesRepOnRecall)
+        Me.GroupBox4.Controls.Add(Me.chkLockSalesRepToCustomer)
         Me.GroupBox4.Controls.Add(Me.lblAssignedDatabase)
         Me.GroupBox4.Controls.Add(Me.txtExpectedDatabase)
         Me.GroupBox4.Controls.Add(Me.Button1)
         Me.GroupBox4.Font = New System.Drawing.Font("Century Gothic", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox4.Location = New System.Drawing.Point(9, 376)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(416, 140)
+        Me.GroupBox4.Size = New System.Drawing.Size(416, 165)
         Me.GroupBox4.TabIndex = 15
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Branch Functions"
@@ -535,6 +539,28 @@ Partial Class frmSettings
         Me.chkAllowBranchSelection.TabIndex = 18
         Me.chkAllowBranchSelection.Text = "Allow Branch Selection"
         Me.chkAllowBranchSelection.UseVisualStyleBackColor = True
+        '
+        'chkLockCustomerSalesRepOnRecall
+        '
+        Me.chkLockCustomerSalesRepOnRecall.AutoSize = True
+        Me.chkLockCustomerSalesRepOnRecall.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkLockCustomerSalesRepOnRecall.Location = New System.Drawing.Point(21, 121)
+        Me.chkLockCustomerSalesRepOnRecall.Name = "chkLockCustomerSalesRepOnRecall"
+        Me.chkLockCustomerSalesRepOnRecall.Size = New System.Drawing.Size(240, 17)
+        Me.chkLockCustomerSalesRepOnRecall.TabIndex = 21
+        Me.chkLockCustomerSalesRepOnRecall.Text = "Lock Customer/Sales Rep on Recall"
+        Me.chkLockCustomerSalesRepOnRecall.UseVisualStyleBackColor = True
+        '
+        'chkLockSalesRepToCustomer
+        '
+        Me.chkLockSalesRepToCustomer.AutoSize = True
+        Me.chkLockSalesRepToCustomer.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkLockSalesRepToCustomer.Location = New System.Drawing.Point(21, 141)
+        Me.chkLockSalesRepToCustomer.Name = "chkLockSalesRepToCustomer"
+        Me.chkLockSalesRepToCustomer.Size = New System.Drawing.Size(291, 17)
+        Me.chkLockSalesRepToCustomer.TabIndex = 22
+        Me.chkLockSalesRepToCustomer.Text = "Lock Sales Rep to Customer's Rep (New Orders)"
+        Me.chkLockSalesRepToCustomer.UseVisualStyleBackColor = True
         '
         'lblAssignedDatabase
         '
@@ -751,7 +777,7 @@ Partial Class frmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(906, 525)
+        Me.ClientSize = New System.Drawing.Size(906, 550)
         Me.Controls.Add(Me.GroupBox5)
         Me.Controls.Add(Me.GroupBox4)
         Me.Controls.Add(Me.GroupBox3)
@@ -811,6 +837,8 @@ Partial Class frmSettings
     Friend WithEvents chkEnableBranchQueue As System.Windows.Forms.CheckBox
     Friend WithEvents chkShowImportButton As System.Windows.Forms.CheckBox
     Friend WithEvents chkAllowBranchSelection As System.Windows.Forms.CheckBox
+    Friend WithEvents chkLockCustomerSalesRepOnRecall As System.Windows.Forms.CheckBox
+    Friend WithEvents chkLockSalesRepToCustomer As System.Windows.Forms.CheckBox
     Friend WithEvents lblAssignedDatabase As System.Windows.Forms.Label
     Friend WithEvents txtExpectedDatabase As System.Windows.Forms.TextBox
     Friend WithEvents cmdPass2 As System.Windows.Forms.Button

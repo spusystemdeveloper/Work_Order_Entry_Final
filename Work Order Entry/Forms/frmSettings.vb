@@ -41,6 +41,10 @@
         chkShowImportButton.Checked = StoreProcessingSettings.ShowImportButton
         chkAllowBranchSelection.Checked =
             StoreProcessingSettings.BranchSelectionEnabled
+        chkLockCustomerSalesRepOnRecall.Checked =
+            StoreProcessingSettings.LockCustomerAndSalesRepOnRecall
+        chkLockSalesRepToCustomer.Checked =
+            StoreProcessingSettings.LockSalesRepToCustomerDefault
         txtExpectedDatabase.Text =
             StoreProcessingSettings.ExpectedDatabaseName
         UpdateBranchFunctionControlState()
@@ -211,6 +215,10 @@
                 chkShowImportButton.Checked,
                 chkAllowBranchSelection.Checked,
                 expectedDatabaseName)
+            StoreProcessingSettings.SaveLockCustomerAndSalesRepOnRecall(
+                chkLockCustomerSalesRepOnRecall.Checked)
+            StoreProcessingSettings.SaveLockSalesRepToCustomerDefault(
+                chkLockSalesRepToCustomer.Checked)
             MessageBox.Show(
                 "Branch settings were saved." & vbCrLf &
                 "Restart the application to apply branch selection changes.",
