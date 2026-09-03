@@ -1268,8 +1268,51 @@ Public Class frmItemLookUp
 
 Proceed:
 
+            ' Work Orders with more than MaxItemsPerWorkOrder items are split across
+            ' multiple Work Orders (e.g. 24 items -> 4 Work Orders of 6 items each).
+            Dim rowChunks As New List(Of List(Of Integer))
+            If getEntryType() = 2 AndAlso gridSelectItem.Rows.Count > MaxItemsPerWorkOrder Then
+                Dim currentChunk As New List(Of Integer)
+                For r As Integer = 0 To gridSelectItem.Rows.Count - 1
+                    currentChunk.Add(r)
+                    If currentChunk.Count = MaxItemsPerWorkOrder Then
+                        rowChunks.Add(currentChunk)
+                        currentChunk = New List(Of Integer)
+                    End If
+                Next
+                If currentChunk.Count > 0 Then rowChunks.Add(currentChunk)
+            Else
+                Dim allRows As New List(Of Integer)
+                For r As Integer = 0 To gridSelectItem.Rows.Count - 1
+                    allRows.Add(r)
+                Next
+                rowChunks.Add(allRows)
+            End If
+
             If getEntryType() = 2 Then
-                iReturnValue = MsgBox("Do you want to save this entry as Work Order ?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
+                Dim confirmMsg As String = "Do you want to save this entry as Work Order ?"
+
+                If rowChunks.Count > 1 Then
+                    Dim preview As New System.Text.StringBuilder()
+                    preview.AppendLine("This entry has " & gridSelectItem.Rows.Count & " items and will be split into " & rowChunks.Count & " Work Orders (max " & MaxItemsPerWorkOrder & " items each):")
+                    preview.AppendLine()
+
+                    For i As Integer = 0 To rowChunks.Count - 1
+                        Dim chunk = rowChunks(i)
+                        preview.AppendLine("Work Order " & (i + 1) & " of " & rowChunks.Count & " (" & chunk.Count & " item" & If(chunk.Count > 1, "s", "") & "):")
+                        For Each r In chunk
+                            Dim itemCode As String = Convert.ToString(gridSelectItem.Item(0, r).Value)
+                            Dim qty As String = Convert.ToString(gridSelectItem.Item(2, r).Value)
+                            preview.AppendLine("   " & itemCode & " x" & qty)
+                        Next
+                        preview.AppendLine()
+                    Next
+
+                    preview.Append(confirmMsg)
+                    confirmMsg = preview.ToString()
+                End If
+
+                iReturnValue = MsgBox(confirmMsg, MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
             ElseIf getEntryType() = 3 Then
                 iReturnValue = MsgBox("Do you want to save this entry as Sales Quotation ?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
             End If
@@ -1291,27 +1334,6 @@ Proceed:
                 End If
 
                 Dim useQueueing As Boolean = UseQueueingForCurrentOrder()
-
-                ' Work Orders with more than MaxItemsPerWorkOrder items are split across
-                ' multiple Work Orders (e.g. 24 items -> 4 Work Orders of 6 items each).
-                Dim rowChunks As New List(Of List(Of Integer))
-                If getEntryType() = 2 AndAlso gridSelectItem.Rows.Count > MaxItemsPerWorkOrder Then
-                    Dim currentChunk As New List(Of Integer)
-                    For r As Integer = 0 To gridSelectItem.Rows.Count - 1
-                        currentChunk.Add(r)
-                        If currentChunk.Count = MaxItemsPerWorkOrder Then
-                            rowChunks.Add(currentChunk)
-                            currentChunk = New List(Of Integer)
-                        End If
-                    Next
-                    If currentChunk.Count > 0 Then rowChunks.Add(currentChunk)
-                Else
-                    Dim allRows As New List(Of Integer)
-                    For r As Integer = 0 To gridSelectItem.Rows.Count - 1
-                        allRows.Add(r)
-                    Next
-                    rowChunks.Add(allRows)
-                End If
 
                 Dim createdOrderIDs As New List(Of Integer)
 
