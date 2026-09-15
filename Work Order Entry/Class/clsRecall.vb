@@ -1,4 +1,4 @@
-﻿Imports Microsoft.VisualBasic.Devices
+Imports Microsoft.VisualBasic.Devices
 
 Public Class clsRecall
 
@@ -746,21 +746,72 @@ Public Class clsRecall
     '    Return If(lastPrice.HasValue, lastPrice.Value, 0D)
     'End Function
 
+    Public Shared Function GetItemLastPrice(ByVal customerId As Integer, ByVal sItemCode As String) As Decimal
+        Dim cleanItemCode As String = If(sItemCode, "").Trim()
+        If customerId <= 0 OrElse String.IsNullOrEmpty(cleanItemCode) Then Return 0D
+
+        Try
+            Using dbx = GetDB()
+                ' 1. Check for specific CH/CI sales invoice transactions first (if ReferenceNumber starts with CH or CI)
+                Dim lastPrice As Decimal? = (From t In dbx.Transactions
+                                             Join te In dbx.TransactionEntries On t.TransactionNumber Equals te.TransactionNumber
+                                             Join i In dbx.Items On te.ItemID Equals i.ID
+                                             Where t.CustomerID = customerId _
+                                               And i.ItemLookupCode = cleanItemCode _
+                                               And te.Quantity > 0 _
+                                               And t.ReferenceNumber IsNot Nothing _
+                                               And (t.ReferenceNumber.StartsWith("CH") OrElse t.ReferenceNumber.StartsWith("CI"))
+                                             Order By t.Time Descending, t.TransactionNumber Descending
+                                             Select CType(te.Price, Decimal?)).FirstOrDefault()
+
+                ' 2. If no CH/CI invoice found, fall back to ANY completed transaction with positive quantity
+                If Not lastPrice.HasValue OrElse lastPrice.Value = 0D Then
+                    lastPrice = (From t In dbx.Transactions
+                                 Join te In dbx.TransactionEntries On t.TransactionNumber Equals te.TransactionNumber
+                                 Join i In dbx.Items On te.ItemID Equals i.ID
+                                 Where t.CustomerID = customerId _
+                                   And i.ItemLookupCode = cleanItemCode _
+                                   And te.Quantity > 0
+                                 Order By t.Time Descending, t.TransactionNumber Descending
+                                 Select CType(te.Price, Decimal?)).FirstOrDefault()
+                End If
+
+                Return If(lastPrice.HasValue, lastPrice.Value, 0D)
+            End Using
+        Catch ex As Exception
+            Return 0D
+        End Try
+    End Function
+
     Public Shared Function GetItemLastPrice(ByVal sCustomerText As String, ByVal sItemCode As String) As Decimal
-        ' This will fetch the latest price for CH or CI transactions or return 0 if not found
-        Using dbx = GetDB()
-            Dim iCustomer As Integer = (From c In dbx.Customers Where c.Company.Equals(sCustomerText) Select c.ID).FirstOrDefault
+        Dim targetCustId As Integer = 0
+        Dim trimmedCustomer As String = If(sCustomerText, "").Trim()
 
-            Dim lastPrice As Decimal? = (From t In dbx.Transactions
-                                         Join te In dbx.TransactionEntries On t.TransactionNumber Equals te.TransactionNumber
-                                         Join i In dbx.Items On te.ItemID Equals i.ID
-                                         Where t.CustomerID = iCustomer And i.ItemLookupCode.Equals(sItemCode) _
-                                       And (t.ReferenceNumber.StartsWith("CH") Or t.ReferenceNumber.StartsWith("CI"))
-                                         Order By t.Time Descending
-                                         Select CType(te.Price, Decimal?)).FirstOrDefault()
+        If Not String.IsNullOrEmpty(trimmedCustomer) Then
+            Try
+                Using dbx = GetDB()
+                    targetCustId = (From c In dbx.Customers
+                                    Where c.Company = trimmedCustomer _
+                                       OrElse c.AccountNumber = trimmedCustomer
+                                    Select c.ID).FirstOrDefault()
 
-            Return If(lastPrice.HasValue, lastPrice.Value, 0D)
-        End Using
+                    If targetCustId <= 0 Then
+                        targetCustId = (From c In dbx.Customers
+                                        Where c.Company.Trim() = trimmedCustomer
+                                        Select c.ID).FirstOrDefault()
+                    End If
+                End Using
+            Catch ex As Exception
+                targetCustId = 0
+            End Try
+        End If
+
+        ' Fall back to currently selected customer if text lookup didn't yield an ID
+        If targetCustId <= 0 AndAlso iCusID > 0 Then
+            targetCustId = iCusID
+        End If
+
+        Return GetItemLastPrice(targetCustId, sItemCode)
     End Function
 
 End Class

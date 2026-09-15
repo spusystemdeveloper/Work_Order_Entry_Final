@@ -91,6 +91,22 @@ Public NotInheritable Class StoreProcessingSettings
         ConfigurationManager.RefreshSection("appSettings")
     End Sub
 
+    Public Shared ReadOnly Property AllowDuplicateItemEntry As Boolean
+        Get
+            Return ReadBoolean("AllowDuplicateItemEntry", False)
+        End Get
+    End Property
+
+    Public Shared Sub SaveAllowDuplicateItemEntry(ByVal isAllowed As Boolean)
+        Dim configuration = ConfigurationManager.OpenExeConfiguration(
+            ConfigurationUserLevel.None)
+
+        SetBoolean(configuration, "AllowDuplicateItemEntry", isAllowed)
+
+        configuration.Save(ConfigurationSaveMode.Modified)
+        ConfigurationManager.RefreshSection("appSettings")
+    End Sub
+
     Public Shared Sub SaveShowForInvoiceButton(ByVal isVisible As Boolean)
         SaveBranchSettings(QueueingEnabled, AllowOrderGrouping, isVisible,
                            ShowImportButton)

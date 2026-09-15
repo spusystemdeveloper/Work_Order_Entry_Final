@@ -1,4 +1,4 @@
-﻿Public Class frmSettings
+Public Class frmSettings
 
     Private Sub frmSettings_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
@@ -39,6 +39,7 @@
         chkAllowOrderGrouping.Checked = StoreProcessingSettings.AllowOrderGrouping
         chkShowForInvoice.Checked = StoreProcessingSettings.ShowForInvoiceButton
         chkShowImportButton.Checked = StoreProcessingSettings.ShowImportButton
+        chkAllowDuplicateItemEntry.Checked = StoreProcessingSettings.AllowDuplicateItemEntry
         chkAllowBranchSelection.Checked =
             StoreProcessingSettings.BranchSelectionEnabled
         chkLockCustomerSalesRepOnRecall.Checked =
@@ -219,6 +220,8 @@
                 chkLockCustomerSalesRepOnRecall.Checked)
             StoreProcessingSettings.SaveLockSalesRepToCustomerDefault(
                 chkLockSalesRepToCustomer.Checked)
+            StoreProcessingSettings.SaveAllowDuplicateItemEntry(
+                chkAllowDuplicateItemEntry.Checked)
             MessageBox.Show(
                 "Branch settings were saved." & vbCrLf &
                 "Restart the application to apply branch selection changes.",

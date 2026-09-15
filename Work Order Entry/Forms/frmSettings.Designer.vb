@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class frmSettings
     Inherits System.Windows.Forms.Form
 
@@ -58,15 +58,16 @@ Partial Class frmSettings
         Me.gridCustType = New System.Windows.Forms.DataGridView()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.cmdSaveBranchSettings = New System.Windows.Forms.Button()
-        Me.chkShowForInvoice = New System.Windows.Forms.CheckBox()
-        Me.chkShowImportButton = New System.Windows.Forms.CheckBox()
-        Me.chkAllowOrderGrouping = New System.Windows.Forms.CheckBox()
-        Me.chkEnableBranchQueue = New System.Windows.Forms.CheckBox()
         Me.chkAllowBranchSelection = New System.Windows.Forms.CheckBox()
         Me.chkLockCustomerSalesRepOnRecall = New System.Windows.Forms.CheckBox()
         Me.chkLockSalesRepToCustomer = New System.Windows.Forms.CheckBox()
         Me.lblAssignedDatabase = New System.Windows.Forms.Label()
         Me.txtExpectedDatabase = New System.Windows.Forms.TextBox()
+        Me.chkShowForInvoice = New System.Windows.Forms.CheckBox()
+        Me.chkShowImportButton = New System.Windows.Forms.CheckBox()
+        Me.chkAllowDuplicateItemEntry = New System.Windows.Forms.CheckBox()
+        Me.chkAllowOrderGrouping = New System.Windows.Forms.CheckBox()
+        Me.chkEnableBranchQueue = New System.Windows.Forms.CheckBox()
         Me.GroupBox5 = New System.Windows.Forms.GroupBox()
         Me.GroupBox7 = New System.Windows.Forms.GroupBox()
         Me.Button3 = New System.Windows.Forms.Button()
@@ -86,6 +87,9 @@ Partial Class frmSettings
         Me.txtMySQLpass = New System.Windows.Forms.TextBox()
         Me.txtMySQLsvr = New System.Windows.Forms.TextBox()
         Me.Label15 = New System.Windows.Forms.Label()
+        Me.GroupBox8 = New System.Windows.Forms.GroupBox()
+        Me.Label19 = New System.Windows.Forms.Label()
+        Me.Label20 = New System.Windows.Forms.Label()
         Me.GroupBox1.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
@@ -94,6 +98,7 @@ Partial Class frmSettings
         Me.GroupBox5.SuspendLayout()
         Me.GroupBox7.SuspendLayout()
         Me.GroupBox6.SuspendLayout()
+        Me.GroupBox8.SuspendLayout()
         Me.SuspendLayout()
         '
         'GroupBox1
@@ -227,7 +232,7 @@ Partial Class frmSettings
         Me.GroupBox2.Font = New System.Drawing.Font("Century Gothic", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox2.Location = New System.Drawing.Point(431, 3)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(465, 186)
+        Me.GroupBox2.Size = New System.Drawing.Size(465, 176)
         Me.GroupBox2.TabIndex = 13
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Password to Prompt"
@@ -235,7 +240,7 @@ Partial Class frmSettings
         'cmdPass3
         '
         Me.cmdPass3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.cmdPass3.Location = New System.Drawing.Point(136, 155)
+        Me.cmdPass3.Location = New System.Drawing.Point(136, 150)
         Me.cmdPass3.Name = "cmdPass3"
         Me.cmdPass3.Size = New System.Drawing.Size(38, 23)
         Me.cmdPass3.TabIndex = 16
@@ -245,7 +250,7 @@ Partial Class frmSettings
         'txtPassword3
         '
         Me.txtPassword3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtPassword3.Location = New System.Drawing.Point(136, 103)
+        Me.txtPassword3.Location = New System.Drawing.Point(136, 98)
         Me.txtPassword3.Name = "txtPassword3"
         Me.txtPassword3.Size = New System.Drawing.Size(83, 20)
         Me.txtPassword3.TabIndex = 13
@@ -255,7 +260,7 @@ Partial Class frmSettings
         '
         Me.Label10.AutoSize = True
         Me.Label10.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label10.Location = New System.Drawing.Point(18, 110)
+        Me.Label10.Location = New System.Drawing.Point(18, 105)
         Me.Label10.Name = "Label10"
         Me.Label10.Size = New System.Drawing.Size(65, 13)
         Me.Label10.TabIndex = 12
@@ -264,7 +269,7 @@ Partial Class frmSettings
         'txtConfirmP3
         '
         Me.txtConfirmP3.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtConfirmP3.Location = New System.Drawing.Point(136, 129)
+        Me.txtConfirmP3.Location = New System.Drawing.Point(136, 124)
         Me.txtConfirmP3.Name = "txtConfirmP3"
         Me.txtConfirmP3.Size = New System.Drawing.Size(83, 20)
         Me.txtConfirmP3.TabIndex = 14
@@ -274,7 +279,7 @@ Partial Class frmSettings
         '
         Me.Label11.AutoSize = True
         Me.Label11.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label11.Location = New System.Drawing.Point(18, 136)
+        Me.Label11.Location = New System.Drawing.Point(18, 131)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(103, 13)
         Me.Label11.TabIndex = 15
@@ -353,7 +358,7 @@ Partial Class frmSettings
         Me.GroupBox3.Font = New System.Drawing.Font("Century Gothic", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox3.Location = New System.Drawing.Point(3, 118)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(422, 252)
+        Me.GroupBox3.Size = New System.Drawing.Size(422, 259)
         Me.GroupBox3.TabIndex = 14
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Customer Type Price Level "
@@ -456,11 +461,6 @@ Partial Class frmSettings
         '
         'GroupBox4
         '
-        Me.GroupBox4.Controls.Add(Me.cmdSaveBranchSettings)
-        Me.GroupBox4.Controls.Add(Me.chkShowForInvoice)
-        Me.GroupBox4.Controls.Add(Me.chkShowImportButton)
-        Me.GroupBox4.Controls.Add(Me.chkAllowOrderGrouping)
-        Me.GroupBox4.Controls.Add(Me.chkEnableBranchQueue)
         Me.GroupBox4.Controls.Add(Me.chkAllowBranchSelection)
         Me.GroupBox4.Controls.Add(Me.chkLockCustomerSalesRepOnRecall)
         Me.GroupBox4.Controls.Add(Me.chkLockSalesRepToCustomer)
@@ -470,72 +470,28 @@ Partial Class frmSettings
         Me.GroupBox4.Font = New System.Drawing.Font("Century Gothic", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox4.Location = New System.Drawing.Point(9, 376)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(416, 165)
+        Me.GroupBox4.Size = New System.Drawing.Size(416, 183)
         Me.GroupBox4.TabIndex = 15
         Me.GroupBox4.TabStop = False
-        Me.GroupBox4.Text = "Branch Functions"
+        Me.GroupBox4.Text = "Branch Configuration"
         '
         'cmdSaveBranchSettings
         '
         Me.cmdSaveBranchSettings.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.cmdSaveBranchSettings.Location = New System.Drawing.Point(332, 50)
+        Me.cmdSaveBranchSettings.Location = New System.Drawing.Point(387, 154)
         Me.cmdSaveBranchSettings.Name = "cmdSaveBranchSettings"
         Me.cmdSaveBranchSettings.Size = New System.Drawing.Size(70, 23)
         Me.cmdSaveBranchSettings.TabIndex = 14
         Me.cmdSaveBranchSettings.Text = "Save"
         Me.cmdSaveBranchSettings.UseVisualStyleBackColor = True
         '
-        'chkShowForInvoice
-        '
-        Me.chkShowForInvoice.AutoSize = True
-        Me.chkShowForInvoice.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkShowForInvoice.Location = New System.Drawing.Point(175, 86)
-        Me.chkShowForInvoice.Name = "chkShowForInvoice"
-        Me.chkShowForInvoice.Size = New System.Drawing.Size(154, 17)
-        Me.chkShowForInvoice.TabIndex = 13
-        Me.chkShowForInvoice.Text = "Show For Invoicing button"
-        Me.chkShowForInvoice.UseVisualStyleBackColor = True
-        '
-        'chkShowImportButton
-        '
-        Me.chkShowImportButton.AutoSize = True
-        Me.chkShowImportButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkShowImportButton.Location = New System.Drawing.Point(175, 65)
-        Me.chkShowImportButton.Name = "chkShowImportButton"
-        Me.chkShowImportButton.Size = New System.Drawing.Size(121, 17)
-        Me.chkShowImportButton.TabIndex = 17
-        Me.chkShowImportButton.Text = "Show Import button"
-        Me.chkShowImportButton.UseVisualStyleBackColor = True
-        '
-        'chkAllowOrderGrouping
-        '
-        Me.chkAllowOrderGrouping.AutoSize = True
-        Me.chkAllowOrderGrouping.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkAllowOrderGrouping.Location = New System.Drawing.Point(175, 44)
-        Me.chkAllowOrderGrouping.Name = "chkAllowOrderGrouping"
-        Me.chkAllowOrderGrouping.Size = New System.Drawing.Size(126, 17)
-        Me.chkAllowOrderGrouping.TabIndex = 15
-        Me.chkAllowOrderGrouping.Text = "Allow order grouping"
-        Me.chkAllowOrderGrouping.UseVisualStyleBackColor = True
-        '
-        'chkEnableBranchQueue
-        '
-        Me.chkEnableBranchQueue.AutoSize = True
-        Me.chkEnableBranchQueue.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkEnableBranchQueue.Location = New System.Drawing.Point(175, 23)
-        Me.chkEnableBranchQueue.Name = "chkEnableBranchQueue"
-        Me.chkEnableBranchQueue.Size = New System.Drawing.Size(132, 17)
-        Me.chkEnableBranchQueue.TabIndex = 16
-        Me.chkEnableBranchQueue.Text = "Enable Branch Queue"
-        Me.chkEnableBranchQueue.UseVisualStyleBackColor = True
-        '
         'chkAllowBranchSelection
         '
         Me.chkAllowBranchSelection.AutoSize = True
         Me.chkAllowBranchSelection.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.chkAllowBranchSelection.Location = New System.Drawing.Point(21, 51)
+        Me.chkAllowBranchSelection.Location = New System.Drawing.Point(21, 58)
         Me.chkAllowBranchSelection.Name = "chkAllowBranchSelection"
-        Me.chkAllowBranchSelection.Size = New System.Drawing.Size(136, 17)
+        Me.chkAllowBranchSelection.Size = New System.Drawing.Size(135, 17)
         Me.chkAllowBranchSelection.TabIndex = 18
         Me.chkAllowBranchSelection.Text = "Allow Branch Selection"
         Me.chkAllowBranchSelection.UseVisualStyleBackColor = True
@@ -546,7 +502,7 @@ Partial Class frmSettings
         Me.chkLockCustomerSalesRepOnRecall.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.chkLockCustomerSalesRepOnRecall.Location = New System.Drawing.Point(21, 121)
         Me.chkLockCustomerSalesRepOnRecall.Name = "chkLockCustomerSalesRepOnRecall"
-        Me.chkLockCustomerSalesRepOnRecall.Size = New System.Drawing.Size(240, 17)
+        Me.chkLockCustomerSalesRepOnRecall.Size = New System.Drawing.Size(199, 17)
         Me.chkLockCustomerSalesRepOnRecall.TabIndex = 21
         Me.chkLockCustomerSalesRepOnRecall.Text = "Lock Customer/Sales Rep on Recall"
         Me.chkLockCustomerSalesRepOnRecall.UseVisualStyleBackColor = True
@@ -557,7 +513,7 @@ Partial Class frmSettings
         Me.chkLockSalesRepToCustomer.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.chkLockSalesRepToCustomer.Location = New System.Drawing.Point(21, 141)
         Me.chkLockSalesRepToCustomer.Name = "chkLockSalesRepToCustomer"
-        Me.chkLockSalesRepToCustomer.Size = New System.Drawing.Size(291, 17)
+        Me.chkLockSalesRepToCustomer.Size = New System.Drawing.Size(256, 17)
         Me.chkLockSalesRepToCustomer.TabIndex = 22
         Me.chkLockSalesRepToCustomer.Text = "Lock Sales Rep to Customer's Rep (New Orders)"
         Me.chkLockSalesRepToCustomer.UseVisualStyleBackColor = True
@@ -565,10 +521,10 @@ Partial Class frmSettings
         'lblAssignedDatabase
         '
         Me.lblAssignedDatabase.AutoSize = True
-        Me.lblAssignedDatabase.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblAssignedDatabase.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.lblAssignedDatabase.Location = New System.Drawing.Point(18, 78)
         Me.lblAssignedDatabase.Name = "lblAssignedDatabase"
-        Me.lblAssignedDatabase.Size = New System.Drawing.Size(104, 13)
+        Me.lblAssignedDatabase.Size = New System.Drawing.Size(120, 13)
         Me.lblAssignedDatabase.TabIndex = 19
         Me.lblAssignedDatabase.Text = "Assigned Database:"
         '
@@ -576,22 +532,77 @@ Partial Class frmSettings
         '
         Me.txtExpectedDatabase.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
         Me.txtExpectedDatabase.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtExpectedDatabase.Location = New System.Drawing.Point(21, 98)
+        Me.txtExpectedDatabase.Location = New System.Drawing.Point(21, 94)
         Me.txtExpectedDatabase.Name = "txtExpectedDatabase"
         Me.txtExpectedDatabase.Size = New System.Drawing.Size(282, 20)
         Me.txtExpectedDatabase.TabIndex = 20
+        '
+        'chkShowForInvoice
+        '
+        Me.chkShowForInvoice.AutoSize = True
+        Me.chkShowForInvoice.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkShowForInvoice.Location = New System.Drawing.Point(61, 78)
+        Me.chkShowForInvoice.Name = "chkShowForInvoice"
+        Me.chkShowForInvoice.Size = New System.Drawing.Size(117, 17)
+        Me.chkShowForInvoice.TabIndex = 13
+        Me.chkShowForInvoice.Text = "Show For Invoicing"
+        Me.chkShowForInvoice.UseVisualStyleBackColor = True
+        '
+        'chkShowImportButton
+        '
+        Me.chkShowImportButton.AutoSize = True
+        Me.chkShowImportButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkShowImportButton.Location = New System.Drawing.Point(248, 62)
+        Me.chkShowImportButton.Name = "chkShowImportButton"
+        Me.chkShowImportButton.Size = New System.Drawing.Size(106, 17)
+        Me.chkShowImportButton.TabIndex = 17
+        Me.chkShowImportButton.Text = "Show Import [F6]"
+        Me.chkShowImportButton.UseVisualStyleBackColor = True
+        '
+        'chkAllowDuplicateItemEntry
+        '
+        Me.chkAllowDuplicateItemEntry.AutoSize = True
+        Me.chkAllowDuplicateItemEntry.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkAllowDuplicateItemEntry.Location = New System.Drawing.Point(248, 45)
+        Me.chkAllowDuplicateItemEntry.Name = "chkAllowDuplicateItemEntry"
+        Me.chkAllowDuplicateItemEntry.Size = New System.Drawing.Size(124, 17)
+        Me.chkAllowDuplicateItemEntry.TabIndex = 23
+        Me.chkAllowDuplicateItemEntry.Text = "Allow duplicate items"
+        Me.chkAllowDuplicateItemEntry.UseVisualStyleBackColor = True
+        '
+        'chkAllowOrderGrouping
+        '
+        Me.chkAllowOrderGrouping.AutoSize = True
+        Me.chkAllowOrderGrouping.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkAllowOrderGrouping.Location = New System.Drawing.Point(61, 62)
+        Me.chkAllowOrderGrouping.Name = "chkAllowOrderGrouping"
+        Me.chkAllowOrderGrouping.Size = New System.Drawing.Size(96, 17)
+        Me.chkAllowOrderGrouping.TabIndex = 15
+        Me.chkAllowOrderGrouping.Text = "Order grouping"
+        Me.chkAllowOrderGrouping.UseVisualStyleBackColor = True
+        '
+        'chkEnableBranchQueue
+        '
+        Me.chkEnableBranchQueue.AutoSize = True
+        Me.chkEnableBranchQueue.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkEnableBranchQueue.Location = New System.Drawing.Point(43, 45)
+        Me.chkEnableBranchQueue.Name = "chkEnableBranchQueue"
+        Me.chkEnableBranchQueue.Size = New System.Drawing.Size(131, 17)
+        Me.chkEnableBranchQueue.TabIndex = 16
+        Me.chkEnableBranchQueue.Text = "Enable Branch Queue"
+        Me.chkEnableBranchQueue.UseVisualStyleBackColor = True
         '
         'GroupBox5
         '
         Me.GroupBox5.Controls.Add(Me.GroupBox7)
         Me.GroupBox5.Controls.Add(Me.GroupBox6)
         Me.GroupBox5.Font = New System.Drawing.Font("Century Gothic", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.GroupBox5.Location = New System.Drawing.Point(431, 195)
+        Me.GroupBox5.Location = New System.Drawing.Point(431, 185)
         Me.GroupBox5.Name = "GroupBox5"
-        Me.GroupBox5.Size = New System.Drawing.Size(463, 254)
+        Me.GroupBox5.Size = New System.Drawing.Size(463, 192)
         Me.GroupBox5.TabIndex = 16
         Me.GroupBox5.TabStop = False
-        Me.GroupBox5.Text = "Website"
+        Me.GroupBox5.Text = "Website - Deprecate"
         '
         'GroupBox7
         '
@@ -604,7 +615,7 @@ Partial Class frmSettings
         Me.GroupBox7.Controls.Add(Me.Label18)
         Me.GroupBox7.Location = New System.Drawing.Point(10, 25)
         Me.GroupBox7.Name = "GroupBox7"
-        Me.GroupBox7.Size = New System.Drawing.Size(209, 175)
+        Me.GroupBox7.Size = New System.Drawing.Size(209, 160)
         Me.GroupBox7.TabIndex = 22
         Me.GroupBox7.TabStop = False
         Me.GroupBox7.Text = "Import Defauls"
@@ -686,7 +697,7 @@ Partial Class frmSettings
         Me.GroupBox6.Controls.Add(Me.Label15)
         Me.GroupBox6.Location = New System.Drawing.Point(225, 25)
         Me.GroupBox6.Name = "GroupBox6"
-        Me.GroupBox6.Size = New System.Drawing.Size(221, 175)
+        Me.GroupBox6.Size = New System.Drawing.Size(221, 160)
         Me.GroupBox6.TabIndex = 21
         Me.GroupBox6.TabStop = False
         Me.GroupBox6.Text = "MySQL Connection"
@@ -773,11 +784,48 @@ Partial Class frmSettings
         Me.Label15.TabIndex = 20
         Me.Label15.Text = "Password :"
         '
+        'GroupBox8
+        '
+        Me.GroupBox8.Controls.Add(Me.cmdSaveBranchSettings)
+        Me.GroupBox8.Controls.Add(Me.Label20)
+        Me.GroupBox8.Controls.Add(Me.Label19)
+        Me.GroupBox8.Controls.Add(Me.chkEnableBranchQueue)
+        Me.GroupBox8.Controls.Add(Me.chkShowForInvoice)
+        Me.GroupBox8.Controls.Add(Me.chkAllowOrderGrouping)
+        Me.GroupBox8.Controls.Add(Me.chkAllowDuplicateItemEntry)
+        Me.GroupBox8.Controls.Add(Me.chkShowImportButton)
+        Me.GroupBox8.Font = New System.Drawing.Font("Century Gothic", 8.25!, System.Drawing.FontStyle.Bold)
+        Me.GroupBox8.Location = New System.Drawing.Point(431, 376)
+        Me.GroupBox8.Name = "GroupBox8"
+        Me.GroupBox8.Size = New System.Drawing.Size(463, 183)
+        Me.GroupBox8.TabIndex = 17
+        Me.GroupBox8.TabStop = False
+        Me.GroupBox8.Text = "Work Order and Queue Options"
+        '
+        'Label19
+        '
+        Me.Label19.AutoSize = True
+        Me.Label19.Location = New System.Drawing.Point(26, 27)
+        Me.Label19.Name = "Label19"
+        Me.Label19.Size = New System.Drawing.Size(98, 15)
+        Me.Label19.TabIndex = 24
+        Me.Label19.Text = "Queueing Mode:"
+        '
+        'Label20
+        '
+        Me.Label20.AutoSize = True
+        Me.Label20.Location = New System.Drawing.Point(237, 28)
+        Me.Label20.Name = "Label20"
+        Me.Label20.Size = New System.Drawing.Size(119, 15)
+        Me.Label20.TabIndex = 25
+        Me.Label20.Text = "Order Entry Features:"
+        '
         'frmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(906, 550)
+        Me.ClientSize = New System.Drawing.Size(906, 571)
+        Me.Controls.Add(Me.GroupBox8)
         Me.Controls.Add(Me.GroupBox5)
         Me.Controls.Add(Me.GroupBox4)
         Me.Controls.Add(Me.GroupBox3)
@@ -804,6 +852,8 @@ Partial Class frmSettings
         Me.GroupBox7.PerformLayout()
         Me.GroupBox6.ResumeLayout(False)
         Me.GroupBox6.PerformLayout()
+        Me.GroupBox8.ResumeLayout(False)
+        Me.GroupBox8.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -836,6 +886,7 @@ Partial Class frmSettings
     Friend WithEvents chkAllowOrderGrouping As System.Windows.Forms.CheckBox
     Friend WithEvents chkEnableBranchQueue As System.Windows.Forms.CheckBox
     Friend WithEvents chkShowImportButton As System.Windows.Forms.CheckBox
+    Friend WithEvents chkAllowDuplicateItemEntry As System.Windows.Forms.CheckBox
     Friend WithEvents chkAllowBranchSelection As System.Windows.Forms.CheckBox
     Friend WithEvents chkLockCustomerSalesRepOnRecall As System.Windows.Forms.CheckBox
     Friend WithEvents chkLockSalesRepToCustomer As System.Windows.Forms.CheckBox
@@ -871,4 +922,7 @@ Partial Class frmSettings
     Friend WithEvents Label17 As System.Windows.Forms.Label
     Friend WithEvents Label18 As System.Windows.Forms.Label
     Friend WithEvents GroupBox6 As System.Windows.Forms.GroupBox
+    Friend WithEvents GroupBox8 As GroupBox
+    Friend WithEvents Label20 As Label
+    Friend WithEvents Label19 As Label
 End Class
