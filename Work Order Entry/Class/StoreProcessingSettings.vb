@@ -152,6 +152,16 @@ Public NotInheritable Class StoreProcessingSettings
         ConfigurationManager.RefreshSection("appSettings")
     End Sub
 
+    Public Shared Sub UpdateExpectedDatabaseName(ByVal newDatabaseName As String)
+        Try
+            Dim configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+            SetString(configuration, "ExpectedDatabaseName", If(newDatabaseName, String.Empty).Trim())
+            configuration.Save(ConfigurationSaveMode.Modified)
+            ConfigurationManager.RefreshSection("appSettings")
+        Catch ex As Exception
+        End Try
+    End Sub
+
     Private Shared Sub SetString(
                                  ByVal configuration As System.Configuration.Configuration,
                                  ByVal key As String,

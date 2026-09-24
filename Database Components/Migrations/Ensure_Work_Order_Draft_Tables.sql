@@ -36,7 +36,7 @@ BEGIN TRY
         (
             DraftDetailID int IDENTITY(1,1) NOT NULL,
             DraftID int NOT NULL,
-            LineNo int NOT NULL,
+            [LineNo] int NOT NULL,
             ItemCode nvarchar(50) NOT NULL,
             ItemName nvarchar(500) NULL,
             Qty int NULL,
@@ -73,7 +73,7 @@ BEGIN TRY
     )
     BEGIN
         CREATE NONCLUSTERED INDEX IX_SOD_WO_DraftDetail_DraftID_LineNo
-            ON dbo.SOD_WO_DraftDetail(DraftID, LineNo);
+            ON dbo.SOD_WO_DraftDetail(DraftID, [LineNo]);
     END;
 
     COMMIT TRANSACTION;

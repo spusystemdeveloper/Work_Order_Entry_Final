@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class UCGridOrder
     Inherits System.Windows.Forms.UserControl
 
@@ -149,6 +149,7 @@ Partial Class UCGridOrder
         Me.lblGroupID.Size = New System.Drawing.Size(16, 13)
         Me.lblGroupID.TabIndex = 6
         Me.lblGroupID.Text = "---"
+        Me.lblGroupID.Visible = False
         '
         'Label6
         '

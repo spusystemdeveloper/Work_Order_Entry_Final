@@ -1,4 +1,4 @@
-﻿Public Class clsItemLookUp
+Public Class clsItemLookUp
 
     Public Shared dt1 As New DataTable()
     Public Shared dt2 As New DataTable()
@@ -1019,20 +1019,22 @@
             Using dbx = GetDB()
                 Dim WoDetails = (From i In dbx.SOD_fntbl_WoDetails(woid, woRegister, woCashier)).SingleOrDefault
 
-                Branch = WoDetails.Branch
-                Orderid = WoDetails.Orderid
-                AccountNo = WoDetails.AccountNo
-                Company = WoDetails.Company
-                Register = WoDetails.Register
-                Cashier = WoDetails.Cashier
-                OrderDate = WoDetails.OrderDate
-                Ordertime = WoDetails.Ordertime
-                Reference = WoDetails.Reference
-                Comment = WoDetails.Comment
-                Subtotal = WoDetails.Subtotal
-                SalesTax = WoDetails.SalesTax
-                Total = WoDetails.Total
-                Address = WoDetails.Address
+                If WoDetails IsNot Nothing Then
+                    Branch = WoDetails.Branch
+                    Orderid = WoDetails.Orderid
+                    AccountNo = WoDetails.AccountNo
+                    Company = WoDetails.Company
+                    Register = WoDetails.Register
+                    Cashier = WoDetails.Cashier
+                    OrderDate = WoDetails.OrderDate
+                    Ordertime = WoDetails.Ordertime
+                    Reference = WoDetails.Reference
+                    Comment = WoDetails.Comment
+                    Subtotal = WoDetails.Subtotal
+                    SalesTax = WoDetails.SalesTax
+                    Total = WoDetails.Total
+                    Address = WoDetails.Address
+                End If
             End Using
 
         Catch ex As Exception
@@ -1046,14 +1048,17 @@
 
     Public Shared Function getOrderForInvoicing(ByVal search As String, ByVal filter As String) As Object
 
-
-
         Using dbx = GetDB()
-            Dim ordr = (From a In dbx.SOD_ViewForInvoices Where a.Status.Equals("Prepared") And a.Orders.Contains(search) And a.OPIS.Equals(filter)
+            Dim cutoffDate As DateTime = DateTime.Now.AddDays(-60)
+            Dim ordr = (From a In dbx.SOD_ViewForInvoices
+                        Join o In dbx.Orders On a.groupto Equals o.ID
+                        Where a.Status.Equals("Prepared") AndAlso o.Closed = False AndAlso o.Time >= cutoffDate AndAlso a.Orders.Contains(search) AndAlso (String.IsNullOrEmpty(filter) OrElse a.OPIS.Equals(filter))
+                        Order By o.Time Descending
                         Select New With {
                           .Group = a.groupto,
                           .Status = a.Status,
-                          .Orders = a.Orders}).ToList
+                          .Orders = a.Orders,
+                          .Encoder = a.OPIS}).ToList()
             Return ordr
         End Using
 
@@ -1091,6 +1096,12 @@
 
                 For Each x In upt
                     x.Status = stat
+                Next
+
+                Dim orderIds = (From b In dbx.Queueings Where b.GroupTo.Equals(groupid) AndAlso b.OrderID.HasValue Select b.OrderID.Value).Distinct().ToList()
+                Dim ordersToTouch = (From o In dbx.Orders Where orderIds.Contains(o.ID)).ToList()
+                For Each ord In ordersToTouch
+                    ord.LastUpdated = DateTime.Now
                 Next
 
                 dbx.SubmitChanges()

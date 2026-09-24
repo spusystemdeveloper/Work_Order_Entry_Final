@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class frmMain
     Inherits System.Windows.Forms.Form
 
@@ -49,6 +49,21 @@ Partial Class frmMain
         Me.lblForInvoice = New System.Windows.Forms.Label()
         Me.Label12 = New System.Windows.Forms.Label()
         Me.Label7 = New System.Windows.Forms.Label()
+        Me.PanelOverdue = New System.Windows.Forms.Panel()
+        Me.picBoxOverdue = New System.Windows.Forms.PictureBox()
+        Me.lblOverdue = New System.Windows.Forms.Label()
+        Me.LabelOverdueTitle = New System.Windows.Forms.Label()
+        Me.Label13 = New System.Windows.Forms.Label()
+        Me.PanelCompletedToday = New System.Windows.Forms.Panel()
+        Me.picBoxCompletedToday = New System.Windows.Forms.PictureBox()
+        Me.LabelCompletedTodayTitle = New System.Windows.Forms.Label()
+        Me.lblCompletedToday = New System.Windows.Forms.Label()
+        Me.lblSearchPrompt = New System.Windows.Forms.Label()
+        Me.txtQueueSearch = New System.Windows.Forms.TextBox()
+        Me.btnClearSearch = New System.Windows.Forms.Button()
+        Me.btnBatchPick = New System.Windows.Forms.Button()
+        Me.btnTvDisplay = New System.Windows.Forms.Button()
+        Me.btnPickerSummary = New System.Windows.Forms.Button()
         Me.pnlBot = New System.Windows.Forms.Panel()
         Me.flowLyout_bot = New System.Windows.Forms.FlowLayoutPanel()
         Me.Label10 = New System.Windows.Forms.Label()
@@ -73,6 +88,8 @@ Partial Class frmMain
         CType(Me.picBoxPrepared, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.Panel5.SuspendLayout()
         CType(Me.picBoxForInvoice, System.ComponentModel.ISupportInitialize).BeginInit()
+        Me.PanelOverdue.SuspendLayout()
+        CType(Me.picBoxOverdue, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.pnlBot.SuspendLayout()
         Me.flowLyout_bot.SuspendLayout()
         Me.pnlTop.SuspendLayout()
@@ -98,6 +115,9 @@ Partial Class frmMain
         Me.FlowLayoutPanel2.Controls.Add(Me.Label11)
         Me.FlowLayoutPanel2.Controls.Add(Me.Panel5)
         Me.FlowLayoutPanel2.Controls.Add(Me.Label7)
+        Me.FlowLayoutPanel2.Controls.Add(Me.PanelOverdue)
+        Me.FlowLayoutPanel2.Controls.Add(Me.Label13)
+        Me.FlowLayoutPanel2.Controls.Add(Me.PanelCompletedToday)
         Me.FlowLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Top
         Me.FlowLayoutPanel2.Location = New System.Drawing.Point(0, 0)
         Me.FlowLayoutPanel2.Name = "FlowLayoutPanel2"
@@ -356,6 +376,100 @@ Partial Class frmMain
         Me.Label7.TabIndex = 22
         Me.Label7.Text = "    "
         '
+        'PanelOverdue
+        '
+        Me.PanelOverdue.AutoSize = True
+        Me.PanelOverdue.BackColor = System.Drawing.Color.Ivory
+        Me.PanelOverdue.Controls.Add(Me.picBoxOverdue)
+        Me.PanelOverdue.Controls.Add(Me.lblOverdue)
+        Me.PanelOverdue.Controls.Add(Me.LabelOverdueTitle)
+        Me.PanelOverdue.Location = New System.Drawing.Point(1022, 13)
+        Me.PanelOverdue.Name = "PanelOverdue"
+        Me.PanelOverdue.Size = New System.Drawing.Size(200, 22)
+        Me.PanelOverdue.TabIndex = 5
+        '
+        'picBoxOverdue
+        '
+        Me.picBoxOverdue.BackColor = System.Drawing.Color.FromArgb(198, 40, 40)
+        Me.picBoxOverdue.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.picBoxOverdue.Location = New System.Drawing.Point(3, 2)
+        Me.picBoxOverdue.Name = "picBoxOverdue"
+        Me.picBoxOverdue.Size = New System.Drawing.Size(17, 17)
+        Me.picBoxOverdue.TabIndex = 19
+        Me.picBoxOverdue.TabStop = False
+        '
+        'lblOverdue
+        '
+        Me.lblOverdue.AutoSize = True
+        Me.lblOverdue.Font = New System.Drawing.Font("Century Gothic", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblOverdue.Location = New System.Drawing.Point(165, 0)
+        Me.lblOverdue.Name = "lblOverdue"
+        Me.lblOverdue.Size = New System.Drawing.Size(30, 19)
+        Me.lblOverdue.TabIndex = 15
+        Me.lblOverdue.Text = "---"
+        '
+        'LabelOverdueTitle
+        '
+        Me.LabelOverdueTitle.AutoSize = True
+        Me.LabelOverdueTitle.Font = New System.Drawing.Font("Century Gothic", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LabelOverdueTitle.Location = New System.Drawing.Point(27, 0)
+        Me.LabelOverdueTitle.Name = "LabelOverdueTitle"
+        Me.LabelOverdueTitle.Size = New System.Drawing.Size(135, 19)
+        Me.LabelOverdueTitle.TabIndex = 14
+        Me.LabelOverdueTitle.Text = "Overdue (>20m) :"
+        '
+        'Label13
+        '
+        Me.Label13.AutoSize = True
+        Me.Label13.Font = New System.Drawing.Font("Century Gothic", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Label13.Location = New System.Drawing.Point(1225, 10)
+        Me.Label13.Name = "Label13"
+        Me.Label13.Size = New System.Drawing.Size(25, 19)
+        Me.Label13.TabIndex = 23
+        Me.Label13.Text = "    "
+        '
+        'PanelCompletedToday
+        '
+        Me.PanelCompletedToday.AutoSize = True
+        Me.PanelCompletedToday.BackColor = System.Drawing.Color.Ivory
+        Me.PanelCompletedToday.Controls.Add(Me.picBoxCompletedToday)
+        Me.PanelCompletedToday.Controls.Add(Me.lblCompletedToday)
+        Me.PanelCompletedToday.Controls.Add(Me.LabelCompletedTodayTitle)
+        Me.PanelCompletedToday.Location = New System.Drawing.Point(1256, 13)
+        Me.PanelCompletedToday.Name = "PanelCompletedToday"
+        Me.PanelCompletedToday.Size = New System.Drawing.Size(225, 22)
+        Me.PanelCompletedToday.TabIndex = 6
+        '
+        'picBoxCompletedToday
+        '
+        Me.picBoxCompletedToday.BackColor = System.Drawing.Color.FromArgb(16, 185, 129)
+        Me.picBoxCompletedToday.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.picBoxCompletedToday.Location = New System.Drawing.Point(3, 2)
+        Me.picBoxCompletedToday.Name = "picBoxCompletedToday"
+        Me.picBoxCompletedToday.Size = New System.Drawing.Size(17, 17)
+        Me.picBoxCompletedToday.TabIndex = 24
+        Me.picBoxCompletedToday.TabStop = False
+        '
+        'lblCompletedToday
+        '
+        Me.lblCompletedToday.AutoSize = True
+        Me.lblCompletedToday.Font = New System.Drawing.Font("Century Gothic", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblCompletedToday.Location = New System.Drawing.Point(185, 0)
+        Me.lblCompletedToday.Name = "lblCompletedToday"
+        Me.lblCompletedToday.Size = New System.Drawing.Size(30, 19)
+        Me.lblCompletedToday.TabIndex = 17
+        Me.lblCompletedToday.Text = "---"
+        '
+        'LabelCompletedTodayTitle
+        '
+        Me.LabelCompletedTodayTitle.AutoSize = True
+        Me.LabelCompletedTodayTitle.Font = New System.Drawing.Font("Century Gothic", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.LabelCompletedTodayTitle.Location = New System.Drawing.Point(27, 0)
+        Me.LabelCompletedTodayTitle.Name = "LabelCompletedTodayTitle"
+        Me.LabelCompletedTodayTitle.Size = New System.Drawing.Size(155, 19)
+        Me.LabelCompletedTodayTitle.TabIndex = 16
+        Me.LabelCompletedTodayTitle.Text = "Completed Today :"
+        '
         'pnlBot
         '
         Me.pnlBot.BackColor = System.Drawing.Color.Ivory
@@ -454,10 +568,49 @@ Partial Class frmMain
         Me.txtReleaseType.TabIndex = 4
         Me.txtReleaseType.Text = "------"
         '
+        'lblSearchPrompt
+        '
+        Me.lblSearchPrompt.AutoSize = True
+        Me.lblSearchPrompt.Font = New System.Drawing.Font("Century Gothic", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.lblSearchPrompt.Location = New System.Drawing.Point(440, 10)
+        Me.lblSearchPrompt.Name = "lblSearchPrompt"
+        Me.lblSearchPrompt.Size = New System.Drawing.Size(60, 16)
+        Me.lblSearchPrompt.TabIndex = 115
+        Me.lblSearchPrompt.Text = "Search :"
+        '
+        'txtQueueSearch
+        '
+        Me.txtQueueSearch.Font = New System.Drawing.Font("Century Gothic", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.txtQueueSearch.Location = New System.Drawing.Point(505, 7)
+        Me.txtQueueSearch.Name = "txtQueueSearch"
+        Me.txtQueueSearch.Size = New System.Drawing.Size(260, 23)
+        Me.txtQueueSearch.TabIndex = 116
+        '
+        'btnClearSearch
+        '
+        Me.btnClearSearch.FlatAppearance.BorderColor = System.Drawing.Color.Black
+        Me.btnClearSearch.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray
+        Me.btnClearSearch.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Control
+        Me.btnClearSearch.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnClearSearch.Font = New System.Drawing.Font("Century Gothic", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnClearSearch.Location = New System.Drawing.Point(768, 6)
+        Me.btnClearSearch.Margin = New System.Windows.Forms.Padding(0)
+        Me.btnClearSearch.Name = "btnClearSearch"
+        Me.btnClearSearch.Size = New System.Drawing.Size(26, 25)
+        Me.btnClearSearch.TabIndex = 117
+        Me.btnClearSearch.Text = "✕"
+        Me.btnClearSearch.UseVisualStyleBackColor = True
+        '
         'pnlTop
         '
         Me.pnlTop.BackColor = System.Drawing.Color.Ivory
         Me.pnlTop.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.pnlTop.Controls.Add(Me.lblSearchPrompt)
+        Me.pnlTop.Controls.Add(Me.txtQueueSearch)
+        Me.pnlTop.Controls.Add(Me.btnClearSearch)
+        Me.pnlTop.Controls.Add(Me.btnBatchPick)
+        Me.pnlTop.Controls.Add(Me.btnTvDisplay)
+        Me.pnlTop.Controls.Add(Me.btnPickerSummary)
         Me.pnlTop.Controls.Add(Me.btnReload)
         Me.pnlTop.Controls.Add(Me.btnSet)
         Me.pnlTop.Controls.Add(Me.txtReleaseType)
@@ -466,6 +619,54 @@ Partial Class frmMain
         Me.pnlTop.Name = "pnlTop"
         Me.pnlTop.Size = New System.Drawing.Size(1294, 38)
         Me.pnlTop.TabIndex = 5
+        '
+        'btnBatchPick
+        '
+        Me.btnBatchPick.Anchor = System.Windows.Forms.AnchorStyles.Right
+        Me.btnBatchPick.FlatAppearance.BorderColor = System.Drawing.Color.Black
+        Me.btnBatchPick.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray
+        Me.btnBatchPick.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Control
+        Me.btnBatchPick.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnBatchPick.Font = New System.Drawing.Font("Century Gothic", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnBatchPick.Location = New System.Drawing.Point(806, 4)
+        Me.btnBatchPick.Margin = New System.Windows.Forms.Padding(0)
+        Me.btnBatchPick.Name = "btnBatchPick"
+        Me.btnBatchPick.Size = New System.Drawing.Size(108, 27)
+        Me.btnBatchPick.TabIndex = 119
+        Me.btnBatchPick.Text = "🌊 Batch Pick"
+        Me.btnBatchPick.UseVisualStyleBackColor = True
+        '
+        'btnTvDisplay
+        '
+        Me.btnTvDisplay.Anchor = System.Windows.Forms.AnchorStyles.Right
+        Me.btnTvDisplay.FlatAppearance.BorderColor = System.Drawing.Color.Black
+        Me.btnTvDisplay.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray
+        Me.btnTvDisplay.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Control
+        Me.btnTvDisplay.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnTvDisplay.Font = New System.Drawing.Font("Century Gothic", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnTvDisplay.Location = New System.Drawing.Point(918, 4)
+        Me.btnTvDisplay.Margin = New System.Windows.Forms.Padding(0)
+        Me.btnTvDisplay.Name = "btnTvDisplay"
+        Me.btnTvDisplay.Size = New System.Drawing.Size(106, 27)
+        Me.btnTvDisplay.TabIndex = 120
+        Me.btnTvDisplay.Text = "📺 TV Display"
+        Me.btnTvDisplay.UseVisualStyleBackColor = True
+        '
+        'btnPickerSummary
+        '
+        Me.btnPickerSummary.Anchor = System.Windows.Forms.AnchorStyles.Right
+        Me.btnPickerSummary.FlatAppearance.BorderColor = System.Drawing.Color.Black
+        Me.btnPickerSummary.FlatAppearance.MouseDownBackColor = System.Drawing.Color.Gray
+        Me.btnPickerSummary.FlatAppearance.MouseOverBackColor = System.Drawing.SystemColors.Control
+        Me.btnPickerSummary.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnPickerSummary.Font = New System.Drawing.Font("Century Gothic", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnPickerSummary.Location = New System.Drawing.Point(1030, 4)
+        Me.btnPickerSummary.Margin = New System.Windows.Forms.Padding(0)
+        Me.btnPickerSummary.Name = "btnPickerSummary"
+        Me.btnPickerSummary.Size = New System.Drawing.Size(90, 27)
+        Me.btnPickerSummary.TabIndex = 118
+        Me.btnPickerSummary.Text = "👥 Pickers"
+        Me.btnPickerSummary.UseVisualStyleBackColor = True
         '
         'btnReload
         '
@@ -544,6 +745,9 @@ Partial Class frmMain
         Me.Panel5.ResumeLayout(False)
         Me.Panel5.PerformLayout()
         CType(Me.picBoxForInvoice, System.ComponentModel.ISupportInitialize).EndInit()
+        Me.PanelOverdue.ResumeLayout(False)
+        Me.PanelOverdue.PerformLayout()
+        CType(Me.picBoxOverdue, System.ComponentModel.ISupportInitialize).EndInit()
         Me.pnlBot.ResumeLayout(False)
         Me.flowLyout_bot.ResumeLayout(False)
         Me.flowLyout_bot.PerformLayout()
@@ -577,6 +781,14 @@ Partial Class frmMain
     Friend WithEvents picBoxPrepared As System.Windows.Forms.PictureBox
     Friend WithEvents picBoxForInvoice As System.Windows.Forms.PictureBox
     Friend WithEvents Label7 As System.Windows.Forms.Label
+    Friend WithEvents PanelOverdue As System.Windows.Forms.Panel
+    Friend WithEvents picBoxOverdue As System.Windows.Forms.PictureBox
+    Friend WithEvents lblOverdue As System.Windows.Forms.Label
+    Friend WithEvents LabelOverdueTitle As System.Windows.Forms.Label
+    Friend WithEvents Label13 As System.Windows.Forms.Label
+    Friend WithEvents lblSearchPrompt As System.Windows.Forms.Label
+    Friend WithEvents txtQueueSearch As System.Windows.Forms.TextBox
+    Friend WithEvents btnClearSearch As System.Windows.Forms.Button
     Friend WithEvents txtReleaseType As System.Windows.Forms.Label
     Friend WithEvents pnlTop As System.Windows.Forms.Panel
     Friend WithEvents pnlContainer As System.Windows.Forms.Panel
@@ -594,4 +806,11 @@ Partial Class frmMain
     Friend WithEvents btnSet As System.Windows.Forms.Button
     Friend WithEvents delay As System.Windows.Forms.Timer
     Friend WithEvents btnReload As System.Windows.Forms.Button
+    Friend WithEvents btnPickerSummary As System.Windows.Forms.Button
+    Friend WithEvents btnBatchPick As System.Windows.Forms.Button
+    Friend WithEvents btnTvDisplay As System.Windows.Forms.Button
+    Friend WithEvents PanelCompletedToday As System.Windows.Forms.Panel
+    Friend WithEvents picBoxCompletedToday As System.Windows.Forms.PictureBox
+    Friend WithEvents lblCompletedToday As System.Windows.Forms.Label
+    Friend WithEvents LabelCompletedTodayTitle As System.Windows.Forms.Label
 End Class

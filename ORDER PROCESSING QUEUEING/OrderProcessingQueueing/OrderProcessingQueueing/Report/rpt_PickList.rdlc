@@ -131,9 +131,9 @@
         </Paragraphs>
         <rd:DefaultName>Textbox1</rd:DefaultName>
         <Top>0.21116in</Top>
-        <Left>4.22565in</Left>
+        <Left>4.20in</Left>
         <Height>0.21875in</Height>
-        <Width>0.99999in</Width>
+        <Width>3.90in</Width>
         <ZIndex>1</ZIndex>
         <Style>
           <Border>
@@ -423,9 +423,9 @@
         </Paragraphs>
         <rd:DefaultName>Textbox1</rd:DefaultName>
         <Top>0.42991in</Top>
-        <Left>2.15636in</Left>
+        <Left>4.20in</Left>
         <Height>0.53979in</Height>
-        <Width>3.06929in</Width>
+        <Width>3.90in</Width>
         <ZIndex>6</ZIndex>
         <Style>
           <Border>
@@ -435,9 +435,9 @@
       </Textbox>
       <Line Name="Line1">
         <Top>2.19032in</Top>
-        <Left>0.1911in</Left>
+        <Left>0.17025in</Left>
         <Height>0in</Height>
-        <Width>5.03454in</Width>
+        <Width>7.93in</Width>
         <ZIndex>7</ZIndex>
         <Style>
           <Border>
@@ -449,25 +449,25 @@
         <TablixBody>
           <TablixColumns>
             <TablixColumn>
-              <Width>0.72706in</Width>
+              <Width>0.80in</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>1.54257in</Width>
+              <Width>3.03in</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>0.52051in</Width>
+              <Width>0.65in</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>0.61756in</Width>
+              <Width>0.70in</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>0.54464in</Width>
+              <Width>0.75in</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>0.48391in</Width>
+              <Width>0.75in</Width>
             </TablixColumn>
             <TablixColumn>
-              <Width>0.59829in</Width>
+              <Width>1.25in</Width>
             </TablixColumn>
           </TablixColumns>
           <TablixRows>
@@ -1109,9 +1109,9 @@
         </TablixRowHierarchy>
         <DataSetName>ItemOrderEntry</DataSetName>
         <Top>1.30302in</Top>
-        <Left>0.1911in</Left>
+        <Left>0.17025in</Left>
         <Height>0.70833in</Height>
-        <Width>5.03454in</Width>
+        <Width>7.93in</Width>
         <ZIndex>8</ZIndex>
         <Style>
           <Border>
@@ -1155,7 +1155,7 @@
         <Top>1.05143in</Top>
         <Left>0.17025in</Left>
         <Height>0.18215in</Height>
-        <Width>5.05539in</Width>
+        <Width>7.93in</Width>
         <ZIndex>9</ZIndex>
         <Style>
           <Border>
@@ -1164,15 +1164,17 @@
         </Style>
       </Textbox>
     </ReportItems>
-    <Height>3.0426in</Height>
+    <Height>3.10in</Height>
     <Style />
   </Body>
-  <Width>5.42924in</Width>
+  <Width>8.20in</Width>
   <Page>
-    <LeftMargin>1in</LeftMargin>
-    <RightMargin>1in</RightMargin>
-    <TopMargin>1in</TopMargin>
-    <BottomMargin>1in</BottomMargin>
+    <PageHeight>5.5in</PageHeight>
+    <PageWidth>8.5in</PageWidth>
+    <LeftMargin>0.15in</LeftMargin>
+    <RightMargin>0.15in</RightMargin>
+    <TopMargin>0.15in</TopMargin>
+    <BottomMargin>0.15in</BottomMargin>
     <Style />
   </Page>
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>

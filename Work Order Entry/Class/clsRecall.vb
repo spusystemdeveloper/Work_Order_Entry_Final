@@ -28,6 +28,12 @@ Public Class clsRecall
 
 
             Using dbx = GetDB()
+                Dim shortageOrderIDs As New System.Collections.Generic.HashSet(Of Long)(
+                    (From qi In dbx.QueueingItems
+                     Join queue In dbx.Queueings On qi.QueueingID Equals queue.id
+                     Where queue.OrderID.HasValue AndAlso qi.Status = "Shortage"
+                     Select queue.OrderID.Value).Distinct().ToList())
+
                 If frmRecall.CheckBox1.Checked Then
 
                     frmRecall.Text = "LIST OF OPEN ENTRIES"
@@ -45,7 +51,7 @@ Public Class clsRecall
                         dr("Date") = i.Time
                         dr("Reference") = i.ReferenceNumber
                         dr("Customer") = i.AccountNumber
-                        dr("Comment") = i.Comment
+                        dr("Comment") = If(shortageOrderIDs.Contains(CLng(i.ID)), "[⚠️ SHORTAGE] ", "") & i.Comment
 
                         dt1.Rows.Add(dr)
 
@@ -100,7 +106,7 @@ Public Class clsRecall
                         dr("Date") = i.Time
                         dr("Reference") = i.ReferenceNumber
                         dr("Customer") = i.AccountNumber
-                        dr("Comment") = i.Comment
+                        dr("Comment") = If(shortageOrderIDs.Contains(CLng(i.ID)), "[⚠️ SHORTAGE] ", "") & i.Comment
 
                         dt1.Rows.Add(dr)
 

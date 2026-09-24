@@ -1,76 +1,125 @@
-﻿Public Class frmForInvoice
+Public Class frmForInvoice
 
     Dim groupid As String
     Dim orders As String
+    Private searchDebounceTimer As Windows.Forms.Timer
 
     Private Sub frmForInvoice_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        gridCustOrder.DataSource = clsItemLookUp.getOrderForInvoicing(txtSearch.Text, frmItemLookUp.usrUsername)
+        ExecuteSearch()
     End Sub
 
     Private Sub txtSearch_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtSearch.TextChanged
-        gridCustOrder.DataSource = clsItemLookUp.getOrderForInvoicing(txtSearch.Text, frmItemLookUp.usrUsername)
+        If searchDebounceTimer Is Nothing Then
+            searchDebounceTimer = New Windows.Forms.Timer()
+            searchDebounceTimer.Interval = 300
+            AddHandler searchDebounceTimer.Tick, AddressOf SearchDebounceTimer_Tick
+        End If
+        searchDebounceTimer.Stop()
+        searchDebounceTimer.Start()
+    End Sub
+
+    Private Sub SearchDebounceTimer_Tick(ByVal sender As Object, ByVal e As EventArgs)
+        If searchDebounceTimer IsNot Nothing Then searchDebounceTimer.Stop()
+        ExecuteSearch()
+    End Sub
+
+    Private Sub txtSearch_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtSearch.KeyDown
+        If e.KeyCode = Keys.Enter Then
+            If searchDebounceTimer IsNot Nothing Then searchDebounceTimer.Stop()
+            ExecuteSearch()
+            e.Handled = True
+            e.SuppressKeyPress = True
+        End If
+    End Sub
+
+    Private Sub ExecuteSearch()
+        Dim userFilter As String = If(chkStoreWide.Checked, Nothing, frmItemLookUp.usrUsername)
+        gridCustOrder.DataSource = Nothing
+        gridCustOrder.DataSource = clsItemLookUp.getOrderForInvoicing(txtSearch.Text.Trim(), userFilter)
+    End Sub
+
+    Private Sub chkStoreWide_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs) Handles chkStoreWide.CheckedChanged
+        ExecuteSearch()
     End Sub
 
     Private Sub btnCancel_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnCancel.Click
-
+        CleanupTimer()
         Me.Dispose()
         Me.Close()
+    End Sub
 
+    Private Sub frmForInvoice_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+        CleanupTimer()
+    End Sub
+
+    Private Sub CleanupTimer()
+        If searchDebounceTimer IsNot Nothing Then
+            searchDebounceTimer.Stop()
+            searchDebounceTimer.Dispose()
+            searchDebounceTimer = Nothing
+        End If
     End Sub
 
     Private Sub btnGroup_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnGroup.Click
+        UpdateSelectionFromGrid()
 
-        If Not groupid = 0 Then
-
+        If Not String.IsNullOrEmpty(groupid) AndAlso groupid <> "0" Then
 
             Dim SearchStrArr() As String = Split(orders, ", ")
 
             For Each x In SearchStrArr
 
                 clsItemLookUp.fakeUpdate(x)
+                frmPrintWo.Type = OrderPrintRules.WorkOrderTemplate
                 frmPrintWo.wo = x
                 frmPrintWo.ShowDialog()
 
             Next
 
-            clsItemLookUp.UpdateQueueStatus(groupid, "For Invoicing")
+            clsItemLookUp.UpdateQueueStatus(CInt(groupid), "For Invoicing")
 
-            gridCustOrder.DataSource = clsItemLookUp.getOrderForInvoicing(txtSearch.Text, frmItemLookUp.usrUsername)
-            groupid = 0
-
+            ExecuteSearch()
+            groupid = "0"
+            orders = ""
 
         Else
             MessageBox.Show("Please select an Order", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         End If
-      
 
     End Sub
-
 
     Private Sub gridCustOrder_DataBindingComplete(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewBindingCompleteEventArgs) Handles gridCustOrder.DataBindingComplete
         Try
-            Me.gridCustOrder.Rows(0).Selected = False
-            groupid = 0
+            If gridCustOrder.Rows.Count > 0 Then
+                gridCustOrder.Rows(0).Selected = False
+            End If
+            groupid = "0"
+            orders = ""
         Catch ex As Exception
 
         End Try
+    End Sub
 
+    Private Sub gridCustOrder_SelectionChanged(ByVal sender As Object, ByVal e As EventArgs) Handles gridCustOrder.SelectionChanged
+        UpdateSelectionFromGrid()
     End Sub
 
     Private Sub gridCustOrder_CellClick(ByVal sender As System.Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles gridCustOrder.CellClick
+        UpdateSelectionFromGrid()
+    End Sub
+
+    Private Sub UpdateSelectionFromGrid()
         Try
-            Dim index As Integer
-
-            index = e.RowIndex
-
-            Dim selectedRow As DataGridViewRow
-            selectedRow = gridCustOrder.Rows(index)
-
-            groupid = selectedRow.Cells(0).Value.ToString()
-            orders = selectedRow.Cells(2).Value.ToString()
-
+            If gridCustOrder.CurrentRow IsNot Nothing AndAlso gridCustOrder.CurrentRow.Index >= 0 Then
+                groupid = If(gridCustOrder.CurrentRow.Cells(0).Value, "0").ToString()
+                orders = If(gridCustOrder.CurrentRow.Cells(2).Value, "").ToString()
+            Else
+                groupid = "0"
+                orders = ""
+            End If
         Catch ex As Exception
-            groupid = 0
+            groupid = "0"
+            orders = ""
         End Try
     End Sub
 

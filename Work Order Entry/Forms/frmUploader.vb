@@ -1,4 +1,4 @@
-﻿Imports System.IO
+Imports System.IO
 Public Class frmUploader
 
     Dim sErrMsg As String = String.Empty
@@ -39,6 +39,8 @@ Public Class frmUploader
 
     Private Sub VerifyImportFile()
         Try
+            frmItemLookUp.isBulkLoading = True
+            frmItemLookUp.gridSelectItem.SuspendLayout()
             Dim parser As New FileIO.TextFieldParser(lblFile.Text)
             parser.Delimiters = New String() {","} ' fields are separated by comma
             parser.HasFieldsEnclosedInQuotes = True ' each of the values is enclosed with double quotes
@@ -175,10 +177,14 @@ Public Class frmUploader
             lblTotal.Text = iRow - 2
             lblSuccess.Text = iSuccess
             lblError.Text = iError
+            frmItemLookUp.gridSelectItem.ResumeLayout()
             frmItemLookUp.UpdateAmt()
 
         Catch ex As Exception
             MsgBox(ex.ToString, vbCritical, "Program Error")
+        Finally
+            frmItemLookUp.gridSelectItem.ResumeLayout()
+            frmItemLookUp.isBulkLoading = False
         End Try
 
     End Sub

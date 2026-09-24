@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class frmQtyPrep
     Inherits System.Windows.Forms.Form
 
@@ -24,6 +24,7 @@ Partial Class frmQtyPrep
     Private Sub InitializeComponent()
         Me.txtQty = New System.Windows.Forms.TextBox()
         Me.btnOK = New System.Windows.Forms.Button()
+        Me.btnShortage = New System.Windows.Forms.Button()
         Me.lblGroupID = New System.Windows.Forms.Label()
         Me.lblItemId = New System.Windows.Forms.Label()
         Me.lblQid = New System.Windows.Forms.Label()
@@ -45,12 +46,25 @@ Partial Class frmQtyPrep
         '
         'btnOK
         '
-        Me.btnOK.Location = New System.Drawing.Point(102, 166)
+        Me.btnOK.Location = New System.Drawing.Point(18, 166)
         Me.btnOK.Name = "btnOK"
-        Me.btnOK.Size = New System.Drawing.Size(85, 40)
+        Me.btnOK.Size = New System.Drawing.Size(120, 38)
         Me.btnOK.TabIndex = 1
         Me.btnOK.Text = "OK"
         Me.btnOK.UseVisualStyleBackColor = True
+        '
+        'btnShortage
+        '
+        Me.btnShortage.BackColor = System.Drawing.Color.FromArgb(254, 243, 199)
+        Me.btnShortage.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnShortage.Font = New System.Drawing.Font("Arial", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnShortage.ForeColor = System.Drawing.Color.FromArgb(180, 83, 9)
+        Me.btnShortage.Location = New System.Drawing.Point(150, 166)
+        Me.btnShortage.Name = "btnShortage"
+        Me.btnShortage.Size = New System.Drawing.Size(130, 38)
+        Me.btnShortage.TabIndex = 2
+        Me.btnShortage.Text = "⚠️ Shortage"
+        Me.btnShortage.UseVisualStyleBackColor = False
         '
         'lblGroupID
         '
@@ -132,6 +146,7 @@ Partial Class frmQtyPrep
         Me.Controls.Add(Me.lblQid)
         Me.Controls.Add(Me.lblItemId)
         Me.Controls.Add(Me.lblGroupID)
+        Me.Controls.Add(Me.btnShortage)
         Me.Controls.Add(Me.btnOK)
         Me.Controls.Add(Me.txtQty)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
@@ -144,6 +159,7 @@ Partial Class frmQtyPrep
     End Sub
     Friend WithEvents txtQty As System.Windows.Forms.TextBox
     Friend WithEvents btnOK As System.Windows.Forms.Button
+    Friend WithEvents btnShortage As System.Windows.Forms.Button
     Friend WithEvents lblGroupID As System.Windows.Forms.Label
     Friend WithEvents lblItemId As System.Windows.Forms.Label
     Friend WithEvents lblQid As System.Windows.Forms.Label

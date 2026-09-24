@@ -1,4 +1,4 @@
-﻿Imports MySql.Data.MySqlClient
+Imports MySql.Data.MySqlClient
 
 Module MySQL_DAL
 
@@ -19,10 +19,11 @@ Module MySQL_DAL
     Dim mysql_dt As DataTable = New DataTable()
 
     Public Function mysql_testConnection() As Boolean
-        Dim _mysql_con As MySqlConnection = New MySqlConnection(mysql_database_connection)
         Try
-            _mysql_con.Open()
-            Return True
+            Using _mysql_con As New MySqlConnection(mysql_database_connection)
+                _mysql_con.Open()
+                Return True
+            End Using
         Catch ex As Exception
             Return False
         End Try

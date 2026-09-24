@@ -1,4 +1,4 @@
-﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
+<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Partial Class frmForInvoice
     Inherits System.Windows.Forms.Form
 
@@ -29,6 +29,7 @@ Partial Class frmForInvoice
         Me.btnGroup = New System.Windows.Forms.Button()
         Me.txtSearch = New System.Windows.Forms.TextBox()
         Me.Label1 = New System.Windows.Forms.Label()
+        Me.chkStoreWide = New System.Windows.Forms.CheckBox()
         CType(Me.gridCustOrder, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -84,19 +85,33 @@ Partial Class frmForInvoice
         Me.btnGroup.Text = "For Invoice"
         Me.btnGroup.UseVisualStyleBackColor = True
         '
+        '
         'txtSearch
         '
         Me.txtSearch.Font = New System.Drawing.Font("Arial", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtSearch.Location = New System.Drawing.Point(119, 18)
+        Me.txtSearch.Location = New System.Drawing.Point(115, 16)
         Me.txtSearch.Name = "txtSearch"
-        Me.txtSearch.Size = New System.Drawing.Size(250, 22)
+        Me.txtSearch.Size = New System.Drawing.Size(195, 22)
         Me.txtSearch.TabIndex = 5
+        '
+        'chkStoreWide
+        '
+        Me.chkStoreWide.AutoSize = True
+        Me.chkStoreWide.Checked = True
+        Me.chkStoreWide.CheckState = System.Windows.Forms.CheckState.Checked
+        Me.chkStoreWide.Font = New System.Drawing.Font("Arial", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkStoreWide.Location = New System.Drawing.Point(320, 18)
+        Me.chkStoreWide.Name = "chkStoreWide"
+        Me.chkStoreWide.Size = New System.Drawing.Size(91, 19)
+        Me.chkStoreWide.TabIndex = 7
+        Me.chkStoreWide.Text = "Store-Wide"
+        Me.chkStoreWide.UseVisualStyleBackColor = True
         '
         'Label1
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Arial", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(12, 21)
+        Me.Label1.Location = New System.Drawing.Point(12, 19)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(101, 16)
         Me.Label1.TabIndex = 6
@@ -106,7 +121,8 @@ Partial Class frmForInvoice
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(380, 361)
+        Me.ClientSize = New System.Drawing.Size(430, 361)
+        Me.Controls.Add(Me.chkStoreWide)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.txtSearch)
         Me.Controls.Add(Me.btnCancel)
@@ -125,4 +141,5 @@ Partial Class frmForInvoice
     Friend WithEvents btnGroup As System.Windows.Forms.Button
     Friend WithEvents txtSearch As System.Windows.Forms.TextBox
     Friend WithEvents Label1 As System.Windows.Forms.Label
+    Friend WithEvents chkStoreWide As System.Windows.Forms.CheckBox
 End Class

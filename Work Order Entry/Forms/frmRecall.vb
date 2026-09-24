@@ -1,8 +1,9 @@
-﻿Public Class frmRecall
+Public Class frmRecall
 
     Dim parm As String
 
     Dim recallData As New BindingSource
+    Private searchDebounceTimer As Windows.Forms.Timer
 
     Private Sub frmRecall_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
         If e.KeyCode = Keys.Escape Then
@@ -104,6 +105,8 @@
 
     Private Sub txtSearch_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtSearch.KeyUp
         If e.KeyCode = Keys.Enter Then
+            If searchDebounceTimer IsNot Nothing Then searchDebounceTimer.Stop()
+            ApplyRecallFilter()
         End If
     End Sub
 
@@ -124,22 +127,48 @@
     End Sub
 
     Private Sub txtSearch_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtSearch.TextChanged
+        If searchDebounceTimer Is Nothing Then
+            searchDebounceTimer = New Windows.Forms.Timer()
+            searchDebounceTimer.Interval = 300
+            AddHandler searchDebounceTimer.Tick, AddressOf SearchDebounceTimer_Tick
+        End If
+        searchDebounceTimer.Stop()
+        searchDebounceTimer.Start()
+    End Sub
 
-        If parm = "Order#" Then
-            recallData.Filter = "[Order#] Like '%" & txtSearch.Text & "%'"
+    Private Sub SearchDebounceTimer_Tick(ByVal sender As Object, ByVal e As EventArgs)
+        searchDebounceTimer.Stop()
+        ApplyRecallFilter()
+    End Sub
+
+    Private Sub ApplyRecallFilter()
+        Dim filterText As String = txtSearch.Text.Replace("'", "''").Trim()
+
+        If String.IsNullOrEmpty(filterText) Then
+            recallData.RemoveFilter()
+        ElseIf parm = "Order#" Then
+            recallData.Filter = "[Order#] Like '%" & filterText & "%'"
         ElseIf parm = "Date" Then
-            recallData.Filter = "[Date] Like '%" & txtSearch.Text & "%'"
+            recallData.Filter = "[Date] Like '%" & filterText & "%'"
         ElseIf parm = "Reference" Then
-            recallData.Filter = "[Reference] Like '%" & txtSearch.Text & "%'"
+            recallData.Filter = "[Reference] Like '%" & filterText & "%'"
         ElseIf parm = "Customer" Then
-            recallData.Filter = "[Customer] Like '%" & txtSearch.Text & "%'"
+            recallData.Filter = "[Customer] Like '%" & filterText & "%'"
         ElseIf parm = "Comment" Then
-            recallData.Filter = "[Comment] Like '%" & txtSearch.Text & "%'"
+            recallData.Filter = "[Comment] Like '%" & filterText & "%'"
+        Else
+            recallData.Filter = "[Order#] Like '%" & filterText & "%'"
         End If
 
-        gridOrder.DataSource = recallData
         lblRec.Text = gridOrder.RowCount & IIf(gridOrder.RowCount > 1, " entries", " entry")
+    End Sub
 
+    Private Sub frmRecall_FormClosing(ByVal sender As Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles Me.FormClosing
+        If searchDebounceTimer IsNot Nothing Then
+            searchDebounceTimer.Stop()
+            searchDebounceTimer.Dispose()
+            searchDebounceTimer = Nothing
+        End If
     End Sub
 
 End Class

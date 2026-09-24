@@ -1,4 +1,4 @@
-﻿Imports System
+Imports System
 Imports System.IO
 Imports System.Data
 Imports System.Text
@@ -80,17 +80,8 @@ Public Class frmPrintWo
             Dim paramTotal As New ReportParameter("paramTotal", clsItemLookUp.Total.ToString("N2"))
             rptviewer.LocalReport.SetParameters(paramTotal)
 
-            'Dim type As String = ""
-            'If frmItemLookUp.getEntryType() = 3 Then
-
-            '    Type = "Sales Quotation"
-            'Else
-            '    Type = "Work Order"
-
-            'End If
-
-
-            Dim paramType As New ReportParameter("paramType", type)
+            Type = OrderPrintRules.ResolveTemplateName(Type)
+            Dim paramType As New ReportParameter("paramType", Type)
             rptviewer.LocalReport.SetParameters(paramType)
 
             Me.rptviewer.LocalReport.DataSources.Add(ReportDataSourcedr)
@@ -146,6 +137,8 @@ Public Class frmPrintWo
     Private Sub frmPrintWo_FormClosed(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles MyBase.FormClosed
 
         rptviewer.Clear()
+        Type = ""
+        wo = 0
         Me.Dispose()
     End Sub
 

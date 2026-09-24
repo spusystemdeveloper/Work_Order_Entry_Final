@@ -65,8 +65,24 @@ BEGIN TRY
             1);
     END;
 
+    -- Performance indexes for Queueing queries (avoids full table scans and parallel thread exhaustion)
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.Queueing') AND name = N'IX_Queueing_GroupTo')
+    BEGIN
+        CREATE NONCLUSTERED INDEX IX_Queueing_GroupTo ON dbo.Queueing (GroupTo) INCLUDE (OrderID, Status, OPIS);
+    END;
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.Queueing') AND name = N'IX_Queueing_OrderID')
+    BEGIN
+        CREATE NONCLUSTERED INDEX IX_Queueing_OrderID ON dbo.Queueing (OrderID);
+    END;
+
+    IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.QueueingItems') AND name = N'IX_QueueingItems_QueueingID')
+    BEGIN
+        CREATE NONCLUSTERED INDEX IX_QueueingItems_QueueingID ON dbo.QueueingItems (QueueingID) INCLUDE (ItemID, QtyPre, Picker, Status);
+    END;
+
     COMMIT TRANSACTION;
-    PRINT 'Queueing compatibility tables are ready.';
+    PRINT 'Queueing compatibility tables and indexes are ready.';
 END TRY
 BEGIN CATCH
     IF XACT_STATE() <> 0 ROLLBACK TRANSACTION;

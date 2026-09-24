@@ -8,6 +8,9 @@ Public Class frmItemLookUp
     Private Const ManualTaxExemptionReasonType As Integer = 6
     Private Const MaxItemsPerWorkOrder As Integer = 6
 
+    Private Shared ReadOnly GridBaseFont As New Font("Arial", 12.0F, FontStyle.Bold)
+    Private Shared ReadOnly GridLoadedFont As New Font("Arial", 12.0F, FontStyle.Bold)
+
     Dim record As Object
     Dim sOldDes As String
     Dim dQty As Double
@@ -22,7 +25,9 @@ Public Class frmItemLookUp
     Dim lastFilterTxt As String
     Dim FilterStr
     Dim itemImage As Image
+    Private imageLoadTimer As Windows.Forms.Timer
     Private isLoadingRecalledOrder As Boolean = False
+    Public isBulkLoading As Boolean = False
     Private isRecalledOrderLocked As Boolean = False
     Private isSalesRepLockedToCustomer As Boolean = False
     Private previousPrice As Decimal
@@ -171,7 +176,6 @@ Public Class frmItemLookUp
             If String.IsNullOrWhiteSpace(sfilterTxt) Then
                 BindGridItemSource(getItem())
                 txtSearch.Focus()
-                gridItem.Refresh()
                 iRow = 0
                 lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
                 Exit Sub
@@ -202,14 +206,12 @@ Public Class frmItemLookUp
                 End If
 
                 txtSearch.Focus()
-                gridItem.Refresh()
                 iRow = 0
                 lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
                 Exit Sub
             End If
 
             txtSearch.Focus()
-            gridItem.Refresh()
             iRow = 0
             'searching
             'txtSearch.Focus()
@@ -234,7 +236,6 @@ Public Class frmItemLookUp
                 If TreeView1.Nodes.Count = 0 Then
                     gridItem.DataSource = getItem()
                 End If
-                gridItem.Refresh()
                 'searching
                 'Me.ActiveControl = txtSearch
 
@@ -417,7 +418,6 @@ Public Class frmItemLookUp
         End If
 
         GridColumnWidth()
-        gridItem.Refresh()
 
     End Sub
 
@@ -671,15 +671,11 @@ Public Class frmItemLookUp
                 End If
             End If
 
-            ' Base font
-            Dim baseFont As New Font("Arial", 12.0F, FontStyle.Bold)
-            Dim loadedFont As New Font("Arial", 12.0F, FontStyle.Bold)
-
-            ' ✅ APPLY TO WHOLE ROW (not per cell)
+            ' ✅ APPLY TO WHOLE ROW using cached fonts (eliminates per-cell GDI allocations)
             If isLoaded Then
-                row.DefaultCellStyle.Font = loadedFont
+                row.DefaultCellStyle.Font = GridLoadedFont
             Else
-                row.DefaultCellStyle.Font = baseFont
+                row.DefaultCellStyle.Font = GridBaseFont
             End If
 
         Catch
@@ -697,7 +693,6 @@ Public Class frmItemLookUp
                 lblStatItemCount.Text = gridItem.RowCount & " items"
                 txtSearch.Text = String.Empty
                 Me.ActiveControl = txtSearch
-                gridItem.Refresh()
             End If
 
 
@@ -708,7 +703,6 @@ Public Class frmItemLookUp
 
                         If TreeView1.Nodes.Count = 0 Then
                             gridItem.DataSource = getItem()
-                            gridItem.Refresh()
                         Else
                             SearchItem()
                         End If
@@ -1064,19 +1058,20 @@ Public Class frmItemLookUp
             Dim isQtoWo As Boolean = chkBoxQtoWo.Checked
 
             ' === VALIDATION PHASE ===
-            If (isWorkOrder AndAlso Not isQtoWo) OrElse (isQuote AndAlso isQtoWo) Then
-                ValidateAllQty()
-            ElseIf (isWorkOrder AndAlso isQtoWo) Then
-                'MessageBox.Show("If naka check ang wo, ug is converted to quote mag validate sya ug qty")
-                ValidateAllQtyForQoute()
-            ElseIf isQuote AndAlso Not isQtoWo Then
-                ' Validate qty not zero for quote
+            If isWorkOrder Then
+                If isQtoWo Then
+                    ValidateAllQtyForQoute()
+                Else
+                    ValidateAllQty()
+                End If
+            ElseIf isQuote Then
+                ' Validate qty not zero or negative for quote
                 For Each row As DataGridViewRow In gridSelectItem.Rows
                     If Not row.IsNewRow Then
                         Dim qtyValue As Object = row.Cells(2).Value
                         If qtyValue IsNot Nothing AndAlso IsNumeric(qtyValue) Then
-                            If Convert.ToDecimal(qtyValue) = 0 Then
-                                MessageBox.Show("Quantity cannot be zero. Please correct the item before proceeding.", "Validation Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                            If Convert.ToDecimal(qtyValue) <= 0 Then
+                                MessageBox.Show("Quantity must be greater than zero. Please correct the item before proceeding.", "Validation Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                                 gridSelectItem.CurrentCell = row.Cells(2)
                                 gridSelectItem.BeginEdit(True)
                                 Exit Sub
@@ -1116,7 +1111,6 @@ Public Class frmItemLookUp
         txtSearch.Text = String.Empty
         'searching
         'Me.ActiveControl = txtSearch
-        gridItem.Refresh()
         Cursor.Current = Cursors.Default
     End Sub
 
@@ -2395,16 +2389,23 @@ Proceed:
                        "(local RMS database)",
                        expectedDatabaseName)
 
-                MessageBox.Show(
-                    "This Work Order installation is locked to database " &
+                Dim promptResult As DialogResult = MessageBox.Show(
+                    "This Work Order installation is configured for database " &
                     expectedText & "." & vbCrLf &
                     "The local RMS configuration points to " &
                     If(actualDatabaseName, "(none)") & "." & vbCrLf & vbCrLf &
-                    "Correct the RMS connection or deploy the matching branch configuration.",
+                    "Do you want to switch and continue using " & actualDatabaseName & "?",
                     "Branch Database Mismatch",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error)
-                Return False
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question)
+
+                If promptResult = DialogResult.Yes Then
+                    If Not String.IsNullOrWhiteSpace(actualDatabaseName) Then
+                        StoreProcessingSettings.UpdateExpectedDatabaseName(actualDatabaseName)
+                    End If
+                Else
+                    Return False
+                End If
             End If
 
             db = New ItemLookUpDataContext(lockedConnectionString)
@@ -2446,7 +2447,6 @@ Proceed:
 
             ' Update_Timer.Start()
             Cursor.Current = Cursors.Default
-            gridItem.Refresh()
         Catch ex As Exception
             MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 25", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -2456,9 +2456,21 @@ Proceed:
     Public Function getItem() As DataTable
         Return load_data("SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0")
     End Function
+    Private Sub EnableDoubleBuffering(ByVal dgv As DataGridView)
+        Try
+            Dim pi = dgv.GetType().GetProperty("DoubleBuffered", Reflection.BindingFlags.Instance Or Reflection.BindingFlags.NonPublic)
+            If pi IsNot Nothing Then
+                pi.SetValue(dgv, True, Nothing)
+            End If
+        Catch
+        End Try
+    End Sub
+
     Private Sub FormatGrid()
 
         Try
+            EnableDoubleBuffering(gridItem)
+            EnableDoubleBuffering(gridSelectItem)
 
             With gridSelectItem
 
@@ -3222,9 +3234,53 @@ Proceed:
 
     End Sub
 
+    Private Sub gridSelectItem_CellFormatting(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellFormattingEventArgs) Handles gridSelectItem.CellFormatting
+        Try
+            If e.RowIndex < 0 OrElse e.RowIndex >= gridSelectItem.Rows.Count Then Return
+            Dim row As DataGridViewRow = gridSelectItem.Rows(e.RowIndex)
+            If row.IsNewRow Then Return
+
+            If e.ColumnIndex = Price.Index Then
+                Dim priceVal = row.Cells(Price.Index).Value
+                Dim costVal = row.Cells(Cost.Index).Value
+
+                If priceVal IsNot Nothing AndAlso costVal IsNot Nothing AndAlso
+                   IsNumeric(priceVal) AndAlso IsNumeric(costVal) Then
+                    Dim dPrice As Decimal = Convert.ToDecimal(priceVal)
+                    Dim dCost As Decimal = Convert.ToDecimal(costVal)
+
+                    If dCost > 0D Then
+                        If dPrice < dCost Then
+                            ' Below Cost -> Soft Red background, Dark Red text
+                            e.CellStyle.BackColor = Color.FromArgb(255, 215, 215)
+                            e.CellStyle.ForeColor = Color.DarkRed
+                            e.CellStyle.SelectionBackColor = Color.Crimson
+                            e.CellStyle.SelectionForeColor = Color.White
+                            row.Cells(Price.Index).ToolTipText = "Price Alert: Selling price is below minimum cost threshold."
+                        ElseIf dPrice < (dCost * 1.05D) Then
+                            ' Low Margin (< 5% above cost) -> Soft Yellow/Amber
+                            e.CellStyle.BackColor = Color.FromArgb(255, 248, 200)
+                            e.CellStyle.ForeColor = Color.DarkGoldenrod
+                            e.CellStyle.SelectionBackColor = Color.Goldenrod
+                            e.CellStyle.SelectionForeColor = Color.White
+                            row.Cells(Price.Index).ToolTipText = "Price Alert: Low profit margin on this item."
+                        Else
+                            row.Cells(Price.Index).ToolTipText = String.Empty
+                        End If
+                    Else
+                        row.Cells(Price.Index).ToolTipText = String.Empty
+                    End If
+                Else
+                    row.Cells(Price.Index).ToolTipText = String.Empty
+                End If
+            End If
+        Catch
+        End Try
+    End Sub
+
     Private Sub gridSelectItem_CellValueChanged(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles gridSelectItem.CellValueChanged
 
-        If isRestoringDraft Then Exit Sub
+        If isRestoringDraft OrElse isLoadingRecalledOrder OrElse isBulkLoading Then Exit Sub
 
         If gridSelectItem.RowCount > 0 Then
 
@@ -3498,18 +3554,30 @@ err_flag:
 
         Try
 
-            Dim sLineItemCode, sPrevItemCode
+            Dim sPrevItemCode As String = String.Empty
             Dim sMsg As String = ""
-            Dim dReqQty, dCommittedQty As Double
+            Dim dCommittedQty As Double
             Dim dAvailable, dNetAvailable As Double
             Dim sCurIndex As Integer
+            Dim needsCatalogReload As Boolean = False
 
-            dReqQty = 0
-            dAvailable = 0
-            dNetAvailable = 0
-            dCommittedQty = 0
-            sPrevItemCode = String.Empty
-            sCurIndex = 0
+            ' Pre-aggregate requested quantities by item code to avoid O(N^2) inner loop
+            Dim totalQtyByItem As New Dictionary(Of String, Double)(StringComparer.OrdinalIgnoreCase)
+            For r As Integer = 0 To gridSelectItem.Rows.Count - 1
+                Dim code As String = If(gridSelectItem(0, r).Value?.ToString(), "")
+                If Not String.IsNullOrEmpty(code) Then
+                    Dim qVal As Double = Val(gridSelectItem(2, r).Value)
+                    If totalQtyByItem.ContainsKey(code) Then
+                        totalQtyByItem(code) += qVal
+                    Else
+                        totalQtyByItem(code) = qVal
+                    End If
+                End If
+            Next
+
+            ' Local caches to eliminate duplicate database queries for the same item
+            Dim itemTypeCache As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
+            Dim netAvailableCache As New Dictionary(Of String, Double)(StringComparer.OrdinalIgnoreCase)
 
             For i As Integer = 0 To gridSelectItem.Rows.Count - 1
 
@@ -3525,9 +3593,6 @@ err_flag:
                     iErrCnt = iErrCnt + 1
                 End If
 
-
-
-
                 If IsNumeric(gridSelectItem(3, i).Value) = False Then
                     gridSelectItem.Rows(i).Cells(3).Style.ForeColor = Color.Red
                     If gridSelectItem(3, i).Value = "-" Then
@@ -3537,44 +3602,42 @@ err_flag:
                     iErrCnt = iErrCnt + 1
                 End If
 
-                sPrevItemCode = gridSelectItem(0, i).Value
-                sCurIndex = gridSelectItem(11, i).Value
+                sPrevItemCode = If(gridSelectItem(0, i).Value?.ToString(), "")
+                sCurIndex = If(IsNumeric(gridSelectItem(11, i).Value), CInt(gridSelectItem(11, i).Value), 0)
 
-                If clsItemLookUp.GetItemType(sPrevItemCode) = 0 Or clsItemLookUp.GetItemType(sPrevItemCode) = 3 Then
+                Dim itemType As Integer
+                If Not itemTypeCache.TryGetValue(sPrevItemCode, itemType) Then
+                    itemType = clsItemLookUp.GetItemType(sPrevItemCode)
+                    itemTypeCache(sPrevItemCode) = itemType
+                End If
 
-                    If IsNumeric(Split(lblOrderNo.Text, ": ")(1)) Then
+                If itemType = 0 OrElse itemType = 3 Then
 
-                        dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode) + clsRecall.CommittedWO(Split(lblOrderNo.Text, ": ")(1), sCurIndex)
-
-                    Else
-                        dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode)
-
+                    If Not netAvailableCache.TryGetValue(sPrevItemCode, dNetAvailable) Then
+                        Dim orderParts As String() = Split(lblOrderNo.Text, ": ")
+                        If orderParts.Length > 1 AndAlso IsNumeric(orderParts(1)) Then
+                            dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode) + clsRecall.CommittedWO(CInt(orderParts(1)), sCurIndex)
+                        Else
+                            dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode)
+                        End If
+                        netAvailableCache(sPrevItemCode) = dNetAvailable
                     End If
 
-                    dCommittedQty = 0
-
-                    For n As Integer = 0 To gridSelectItem.Rows.Count - 1
-                        sLineItemCode = gridSelectItem(0, n).Value
-                        If sPrevItemCode = sLineItemCode Then
-                            dCommittedQty = dCommittedQty + Val(gridSelectItem(2, n).Value)
-                        End If
-                    Next
+                    If totalQtyByItem.ContainsKey(sPrevItemCode) Then
+                        dCommittedQty = totalQtyByItem(sPrevItemCode)
+                    Else
+                        dCommittedQty = 0
+                    End If
 
                     dAvailable = dNetAvailable - dCommittedQty
 
                     If dAvailable < 0 Then
-
                         gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
                         gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.Red
                         iErrCnt = iErrCnt + 1
 
                         sMsg = "Please Check The Latest Available Quantity." & vbCrLf & vbCrLf & "The Available Quantity Of The Item(s) Has Been Changed/Updated Prior To Saving."
-
-
-                        loadData()
-                        GridColumnWidth()
-
-
+                        needsCatalogReload = True
                     Else
                         gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Black
                         gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.White
@@ -3584,13 +3647,17 @@ err_flag:
 
             Next
 
+            If needsCatalogReload Then
+                loadData()
+                GridColumnWidth()
+            End If
+
             UpdateAmt()
 
             If sMsg = String.Empty Or sMsg = "" Then
                 Return Nothing
             Else
                 Return MessageBox.Show(sMsg, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-
             End If
 
         Catch ex As Exception
@@ -3598,7 +3665,6 @@ err_flag:
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
-
 
     End Function
     'comment
@@ -3709,28 +3775,32 @@ err_flag:
     'End Function
 
     Public Function ValidateAllQtyForQoute() As DialogResult
-        'MessageBox.Show("ValidateAllQtyForQoute()")
         Try
 
-            Dim sLineItemCode, sPrevItemCode
+            Dim sPrevItemCode As String = String.Empty
             Dim sMsg As String = ""
-            Dim dReqQty, dCommittedQty As Double
+            Dim dCommittedQty As Double
             Dim dAvailable, dNetAvailable As Double
             Dim sCurIndex As Integer
-            'Comment
+            Dim needsCatalogReload As Boolean = False
 
-            'Dim onHandQty As Double
-            'Dim totalCommitted As Double
-            'Dim currentQuoteQty As Double
-            'Dim netAvailable As Double
+            ' Pre-aggregate requested quantities by item code to avoid O(N^2) inner loop
+            Dim totalQtyByItem As New Dictionary(Of String, Double)(StringComparer.OrdinalIgnoreCase)
+            For r As Integer = 0 To gridSelectItem.Rows.Count - 1
+                Dim code As String = If(gridSelectItem(0, r).Value?.ToString(), "")
+                If Not String.IsNullOrEmpty(code) Then
+                    Dim qVal As Double = Val(gridSelectItem(2, r).Value)
+                    If totalQtyByItem.ContainsKey(code) Then
+                        totalQtyByItem(code) += qVal
+                    Else
+                        totalQtyByItem(code) = qVal
+                    End If
+                End If
+            Next
 
-
-            dReqQty = 0
-            dAvailable = 0
-            dNetAvailable = 0
-            dCommittedQty = 0
-            sPrevItemCode = String.Empty
-            sCurIndex = 0
+            ' Local caches to eliminate duplicate database queries for the same item
+            Dim itemTypeCache As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
+            Dim netAvailableCache As New Dictionary(Of String, Double)(StringComparer.OrdinalIgnoreCase)
 
             For i As Integer = 0 To gridSelectItem.Rows.Count - 1
 
@@ -3755,76 +3825,50 @@ err_flag:
                     iErrCnt = iErrCnt + 1
                 End If
 
-                sPrevItemCode = gridSelectItem(0, i).Value
-                sCurIndex = gridSelectItem(11, i).Value
+                sPrevItemCode = If(gridSelectItem(0, i).Value?.ToString(), "")
+                sCurIndex = If(IsNumeric(gridSelectItem(11, i).Value), CInt(gridSelectItem(11, i).Value), 0)
 
-                If clsItemLookUp.GetItemType(sPrevItemCode) = 0 Or clsItemLookUp.GetItemType(sPrevItemCode) = 3 Then
+                Dim itemType As Integer
+                If Not itemTypeCache.TryGetValue(sPrevItemCode, itemType) Then
+                    itemType = clsItemLookUp.GetItemType(sPrevItemCode)
+                    itemTypeCache(sPrevItemCode) = itemType
+                End If
 
-                    If IsNumeric(Split(lblOrderNo.Text, ": ")(1)) Then
+                If itemType = 0 OrElse itemType = 3 Then
 
-                        'dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode) + clsRecall.CommittedWO(Split(lblOrderNo.Text, ": ")(1), sCurIndex)
-
-                        'onHandQty = clsItemLookUp.getItemQty(sPrevItemCode)
-                        'totalCommitted = clsItemLookUp.getItemQtyCommitted(sPrevItemCode)
-                        'currentQuoteQty = clsRecall.CommittedWO(Split(lblOrderNo.Text, ": ")(1), sCurIndex) ' use your actual logic here
-                        'netAvailable = onHandQty - (totalCommitted - currentQuoteQty)
+                    If Not netAvailableCache.TryGetValue(sPrevItemCode, dNetAvailable) Then
                         dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode)
-                    Else
-                        dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode)
-
+                        netAvailableCache(sPrevItemCode) = dNetAvailable
                     End If
 
-                    dCommittedQty = 0
-
-                    For n As Integer = 0 To gridSelectItem.Rows.Count - 1
-                        sLineItemCode = gridSelectItem(0, n).Value
-                        If sPrevItemCode = sLineItemCode Then
-                            dCommittedQty = dCommittedQty + Val(gridSelectItem(2, n).Value)
-                        End If
-                    Next
-
-                    'dAvailable = dNetAvailable - dCommittedQty
-
-                    'MessageBox.Show("dNetAvailable: " & dNetAvailable)
-                    'MessageBox.Show("dCommittedQty: " & dCommittedQty)
-                    'MessageBox.Show("dAvailable =: " & dNetAvailable & " - " & dCommittedQty & " = " & dAvailable)
-                    'MessageBox.Show("dAvailable: " & dAvailable)
-                    'MessageBox.Show("if dAvailable < 0")
-
-                    'MessageBox.Show("onHandQty " & onHandQty)
-                    'MessageBox.Show("totalCommitted " & totalCommitted)
-                    'MessageBox.Show("currentQuoteQty" & currentQuoteQty)
-                    'MessageBox.Show("dNetAvailable " & dNetAvailable)
-                    'MessageBox.Show("dCommittedQty: " & dCommittedQty)
+                    If totalQtyByItem.ContainsKey(sPrevItemCode) Then
+                        dCommittedQty = totalQtyByItem(sPrevItemCode)
+                    Else
+                        dCommittedQty = 0
+                    End If
 
                     dAvailable = dNetAvailable - dCommittedQty
 
-                    'check = dAvailable + dCommittedQty
-                    'essageBox.Show("dAvailable: " & dAvailable = netAvailable - dCommittedQty)
-                    'MessageBox.Show("dAvailable: " & dAvailable)
-                    'MessageBox.Show("check: " & check)
-
                     If dAvailable < 0 Then
-
                         gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
                         gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.Red
                         iErrCnt = iErrCnt + 1
 
                         sMsg = "Please Check The Latest Available Quantity." & vbCrLf & vbCrLf & "The Available Quantity Of The Item(s) Has Been Changed/Updated Prior To Saving."
-
-                        loadData()
-                        GridColumnWidth()
-
+                        needsCatalogReload = True
                     Else
-
                         gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Black
                         gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.White
-
                     End If
 
                 End If
 
             Next
+
+            If needsCatalogReload Then
+                loadData()
+                GridColumnWidth()
+            End If
 
             UpdateAmt()
 
@@ -3999,7 +4043,6 @@ err_flag:
 
             iRow = 0
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
-            gridItem.Refresh()
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0046", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -4056,7 +4099,6 @@ err_flag:
                 txtSearch.Text = String.Empty
                 'searching
                 'Me.ActiveControl = txtSearch
-                gridItem.Refresh()
             End If
 
             If e.KeyCode = Keys.F4 Then
@@ -4068,7 +4110,6 @@ err_flag:
 
                         If TreeView1.Nodes.Count = 0 Then
                             gridItem.DataSource = getItem()
-                            gridItem.Refresh()
                         Else
                             SearchItem()
                         End If
@@ -4413,6 +4454,9 @@ err_flag:
             Dim recalledOrderUsesQueueing As Boolean =
                 iOrderType = 2 AndAlso StoreProcessingSettings.QueueingEnabled
 
+            Dim shortageAlertList As New List(Of String)()
+
+            gridSelectItem.SuspendLayout()
             For Each n In clsRecall.RecallOrderEntry(orderid)
 
                 clsItemLookUp.GetPrice(1, n.Taxable, n.Price)
@@ -4444,16 +4488,24 @@ err_flag:
                     End If
                     newTimeRecord.Cells(OrderEntryID.Index).Value = n.ID
 
-                    Dim vqty As Integer
+                    Dim vqty As Integer = 0
+                    Dim qStatus As String = ""
+                    Dim qPicker As String = ""
 
                     If iOrderType = 3 OrElse Not recalledOrderUsesQueueing Then
                         vqty = 0
                     Else
 
                         Try
-                            vqty = (From a In db.QueueingItems
-                                    Join b In db.Queueings On a.QueueingID Equals b.id Where a.ItemID.Equals(iItemID) And b.OrderID.Equals(orderid)
-                                    Select a.QtyPre).ToList()(0)
+                            Dim qi = (From a In db.QueueingItems
+                                      Join b In db.Queueings On a.QueueingID Equals b.id
+                                      Where a.ItemID.Equals(iItemID) And b.OrderID.Equals(orderid)
+                                      Select a.QtyPre, a.Status, a.Picker).FirstOrDefault()
+                            If qi IsNot Nothing Then
+                                vqty = qi.QtyPre
+                                qStatus = If(qi.Status, "")
+                                qPicker = If(qi.Picker, "")
+                            End If
                         Catch ex As Exception
                             vqty = 0
                         End Try
@@ -4461,6 +4513,16 @@ err_flag:
                     End If
 
                     newTimeRecord.Cells(CustPrep.Index).Value = vqty
+
+                    If qStatus = "Shortage" Then
+                        newTimeRecord.DefaultCellStyle.BackColor = Color.FromArgb(254, 243, 199)
+                        newTimeRecord.DefaultCellStyle.ForeColor = Color.FromArgb(180, 83, 9)
+                        newTimeRecord.DefaultCellStyle.SelectionBackColor = Color.FromArgb(253, 230, 138)
+                        newTimeRecord.DefaultCellStyle.SelectionForeColor = Color.FromArgb(146, 64, 14)
+                        Dim pickerInfo As String = If(String.IsNullOrEmpty(qPicker), "Picker: Unassigned", "Picker: " & qPicker)
+                        shortageAlertList.Add("• " & n.ItemLookUpcode & " - " & n.Description & vbCrLf &
+                                              "   Ordered: " & n.QuantityOnOrder & " | Found: " & vqty & " | " & pickerInfo)
+                    End If
 
                 End With
 
@@ -4470,6 +4532,7 @@ err_flag:
                 gridSelectItem.Rows.Add(newTimeRecord)
 
             Next
+            gridSelectItem.ResumeLayout()
 
             gridSelectItem.AllowUserToAddRows = previousAllowUserToAddRows
             'gridSelectItem.CurrentCell = gridSelectItem(0, gridSelectItem.RowCount - 1)
@@ -4479,6 +4542,15 @@ err_flag:
             ApplyCustomerTaxStatusToRows()
             UpdateAmt()
             GetCustomerPriceLevel()
+
+            If shortageAlertList.Count > 0 Then
+                Dim alertMsg As String = "⚠️ WAREHOUSE SHORTAGE ALERT (OUT OF STOCK)" & vbCrLf & vbCrLf &
+                                         "The warehouse picker has flagged shortage on Work Order #" & orderid & ":" & vbCrLf & vbCrLf &
+                                         String.Join(vbCrLf & vbCrLf, shortageAlertList.ToArray()) & vbCrLf & vbCrLf &
+                                         "Highlighted rows in the table indicate shortages." & vbCrLf &
+                                         "Please coordinate with the picker or contact the customer."
+                MessageBox.Show(alertMsg, "Warehouse Shortage Notice", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            End If
 
             If iOrderType = 3 Then
                 MessageBox.Show(
@@ -4492,6 +4564,7 @@ err_flag:
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0051", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         Finally
+            gridSelectItem.ResumeLayout()
             isLoadingRecalledOrder = False
         End Try
     End Sub
@@ -4500,6 +4573,7 @@ err_flag:
         Try
 
             Cursor.Current = Cursors.WaitCursor
+            isBulkLoading = True
 
             gridSelectItem.Rows.Clear()
             Dim previousAllowUserToAddRows = gridSelectItem.AllowUserToAddRows
@@ -4531,6 +4605,7 @@ err_flag:
 
             iOrderType = clsImport.iType_
 
+            gridSelectItem.SuspendLayout()
             For Each n In clsImport.importOrderEntry()
 
                 Dim newTimeRecord As DataGridViewRow = gridSelectItem.Rows(gridSelectItem.NewRowIndex).Clone
@@ -4570,6 +4645,7 @@ err_flag:
                 gridSelectItem.Rows.Add(newTimeRecord)
 
             Next
+            gridSelectItem.ResumeLayout()
 
             gridSelectItem.AllowUserToAddRows = previousAllowUserToAddRows
             'gridSelectItem.CurrentCell = gridSelectItem(0, gridSelectItem.RowCount - 1)
@@ -4585,6 +4661,9 @@ err_flag:
 
             MessageBox.Show("Import Error!" & vbCrLf & vbCrLf & ex.Message, "MESSAGE : ERROR 0052", MessageBoxButtons.OK, MessageBoxIcon.Error)
 
+        Finally
+            gridSelectItem.ResumeLayout()
+            isBulkLoading = False
         End Try
 
 
@@ -4608,6 +4687,9 @@ err_flag:
                 Exit Sub
             End If
 
+            isBulkLoading = True
+
+            gridSelectItem.SuspendLayout()
             For Each n In clsImport.importPOEntry()
 
                 Dim newTimeRecord As DataGridViewRow = gridSelectItem.Rows(gridSelectItem.NewRowIndex).Clone
@@ -4647,6 +4729,7 @@ err_flag:
                 gridSelectItem.Rows.Add(newTimeRecord)
 
             Next
+            gridSelectItem.ResumeLayout()
 
             gridSelectItem.AllowUserToAddRows = previousAllowUserToAddRows
             'gridSelectItem.CurrentCell = gridSelectItem(0, gridSelectItem.RowCount - 1)
@@ -4667,6 +4750,9 @@ err_flag:
 
             MessageBox.Show("Import Error!" & vbCrLf & vbCrLf & ex.Message, "MESSAGE : ERROR 0053", MessageBoxButtons.OK, MessageBoxIcon.Error)
 
+        Finally
+            gridSelectItem.ResumeLayout()
+            isBulkLoading = False
         End Try
     End Sub
 
@@ -4706,6 +4792,9 @@ err_flag:
                 Exit Sub
             End If
 
+            isBulkLoading = True
+
+            gridSelectItem.SuspendLayout()
             For Each n In clsImport.importFromWebsite(orderNumber)
 
                 Dim newTimeRecord As DataGridViewRow = gridSelectItem.Rows(gridSelectItem.NewRowIndex).Clone
@@ -4745,6 +4834,7 @@ err_flag:
                 gridSelectItem.Rows.Add(newTimeRecord)
 
             Next
+            gridSelectItem.ResumeLayout()
 
             SearchItemImport()
 
@@ -4781,6 +4871,9 @@ err_flag:
 
             MessageBox.Show("Import Error!" & vbCrLf & vbCrLf & ex.Message, "MESSAGE : ERROR 0054", MessageBoxButtons.OK, MessageBoxIcon.Error)
 
+        Finally
+            gridSelectItem.ResumeLayout()
+            isBulkLoading = False
         End Try
     End Sub
 
@@ -5011,6 +5104,12 @@ err_flag:
     End Sub
 
     Private Sub frmItemLookUp_FormClosing(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles MyBase.FormClosing
+        If imageLoadTimer IsNot Nothing Then
+            imageLoadTimer.Stop()
+            imageLoadTimer.Dispose()
+            imageLoadTimer = Nothing
+        End If
+
         If isRestoringDraft Then Exit Sub
 
         Try
@@ -5134,48 +5233,68 @@ err_flag:
             Me.picPanel.Location = New Point(358, gridItem.Size.Height - picPanel.Size.Height - 5)
             picItem.ZoomMode = ZoomPictureBox.ZoomType.MousePosition
 
+            Try
+                If gridItem.CurrentRow IsNot Nothing AndAlso gridItem.CurrentRow.Index >= 0 Then
+                    Dim val = gridItem.Item(0, gridItem.CurrentRow.Index).Value
+                    If val IsNot Nothing AndAlso Not IsDBNull(val) Then
+                        setPic(val.ToString())
+                    End If
+                End If
+            Catch ex As Exception
+            End Try
         Else
+            If imageLoadTimer IsNot Nothing Then imageLoadTimer.Stop()
             picPanel.Visible = False
+            itemImage = Nothing
+            picItem.Image = Nothing
         End If
     End Sub
 
     Private Sub setPic(ByVal itemcode As String)
 
-        Cursor.Current = Cursors.WaitCursor
-
         If chkShowImage.Checked = True Then
             Try
-                itemImage = Image.FromFile(rmsPath("Pictures") & "HD\" & itemcode & ".JPG")
-                picItem.Image = itemImage
+                Dim imagePath As String = rmsPath("Pictures") & "HD\" & itemcode & ".JPG"
+                If System.IO.File.Exists(imagePath) Then
+                    itemImage = Image.FromFile(imagePath)
+                    picItem.Image = itemImage
+                Else
+                    itemImage = Nothing
+                    picItem.Image = My.Resources.no_image_icon_15
+                End If
             Catch ex As Exception
+                itemImage = Nothing
                 picItem.Image = My.Resources.no_image_icon_15
             End Try
         End If
 
-        Cursor.Current = Cursors.Default
-
     End Sub
 
     Private Sub gridItem_SelectionChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles gridItem.SelectionChanged
+        If Not chkShowImage.Checked Then Return
+
+        If imageLoadTimer Is Nothing Then
+            imageLoadTimer = New Windows.Forms.Timer()
+            imageLoadTimer.Interval = 200
+            AddHandler imageLoadTimer.Tick, AddressOf ImageLoadTimer_Tick
+        End If
+        imageLoadTimer.Stop()
+        imageLoadTimer.Start()
+    End Sub
+
+    Private Sub ImageLoadTimer_Tick(ByVal sender As Object, ByVal e As EventArgs)
+        If imageLoadTimer IsNot Nothing Then imageLoadTimer.Stop()
+        If Not chkShowImage.Checked Then Exit Sub
+
         Try
-            itemImage = Nothing
-            setPic(gridItem.Item(0, gridItem.CurrentRow.Index).Value.ToString())
+            If gridItem.CurrentRow IsNot Nothing AndAlso gridItem.CurrentRow.Index >= 0 Then
+                Dim val = gridItem.Item(0, gridItem.CurrentRow.Index).Value
+                If val IsNot Nothing AndAlso Not IsDBNull(val) Then
+                    setPic(val.ToString())
+                End If
+            End If
         Catch ex As Exception
-
         End Try
-
-        'Try
-        '    ' Check if the value is DBNull or Nothing before calling ToString()
-        '    If gridItem.Item(0, gridItem.CurrentRow.Index).Value Is DBNull.Value OrElse gridItem.Item(0, gridItem.CurrentRow.Index).Value Is Nothing Then
-        '        itemImage = Nothing
-        '    Else
-        '        ' Proceed with setting the picture if the value is not null
-        '        setPic(gridItem.Item(0, gridItem.CurrentRow.Index).Value.ToString())
-        '    End If
-        'Catch ex As Exception
-        '    ' Log the exception or handle it in a meaningful way
-        '    'MessageBox.Show("An error occurred: " & ex.Message)
-        'End Try
     End Sub
 
     Private Sub picItem_MouseLeave(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles picItem.MouseLeave
@@ -5639,7 +5758,6 @@ inputCust:
             txtBarcode.Focus()
 
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
-            gridItem.Refresh()
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message,
                         "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -62,6 +62,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
@@ -76,8 +77,11 @@
     <Import Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationEvents.vb" />
     <Compile Include="Class\clsOrderedItems.vb" />
     <Compile Include="Class\clsQueueing.vb" />
+    <Compile Include="Class\ErrorLogger.vb" />
+    <Compile Include="Class\QueueOrderAgeRules.vb" />
     <Compile Include="Database.designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -93,6 +97,24 @@
       <DependentUpon>frmPicker.vb</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmPicker.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmBatchPick.Designer.vb">
+      <DependentUpon>frmBatchPick.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmBatchPick.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmPickupDisplay.Designer.vb">
+      <DependentUpon>frmPickupDisplay.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmPickupDisplay.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmPickerSummary.Designer.vb">
+      <DependentUpon>frmPickerSummary.vb</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmPickerSummary.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmPrint.Designer.vb">
@@ -161,6 +183,15 @@
     </None>
     <EmbeddedResource Include="Forms\frmPicker.resx">
       <DependentUpon>frmPicker.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmBatchPick.resx">
+      <DependentUpon>frmBatchPick.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmPickupDisplay.resx">
+      <DependentUpon>frmPickupDisplay.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmPickerSummary.resx">
+      <DependentUpon>frmPickerSummary.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmQtyPrep.resx">
       <DependentUpon>frmQtyPrep.vb</DependentUpon>

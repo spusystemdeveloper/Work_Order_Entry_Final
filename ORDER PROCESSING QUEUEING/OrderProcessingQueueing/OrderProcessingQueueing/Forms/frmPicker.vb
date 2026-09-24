@@ -1,4 +1,4 @@
-﻿Public Class frmPicker
+Public Class frmPicker
 
     Public _queueid As Integer
     Public _itemid As Integer
@@ -10,42 +10,79 @@
     Public Shared _data As New DataTable()
 
     Private Sub btnProcess_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnProcess.Click
-        Dim picker = gridPickers.Item(1, gridPickers.CurrentRow.Index).Value
+        If gridPickers.Rows.Count = 0 Then
+            MessageBox.Show("No pickers found in the system. Please ensure pickers are configured in the PickerList database table.", "No Pickers Found", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
 
-        If _updateType = "All" Then
+        If gridPickers.CurrentRow Is Nothing OrElse gridPickers.CurrentRow.Index < 0 Then
+            MessageBox.Show("Please select a picker from the list.", "Select Picker", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Exit Sub
+        End If
 
-            _data.Rows.Remove(_data.Rows(_data.Rows.Count - 1))
+        Dim pickerVal As Object = gridPickers.Item(1, gridPickers.CurrentRow.Index).Value
+        If pickerVal Is Nothing OrElse String.IsNullOrWhiteSpace(pickerVal.ToString()) Then
+            MessageBox.Show("Selected picker has no valid initial or code.", "Invalid Picker", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Exit Sub
+        End If
 
-            For Each x As DataRow In _data.Rows
+        Dim picker As String = pickerVal.ToString().Trim()
 
-                If x("picker") = "" Or x("picker") = String.Empty Then
+        Cursor.Current = Cursors.WaitCursor
+        Try
+            If _updateType = "All" Then
 
-                    clsQueueing.UpdatePicker(x("queueid"), x("itemid"), picker)
-                    frmMain.skipUpdate = True
+                If _data IsNot Nothing AndAlso _data.Rows.Count > 0 Then
+                    Dim batchUpdates As New List(Of Tuple(Of Long, Integer))()
+                    Dim skippedAny As Boolean = False
+                    For Each x As DataRow In _data.Rows
+                        Dim currPicker = If(x("picker"), "").ToString().Trim()
+                        If String.IsNullOrEmpty(currPicker) Then
+                            Dim qVal = x("queueid")
+                            Dim itmVal = x("itemid")
+                            If qVal IsNot Nothing AndAlso itmVal IsNot Nothing AndAlso IsNumeric(qVal) AndAlso IsNumeric(itmVal) Then
+                                batchUpdates.Add(Tuple.Create(Convert.ToInt64(qVal), Convert.ToInt32(itmVal)))
+                            End If
+                        Else
+                            skippedAny = True
+                        End If
+                    Next
 
-                Else
-                    MsgBox("Some Item is already proccessed by another Picker. It will not be updated.", vbExclamation, "Message")
+                    If batchUpdates.Count > 0 Then
+                        clsQueueing.UpdateBatchPicker(batchUpdates, picker)
+                        frmMain.skipUpdate = True
+                    End If
 
+                    If skippedAny Then
+                        MsgBox("Some Item is already processed by another Picker. It will not be updated.", vbExclamation, "Message")
+                    End If
                 End If
-            Next
 
-            frmMain.prioritizeUserControl(lblGroupID.Text)      ' Prioritize Update
-            Me.Close()
-
-        Else
-
-            If _picker = "" Then
-                'curcell.Value = picker
-                clsQueueing.UpdatePicker(_queueid, _itemid, picker)
                 frmMain.prioritizeUserControl(lblGroupID.Text)      ' Prioritize Update
                 Me.Close()
 
             Else
-                MsgBox("Unable to process item! Item is being proccessed by another Picker.", vbCritical, "Message")
+
+                If String.IsNullOrWhiteSpace(_picker) Then
+                    clsQueueing.UpdatePicker(_queueid, _itemid, picker)
+                    frmMain.skipUpdate = True
+                    frmMain.prioritizeUserControl(lblGroupID.Text)      ' Prioritize Update
+                    Me.Close()
+                Else
+                    MsgBox("Unable to process item! Item is being processed by another Picker.", vbCritical, "Message")
+                End If
+
             End If
+        Finally
+            Cursor.Current = Cursors.Default
+        End Try
 
+    End Sub
+
+    Private Sub gridPickers_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles gridPickers.CellDoubleClick
+        If e.RowIndex >= 0 Then
+            btnProcess_Click(sender, EventArgs.Empty)
         End If
-
     End Sub
 
     Private Sub btnUnProcess_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnUnProcess.Click
@@ -72,16 +109,39 @@
     End Sub
 
     Private Sub frmPicker_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
-        If _updateType = "All" Then
-            lblItemCode.Text = "---------"
-            lblDesc.Text = "---------"
-        End If
-        LoadPickers()
-        Me.Text = "Choose Picker"
+        Try
+            If _updateType = "All" Then
+                lblItemCode.Text = "---------"
+                lblDesc.Text = "---------"
+            End If
+            LoadPickers()
+            Me.Text = "Choose Picker"
+        Catch ex As Exception
+            MessageBox.Show("FROM : frmPicker " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     Private Sub LoadPickers()
-        gridPickers.DataSource = clsQueueing.LoadPickers
+        Try
+            gridPickers.DataSource = clsQueueing.LoadPickers()
+            If gridPickers.Columns.Count >= 3 Then
+                gridPickers.Columns(0).HeaderText = "Reg #"
+                gridPickers.Columns(1).HeaderText = "Initial"
+                gridPickers.Columns(2).HeaderText = "Name"
+                gridPickers.Columns(0).Width = 55
+                gridPickers.Columns(1).Width = 65
+            End If
+
+            If gridPickers.Rows.Count > 0 AndAlso gridPickers.Columns.Count > 1 Then
+                gridPickers.ClearSelection()
+                gridPickers.Rows(0).Selected = True
+                Try
+                    gridPickers.CurrentCell = gridPickers.Rows(0).Cells(1)
+                Catch exCell As Exception
+                End Try
+            End If
+        Catch ex As Exception
+        End Try
     End Sub
 
     Private Function MyInputBox(ByVal Prompt As String) As String

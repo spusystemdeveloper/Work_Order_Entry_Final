@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -110,6 +110,7 @@
     <Compile Include="Class\clsCustomer.vb" />
     <Compile Include="Class\clsCustomerAcct.vb" />
     <Compile Include="Class\clsWorkOrderDraft.vb" />
+    <Compile Include="Class\ErrorLogger.vb" />
     <Compile Include="Class\clsImport.vb" />
     <Compile Include="Class\clsImportQuotation.vb" />
     <Compile Include="Class\clsItemLookUp.vb" />

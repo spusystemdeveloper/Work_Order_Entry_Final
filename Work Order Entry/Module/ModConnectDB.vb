@@ -1,4 +1,4 @@
-﻿Imports Microsoft.Win32
+Imports Microsoft.Win32
 Imports System.Data.SqlClient
 
 Module ModConnectDB
@@ -158,42 +158,38 @@ Module ModConnectDB
     'QUERY SQL
     Public Sub query(ByVal sql_query As String)
         Try
-            DatabaseConnection()
-            sql_con.Open()
-            sql_cmd = sql_con.CreateCommand()
-            sql_cmd.CommandText = sql_query
-            sql_cmd.ExecuteNonQuery()
-            '  MessageBox.Show("SUCCESS !", "", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            sql_con.Close()
+            Using con As New SqlConnection(DB_Conn("constr"))
+                con.Open()
+                Using cmd As SqlCommand = con.CreateCommand()
+                    cmd.CommandText = sql_query
+                    cmd.ExecuteNonQuery()
+                End Using
+            End Using
         Catch ex As Exception
-
             MessageBox.Show(ex.Message)
         End Try
     End Sub
 
     'THIS METHOD IS FOR RETRIEVING DATA IN THE DATABASE
     Public Function load_data(ByVal sql As String) As DataTable
-
         Try
-            sql_dt = New DataTable()
-            DatabaseConnection()
-            sql_con.Open()
-            sql_cmd = sql_con.CreateCommand()
-            sql_da = New SqlDataAdapter(sql, sql_con)
-            sql_da.Fill(sql_dt)
-
-            Return sql_dt
-
+            Dim dt As New DataTable()
+            Using con As New SqlConnection(DB_Conn("constr"))
+                Using cmd As SqlCommand = con.CreateCommand()
+                    cmd.CommandText = sql
+                    Using da As New SqlDataAdapter(cmd)
+                        con.Open()
+                        da.Fill(dt)
+                    End Using
+                End Using
+            End Using
+            sql_dt = dt
+            Return dt
         Catch ex As Exception
-
             MessageBox.Show(ex.Message + " Please Check Database !")
             Application.Exit()
             Return Nothing
-
         End Try
-
-        sql_con.Close()
-
     End Function
 
     Public Function load_data(ByVal sql As String,
