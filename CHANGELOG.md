@@ -4,6 +4,66 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-14
 
+### Work Order Database Updater
+
+- Added an offline step-by-step user guide, quick-start text, and an in-tool
+  Help / instructions button. Covers connection/profile setup, script import
+  and ordering, file replacement, function creation/update, schema/index changes,
+  package integration, deployment statuses, logs, and recovery limitations.
+- Included SQL Server 2016 compatible demonstration templates for a create/update
+  function, additive column migration, and non-unique index; examples are for a
+  disposable restore and are never auto-selected. Release builds include the
+  instructions/templates alongside the SQL package.
+
+- Added a separate .NET Framework 4.7.2 WinForms updater to the main solution.
+  Runs as the current Windows user, with Windows or SQL authentication; it does
+  not change the RMS registry or store login passwords.
+- Supports explicit selection and SQL preview of five optional migrations and
+  ordered GSC/DVO/portable object definitions, plus future reviewed SQL files.
+  SQLCMD driver/security commands are excluded; no changes are auto-selected.
+- Checks the target database/version/RMS prerequisites and definition visibility,
+  requires an explicit target confirmation, rejects changed reviewed files, and
+  uses an application lock plus one transaction for the complete selected plan.
+- Stores committed deployment history with SHA-256 hashes. Saves selected SQL,
+  execution results, previous visible module definitions/settings, and index
+  inventory locally. The schema snapshot is not a full backup or automatic undo.
+- Added disposable LocalDB checks for catalogs, SQL batch handling, target/permission
+  rejection, function create/update, real index reuse, history, multi-script rollback,
+  edited files, concurrent updater rejection, and WinForms initialization.
+- Both existing solutions and the updater build in x86 Debug/Release. All 103
+  existing unit tests and 44 isolated updater checks passed, including the six
+  guide-example checks for creation, updates, repeat deployment, and deliberate
+  reapplication of a prior compatible function definition; the local Debug
+  configuration was restored byte-for-byte. No updater deployment was run on a
+  store database. Desktop launch approval timed out; form initialization and
+  package loading were exercised in the isolated harness.
+- Application workflows and rules are unchanged by adding the tool. Applying a
+  selected function/migration still requires review of that script's branch rules.
+
+
+### Item-code lookup index for recall prices
+
+- Repeated SELECT-only measurements and actual plans for local orders 283845 and
+  282844 found a full scan of 69,357 Item rows (5,163 logical page reads) for the
+  price lookup. Later warm samples were substantially below the earlier 427 ms
+  app sample; no typical full-recall speed improvement is claimed from these reads.
+- Prepared optional `Improve_WorkOrder_ItemLookup.sql`: a non-unique ItemLookupCode
+  index covering ID/Taxable. It reuses a suitable existing index, is idempotent,
+  and stops on a conflicting index name. It changes no prices, quantities, or rules.
+- Added a SELECT-only analysis tool that records repeated timings, actual plans,
+  I/O, and price signatures for before/after comparisons. No app query change is needed.
+- Added five isolated checks on a wide synthetic fixture with 69,211 Item rows.
+  Item logical reads fell from 4,645 to 7, returned prices matched, and idempotence,
+  duplicate-code behavior, equivalent-index reuse, and collision protection passed.
+- Both applications build in x86 Debug/Release; all 103 unit tests and 99 isolated
+  SQL/UI checks passed. The local Debug configuration is preserved.
+- Applied the tested index to local GSC_STORE_DB after confirming no active user
+  transactions, with a three-second lock-wait limit. Creation took 410 ms.
+  Afterward Item scans became seeks: reads fell from 5,163 to 6/12 for the two
+  orders. All before/after price signatures matched. Warm lookup medians fell
+  from 37.889 to 1.434 ms (283845) and 40.622 to 3.972 ms (282844).
+  These are database-component results; full app recall still needs measurement.
+
 ### Recall tax lookup and processing-time measurement
 
 - Split the recall tax/totals phase into item-tax read/application and total

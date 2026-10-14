@@ -1,0 +1,25 @@
+WORK ORDER DATABASE UPDATER - START HERE
+
+1. Extract the whole ZIP into a folder. Keep Database Components and Templates
+   beside Work Order Database Updater.exe.
+2. Open Work Order Database Updater.exe.
+3. Click "Help / instructions..." for the full setup and script-import guide.
+   You can also read USER_GUIDE.md directly with a text editor.
+4. Enter your SQL server, exact database name, and approved authentication.
+5. Select the matching branch profile, then click "Check target".
+   This checks the database without applying any update.
+6. Select only the required scripts, or click "Add SQL script..." to import
+   one reviewed .sql file at a time. Import dependencies before their callers.
+7. Review the SQL. Test on a disposable restore and have a current backup.
+8. Click "Review and apply...", confirm the target and backup/testing, type
+   the database name exactly as shown, then click "Apply selected changes".
+9. Wait for COMMITTED, check the target again, and test the affected app flow.
+
+Importing a file does not execute it. Added scripts are not saved to the list
+between sessions. Reloading/changing profiles clears imported scripts.
+
+Templates are EXAMPLES FOR A TEST RESTORE. They create demo objects, not new
+Work Order features. See USER_GUIDE.md before adapting them.
+
+Windows administrator access is not needed. Your database login still needs
+SQL permissions. This tool does not install RMS or update application EXEs.

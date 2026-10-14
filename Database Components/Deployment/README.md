@@ -5,6 +5,12 @@ GSC_STORE_DB. Generation does not modify either database.
 
 ## Scope
 
+For an interactive way to select and preview these objects, see
+[Work Order Database Updater](../../Database%20Updater/README.md).
+It discovers the ordered object files from each branch driver and excludes
+the driver/security commands. Selecting the correct branch and reviewing its
+rules remain necessary. It also supports optional migrations and future SQL fixes.
+
 This package contains individual SQL files for custom objects mapped or
 directly referenced by Work Order Entry and Order Processing Queueing, plus
 the transitive dependencies SOD_Reg, SOD_fn_GetDiscQty,
@@ -13,6 +19,12 @@ triggers. Standard RMS tables are prerequisites and are not scripted.
 Unrelated SOD_ objects used by other add-ins are intentionally excluded.
 
 ## Layout
+
+The optional item lookup index is in
+`../Migrations/Improve_WorkOrder_ItemLookup.sql`, with deployment notes in
+`../Migrations/WORKORDER_ITEM_LOOKUP_GUIDE.md`. It is outside the audited-object
+manifest and automatic branch drivers. Run it only in the intended RMS store
+database after testing, during a quiet period because index creation takes locks.
 
 - Objects/Common: definitions identical in both audited branches.
 - Objects/BranchOverrides: definitions present in both branches but

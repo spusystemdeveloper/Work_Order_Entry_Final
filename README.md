@@ -4,6 +4,18 @@ VB.NET RMS add-ins for Work Order Entry and Order Processing Queueing.
 
 ## Database deployment
 
+Use the separate [Work Order Database Updater](Database%20Updater/README.md)
+to review and apply selected migrations, function/object updates, or performance
+indexes. Build the solution in Release / x86 and copy the updater's whole output
+folder. It runs without Windows administrator elevation and uses an explicitly
+selected SQL database/login. Changes are transactional and recorded with file
+hashes. Future reviewed SQL fixes can be added through the tool.
+
+Follow the [updater user guide](Database%20Updater/USER_GUIDE.md) for workstation
+setup, importing SQL, creating/updating functions, and adding package entries.
+The tool also includes an offline **Help / instructions...** button and example
+SQL files for use on a disposable restore.
+
 The application-referenced database objects are stored as individual,
 idempotent SQL files with separate DVO and GSC definitions where the live
 branches differ:
@@ -28,6 +40,12 @@ live database. Always test the matching branch driver against a disposable
 database restore before production deployment.
 
 ## Unit tests
+
+For stores missing the item-code lookup index, see
+`Database Components/Migrations/Improve_WorkOrder_ItemLookup.sql` and
+`Database Components/Migrations/WORKORDER_ITEM_LOOKUP_GUIDE.md`. This optional
+database optimization preserves the application rules and is not automatically
+included in the branch deployment drivers.
 
 The test project contains 103 database-free unit tests for price levels,
 print-template selection, import-file routing, branch validation,

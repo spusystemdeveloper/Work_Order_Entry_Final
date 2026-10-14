@@ -5,6 +5,21 @@ connecting to DVO/GSC, or changing database records.
 
 ## What is tested
 
+The separate database updater has its own disposable integration checks:
+
+```powershell
+& 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -NoProfile -ExecutionPolicy Bypass -File '.\Database Components\Tests\DatabaseUpdater_LocalDB_Test.ps1'
+```
+
+Build the Debug updater first (included in `Work Order Entry.sln`). These checks
+create and remove their own LocalDB instance; they never use store databases or
+application credentials. See [the updater guide](Database%20Updater/README.md)
+for deployment, rollback, and snapshot limitations.
+
+All 44 updater checks passed on October 14, 2026. The included user-guide SQL
+examples are executed through the actual updater runner, including repeat
+deployment and function body/verification changes, on its disposable fixture.
+
 - Price labels map to the correct RMS price-level number.
 - The Price Level form initially highlights its top row.
 - Multiple customer-change prices are counted and processed one row at a time.
@@ -87,7 +102,7 @@ The unit tests do not exercise SQL functions, stored procedures, saving,
 recall, inventory commitment, actual database locks, or queue processing.
 `Database Components/Tests/OrderTools_LocalDB_SmokeTest.ps1` separately tests
 history triggers, edit checks/locks, ready eligibility, and shortage save/rollback
-in an isolated fixture. Its 94 checks include preserving stock on hand and other
+in an isolated fixture. Its 99 checks include preserving stock on hand and other
 orders' reservations while releasing only the accepted shortage difference.
 It also checks the RMS smallint item type, fresh queue refresh/shortage writes,
 clear-shortage behavior, and card stage changes. Build both solutions in Debug first.
@@ -106,6 +121,10 @@ batch modes, preserving Boolean types, quoted/untrimmed codes, missing and blank
 items, fresh tax changes, parameter bounds, exemption behavior, and existing
 taxable/exempt totals. Fixture totals timings use an unshown form without a
 credit-warning dialog; they do not measure a full live recall.
+Five lookup-index checks add synthetic wide items and sale history, compare the
+same production price query before/after the index, verify fewer logical reads
+without timing thresholds, and check idempotence, equivalent-index reuse, and
+safe handling of a conflicting name. All writes remain inside the disposable fixture.
 See `ORDER_TOOLS_GUIDE.md` for that test and branch deployment checks. Full RMS workflows require
 integration tests against a disposable RMS database restore—never a live
 production database.

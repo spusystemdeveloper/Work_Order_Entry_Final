@@ -101,7 +101,9 @@ CREATE TABLE dbo.Queueing(id bigint IDENTITY PRIMARY KEY, OrderID bigint NULL,
     Status int NULL, GroupTo int NULL, OPIS varchar(max) NULL);
 CREATE TABLE dbo.QueueingItems(id bigint IDENTITY PRIMARY KEY, QueueingID bigint NULL,
     ItemID int NULL, QtyPre int NULL, Picker nvarchar(50) NULL, Status varchar(50) NULL, PickLoc varchar(max) NULL);
-CREATE TABLE dbo.[Transaction](TransactionNumber int PRIMARY KEY, RecallID int, CashierID int);
+CREATE TABLE dbo.[Transaction](TransactionNumber int PRIMARY KEY NONCLUSTERED, RecallID int, CashierID int,
+    RecallType int NOT NULL DEFAULT 0);
+CREATE CLUSTERED INDEX IX_Fixture_RecallType ON dbo.[Transaction](RecallType);
 CREATE TABLE dbo.SOD_WO_LOGS(id int IDENTITY PRIMARY KEY, OrderId int, ItemID int,
     FullPrice money, UpdatedPrice money, ApprovedUser nvarchar(50), Status nvarchar(50));
 INSERT dbo.Item(ID) VALUES(1);
@@ -224,6 +226,55 @@ INSERT dbo.Item(ID,ItemLookupCode) SELECT 10000+n,N'BATCH-'+CONVERT(nvarchar(10)
         Check ($otherQueue[1].Prepared -eq 0 -and $otherQueue[1].Status -eq 'Pending') 'Batch queue details stay isolated to the recalled order'
         Execute-Sql "UPDATE dbo.QueueingItems SET QtyPre=0,Status='Pending',Picker=N'' WHERE QueueingID=1;"
     } finally { $context.Dispose() }
+    # Representative wide Item table and invoice history for the lookup-index check.
+    # All rows are synthetic and remain inside this fixture's disposable database.
+    Execute-Sql @'
+ALTER TABLE dbo.Item ADD TestPadding char(450) NOT NULL DEFAULT (REPLICATE('X',450)) WITH VALUES;
+;WITH numbers AS (SELECT TOP (69000) ROW_NUMBER() OVER (ORDER BY a.object_id,b.object_id) AS n FROM sys.all_objects a CROSS JOIN sys.all_objects b)
+INSERT dbo.Item(ID,ItemLookupCode) SELECT 100000+n,N'LAB-'+CONVERT(nvarchar(20),n) FROM numbers;
+INSERT dbo.[Transaction](TransactionNumber,CustomerID,[Time],ReferenceNumber)
+SELECT 1000000+ID,10,'20200101',N'LAB' FROM dbo.Item WHERE ID>100000;
+INSERT dbo.TransactionEntry(TransactionNumber,ItemID,Quantity,Price)
+SELECT 1000000+ID,ID,1,1 FROM dbo.Item WHERE ID>100000;
+CREATE INDEX IX_Fixture_ItemID ON dbo.TransactionEntry(ItemID);
+CREATE INDEX IX_Fixture_TransactionNumber ON dbo.TransactionEntry(TransactionNumber);
+CREATE INDEX IX_Fixture_CustomerID ON dbo.[Transaction](CustomerID);
+'@
+    $lookupMigration = [IO.File]::ReadAllText((Join-Path $repo 'Database Components\Migrations\Improve_WorkOrder_ItemLookup.sql'))
+    $indexContext = [WorkOrderEntry.ItemLookUpDataContext]::new($testConnectionString)
+    $lookupIO = [Collections.Generic.List[string]]::new()
+    $lookupHandler = [System.Data.SqlClient.SqlInfoMessageEventHandler]{param($sender,$eventArgs) $lookupIO.Add($eventArgs.Message)}
+    try {
+        $indexContext.Connection.Open()
+        $indexContext.Connection.add_InfoMessage($lookupHandler)
+        $null = $indexContext.ExecuteCommand('SET STATISTICS IO ON;')
+        $lookupIO.Clear()
+        $beforeLookup = [WorkOrderEntry.RecallReadData]::LoadLastPrices($indexContext,10,[string[]]@('PREFERRED',"QUOTE'SKU"))
+        $beforeReads = [regex]::Match(($lookupIO -join "`n"),"Table 'Item'.*?logical reads ([0-9]+)").Groups[1].Value
+        Execute-Sql 'CREATE INDEX IX_SOD_WO_ItemLookup ON dbo.Item(Description);'
+        $collisionBlocked = $false
+        try { Execute-Sql $lookupMigration }
+        catch { $collisionBlocked = $_.Exception.ToString().Contains('already exists with another definition'); if (-not $collisionBlocked) {throw} }
+        Check ($collisionBlocked -and (Scalar-Sql "SELECT COUNT(*) FROM sys.indexes WHERE object_id=OBJECT_ID('dbo.Item') AND name='IX_SOD_WO_ItemLookup';") -eq 1) 'Lookup migration preserves an existing conflicting index and requires review'
+        Execute-Sql 'DROP INDEX IX_SOD_WO_ItemLookup ON dbo.Item;'
+        Execute-Sql $lookupMigration
+        Execute-Sql $lookupMigration
+        Check ((Scalar-Sql "SELECT COUNT(*) FROM sys.indexes WHERE object_id=OBJECT_ID('dbo.Item') AND name='IX_SOD_WO_ItemLookup' AND is_unique=0;") -eq 1) 'Item lookup migration is idempotent and does not impose item-code uniqueness'
+        $lookupIO.Clear()
+        $afterLookup = [WorkOrderEntry.RecallReadData]::LoadLastPrices($indexContext,10,[string[]]@('PREFERRED',"QUOTE'SKU"))
+        $afterReads = [regex]::Match(($lookupIO -join "`n"),"Table 'Item'.*?logical reads ([0-9]+)").Groups[1].Value
+        Check ($beforeLookup['PREFERRED'] -eq $afterLookup['PREFERRED'] -and $beforeLookup["QUOTE'SKU"] -eq $afterLookup["QUOTE'SKU"]) 'Indexed lookup retains the same latest customer invoice prices including duplicate codes'
+        Check ($beforeReads -ne '' -and $afterReads -ne '' -and [int]$afterReads -lt ([int]$beforeReads / 10)) 'Lookup index reduces Item logical reads by more than 90 percent on the wide synthetic fixture'
+        Write-Output "Isolated lookup Item logical reads: $beforeReads before; $afterReads after."
+        [pscustomobject]@{SyntheticItems=(Scalar-Sql 'SELECT COUNT(*) FROM dbo.Item;');BeforeItemReads=[int]$beforeReads;AfterItemReads=[int]$afterReads} |
+            Export-Csv -LiteralPath (Join-Path $testDirectory 'LookupIndexIO.csv') -NoTypeInformation
+        Execute-Sql "EXEC sys.sp_rename N'dbo.Item.IX_SOD_WO_ItemLookup',N'IX_Fixture_EquivalentLookup',N'INDEX';"
+        Execute-Sql $lookupMigration
+        Check ((Scalar-Sql "SELECT COUNT(*) FROM sys.indexes WHERE object_id=OBJECT_ID('dbo.Item') AND name='IX_SOD_WO_ItemLookup';") -eq 0) 'Lookup migration reuses an equivalent covered index with a different name'
+    } finally {
+        $indexContext.Connection.remove_InfoMessage($lookupHandler)
+        $indexContext.Dispose()
+    }
     $taxForm = [WorkOrderEntry.frmItemLookUp]::new()
     $flags = [Reflection.BindingFlags]'Instance,NonPublic'
     $applyTax = $taxForm.GetType().GetMethod('ApplyTaxChangeReasonCode', $flags)

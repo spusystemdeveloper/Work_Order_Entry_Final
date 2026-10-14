@@ -221,6 +221,7 @@
     </Compile>
     <Compile Include="Forms\frmItemLookUp.OrderTools.vb">
       <DependentUpon>frmItemLookUp.vb</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmLinqLevel.Designer.vb">
       <DependentUpon>frmLinqLevel.vb</DependentUpon>

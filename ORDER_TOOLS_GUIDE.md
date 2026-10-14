@@ -8,6 +8,12 @@ on the For Invoicing button or the optional history migration.
 
 ## Using the tools
 
+Database installation and maintenance can use the separate
+[Work Order Database Updater](Database%20Updater/README.md). It lets the database
+maintainer preview selected history/queue migrations, function updates, and
+performance indexes, then records the applied file hashes. It does not change
+the app's business process automatically or distribute new application EXEs.
+
 **Order history:** Choose **Order actions → History...** in the bottom status
 bar. A recalled order's number is filled in automatically. Enter another order
 number to inspect its recorded history, including closed or cancelled orders.
@@ -178,7 +184,7 @@ triggers and preserve `SOD_WO_History` for review.
 ## Verification
 
 On October 14, 2026, both solutions built successfully in x86 Debug and Release,
-all 103 unit tests passed, and all 94 isolated SQL/UI smoke checks passed. The
+all 103 unit tests passed, and all 99 isolated SQL/UI smoke checks passed. The
 history and shortage confirmation windows were rendered and visually checked. The SQL fixture ran on LocalDB
 17 with compatibility level 130; live branch databases were not changed.
 
@@ -283,6 +289,20 @@ affect the samples.
 batch item-tax SELECTs for an explicit order/server/database with Windows
 authentication. It changes no branch records and writes order/date-specific CSV
 results under `TestResults`. It excludes UI updates and notice waits.
+
+For deeper price diagnostics, `Database Components/Tests/RecallPrice_ReadOnly_Analysis.ps1`
+runs five SELECT-only samples per specified order, then captures a separate actual
+plan and I/O. Use `OrderIDsText`, `Server`, `Database`, and `RunLabel` (`Baseline`
+or `AfterIndex`). It writes timing/signature CSVs and plans under `TestResults`.
+Plan capture is outside timed samples; for orders over 200 distinct codes, the
+diagnostic plan represents the first chunk. Price signatures allow comparison
+without logging customer names or returned price values.
+
+`Database Components/Migrations/Improve_WorkOrder_ItemLookup.sql` is an optional
+database index for stores lacking a covered ItemLookupCode index. It is separate
+from the automatic branch drivers and requires no new application executable.
+See `Database Components/Migrations/WORKORDER_ITEM_LOOKUP_GUIDE.md` for deployment
+and validation. Index creation takes locks, so use a quiet period.
 
 An error dialog inside an existing helper may still contribute to a phase's
 duration. These are phase measurements, not a complete stopwatch of every F12
