@@ -188,13 +188,11 @@ all 103 unit tests passed, and all 99 isolated SQL/UI smoke checks passed. The
 history and shortage confirmation windows were rendered and visually checked. The SQL fixture ran on LocalDB
 17 with compatibility level 130; live branch databases were not changed.
 
-The database-free suite includes 103 tests, with 12 additions covering edit
-validation and ready notification transitions and 16 covering shortage eligibility,
-reservation calculations, picker preservation, and explicit consent, plus 9
-covering shortage alert transitions and selection, plus 13 covering local filters
-and unchanged reservation arithmetic, plus 9 covering shared price approval and
-safe timing logs, plus 2 checking dialog-time exclusion. Run `Run-UnitTests.ps1` from
-the repository root.
+The database-free suite includes 101 tests covering edit validation, ready
+notification transitions, shortage eligibility, reservation calculations, picker
+preservation, explicit consent, shortage alert transitions, local filters, shared
+price approval and loading-overlay scopes. The retired timing-helper tests were
+removed. Run `Run-UnitTests.ps1` from the repository root.
 
 The isolated SQL smoke test builds a small RMS-shaped fixture in a new LocalDB
 instance, applies the actual invoicing view and the migrations, tests the runtime
@@ -222,7 +220,7 @@ legacy main form has not been rewritten. A local, database-free check of 50
 searches over 5,000 loaded rows measured median 1.50 ms / p95 2.38 ms; branch
 database and end-to-end processing speed still require branch-load measurements.
 
-## Save/recall timing and refactor checks
+## Save/recall refactor checks
 
 The October 7 refactor shares the existing price approval rules and batches item
 and order-entry reads within the locked existing-order save transaction. Save
@@ -231,47 +229,9 @@ committed saves. A printing/grouping/cleanup problem after commit is reported as
 an **Order Saved - Follow-up Warning**. Tax calculations and the business workflow
 remain unchanged. No additional migration is needed.
 
-Timing is optional and defaults off. In the deployed
-`Work Order Entry_V8.exe.config`, change the `EnableOrderPerformanceLogging`
-setting from `false` to `true`, then restart Work Order Entry. Run a few ordinary
-save/recall tests with representative order sizes. Set it back to `false` and
-restart when the measurements are complete.
-
-The daily CSV is saved under
-`%LOCALAPPDATA%\WorkOrderEntry\Logs\OrderTiming_YYYY-MM-DD.csv`.
-It contains the time, phase, order number, line count, elapsed milliseconds, and
-outcome, without item descriptions, customer information, passwords, or connection
-strings. New-order database timing uses order number 0 because the numbers are
-generated during saving; catalogue timing uses line count 0.
-
-Compare these phases separately:
-
-- `InsertDatabase` / `UpdateDatabase`: database work after confirming the save,
-  including transaction checks, reads, writes, and commit.
-- `RecallReadAndPopulate`: recall checks, reads, and screen population, ending
-  before the final shortage/quotation notice.
-- `RefreshDetails`: screen reset and the requested catalogue refresh.
-- `CatalogueReload`: the catalogue load within that refresh; this time is already
-  included in `RefreshDetails`, so do not add the two measurements together.
-
-Confirmation, grouping, and printing waits are outside database-save timing.
-The October 13 recall change also records `RecallStartSnapshot`, `RecallTaxReason`,
-`RecallHeaderRead`, `RecallCustomerSetup`, `RecallEntryRead`, `RecallLastPrices`,
-`RecallQueueRead`, `RecallPopulateAndPricing`, `RecallFinalValidation`,
-`RecallTaxAndTotals`, and `RecallCustomerSummary`. All are components of
-`RecallReadAndPopulate`; do not add them to the overall time. Row population
-still includes existing approval-price reads. `Fallback` on last prices means the batch failed and the old
-per-item helper was used.
-
-From the October 14 build, `RecallItemTaxReadAndApply` measures the batched item
-tax lookup and row application; `RecallTotalsCalculation` measures the existing
-total calculation and control updates. Both are included in `RecallTaxAndTotals`.
-`RecallCreditNoticeWait` separately records time spent in the existing credit-limit
-warning during recall. That wait is excluded from `RecallTotalsCalculation`,
-`RecallTaxAndTotals`, and `RecallReadAndPopulate`. The warning condition and display
-are unchanged. Earlier builds counted this wait, so comparing old/new processing
-times without accounting for notices can imply an improvement that did not occur.
-Other helper error dialogs can still contribute wait time.
+Optional application timing and CSV logging were removed on October 14 at the
+user's request. Save, Recall and Refresh use their existing business rules
+without timing scopes. No timing setting is needed in the app configuration.
 
 Last prices, warehouse details, and recalled item tax flags are loaded in batches and used only for
 that recall. Each new recall uses fresh contexts. Starting/final snapshot checks
@@ -304,10 +264,7 @@ from the automatic branch drivers and requires no new application executable.
 See `Database Components/Migrations/WORKORDER_ITEM_LOOKUP_GUIDE.md` for deployment
 and validation. Index creation takes locks, so use a quiet period.
 
-An error dialog inside an existing helper may still contribute to a phase's
-duration. These are phase measurements, not a complete stopwatch of every F12
-step or proof of faster store processing. Logging failures are ignored so normal
-order processing can continue. See `UNIT_TEST_GUIDE.md` for the manual checklist.
+See UNIT_TEST_GUIDE.md for the manual workflow checklist.
 It does not read application connection settings or connect to a branch database.
 Run it after Debug builds of both solutions with Windows PowerShell 5.1:
 

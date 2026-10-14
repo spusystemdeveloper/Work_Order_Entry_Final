@@ -112,12 +112,12 @@ namespace WorkOrderDatabaseUpdater
             if (profile != "GSC" && profile != "DVO" && profile != "Portable") throw new ArgumentException("Unknown branch profile.");
             var result = new List<UpdateScript>();
             string[] migrations = { "Ensure_Queueing_Compatibility_Tables", "Ensure_Work_Order_Draft_Tables",
-                "Fix_WorkOrder_History_Identity", "Enable_WorkOrder_History", "Prepare_WorkOrder_Edit_Checks", "Improve_WorkOrder_ItemLookup" };
+                "Enable_WorkOrder_History", "Prepare_WorkOrder_Edit_Checks", "Improve_WorkOrder_ItemLookup" };
             foreach (var name in migrations)
                 result.Add(UpdateScript.Load(System.IO.Path.Combine(components, "Migrations", name + ".sql"),
                     "Migrations/" + name + ".sql", name.Contains("Checks") || name.Contains("Lookup") ? "Index / performance" : "Migration",
-                    name == "Fix_WorkOrder_History_Identity"
-                        ? "RMS compatibility: rebuilds the custom history table preserving events and IDs. Back up first; apply before Enable_WorkOrder_History."
+                    name == "Enable_WorkOrder_History"
+                        ? "Creates/updates history triggers and converts approved legacy IDENTITY history to a sequence, preserving events, IDs and permissions. Back up first; no separate history fix needed."
                         : "Optional; existing tables are preserved. Review prerequisites in the SQL.", true));
             string deployment = System.IO.Path.GetFullPath(System.IO.Path.Combine(components, "Deployment"));
             string driver = profile == "Portable" ? "Deploy_PORTABLE_REQUIRED_OBJECTS.sql" : "Deploy_" + profile + "_STORE_DB.sql";

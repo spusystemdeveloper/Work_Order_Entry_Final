@@ -5,6 +5,25 @@ connecting to DVO/GSC, or changing database records.
 
 ## What is tested
 
+Five timing-helper tests were removed with the retired application logger,
+leaving 101 unit tests. Three overlay regressions check that ignored owners,
+disposed owners and handle-creation failures retain correct nested scope behavior.
+The tests use hidden synthetic forms without a real app or database.
+
+For Release deployment dependencies, run:
+
+```powershell
+& '.\Database Components\Tests\Packaging_CleanFolder_Test.ps1'
+```
+
+Build Release first. This copies only the application EXE and its five packaged
+ReportViewer DLLs into an owned `TestResults` folder, compiles an x86 probe and
+checks compilation of the actual Import entry point, CSV import, XLSX import,
+single Excel dependency loading, WO report rendering, pick-list report rendering,
+physical ReportViewer loading and the absence of extra dependency DLLs. PDFs use
+synthetic data. No store SQL, app login, screen automation or print job is involved.
+The check reproduced the old embedding failure before the DLL packaging fix.
+
 Two additional disposable SQL suites cover the October 14 identity incident:
 
 ```powershell
@@ -12,9 +31,11 @@ Two additional disposable SQL suites cover the October 14 identity incident:
 & '.\Database Components\Tests\HO_RecoveryScript_LocalDB_Test.ps1'
 ```
 
-The first passed 20 checks: actual legacy `@@IDENTITY` reproduction, preserving
-audit events/permissions, conversion rollback, custom-schema rejection, nested
-queue triggers, and fresh/repeated sequence installation. The second passed 27
+The first passed 27 checks: actual legacy `@@IDENTITY` reproduction, preserving audit
+events/permissions, conversion rollback, custom-schema rejection, nested queue
+triggers, and fresh/repeated sequence installation. It also tests one-script
+legacy upgrades through the updater, rollback of both conversion and trigger
+updates, and a later trigger compilation failure. The second passed 27
 checks running the entire standalone HO SSMS script on synthetic data, including
 default rehearsal rollback, explicit commit, unchanged unrelated old invoice
 records, tax/receivable/payment links, repeat runs, optional log references and
@@ -40,7 +61,7 @@ create and remove their own LocalDB instance; they never use store databases or
 application credentials. See [the updater guide](Database%20Updater/README.md)
 for deployment, rollback, and snapshot limitations.
 
-All 60 updater checks passed on October 14, 2026. The included user-guide SQL
+All 63 updater checks passed on October 14, 2026. The included user-guide SQL
 examples are executed through the actual updater runner, including repeat
 deployment and function body/verification changes, on its disposable fixture.
 Sixteen additional checks exercise HO_PO_DB's focused password-slot column
@@ -78,18 +99,13 @@ instance; the tests do not connect to the live HO server.
 - Shared price approval retains the saved below-minimum price on recall, requires
   approval for changed/new below-minimum prices, and distinguishes a saved zero
   price from a missing line.
-- Optional timing produces one record per scope, uses consistent decimal formatting,
-  creates no files when disabled, and cannot interrupt processing if logging fails.
-  Excluded dialog waits cannot make processing time negative, and invalid wait
-  durations cannot corrupt a timing record.
-
 - Shortage acceptance uses the recorded physical count, releases the difference
   without rounding fractional reservations, preserves the picker, and rejects
   changed counts, duplicates, zero/missing counts, closed orders, quotations,
   non-inventory items, and lines already prepared. Agreement requires an
   unchecked-by-default consent box and a nonblank customer note.
 
-The current project contains 103 test methods. All 103 passed on October 14, 2026.
+The current project contains 101 test methods. All 101 passed on October 14, 2026.
 
 Many test names describe the scenario in **Given / When / Then** form:
 
@@ -159,13 +175,9 @@ production database.
 
 ## Check the save refactor manually
 
-For the October 14 timing/tax lookup change, restart the rebuilt app and recall
+For the October 14 batched tax lookup change, restart the rebuilt app and recall
 an ordinary taxable order, an exempt order, and a quotation. Verify the row flags,
 prices, quantities, VAT/subtotal/total, and existing credit-limit warning behavior.
-When logging is enabled, `RecallItemTaxReadAndApply` and `RecallTotalsCalculation`
-separate the two processing steps. `RecallCreditNoticeWait` records credit-warning
-wait time; it is excluded from the new overall/tax/totals processing measurements.
-Older logs include that wait and are not directly comparable when a warning appeared.
 
 For the October 13 recall change, restart the rebuilt app and recall a normal
 multi-line Work Order. Verify its quantities, last purchase prices, prepared
@@ -176,9 +188,6 @@ With two test sessions, recall the same disposable order in both; save in one
 and confirm the other session's stale save is blocked. Make a warehouse shortage
 change and use Reload order in the cashier session to verify the latest count
 and picker appear. Avoid making production changes solely for a load test.
-When timing is enabled, inspect `RecallReadAndPopulate` and the component timings.
-The prior sample for order 282844 was 2.245 seconds, but older records can include
-credit-notice wait. Account for that measurement change before claiming a speed gain.
 
 Use the updated Work Order Entry executable with disposable test orders:
 
@@ -202,5 +211,5 @@ Use the updated Work Order Entry executable with disposable test orders:
 
 The isolated SQL fixture does not execute every main-form save prompt or the full
 RMS stored-procedure workflow. These manual checks cover that remaining scope.
-See `ORDER_TOOLS_GUIDE.md` for optional timing logs; no database migration is
+See `ORDER_TOOLS_GUIDE.md` for the refactor checklist; no database migration is
 required by this refactor.

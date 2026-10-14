@@ -67,22 +67,32 @@ END;
 '@
     $wrong=Scalar 'INSERT dbo.[Transaction](RecallID,CashierID) VALUES(10,1);SELECT CONVERT(int,@@IDENTITY);'
     Check ($wrong -eq 2 -and (Scalar 'SELECT MAX(TransactionNumber) FROM dbo.[Transaction]') -eq 1000) 'Legacy history reproduces RMS receiving event ID instead of transaction number'
-    Reject {Sql $enableSql} 'Apply Fix_WorkOrder_History_Identity' 'New history installer refuses to retain the unsafe legacy identity'
     Reject {Sql $fixSql} 'updater transaction' 'History conversion requires an atomic caller transaction'
     $before=Scalar 'SELECT * FROM dbo.SOD_WO_History ORDER BY EventID FOR XML PATH(''Event''),ROOT(''History'')'
     Sql 'CREATE INDEX CustomHistoryIndex ON dbo.SOD_WO_History(ItemID);'
+    Reject {Sql $enableSql} 'custom dependencies' 'Single history installer rejects customized legacy tables without rebuilding'
     $tx=$connection.BeginTransaction()
     try {Reject {Sql $fixSql $tx} 'custom dependencies' 'Custom history indexes stop conversion before data changes';if($tx.Connection){$tx.Rollback()}}finally{$tx.Dispose()}
     Check ((Scalar "SELECT COLUMNPROPERTY(OBJECT_ID(N'dbo.SOD_WO_History'),N'EventID','IsIdentity')") -eq 1 -and (Scalar 'SELECT * FROM dbo.SOD_WO_History ORDER BY EventID FOR XML PATH(''Event''),ROOT(''History'')') -eq $before) 'Rejected conversion preserves the original identity and events'
     Sql 'DROP INDEX CustomHistoryIndex ON dbo.SOD_WO_History;'
+    $oldTrigger=Scalar "SELECT OBJECT_DEFINITION(OBJECT_ID(N'dbo.SOD_trg_WO_History_Invoice'))"
+    $tx=$connection.BeginTransaction()
+    try {Sql $enableSql $tx;$tx.Rollback()}finally{$tx.Dispose()}
+    Check ((Scalar "SELECT COLUMNPROPERTY(OBJECT_ID(N'dbo.SOD_WO_History'),N'EventID','IsIdentity')") -eq 1 -and
+        (Scalar 'SELECT * FROM dbo.SOD_WO_History ORDER BY EventID FOR XML PATH(''Event''),ROOT(''History'')') -eq $before -and
+        (Scalar "SELECT OBJECT_DEFINITION(OBJECT_ID(N'dbo.SOD_trg_WO_History_Invoice'))") -eq $oldTrigger -and
+        (Scalar "SELECT COUNT(*) FROM sys.sequences WHERE name='SOD_WO_History_EventSequence'") -eq 0) 'Rolling back the single installer restores events, identity, trigger and sequence state'
     $tx=$connection.BeginTransaction()
     try {Sql $fixSql $tx;$tx.Rollback()}finally{$tx.Dispose()}
     Check ((Scalar "SELECT COLUMNPROPERTY(OBJECT_ID(N'dbo.SOD_WO_History'),N'EventID','IsIdentity')") -eq 1 -and (Scalar "SELECT COUNT(*) FROM sys.sequences WHERE name='SOD_WO_History_EventSequence'") -eq 0 -and (Scalar 'SELECT * FROM dbo.SOD_WO_History ORDER BY EventID FOR XML PATH(''Event''),ROOT(''History'')') -eq $before) 'Rolling back a completed conversion restores the original table and events'
     $fix=[WorkOrderDatabaseUpdater.UpdateScript]::Load((Join-Path $repo 'Database Components\Migrations\Fix_WorkOrder_History_Identity.sql'),'Migrations/Fix_WorkOrder_History_Identity.sql','Compatibility fix','Test',$false)
-    $null=[WorkOrderDatabaseUpdater.UpdateRunner]::Apply($cs,$database,[WorkOrderDatabaseUpdater.UpdateScript[]]@($fix),(Join-Path $directory 'Runs'))
+    $installer=[WorkOrderDatabaseUpdater.UpdateScript]::Load((Join-Path $repo 'Database Components\Migrations\Enable_WorkOrder_History.sql'),'Migrations/Enable_WorkOrder_History.sql','History create/update','Test',$true)
+    $null=[WorkOrderDatabaseUpdater.UpdateRunner]::Apply($cs,$database,[WorkOrderDatabaseUpdater.UpdateScript[]]@($installer),(Join-Path $directory 'Runs'))
     $after=Scalar 'SELECT * FROM dbo.SOD_WO_History ORDER BY EventID FOR XML PATH(''Event''),ROOT(''History'')'
     Check ($before -eq $after) 'Legacy conversion preserves every history ID and event field'
     Check ((Scalar "SELECT COLUMNPROPERTY(OBJECT_ID(N'dbo.SOD_WO_History'),N'EventID','IsIdentity')") -eq 0) 'History no longer generates a SQL identity'
+    Check ((Scalar "SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory WHERE ScriptId=N'Migrations/Enable_WorkOrder_History.sql'") -eq 1 -and
+        (Scalar "SELECT COUNT(*) FROM sys.triggers WHERE name LIKE N'SOD_trg_WO_History_%'") -eq 6) 'One updater selection converts legacy history, updates all audit triggers and records deployment'
     Check ((Scalar "SELECT COUNT(*) FROM sys.database_permissions WHERE major_id=OBJECT_ID(N'dbo.SOD_WO_History') AND grantee_principal_id=USER_ID(N'HistoryReader') AND ((permission_name='SELECT' AND state='G') OR(permission_name='UPDATE' AND state='D'))") -eq 2) 'Existing grant and deny permissions survive conversion'
     Sql $enableSql
     Sql @'
@@ -99,6 +109,8 @@ BEGIN SET NOCOUNT ON; UPDATE q SET Status=1 FROM dbo.Queueing q JOIN inserted i 
     $entryId=Scalar 'INSERT dbo.OrderEntry(OrderID,ItemID,QuantityOnOrder,Price,FullPrice,Taxable,TaxChangeReasonCodeID,Description,Comment) VALUES(11,1,1,112,112,1,0,N''Fixture'',N'''');SELECT CONVERT(int,@@IDENTITY);'
     Check ($entryId -eq 1) 'OrderEntry creation keeps its own identity with auditing enabled'
     $nextBefore=Scalar 'SELECT MAX(EventID) FROM dbo.SOD_WO_History'
+    Sql $enableSql
+    Check ((Scalar 'SELECT MAX(EventID) FROM dbo.SOD_WO_History') -eq $nextBefore) 'Repeated single history installer preserves upgraded events and sequence progress'
     $null=[WorkOrderDatabaseUpdater.UpdateRunner]::Apply($cs,$database,[WorkOrderDatabaseUpdater.UpdateScript[]]@($fix),(Join-Path $directory 'Runs'))
     Check ((Scalar 'SELECT MAX(EventID) FROM dbo.SOD_WO_History') -eq $nextBefore) 'Repeated identity fix neither backfills events nor restarts IDs'
     Sql "INSERT dbo.SOD_WO_History(OrderID,EventName,Actor,Terminal,Details) VALUES(11,N'Manual event',N'Fixture',N'Test',N'Next value');"
@@ -115,6 +127,34 @@ BEGIN SET NOCOUNT ON; UPDATE q SET Status=1 FROM dbo.Queueing q JOIN inserted i 
     Check ($freshId -eq 12) 'Fresh-install audit defaults preserve the RMS identity result'
     Sql $enableSql
     Check ((Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_History') -eq 1) 'Fresh sequence installation remains idempotent'
+    # A later trigger-creation failure must also undo a completed legacy conversion.
+    Sql 'DROP TABLE dbo.SOD_WO_History;DROP SEQUENCE dbo.SOD_WO_History_EventSequence;'
+    Sql @'
+CREATE TABLE dbo.SOD_WO_History(EventID bigint IDENTITY,OrderID int NOT NULL,
+ EventTime datetime2(3) NOT NULL CONSTRAINT DF_SOD_WO_History_Time DEFAULT SYSDATETIME(),EventName nvarchar(60) NOT NULL,
+ Actor nvarchar(128) NOT NULL,Terminal nvarchar(256) NOT NULL,ItemID int NULL,Details nvarchar(2000) NOT NULL,
+ CONSTRAINT PK_SOD_WO_History PRIMARY KEY CLUSTERED(EventID));
+INSERT dbo.SOD_WO_History(OrderID,EventName,Actor,Terminal,Details) VALUES(12,N'Failure fixture',N'Test',N'Test',N'Keep me');
+ALTER TABLE dbo.QueueingItems DROP COLUMN PickLoc;
+'@
+    $failedBefore=Scalar 'SELECT * FROM dbo.SOD_WO_History ORDER BY EventID FOR XML PATH(''Event''),ROOT(''History'')'
+    $oldTrigger=Scalar "SELECT OBJECT_DEFINITION(OBJECT_ID(N'dbo.SOD_trg_WO_History_Invoice'))"
+    Reject {Sql $enableSql} 'PickLoc' 'A trigger compilation error fails the entire create/update history script'
+    Check ((Scalar "SELECT COLUMNPROPERTY(OBJECT_ID(N'dbo.SOD_WO_History'),N'EventID','IsIdentity')") -eq 1 -and
+        (Scalar 'SELECT * FROM dbo.SOD_WO_History ORDER BY EventID FOR XML PATH(''Event''),ROOT(''History'')') -eq $failedBefore -and
+        (Scalar "SELECT OBJECT_DEFINITION(OBJECT_ID(N'dbo.SOD_trg_WO_History_Invoice'))") -eq $oldTrigger -and
+        (Scalar "SELECT COUNT(*) FROM sys.sequences WHERE name='SOD_WO_History_EventSequence'") -eq 0) 'Later trigger failure restores the original history and trigger state'
+    Sql 'ALTER TABLE dbo.QueueingItems ADD PickLoc varchar(max);'
+    $failurePath=Join-Path $directory 'LaterFailure.sql'
+    [IO.File]::WriteAllText($failurePath,"THROW 52499, 'History plan fixture failure', 1;")
+    $failure=[WorkOrderDatabaseUpdater.UpdateScript]::Load($failurePath,'Test/LaterFailure.sql','Test','Disposable fixture',$false)
+    $deploymentCount=Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory'
+    Reject { [WorkOrderDatabaseUpdater.UpdateRunner]::Apply($cs,$database,[WorkOrderDatabaseUpdater.UpdateScript[]]@($installer,$failure),(Join-Path $directory 'Runs')) } 'History plan fixture failure' 'A later selected script rolls back the completed history upgrade'
+    Check ((Scalar "SELECT COLUMNPROPERTY(OBJECT_ID(N'dbo.SOD_WO_History'),N'EventID','IsIdentity')") -eq 1 -and
+        (Scalar 'SELECT * FROM dbo.SOD_WO_History ORDER BY EventID FOR XML PATH(''Event''),ROOT(''History'')') -eq $failedBefore -and
+        (Scalar "SELECT OBJECT_DEFINITION(OBJECT_ID(N'dbo.SOD_trg_WO_History_Invoice'))") -eq $oldTrigger -and
+        (Scalar "SELECT COUNT(*) FROM sys.sequences WHERE name='SOD_WO_History_EventSequence'") -eq 0 -and
+        (Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory') -eq $deploymentCount) 'Failed updater plan restores legacy history, triggers and deployment records together'
     Write-Output "PASS: $checks identity compatibility checks; artifacts: $directory"
 } finally {
     if($connection){$connection.Dispose()}

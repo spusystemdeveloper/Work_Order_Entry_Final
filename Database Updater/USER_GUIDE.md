@@ -175,11 +175,12 @@ used by the app can change behavior immediately; review its business rules.
 
 ## 7. Add a column or an index
 
-**History compatibility fix:** when an existing `SOD_WO_History.EventID` is an
-IDENTITY, select `Fix_WorkOrder_History_Identity.sql` first. It preserves event
-records and replaces identity generation with a sequence so RMS receives its own
-transaction/order number. Run it before `Enable_WorkOrder_History.sql`; the
-installer stops on unsafe legacy history. Already incorrect transaction links
+**History create/update:** select only `Enable_WorkOrder_History.sql`. It handles
+fresh installations and approved legacy IDENTITY history tables, preserving
+event records, IDs and permissions while using a sequence so RMS receives its
+own transaction/order number. It also creates/updates the history triggers in
+the same transaction. Back up first; customized legacy tables stop for review.
+No separate history fix selection is required. Already incorrect transaction links
 need a separate incident-specific recovery. The
 [HO recovery guide](../Database%20Components/Recovery/README.md) provides a
 self-contained SSMS file with rollback rehearsal enabled by default.

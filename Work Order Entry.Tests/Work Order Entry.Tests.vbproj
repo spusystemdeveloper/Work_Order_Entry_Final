@@ -73,7 +73,7 @@
     <Compile Include="ShortageAlertListTests.vb" />
     <Compile Include="OrderCommitmentRulesTests.vb" />
     <Compile Include="OrderPriceApprovalRulesTests.vb" />
-    <Compile Include="OrderPerformanceTimingTests.vb" />
+    <Compile Include="LoadingOverlayTests.vb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

@@ -1,4 +1,6 @@
 <Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
-  <!-- Packs every referenced DLL into the exe so only the exe needs to be deployed. -->
-  <Costura />
+  <!-- ReportViewer needs physical DLLs in the application folder, including for
+       its expression-processing AppDomain. Keep those DLLs in the output package;
+       other dependencies remain embedded as before. -->
+  <Costura ExcludeAssemblies="Microsoft.ReportViewer.*" />
 </Weavers>

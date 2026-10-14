@@ -57,13 +57,14 @@ made using SSMS or earlier tools have no entry in this updater's history.
 
 ## Future migrations and function fixes
 
-For existing Work Order audit history, apply `Fix_WorkOrder_History_Identity.sql`
-before `Enable_WorkOrder_History.sql`. RMS uses `@@IDENTITY`; the former history
-IDENTITY column could cause transaction children to reference an audit event ID.
-The compatibility migration retains all audit events/IDs using a sequence and
-preserves existing audit trigger definitions. The updated installer uses sequences
-for new databases and refuses an unsafe legacy table. Back up first. These
-migrations prevent recurrence; they do not repair already mislinked sales. See
+Select **Enable_WorkOrder_History.sql** for both new installations and updates.
+This one script creates/updates the history triggers and converts the approved
+legacy history IDENTITY table to a sequence, retaining events, IDs and permissions
+in the same transaction. RMS uses `@@IDENTITY`; history must not replace its
+returned order/transaction number. Customized legacy history schemas stop for
+review. Back up first. The former `Fix_WorkOrder_History_Identity.sql` remains
+only for existing recovery scripts and is no longer a separate catalog selection.
+This update prevents recurrence; it does not repair already mislinked sales. See
 [the incident recovery instructions](../Database%20Components/Recovery/README.md).
 
 Use **Add SQL script** for trusted, reviewed `.sql` files. Functions can use

@@ -2,6 +2,35 @@
 
 VB.NET RMS add-ins for Work Order Entry and Order Processing Queueing.
 
+## Application deployment and printing
+
+Build `Work Order Entry.sln` in Release / x86. Deploy the **whole**
+`Work Order Entry/bin/Release` folder, including these matching ReportViewer DLLs:
+`Microsoft.ReportViewer.Common.dll`, `Microsoft.ReportViewer.WinForms.dll`,
+`Microsoft.ReportViewer.ProcessingObjectModel.dll`,
+`Microsoft.ReportViewer.DataVisualization.dll`, and `Microsoft.ReportViewer.Design.dll`.
+They come from the project's ReportViewer package `150.1652.0` and must remain
+beside `Work Order Entry_V8.exe`. Other managed dependencies remain embedded.
+Copying only the EXE is insufficient for this build; ReportViewer 2005 is not a
+replacement for the bundled version. No separate ReportViewer install is needed.
+
+On an existing unit, retain its store-specific `Work Order Entry_V8.exe.config`
+when replacing the EXE and DLLs. On a new unit, review the configuration for the
+intended store. Application packaging does not deploy database migrations.
+
+Start the EXE from the updated folder and update any Desktop shortcut to that
+location. A separate old Desktop EXE will continue running the old code. An import
+error naming `ExcelDataSetConfiguration.set_ConfigureDataTable` can occur with
+the legacy embedded-DLL loader when it loads ExcelDataReader more than once.
+Deploy the current complete package; do not mix old EXEs or Excel DLLs into it.
+
+Verify the Release package with
+`Database Components/Tests/Packaging_CleanFolder_Test.ps1`: it reads synthetic
+CSV/XLSX files and renders the actual embedded WO/pick-list reports to PDFs in a
+clean folder without an app config or installed ReportViewer 15 dependency.
+It does not open the real app, access SQL, or send a physical print job. See
+[the testing guide](UNIT_TEST_GUIDE.md). A normal unit test can miss packaging failures.
+
 ## Database deployment
 
 Use the separate [Work Order Database Updater](Database%20Updater/README.md)
@@ -47,12 +76,12 @@ For stores missing the item-code lookup index, see
 database optimization preserves the application rules and is not automatically
 included in the branch deployment drivers.
 
-The test project contains 103 database-free unit tests for price levels,
+The test project contains 101 database-free unit tests for price levels,
 print-template selection, import-file routing, branch validation,
 senior-citizen tags, VAT, tax exemption, non-taxable pricing, queue order-age
 rules, error logging, edit-conflict validation, ready notifications, and customer
-acceptance of warehouse shortages and safe processing-time measurement.
-All 103 passed on October 14, 2026.
+acceptance of warehouse shortages and loading-overlay scope handling.
+All 101 passed on October 14, 2026.
 
 Run the unit tests from the repository root with:
 

@@ -63,6 +63,8 @@ try {
         $catalog = [WorkOrderDatabaseUpdater.UpdateCatalog]::Load($components, $profile)
         Check ($catalog.Count -gt 5) "$profile catalog loads all migration/object batches"
         Check (-not ($catalog.Id -match 'Security|Validation|Deploy_')) "$profile excludes permissions and SQLCMD driver execution"
+        Check (@($catalog | Where-Object {$_.Id -eq 'Migrations/Enable_WorkOrder_History.sql'}).Count -eq 1 -and
+            -not ($catalog.Id -match 'Fix_WorkOrder_History_Identity')) "$profile offers one history create/update selection"
     }
     $maskedGo = "SELECT 'first`nGO`nlast';`n/* outer /* nested */`nGO`n*/`nGO -- separator`nSELECT 2;"
     Check ([WorkOrderDatabaseUpdater.SqlBatches]::Split($maskedGo, $false).Count -eq 2) 'GO in strings and nested comments stays inside its batch'

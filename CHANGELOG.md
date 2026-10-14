@@ -4,6 +4,86 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-14
 
+### Explicit ReportViewer SQL Types dependency
+
+- Added an explicit `Microsoft.SqlServer.Types` reference at `14.0.314.76`,
+  the same version already resolved by NuGet. ReportViewer's unavailable lower
+  bound `14.0.0` previously produced NU1603 on restore. This selects the existing
+  resolved package deliberately without suppressing warnings or changing RMS
+  rules, report layouts or the application's database operations.
+- NuGet restore completes without NU1603. Both solutions build Release/x86;
+  all 101 unit tests and clean-folder Import/CSV/XLSX/report checks pass. Rebuilt
+  and verified the application ZIP; existing local configuration was preserved.
+
+### Remove optional application timing
+
+- Removed Save/Recall/Refresh/catalogue timing scopes, the CSV logging helper,
+  credit-warning wait measurement and `EnableOrderPerformanceLogging` setting
+  at the user's request. Removed the five tests belonging to the retired helper.
+- Preserved database context/transaction scopes, batched reads and fallback
+  behavior, snapshot conflict checks, tax/totals calculation, stock commitments,
+  shortage handling and the existing credit-limit warning. Updated instructions
+  to stop recommending application timing logs. No database migration required.
+- Both solutions build Release/x86, all 101 remaining unit tests and 99 isolated
+  Work Order workflow checks pass. Clean-folder Import compilation, CSV/XLSX reads
+  and both reports pass. Rebuilt the application ZIP; retained local store config
+  while removing its obsolete timing setting. No live store records were changed.
+
+### One Work Order history create/update script
+
+- Integrated the guarded legacy IDENTITY-to-sequence conversion into
+  `Enable_WorkOrder_History.sql`. One script now creates fresh history or upgrades
+  approved legacy history, preserves events/IDs/permissions and creates/updates
+  audit triggers atomically. Custom legacy dependencies still stop for review.
+- The updater presents one history selection. Retained the old fix file only for
+  existing recovery-script compatibility; it is no longer a required extra step.
+  Updated deployment instructions. RMS tables, business rules and already
+  mislinked transaction records are unchanged. No live migration was executed.
+- Added isolated checks for one-selection upgrades, conversion/trigger rollback,
+  repeat deployment, catalog contents and later trigger compilation failure.
+- Validation: 27 history compatibility checks, 63 updater checks, 99 Work Order
+  workflow checks and all 106 unit tests pass. Both solutions build Release/x86;
+  existing local Debug config was preserved. Rebuilt the updater ZIP with the
+  consolidated installer and current catalog/instructions.
+
+### Import deployment verification
+
+- Traced the reported import MissingMethodException to the September 15 Desktop
+  EXE, which differs from the current Release build. The error log contains two
+  loaded ExcelDataReader assemblies; the reference build's manual resource
+  resolver reloads assemblies without caching. The current build uses Costura.
+- Extended the clean-folder probe to JIT-compile the actual Import entry point
+  without opening its file picker and reject duplicate Excel dependency loads
+  or mismatched reader type identities. Documented using the updated folder and
+  correcting shortcuts. No application import or business rules changed.
+- Both solutions build in Release/x86; all 106 unit tests and the extended
+  clean-folder checks pass. Verified the application ZIP contains the tested
+  Release EXE and five ReportViewer DLLs. Existing local config was restored.
+
+### Printing deployment and loading overlay fixes
+
+- Excluded ReportViewer assemblies from Costura embedding so matching physical
+  DLLs ship with the EXE. The new ReportViewer package failed report processing
+  when loaded in memory; temporary extraction fixed its version-path lookup but
+  did not resolve the expression host's separate assembly lookup. Folder deployment
+  passed WO and pick-list PDF rendering with no installed ReportViewer 15 needed.
+- Retained existing report layouts and print parameter/amount logic. Added clean
+  package checks for CSV/XLSX reads, both actual report definitions and physical
+  dependency loading. Documented folder deployment and preserving store config.
+- Corrected loading-overlay scope ownership: ignored/disposed owners and failed
+  creation now return no-op scopes, avoiding unmatched/double decrements. Added
+  three regressions; all 106 unit tests pass. Save/import business rules unchanged.
+- Rebuilt the updater distribution from current Release output, replacing an
+  old archive that contained the unsafe identity-based history installer and
+  omitted the compatibility migration. Preserve the prior ZIP under TestResults.
+  Packages contain the sequence installer and `Fix_WorkOrder_History_Identity.sql`;
+  selected migrations still require personal review/application. No live SQL ran.
+- Final validation: both solutions build in x86 Debug/Release; all 106 units,
+  99 isolated workflow checks and 60 updater checks pass. Clean-folder CSV/XLSX,
+  WO/pick-list rendering, physical ReportViewer location and package-content
+  checks pass. Local Debug configuration restored byte-for-byte. Actual printer
+  output remains a workstation acceptance check; no physical print job was sent.
+
 ### Critical RMS audit identity compatibility and recovery
 
 - Simplified the backup-path placeholder guard after a user-edited script had

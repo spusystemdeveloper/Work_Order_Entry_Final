@@ -5,11 +5,12 @@ GSC_STORE_DB. Generation does not modify either database.
 
 ## Scope
 
-Existing identity-based Work Order history requires
-`../Migrations/Fix_WorkOrder_History_Identity.sql` before reinstalling history.
-The old audit IDENTITY could interfere with RMS's `@@IDENTITY` lookup. This
-compatibility migration preserves events/IDs and existing triggers; fresh history
-uses a sequence. Already mislinked transactions need separate, guarded recovery:
+Use `../Migrations/Enable_WorkOrder_History.sql` for history creation or updating.
+It includes conversion of approved legacy IDENTITY history to a sequence while
+preserving events/IDs/permissions, then creates/updates the history triggers in
+one transaction. No separate identity fix step is needed. The old audit IDENTITY
+could interfere with RMS's `@@IDENTITY` lookup. Customized legacy tables stop
+for review. Already mislinked transactions need separate, guarded recovery:
 see [the recovery guide](../Recovery/README.md). Recovery files are not automatic
 branch deployments or updater catalog items.
 

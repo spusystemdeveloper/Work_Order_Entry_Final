@@ -43,7 +43,8 @@ Public NotInheritable Class LoadingOverlay
 
     Public Shared Function Show(owner As Form, text As String) As IDisposable
         ' Nested operations (e.g. save inside an import) keep the outer overlay.
-        If owner Is Nothing OrElse owner.IsDisposed OrElse Interlocked.Increment(activeCount) > 1 Then
+        If owner Is Nothing OrElse owner.IsDisposed Then Return New NestedScope(False)
+        If Interlocked.Increment(activeCount) > 1 Then
             Return New NestedScope()
         End If
         Try
@@ -53,7 +54,7 @@ Public NotInheritable Class LoadingOverlay
             Return New LoadingOverlay(owner, text)
         Catch
             Interlocked.Decrement(activeCount)
-            Return New NestedScope()
+            Return New NestedScope(False)
         End Try
     End Function
 
@@ -150,11 +151,15 @@ Public NotInheritable Class LoadingOverlay
 
     Private NotInheritable Class NestedScope
         Implements IDisposable
+        Private ReadOnly ownsCount As Boolean
         Private done As Boolean
+        Public Sub New(Optional counted As Boolean = True)
+            ownsCount = counted
+        End Sub
         Public Sub Dispose() Implements IDisposable.Dispose
             If done Then Return
             done = True
-            Interlocked.Decrement(activeCount)
+            If ownsCount Then Interlocked.Decrement(activeCount)
         End Sub
     End Class
 

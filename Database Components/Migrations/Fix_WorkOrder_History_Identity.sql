@@ -1,4 +1,7 @@
-/* SQL Server 2016 RTM. Run through the updater or inside an explicit transaction.
+/* Compatibility-only entry point retained for existing recovery scripts.
+   Normal history installation/updating now uses Enable_WorkOrder_History.sql,
+   which includes the conversion. Do not select this as an additional step.
+   SQL Server 2016 RTM. Run inside an explicit transaction.
    Replaces the custom history IDENTITY with a sequence-backed EventID, preserving
    all existing events and their IDs. RMS uses @@IDENTITY: history must not change it.
    No RMS business table, transaction link, amount, or inventory value is edited.
