@@ -160,6 +160,9 @@
         Try
             Using dbx = GetDB()
 
+                dbx.Connection.Open()
+                OrderHistory.SetActor(dbx, frmItemLookUp.usrUsername, frmItemLookUp.usrRegister)
+
                 Dim Order = (From a In dbx.Queueings Where a.OrderID.Equals(orderid)
                              Select a).SingleOrDefault
 

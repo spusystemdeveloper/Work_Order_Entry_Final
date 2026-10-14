@@ -321,6 +321,9 @@ Public Class UCGridOrder
     Public Sub checkStatus()
 
         Try
+            ' Recompute the stage after reload, including a previously prepared card.
+            Me.BackColor = Color.OldLace
+            Me.gridOrder.Enabled = True
             Dim statPrepared = 0
             Dim statForInvoice = 0
             Dim statProcess = 0

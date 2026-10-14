@@ -2,9 +2,17 @@
 
 > **Date:** July 9, 2026  
 > **Based on:** Performance Investigation Report — Database & UI Grid Analysis  
-> **Status:** Recommendations Only — No Code Has Been Revised
+> **Status:** Historical recommendations with selected implementation notes checked October 6, 2026. Original investigation dates and line numbers are retained.
 
 ---
+
+## Current status notes (October 6, 2026)
+
+- Fix #9: `ModConnectDB.query` and both `load_data` overloads now use `Using` blocks to dispose SQL connections and commands; the original connection leak is corrected.
+- Fix #10: `mysql_testConnection` now disposes its test connection with a `Using` block.
+- Fix #7: the main item form now enables double buffering on both item grids.
+- Fix #8: `frmForInvoice` now debounces search with a 300 ms timer. This does not establish completion of the separate recall-search recommendation.
+- The remaining recommendations and snippets are historical proposals, not a verified list of current defects or production-ready replacement code. No performance measurements were rerun for this update.
 
 ## Priority Legend
 
@@ -126,7 +134,7 @@ isRestoringDraft = False
 ```vb
 ' Pre-fetch all needed data in ONE query:
 Dim itemData = (From a In db.Items
-                Where a.ItemLookupCode In itemCodes
+                Where itemCodes.Contains(a.ItemLookupCode)
                 Select a.ItemLookupCode, a.ItemType, a.Quantity
                ).ToDictionary(Function(x) x.ItemLookupCode)
 
@@ -443,6 +451,6 @@ We recommend tackling these fixes in the following order for maximum impact:
 
 ## Notes
 
-- **No code has been changed** — this document contains recommendations only.
+- The original report contained recommendations only. See the current status notes above for selected fixes now present in source.
 - Fixes in Phase 1 and Phase 2 should resolve the most visible lagging.
-- The connection leak (Fix #9) is especially urgent as it causes the app to progressively slow down the longer it runs.
+- Connection-disposal fixes (#9 and #10) are now present in source. Remaining performance work requires measurement against the current build.

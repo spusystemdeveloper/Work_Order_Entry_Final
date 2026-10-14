@@ -7,6 +7,10 @@
 
 The connection password is intentionally not reproduced in this report.
 
+**Historical snapshot:** Database counts, schema observations, and integrity
+findings below reflect the dated audit, not current live state. The October 6,
+2026 documentation review did not reconnect to the database or rerun this audit.
+
 ## Environment
 
 | Property | Observed value |

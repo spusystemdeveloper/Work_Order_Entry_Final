@@ -2,6 +2,10 @@
 
 This guide explains how **Order Processing Queueing** works, how it integrates with **Work Order Entry** and **Microsoft Dynamics RMS**, and how to configure and troubleshoot it.
 
+**Documentation checked against source:** October 6, 2026. Operational features
+described below are present in the current source; this update did not verify a
+deployed installation or a live database.
+
 ---
 
 ## 1. Overview & Architecture
@@ -17,7 +21,7 @@ In high-volume retail and wholesale store branches (such as Gensan), the sales a
 
 ---
 
-## 2. The 3-Step Order Lifecycle
+## 2. Order Lifecycle Across Three Applications
 
 ```
 [1. Work Order Entry]            [2. Order Processing Queueing]           [3. RMS POS]
@@ -39,10 +43,21 @@ Saves Order  ───────────────────► Appear
 
 | Stage | Application | Who | Status | What Happens |
 |---|---|---|---|---|
-| **1. Order Creation** | `Work Order Entry` | Sales Rep / Cashier | `"In Queue"` | Saves Work Order (Type 2). Commits stock. Creates records in `Queueing` and `QueueingItems`. If grouping is enabled, assigns a `GroupNumber`. |
-| **2. Warehouse Picking** | `OrderProcessingQueueing` | Warehouse Picker | `"In Queue"` → `"Prepared"` | Order appears as a visual tile. Supervisor assigns a picker from `PickerList`. Staff gathers items and logs `QtyPrep`. When all items are complete, status changes to `"Prepared"`. |
+| **1. Order Creation** | `Work Order Entry` | Sales Rep / Cashier | Pending / For Process | Saves Work Order (Type 2). Commits stock. Creates a `Queueing` ownership header and, when branch queueing is enabled, `QueueingItems`. Grouping uses `GroupTo`. |
+| **2. Warehouse Picking** | `OrderProcessingQueueing` | Warehouse Picker | Pending → In Process → Prepared | Order appears as a visual tile. Supervisor assigns a picker from `PickerList`. Staff gathers items and records prepared quantity in `QtyPre`. A group becomes prepared when all required items are prepared. |
 | **3. For Invoicing** | `Work Order Entry` | Cashier | `"Prepared"` → `"For Invoicing"` | Cashier presses **[F7] For Invoicing**. Selects the prepared order batch. Prints the final Work Order. Status updates to `"For Invoicing"`. |
 | **4. POS Settlement** | RMS Store Operations POS | Cashier | `"Closed"` | Cashier tenders payment. SQL trigger `trg_Transaction_closeQueue` automatically detects the completed sale and closes the queue record. |
+
+The queue header uses numeric `Queueing.Status`: `0` for open, `1` for
+completed, and `2` for cancelled. Item preparation uses text values in
+`QueueingItems.Status`; the table above describes the operator-facing stages.
+"In Queue" in the diagram is a workflow label, not a queue-header status value.
+
+Active warehouse cards progress through **OldLace** (For Process),
+**DarkSalmon** (In Process), **PaleGreen** (Prepared), and **CornflowerBlue**
+(For Invoicing). For Invoicing cards stay visible and count toward **For Invoice**
+until RMS settlement closes their queue records. The current warehouse loaders
+also limit displayed orders to the past 60 days and apply terminal filters.
 
 ---
 
@@ -50,15 +65,18 @@ Saves Order  ───────────────────► Appear
 
 ### A. In Work Order Entry (`App.config` & Settings Form)
 
-Configured under **Settings → Work Order and Queue Options**:
+Configured under **Settings → Branch Functions**:
 
 * **`QueueingEnabled`:**
-  * `True`: Full warehouse queueing enabled (Gensan branch style). Writes to `QueueingItems`, shows `[F7] For Invoicing`, and enables order grouping.
-  * `False`: Direct processing mode (Davao branch style). Work Orders commit stock directly without writing queue item lines. `[F7] For Invoicing` is hidden.
+  * `True`: Enables warehouse `QueueingItems` processing (Gensan branch style). Grouping and `[F7] For Invoicing` also require their individual settings below.
+  * `False`: Direct processing mode (Davao branch style). Type-2 Work Orders still commit stock. Processing queue items are removed, ownership headers remain for recall, and `[F7] For Invoicing` is hidden.
 * **`AllowOrderGrouping`:**
-  * Prompts the cashier to group multiple orders for the same customer under a single batch/group number (`GroupNumber`), allowing warehouse staff to pick all orders for that customer together.
+  * When branch queueing is enabled, prompts the cashier to group multiple orders for the same customer under a shared `Queueing.GroupTo`, allowing warehouse staff to pick those orders together.
 * **`ShowForInvoiceButton`:**
-  * Controls the visibility of the **For Invoicing [F7]** button on the main screen.
+  * Controls the visibility of the **For Invoicing [F7]** button on the main screen; queueing must also be enabled.
+
+Sales Quotations (type `3`) retain an ownership header for recall but have no
+processing queue items and do not reserve inventory.
 
 ### B. In Order Processing Queueing (`OrderProcessingQueueing.exe`)
 
@@ -81,11 +99,11 @@ Both applications connect to the same store database and rely on these core obje
 
 | Object Name | Type | Purpose |
 |---|---|---|
-| `Queueing` | Table | Header record linking `OrderID`, `GroupNumber`, and `OPIS` (Order Taker username). |
-| `QueueingItems` | Table | Individual line items with `PickLoc`, `Quantity`, `QuantityPrep`, `Picker`, and `Status`. |
+| `Queueing` | Table | Header record linking `OrderID`, `GroupTo`, `OPIS` (order taker username), and numeric `Status`. |
+| `QueueingItems` | Table | Queue item records with `QueueingID`, `ItemID`, `PickLoc`, `QtyPre`, `Picker`, and text `Status`. Ordered quantity is read from RMS `OrderEntry.QuantityOnOrder`. |
 | `PickerList` | Table | Master list of authorized warehouse picking staff. |
 | `SOD_Item_Logs` | Table | Audit log recording inventory adjustments and queue changes. |
-| `SOD_ViewForInvoice` | View | Feeds `frmForInvoice` with orders where `Status = 'Prepared'`. |
+| `SOD_ViewForInvoice` | View | Returns open queue groups with a computed readiness status. The application filters for `Prepared`, open RMS orders, and orders from the past 60 days. |
 | `SOD_viewTableLastUpdate` | View | Used by `OrderProcessingQueueing` to detect when new orders are created. |
 | `trg_Transaction_closeQueue` | Trigger | Trigger on RMS `Transaction` table that closes the queue record when payment is tendered. |
 
@@ -97,40 +115,68 @@ Both applications connect to the same store database and rely on these core obje
 1. **Check Release Type:** Was the order created as `Pick-up` or `Delivery`? Ensure the warehouse terminal is set to the matching mode.
 2. **Check Pick Location:** In `Work Order Entry`, is the `Pick Loc` checkbox checked (`UP-STORE`) or unchecked (`STORE`)?
 3. **Check Database:** Confirm that both `Work Order Entry` and `OrderProcessingQueueing` are connected to the exact same SQL database.
+4. **Check Age and Stage Filters:** The warehouse loaders restrict orders to the past 60 days. Check the active quick filter and search text. For Invoicing orders remain active until settlement.
 
 ### Issue 2: Order does not appear in [F7] For Invoicing
 1. **Status Check:** Orders only appear in `[F7]` once the warehouse has marked all items as **"Prepared"**. If an order is still "In Queue", it will not show up.
-2. **Order Taker / OPIS Filter:** By default, `frmForInvoice` filters orders created by the currently logged-in user (`frmItemLookUp.usrUsername`).
+2. **Store-Wide / OPIS Filter:** **Store-Wide** is checked by default, so any cashier can view eligible prepared orders across the store. Clear it to restrict the list to the logged-in order taker (`frmItemLookUp.usrUsername`). The Encoder column identifies the original order taker.
+3. **Closed / Older Orders:** The application excludes closed orders and orders older than 60 days. Readiness comes from the queue-group view; investigate missing or inconsistent queue-item records if a group is unexpectedly marked prepared.
 
 ---
 
-## 6. Future Enhancements & Feature Roadmap (Queueing)
+## 6. Operational Features Present in Source
 
-The following high-value suggestions are documented for future iterations:
+These features are implemented in the current source. The changelog records
+several as experimental; validate them in the branch pilot before relying on
+them operationally.
+
+- **Order age and overdue alerts:** card headers show elapsed time and use
+  green below 10 minutes, amber from 10 minutes, and red from 20 minutes.
+  Prepared and For Invoicing cards retain their stage styling. The top overdue
+  panel filters orders older than 20 minutes when clicked.
+- **Queue search and quick filters:** search customer, Work Order number,
+  group, SKU, or description alongside the stage filters.
+- **Shortage flags:** the prepared-quantity dialog records found stock and
+  marks the item `Shortage`. Warehouse cards highlight shortages; recalling
+  the order in Work Order Entry shows a shortage notice.
+  After customer agreement, the cashier can reduce that line to the recorded
+  found quantity through Order actions and Save. This releases only the shortage
+  reservation and preserves the picker; stock on hand is unchanged. See
+  `ORDER_TOOLS_GUIDE.md` for requirements and undo behavior.
+  The card's Refresh button reads fresh database records and resets its stage,
+  shortage badge, and editability. Shortage/status saves also notify the normal
+  automatic refresh through the order's update timestamp.
+- **Picker workload and productivity:** the Pickers dialog shows workload,
+  filters cards by picker, supports bulk reassignment, and offers a daily
+  leaderboard. The main screen also shows Completed Today.
+- **Batch Pick:** consolidates pending/in-process items by SKU and bin
+  location, with filters and a printable batch pick sheet.
+- **TV Display:** shows Being Prepared and Ready for Pickup / Cashier columns,
+  refreshes from queue cards every five seconds, and supports F11 fullscreen.
+
+---
+
+## 7. Remaining Enhancement Ideas
+
+The following ideas remain proposals rather than completed features:
 
 ### A. Warehouse Floor & Picking Speed
+
 1. **Scan-to-Verify (Barcode Scanning)**:
    * Allow pickers to scan the physical item barcode before marking it "Prepared" to eliminate wrong-item and wrong-pack-size picking errors.
-2. **Bin / Shelf Location Ordering**:
-   * Sort items on the pick list and screen by warehouse aisle/bin location so pickers follow a single optimized path through the warehouse without backtracking.
-3. **Out-of-Stock / Short-Pick Flagging**:
-   * Allow pickers to flag damaged or missing stock with the actual quantity found, alerting the cashier immediately rather than stalling the entire order batch.
+2. **Optimized Bin / Shelf Route**:
+   * Extend the existing batch pick view with an optimized aisle/bin route that minimizes backtracking.
 
-### B. Visibility & Customer Experience
-4. **Order Age & Priority Color-Coding**:
-   * Add visual age indicators on the queue grid (e.g., Green = `< 10 mins`, Yellow = `10–20 mins`, Red = `> 20 mins`) to prioritize older orders and reduce customer wait times.
-5. **Customer-Facing TV Display (Queue Board)**:
-   * A lightweight status display facing the customer counter with two columns: **"Preparing"** and **"Ready for Payment / Pickup"**.
+### B. Cashier & Warehouse Coordination
 
-### C. Cashier & Warehouse Coordination
-6. **Cashier "Ready" Notification / Sound Cue**:
-   * A subtle visual alert or chime on the Work Order Entry screen when an order batch hits 100% "Prepared", signaling the cashier to pull the order into `[F7] For Invoicing`.
-7. **Packing Slip / Box Label Printing**:
+3. **Optional Sound Cue**:
+   * The visual ready notification is now implemented in Work Order Entry; see `ORDER_TOOLS_GUIDE.md`. An optional sound cue remains a proposal.
+4. **Packing Slip / Box Label Printing**:
    * Quick-print option for sticky box tags (Order #, Customer Name, Box X of Y) for multi-carton wholesale orders.
 
-### D. Accountability & Management Insights
-8. **Stage Timestamps & SLA Tracking**:
-   * Log timestamps across transitions (*Created → Pick Assigned → Prepared → Invoiced*) to track prep speed and pinpoint fulfillment bottlenecks.
-9. **Daily Picker Productivity Summary**:
-   * An end-of-day report summarizing total lines and orders completed per picker for workload balance and performance tracking.
+### C. Accountability & Management Insights
 
+5. **Stage Timestamps & SLA Tracking**:
+   * The optional order history migration now records stage events and timestamps. Extend those records with dedicated SLA and bottleneck reports; see `ORDER_TOOLS_GUIDE.md`.
+6. **Exportable End-of-Day Picker Report**:
+   * Extend the existing daily leaderboard with an exportable end-of-day summary for workload and performance review.

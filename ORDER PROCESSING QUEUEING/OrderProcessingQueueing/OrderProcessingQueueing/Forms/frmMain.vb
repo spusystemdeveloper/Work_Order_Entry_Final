@@ -318,14 +318,9 @@ Public Class frmMain
 
             db_lastupdated = clsQueueing.checkTableUpdate()
 
-            If skipUpdate = True Then
-
-                skipUpdate = False
-                Exit Sub
-
-            Else
-                updateData()
-            End If
+            ' A local priority refresh must not hide another terminal's next change.
+            skipUpdate = False
+            updateData()
 
         End If
 

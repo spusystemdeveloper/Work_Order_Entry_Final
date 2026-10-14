@@ -1,5 +1,7 @@
 Public Class frmForInvoice
 
+    Public Property PreferredGroup As Integer?
+
     Dim groupid As String
     Dim orders As String
     Private searchDebounceTimer As Windows.Forms.Timer
@@ -36,6 +38,17 @@ Public Class frmForInvoice
         Dim userFilter As String = If(chkStoreWide.Checked, Nothing, frmItemLookUp.usrUsername)
         gridCustOrder.DataSource = Nothing
         gridCustOrder.DataSource = clsItemLookUp.getOrderForInvoicing(txtSearch.Text.Trim(), userFilter)
+        If PreferredGroup.HasValue Then
+            For Each row As DataGridViewRow In gridCustOrder.Rows
+                If Convert.ToInt32(row.Cells(0).Value) = PreferredGroup.Value Then
+                    gridCustOrder.CurrentCell = row.Cells(0)
+                    row.Selected = True
+                    UpdateSelectionFromGrid()
+                    Exit For
+                End If
+            Next
+            PreferredGroup = Nothing
+        End If
     End Sub
 
     Private Sub chkStoreWide_CheckedChanged(ByVal sender As Object, ByVal e As EventArgs) Handles chkStoreWide.CheckedChanged

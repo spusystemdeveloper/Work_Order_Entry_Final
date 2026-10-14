@@ -31,6 +31,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
@@ -65,6 +66,14 @@
     <Compile Include="TaxCalculationTests.vb" />
     <Compile Include="QueueOrderAgeRulesTests.vb" />
     <Compile Include="ErrorLoggerTests.vb" />
+    <Compile Include="OrderEditGuardTests.vb" />
+    <Compile Include="ReadyOrderNotificationsTests.vb" />
+    <Compile Include="ShortageReductionTests.vb" />
+    <Compile Include="ShortageNotificationsTests.vb" />
+    <Compile Include="ShortageAlertListTests.vb" />
+    <Compile Include="OrderCommitmentRulesTests.vb" />
+    <Compile Include="OrderPriceApprovalRulesTests.vb" />
+    <Compile Include="OrderPerformanceTimingTests.vb" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
 </Project>

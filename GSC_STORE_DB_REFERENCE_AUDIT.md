@@ -7,6 +7,10 @@
 
 No database objects or rows were changed during this audit.
 
+**Historical snapshot:** Database counts, schema observations, and rollback
+results below reflect the dated audit, not current live state. The October 6,
+2026 documentation review did not reconnect to the database or rerun these checks.
+
 ## Tax-reason compatibility check
 
 A read-only comparison on July 27, 2026 confirmed:

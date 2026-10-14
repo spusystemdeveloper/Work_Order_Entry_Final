@@ -111,6 +111,28 @@
     <Compile Include="Class\clsCustomerAcct.vb" />
     <Compile Include="Class\clsWorkOrderDraft.vb" />
     <Compile Include="Class\ErrorLogger.vb" />
+    <Compile Include="Class\OrderEditGuard.vb" />
+    <Compile Include="Class\ReadyOrderNotifications.vb" />
+    <Compile Include="Class\ShortageNotifications.vb" />
+    <Compile Include="Class\ShortageAlertList.vb" />
+    <Compile Include="Class\OrderCommitmentRules.vb" />
+    <Compile Include="Class\OrderPriceApprovalRules.vb" />
+    <Compile Include="Class\OrderPerformanceTiming.vb" />
+    <Compile Include="Class\RecallReadData.vb" />
+    <Compile Include="Forms\frmShortageAlerts.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmItemLookUp.ShortageAlerts.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Class\OrderHistory.vb" />
+    <Compile Include="Class\ShortageReduction.vb" />
+    <Compile Include="Forms\frmShortageReductionConfirm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmOrderHistory.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Class\clsImport.vb" />
     <Compile Include="Class\clsImportQuotation.vb" />
     <Compile Include="Class\clsItemLookUp.vb" />
@@ -193,6 +215,12 @@
     </Compile>
     <Compile Include="Forms\frmItemLookUp.vb">
       <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmItemLookUp.ShortageReduction.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmItemLookUp.OrderTools.vb">
+      <DependentUpon>frmItemLookUp.vb</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmLinqLevel.Designer.vb">
       <DependentUpon>frmLinqLevel.vb</DependentUpon>

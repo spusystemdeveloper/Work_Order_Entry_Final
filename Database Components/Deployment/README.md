@@ -68,6 +68,12 @@ in the identical live definition. Identical does not mean branch-neutral.
 
 ## Important limitation
 
+The new order tools have separate migrations outside this original audited
+package: `../Migrations/Prepare_WorkOrder_Edit_Checks.sql` adds lookup indexes,
+and `../Migrations/Enable_WorkOrder_History.sql` enables the optional timeline.
+They are not included in the dated 49-object manifest or branch drivers. Follow
+the repository's `ORDER_TOOLS_GUIDE.md` and test them against a branch restore.
+
 The generated table scripts create missing tables but deliberately do not
 alter an existing table. Existing-table schema differences must be handled by
 a separately reviewed migration. A branch driver includes source-only objects

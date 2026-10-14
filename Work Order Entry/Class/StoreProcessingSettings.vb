@@ -59,6 +59,18 @@ Public NotInheritable Class StoreProcessingSettings
         End Get
     End Property
 
+    Public Shared ReadOnly Property EnableReadyOrderNotifications As Boolean
+        Get
+            Return QueueingEnabled AndAlso ReadBoolean("EnableReadyOrderNotifications", True)
+        End Get
+    End Property
+
+    Public Shared ReadOnly Property EnableShortageNotifications As Boolean
+        Get
+            Return QueueingEnabled AndAlso ReadBoolean("EnableShortageNotifications", True)
+        End Get
+    End Property
+
     Public Shared ReadOnly Property LockCustomerAndSalesRepOnRecall As Boolean
         Get
             Return ReadBoolean("LockCustomerAndSalesRepOnRecall", False)

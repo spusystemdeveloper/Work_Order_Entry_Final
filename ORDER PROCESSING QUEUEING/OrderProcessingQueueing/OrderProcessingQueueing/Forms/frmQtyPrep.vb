@@ -40,7 +40,7 @@ Public Class frmQtyPrep
                                                           "[Cancel] = Do not save", "Quantity Warning / Shortage", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question)
 
                 If res = DialogResult.Yes Then
-                    clsQueueing.FlagItemShortage(_queueid, _itemid, CInt(txtQty.Text))
+                    If Not SaveShortage(CInt(txtQty.Text)) Then Return
                     frmMain.prioritizeUserControl(lblGroupID.Text)
                     Me.Close()
                     Exit Sub
@@ -101,9 +101,16 @@ Proceed:
                                       "Confirm Stock Shortage", MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
 
         If confirm = DialogResult.Yes Then
-            clsQueueing.FlagItemShortage(_queueid, _itemid, qtyFound)
+            If Not SaveShortage(qtyFound) Then Return
             frmMain.prioritizeUserControl(lblGroupID.Text)
             Me.Close()
         End If
     End Sub
+
+    Private Function SaveShortage(qtyFound As Integer) As Boolean
+        If clsQueueing.FlagItemShortage(_queueid, _itemid, qtyFound) Then Return True
+        MessageBox.Show("The shortage was not saved. Refresh the order and try again.",
+                        "Shortage", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Return False
+    End Function
 End Class

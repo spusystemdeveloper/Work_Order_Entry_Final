@@ -1089,6 +1089,8 @@ Public Class clsItemLookUp
 
 
             Using dbx = GetDB()
+                dbx.Connection.Open()
+                OrderHistory.SetActor(dbx, frmItemLookUp.usrUsername, frmItemLookUp.usrRegister)
                 Dim upt = (From a In dbx.QueueingItems
                            Join b In dbx.Queueings On a.QueueingID Equals b.id
                            Where b.GroupTo.Equals(groupid)

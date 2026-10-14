@@ -2,6 +2,239 @@
 
 All notable changes to the **Work Order Entry** application are documented in this file.
 
+## [Unreleased] - 2026-10-14
+
+### Recall tax lookup and processing-time measurement
+
+- Split the recall tax/totals phase into item-tax read/application and total
+  calculation timings. Added a separate credit-notice wait record. The existing
+  credit-limit warning, its condition, and its place in the workflow are preserved.
+- Overall recall, tax/totals, and total-calculation timings exclude the measured
+  credit-notice wait. Older logs included that wait, so a shorter new record alone
+  does not prove faster processing. Other helper error-dialog waits can still count.
+- Recalled taxable orders load item tax flags together, up to 200 codes per query,
+  using the original lookup text and database collation. Blank codes, missing items,
+  Boolean row flags, and exemption behavior are preserved. Data belongs to one
+  recall; customer selection and Set Tax outside recall keep their existing reads.
+- The total/VAT formulas, line prices and quantities, credit rules, edit guards,
+  save transactions, shortage handling, and inventory rules are unchanged.
+- Added two timing-log unit checks and ten isolated SQL/UI checks for tax flags,
+  fresh reads, parameter bounds, legacy row values/types, and unchanged totals.
+  A SELECT-only comparison for order 283845 returned matching flags and reduced
+  two tax requests to one; its mixed timings do not establish a speed gain.
+- Both applications build in x86 Debug and Release; all 103 unit tests and 94
+  isolated SQL/UI checks passed. Preserved the local Debug database/timing settings.
+
+### Clearer selected-item shortage warning
+
+- When Accept shortage is used on a line without a recalled shortage, the warning
+  now displays its item code and tells the user to click the shortage-highlighted
+  row in Selected Items. Reload guidance remains for shortages flagged after recall.
+- This is a message-only change. Selection, eligibility, customer consent, undo,
+  saving, stock reservations, and warehouse rules are unchanged.
+- Both applications build in x86 Debug and Release; all 101 unit tests passed.
+  Updated the shortage guide and preserved the local Debug configuration.
+
+## [Unreleased] - 2026-10-13
+
+### Fresh batch reads for multi-user recall
+
+- Recall loads last purchase prices together (up to 200 item codes per query),
+  retaining CH/CI invoice preference, zero-price fallback, positive quantities,
+  customer identity, and date/transaction-number ordering. Item codes are SQL
+  parameters. A batch failure falls back to the existing per-item price helper.
+  Relevant sales are ranked together, preserving selection across duplicate
+  catalogue codes without repeated per-item history scans.
+- Warehouse quantity, status, and picker are read once using a fresh context for
+  the recalled order. Results exist only within that recall; there is no shared
+  or persistent cache. The starting/final snapshots and locked save checks remain.
+- Added individual recall timings for snapshots, tax reason, header/entries,
+  customer setup/summary, last prices, warehouse details, row population/pricing,
+  final validation, and tax/totals. These are included in the overall recall time.
+- A SELECT-only comparison on local order 282844 returned matching prices and
+  warehouse details in three runs, reducing each component from four queries to
+  one. These component measurements do not establish new full recall speed or
+  production user capacity. See `TestResults/Recall-ReadOnly-Benchmark.csv`.
+- Extended the isolated SQL fixture with price-rule comparisons, fresh reads,
+  large-order parameter limits, and two-cashier/warehouse conflict checks.
+  Business rules, save transactions, physical stock, and queue stages are unchanged.
+- Both solutions build in x86 Debug and Release; all 101 unit tests and 84
+  isolated SQL/UI checks passed. Preserved the local Debug database and timing settings.
+
+## [Unreleased] - 2026-10-07
+
+### Remove redundant catalogue loading
+
+- Removed the full-catalogue `getItemtoGrid()` call from `loadData()`. The displayed
+  grid already uses the separate TOP-500 query; the extra table's only reader is
+  a legacy availability helper with no active callers. Retained the public legacy
+  helper and table to keep this change focused.
+- Refresh still reads current displayed items from SQL Server. Item search,
+  stock validation, save/recall rules, and database records are unchanged.
+- The previous sample loaded 69,338 unused rows. Actual refresh and save speed
+  after this change remains to be measured in the local application.
+- Both applications build in x86 Debug and Release; all 101 unit tests and 65
+  isolated SQL/UI checks passed. Preserved the local Debug database and timing settings.
+
+### Set Tax save conflict correction
+
+- Reproduced the "1 of 2 updates failed" error when a new Work Order's tax reason
+  was changed. The final direct `VoucherID = 0` update advanced the line's RMS
+  rowversion after tax processing had already loaded it, causing LINQ's own
+  pending tax update to fail its concurrency check.
+- Moved the existing Work Order-only voucher update before loading tracked tax
+  entities. Tax reasons, voucher values, transaction rollback, and concurrency
+  protection retain their rules; no database migration or tax-rate change is needed.
+- Extended the isolated fixture to run production tax preparation with complete
+  mapped order/line columns and RMS rowversions. Six checks reproduce the old
+  conflict and verify corrected tax saving, voucher behavior, rollback, reversal
+  to taxable, and quotation behavior. All 101 unit tests and 65 isolated checks
+  passed; both applications build in x86 Debug and Release.
+
+### Save and recall refactor
+
+- Shared the existing minimum-price approval rule between row highlighting and
+  final save validation. Recalled prices already approved below the minimum,
+  newly added lines, price levels, and password requirements retain their rules.
+- Existing-order saves load order entries and involved items once per transaction
+  instead of looking them up for each updated/deleted line. The reads remain after
+  the locked snapshot check; atomic reservation updates and queue writes are preserved.
+- Saves now return explicit Saved, Cancelled, ValidationFailed, Conflict, or Failed
+  outcomes. Final validation returns success only after a committed save. Follow-up
+  problems after commit show an "Order Saved" warning rather than implying the
+  database save failed. Shortage UI cleanup runs after the committed database work.
+- Added optional CSV timing for database insert/update, recall population, screen
+  refresh, and catalogue reload. Logging defaults off, excludes save/print/grouping
+  confirmation waits, contains no customer/credential data, and cannot fail a save.
+  This adds measurement capability; live store speed has not been measured.
+- Added nine unit tests for price-rule boundaries and safe timing logs. All 101
+  unit tests and 59 isolated SQL/UI checks passed; both solutions built in x86
+  Debug and Release. Updated testing and diagnostic instructions.
+- Existing tax calculations, stock validation, splitting, grouping, printing,
+  queue stages, and catalogue refresh policy are unchanged. The mixed-tax VAT
+  concern remains a separate business-rule review.
+
+## [Unreleased] - 2026-10-06
+
+### Shortage search and focused refactoring
+
+- Added local search by Work Order number, customer, item code, description,
+  and picker, plus picker selection, New / changed only, Zero found only,
+  result counts, and Clear filters. Filters combine and do not query SQL Server.
+  Missing counts are not treated as zero; quotes/wildcards in searches are literal.
+  Empty results disable opening, and clearing filters preserves a visible selection.
+- Moved shortage-list presentation/filtering into `ShortageAlertList`, keeping
+  the form focused on controls and selection. The notification poll, alert
+  acknowledgement, recall confirmation, and shortage acceptance rules are preserved.
+- Extracted the existing inventory reservation arithmetic into
+  `OrderCommitmentRules`, used by new-order saves, existing-order changes, and
+  deleted lines. Type-2-only reservations, non-inventory exemptions, fractional
+  quantities, transaction boundaries, tax/price calculation, and queue stages
+  retain their existing behavior. This is a focused refactor, not a full main-form rewrite.
+- Added 13 unit tests and 8 SQL/UI filter checks; all 92 unit tests and 59
+  isolated checks passed. Both solutions built in x86 Debug and Release.
+  The filter window was rendered and visually checked; live data was unchanged.
+- A database-free local benchmark of 50 searches over 5,000 loaded lines
+  measured median 1.50 ms and p95 2.38 ms. These are local list-filter timings,
+  not measurements of branch database load or full order-save performance.
+
+### Cashier warehouse shortage alerts
+
+- Added a 15-second background shortage check with a status-bar link and
+  **Order actions → Warehouse shortages...**. Lists current open Work Orders,
+  customer, item, ordered/found quantities, and picker; new or changed shortages
+  are highlighted without repeated alerts for unchanged counts.
+- Added direct recall from the list, prioritizing new alerts and confirming
+  before discarding current screen work. Closing the list leaves alerts pending;
+  successful recall acknowledges only the order/counts loaded, preserving later
+  warehouse changes and other orders' alerts.
+- Includes zero/missing found counts for follow-up; excludes closed, cancelled,
+  quotation, removed-line, and older-than-60-day orders. Poll failures preserve
+  the baseline and retry. Queue-disabled branches do not poll. The optional
+  `EnableShortageNotifications` setting defaults to true independently of ready
+  notifications. No new database migration or inventory change is made.
+- Added 9 unit tests and 9 isolated SQL/UI checks. All 79 unit tests and 51
+  isolated checks passed; the alert window was rendered and visually checked.
+  Both solutions built in x86 Debug and Release. Live databases were unchanged.
+
+### Shortage recall and queue refresh corrections
+
+- Fixed the shortage recall reader's numeric conversion: RMS `Item.ItemType`
+  is `smallint`, while the reader expects `Integer`. The SQL projection now
+  converts it explicitly, preventing "Specified cast is not valid" during recall.
+- Queue card reads and update polling use fresh database contexts. Shortage,
+  single-line quantity, and status writes also read fresh records and touch the
+  order's update time in the same transaction, avoiding stale tracked state.
+- Automatic refresh no longer skips the next detected change after a local
+  priority refresh, which could hide another terminal's concurrent update.
+- Refresh recomputes card color, badge, and editability from its current rows,
+  including Prepared-to-Shortage and Shortage-to-Pending transitions. For
+  Invoicing cards remain visible. Failed shortage saves now leave the quantity
+  dialog open and report the failure instead of appearing successful.
+- Updated the isolated fixture to use RMS's actual smallint item type and added
+  queue read/write, automatic-update detection, clear-shortage, and card-stage
+  regression checks. All 42 isolated checks and 70 unit tests passed; both
+  solutions built in x86 Debug and Release. No live branch data was changed.
+
+### Customer acceptance of warehouse shortages
+
+- Added **Order actions → Reduce selected shortage to found quantity...** for
+  recalled queued Work Orders. Uses the saved warehouse count, shows the revised
+  line amount and reservation release, and requires explicit customer consent
+  plus a note. Pending reductions are marked on screen and can be undone before Save.
+- Closing with pending reductions asks to return/save or discard them. Discard
+  restores original quantities before draft saving, since drafts do not store
+  the customer's agreement note.
+- Saving validates the recalled and current warehouse state, then reduces the
+  quantity/amounts/reservation, marks the item Prepared, preserves its picker,
+  and records a **Shortage accepted** event in the same transaction. RMS stock
+  on hand and other orders are unchanged. The existing history migration and
+  application permission to insert history events are required.
+- Rejects zero/missing counts, ambiguous duplicate item/queue lines, quotations,
+  non-inventory items, closed orders, and counts at or above the ordered amount.
+- Added 16 unit tests and expanded the isolated SQL/UI fixture to 31 checks,
+  including an injected failure after all writes, full rollback, changed physical
+  count rejection, unchanged stock on hand, picker preservation, and decision history.
+- Verified all 70 unit tests and both solutions in x86 Debug and Release. The
+  confirmation window was rendered and checked. No live database was modified.
+
+### Order tools
+
+- Added Order actions with an asynchronous history viewer and explicit reload
+  confirmation. History remains available by order number after closure.
+- Added the optional SQL Server 2016 history migration with transactional,
+  set-based triggers for headers, entries, ownership/grouping, picking,
+  price approvals, and RMS transaction posting. Logged approver names exclude passwords.
+- Added recalled-state checks for updates and cancellation, including header,
+  entries, groups, and warehouse state. Validation acquires database locks
+  before writes; changed, closed, missing, or unversioned recalled orders are blocked.
+- Added idempotent, non-unique lookup indexes for order/queue checks where
+  equivalent usable indexes are absent.
+- Added non-interrupting ready-for-invoicing counts with 15-second background
+  polling, transition deduplication, failure recovery, and direct opening of
+  the existing invoicing dialog. Printing/invoicing still requires explicit action.
+- Added 12 database-free tests and an isolated LocalDB migration/runtime smoke
+  test. Deployment and branch integration instructions are in `ORDER_TOOLS_GUIDE.md`.
+- Verified both solutions in x86 Debug and Release, all 54 unit tests, and 22
+  isolated SQL/UI smoke checks. The fixture used LocalDB 17 with compatibility
+  level 130; SQL Server 2016 branch-restore pilot testing remains required.
+
+### Documentation review
+
+- Initially updated README and unit-test guidance to describe the then-current 42 test methods,
+  queue order-age and logger coverage, repository-root invocation, and runner requirements.
+- Corrected the queueing guide's Store-Wide invoicing default, queue column
+  names, branch settings location, ownership headers, four card stages, and
+  60-day display filters. Separated implemented operational features from proposals.
+- Clarified current top-row price selection, quotation ownership headers,
+  recall dependencies, and enabled grouping in the implementation plan and
+  historical source review.
+- Added current implementation notes to the historical performance
+  recommendations and corrected the sample collection-membership expression.
+- Marked DVO/GSC audit results as historical snapshots. The initial review
+  changed documentation only. The subsequent order-tools builds and tests are
+  recorded above; performance measurements and live database audits were not rerun.
+
 ## [V8.1.4] - 2026-09-21
 
 ### 🛡️ Enterprise Global Graceful Error Handling & Crash Prevention

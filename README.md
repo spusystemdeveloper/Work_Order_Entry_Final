@@ -29,9 +29,21 @@ database restore before production deployment.
 
 ## Unit tests
 
-The solution includes 27 database-free unit tests for price levels,
+The test project contains 103 database-free unit tests for price levels,
 print-template selection, import-file routing, branch validation,
-senior-citizen tags, VAT, tax exemption, and non-taxable pricing.
+senior-citizen tags, VAT, tax exemption, non-taxable pricing, queue order-age
+rules, error logging, edit-conflict validation, ready notifications, and customer
+acceptance of warehouse shortages and safe processing-time measurement.
+All 103 passed on October 14, 2026.
+
+Run the unit tests from the repository root with:
+
+```powershell
+.\Run-UnitTests.ps1
+```
+
+See `UNIT_TEST_GUIDE.md` for a plain-language explanation of what each test
+does and what still requires integration testing.
 
 ## Branch database lock
 
@@ -49,15 +61,22 @@ connection and stops before login if its database does not match the assigned
 database. The controls save `BranchSelectionEnabled` and
 `ExpectedDatabaseName` in the deployed application configuration.
 
-Run them with:
-
-```powershell
-.\Run-UnitTests.ps1
-```
-
-See `UNIT_TEST_GUIDE.md` for a plain-language explanation of what each test
-does and what still requires integration testing.
-
 ## Order Processing Queueing
 
 See `ORDER_PROCESSING_QUEUEING_GUIDE.md` for a complete walkthrough of the warehouse picking screen, queue lifecycle, settings, and database triggers.
+
+## Order tools
+
+Work Order Entry now includes an order history window, a ready-for-invoicing
+notification, and protection against saving or cancelling a stale recalled order.
+Warehouse shortage alerts also appear automatically in the status bar; click
+the alert or **Order actions → Warehouse shortages...** to open an affected order.
+The list supports local search, picker selection, new/changed and zero-found
+filters, result counts, and Clear filters without extra database queries.
+Cashiers can accept a positive warehouse shortage after customer agreement;
+saving reduces the quantity, amounts, and reserved stock together, preserves the
+picker, and records the decision. RMS stock on hand is unchanged.
+Open history or reload an order from **Order actions** in the bottom status bar.
+History and shortage acceptance require the optional `Enable_WorkOrder_History.sql` migration;
+`Prepare_WorkOrder_Edit_Checks.sql` supplies lookup indexes recommended for
+large queues. See `ORDER_TOOLS_GUIDE.md` for use, deployment, and verification.

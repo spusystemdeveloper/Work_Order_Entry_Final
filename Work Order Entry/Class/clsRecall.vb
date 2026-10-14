@@ -521,17 +521,21 @@ Public Class clsRecall
 
     End Sub
 
-    Public Shared Sub CancelOrder(ByVal orderid As Integer)
+    Public Shared Sub CancelOrder(ByVal orderid As Integer, ByVal expected As OrderEditSnapshot)
 
         Try
             Using dbx = GetDB()
                 If dbx.Connection.State = ConnectionState.Closed Then dbx.Connection.Open()
+
+                OrderHistory.SetActor(dbx, frmItemLookUp.usrUsername, frmItemLookUp.usrRegister)
 
                 Using cancelTransaction = dbx.Connection.BeginTransaction()
                     dbx.Transaction = cancelTransaction
 
                     Try
                         clsItemLookUp.AcquireOrderTransactionLock(dbx, orderid)
+
+                        OrderEditGuard.EnsureUnchanged(expected, OrderEditGuard.Capture(dbx, orderid, True))
 
                         Dim order = (From candidate In dbx.Orders
                                      Where candidate.ID = orderid
@@ -569,6 +573,8 @@ Public Class clsRecall
                     End Try
                 End Using
             End Using
+        Catch ex As OrderEditConflictException
+            Throw
         Catch ex As Exception
             ErrorCount = ErrorCount + 1
             Throw New InvalidOperationException(

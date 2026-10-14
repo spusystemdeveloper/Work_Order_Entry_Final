@@ -5,6 +5,48 @@
 **Plan date:** 2026-07-23  
 **Status:** In progress. Unified branch processing settings and the Work Order Entry data-integrity milestone are implemented; branch integration testing remains pending.
 
+**Documentation status checked:** October 7, 2026. The progress section
+describes the current source; later phases describe proposed work. Historical
+build and database results have not been rerun for this documentation update.
+
+## Order tools implemented (October 6, 2026)
+
+- Added a history viewer and optional, transactional database migration to
+  record order/line changes, price approvals, grouping, warehouse preparation,
+  cancellation, and RMS transaction posting. History begins at deployment.
+- Added background, store-wide ready-for-invoicing counts and a link that opens
+  the existing invoicing dialog with a newly ready group selected.
+- Added background warehouse shortage alerts with quantity-change tracking,
+  a list prioritizing new shortages, and direct recall after confirming before
+  replacing current screen work. Alerts require queue processing, without a new migration.
+- Added local search and filters with a separate shortage-list model. Extracted
+  the existing reservation arithmetic into one tested helper for new, changed,
+  and deleted order lines; existing transaction and business rules are preserved.
+- Added recalled-state validation before saving or cancelling. It compares
+  order, line, and queue state while holding database locks through the write
+  transaction; conflicts preserve unsaved screen data and offer explicit reload.
+- Added an idempotent lookup-index migration to reduce scans on large queues.
+- Added customer acceptance of positive warehouse shortages with an explicit
+  consent/note dialog, pending undo, transactional quantity/amount/reservation
+  updates, preserved picker, and history. Stock on hand is unchanged.
+- The current database-free suite contains 101 tests. See `ORDER_TOOLS_GUIDE.md`
+  for isolated SQL verification and the branch-restoration pilot checklist.
+
+## Save/recall refactor implemented (October 7, 2026)
+
+- Shared the existing price approval rules between editing and saving.
+- Batched item and order-entry reads inside the locked existing-order transaction.
+- Added explicit save outcomes and warnings for follow-up failures after commit.
+- Added optional save, recall, and refresh timing logs, disabled by default.
+- The 101 unit tests and 65 isolated SQL/UI checks passed. Live store timings
+  and full main-form workflow checks remain separate verification steps; see
+  `UNIT_TEST_GUIDE.md` and `ORDER_TOOLS_GUIDE.md`.
+- Tax calculations and the Work Order business process remain unchanged.
+
+The existing reference implementation and later architectural proposals below
+remain separate from these additions. Branch database migrations have not been
+applied to live databases.
+
 **Read-only reference implementation:**  
 `C:\Users\ADMIN\Documents\SPU - JANREY FILES\RMS ADDINS\WORK ORDER\WORK ORDER V4\Work Order Entry\Work Order Entry_4`
 
@@ -21,7 +63,7 @@ The following source fixes are implemented and compile successfully:
 - Queue grouping runs only for queued Work Orders and only when enabled for that branch.
 - The queue invoicing action is hidden when branch queue processing is disabled.
 - The idempotent `Ensure_Queueing_Compatibility_Tables.sql` migration supplies the compatibility tables required by the deployed legacy insert procedures at every branch.
-- Customer Price A/B/C selection now defaults to the customer's configured level.
+- The Price Level form loads available prices through the customer's permitted level and initially highlights its top row. A unit test verifies this behavior; automatic customer-level selection remains an original recommendation.
 - A successful customer change marks every selected line with `"-"` and requires the operator to confirm a new price by double-clicking each highlighted row. F2 remains the item-search command. The prompt shows the number of unconfirmed items, selection advances to the next unconfirmed row, and saving remains blocked until every line is confirmed; cancel leaves the order unchanged.
 - Accounts-receivable credit is calculated from the selected customer ID rather than treating the ID as a currency value.
 - Manual tax exemption resolves RMS reason code `701`, type `6`, in the selected store database instead of assuming a shared numeric ID. Davao resolves it to ID `39`; Gensan resolves it to ID `33`. The resolved reason is cleared when the order returns to taxable status.
@@ -38,7 +80,7 @@ The following source fixes are implemented and compile successfully:
 - Draft recovery is optional. If `SOD_WO_DraftHeader` or `SOD_WO_DraftDetail` is missing, draft save/recovery is skipped without blocking Work Order processing. The idempotent manual migration enables the feature when deployed by an authorized database administrator.
 - A read-only DVO/GSC database audit now produces an application-scoped deployment package under `Database Components\Deployment`. Its 49-object manifest separates 26 identical definitions, 9 branch-specific definition pairs, 9 DVO-only definitions, and 5 objects missing from both audited databases. Tables, views, functions, procedures, and triggers are individual guarded SQL files. The inventory includes the transitive `SOD_Reg`, `SOD_fn_GetStockInQty`, and `SOD_fntbl_sumStockin` dependencies required by other exported functions.
 - The current DVO database passes the package's required-object validation. Seven reviewed portable, local-database definitions now cover the corresponding GSC gaps: `SOD_WO_LOGS`, `SOD_ViewItemsWO`, `SOD_fn_GetAvailableQty`, `SOD_fn_GetConvertQty`, `SOD_fn_GetCreditLimit`, `SOD_fn_GetTotalOpenWorkOrder`, and `SOD_fntbl_CheckOpenWO`. The GSC driver includes them; the live GSC database remains unchanged until DBA testing and deployment.
-- A database-free MSTest project now provides 18 readable Given/When/Then unit tests for price-level mapping, initial top-row selection, multiple-item price confirmation, branch-database matching, senior-citizen tagging, taxable VAT separation, tax exemption, and non-taxable pricing. `Run-UnitTests.ps1` builds and runs the suite without connecting to an RMS database.
+- A database-free MSTest project now contains 101 test methods for price-level mapping, initial top-row selection, multiple-item price confirmation, branch-database matching, print-template selection, import-file routing, senior-citizen tagging, VAT, tax exemption, non-taxable pricing, queue order-age rules, error logging, edit-conflict validation, and ready notifications. `Run-UnitTests.ps1` builds and runs the suite without connecting to an RMS database.
 - Branch selection is now deployment-controlled. With `BranchSelectionEnabled=false`, startup skips `frmStoreSetup`, uses the local RMS registry connection, and rejects a database that does not match `ExpectedDatabaseName`. The default project configuration is locked to `DVO_STORE_DB`; each other branch must deploy its matching expected database name.
 
 Verification command:
@@ -142,7 +184,7 @@ Login and select store
 Create quotation
   -> Save and print quotation
   -> Do not commit inventory
-  -> Do not create queue records
+  -> Retain the Queueing ownership header for recall; do not retain processing queue items
   -> Convert to work order only after customer acceptance
 ```
 
@@ -196,7 +238,7 @@ Deployment examples:
 | Gensan processing queue | `true` | `true` | `true` |
 | Davao recall ownership only | `false` | `false` | `false` |
 
-All three modes preserve the current inventory rule: type-2 Work Orders commit
+Both branch profiles preserve the current inventory rule: type-2 Work Orders commit
 inventory and type-3 Sales Quotations do not. Queue choice does not change that
 rule.
 
@@ -309,7 +351,10 @@ The application must not determine queue behavior merely by checking whether a `
 
 ### 5.3 Make recall independent of queueing
 
-Work-order ownership and recall must not depend on `Queueing.OPIS`, because direct-processing stores may not have queue rows.
+**Proposed future separation:** The current build retains a `Queueing.OPIS`
+ownership header for direct-mode Work Orders and Sales Quotations. Replacing
+this dependency requires a metadata migration and updated recall paths before
+ownership headers can be removed.
 
 Add custom order metadata containing at least:
 
@@ -368,7 +413,7 @@ Queue creation must first locate an existing record and must tolerate a safe ret
 ### 7.1 Quotation isolation
 
 - Restore the type check currently commented out in the quotation insert procedures, or remove queue writes from those procedures entirely.
-- Type-3 quotations must never create queue records or commit inventory.
+- In the current build, type-3 quotations retain a recall-ownership `Queueing` header but have no processing `QueueingItems` and do not commit inventory. Removing ownership headers belongs to the future metadata migration in section 5.3.
 - Conversion to type-2 work order creates the queue only when `UseQueueing = True` and commits inventory only when `CommitInventory = True`.
 
 ### 7.2 Customer and pricing changes
@@ -380,7 +425,9 @@ When a customer changes:
 3. Recalculate subtotal, VAT, total, and credit warning as prices are confirmed; do not allow saving while any price is unconfirmed.
 4. Clear approvals that are no longer valid and require new approval where necessary.
 
-Correct `frmPriceLevel` so it selects the customer's configured price rather than defaulting to Retail.
+The original recommendation was to select the customer's configured price
+automatically. The current form instead highlights the top row and has a unit
+test for that behavior. Changing this policy requires updating the form and its test.
 
 ### 7.3 Tax transitions
 
@@ -427,7 +474,9 @@ Preserve original cancelled order quantities for audit instead of zeroing the or
 
 ## 8. Phase 5: Restore order grouping safely
 
-The grouping implementation exists, but its normal calls are commented out. Do not merely uncomment them.
+Grouping is currently invoked for queued Work Orders when
+`StoreProcessingSettings.AllowOrderGrouping` is enabled. Remaining work in
+this phase concerns compatibility checks, atomic group updates, and audit history.
 
 ### 8.1 Enable by configuration
 
@@ -526,7 +575,7 @@ Do not automatically correct live tax or order records without business validati
 - Build both solutions in a clean environment.
 - Unit-test price, tax, quantity, commitment, and status-transition rules.
 - Integration-test transaction rollback and both queue storage modes.
-- Verify that quotation saves never touch queue or commitment data.
+- Verify that quotation saves retain only their recall-ownership queue header, remove processing queue items, and do not change inventory commitments.
 
 ### 11.2 Workflow test matrix
 
@@ -597,11 +646,11 @@ The work is complete when:
 - The same build supports direct and queue-enabled stores through configuration.
 - Each installation connects only to its own approved store server.
 - Saving is atomic and does not report success after a partial failure.
-- Quotations never reserve stock or enter queueing.
+- Quotations never reserve stock or enter warehouse processing; their current recall-ownership headers remain until the metadata migration is implemented.
 - Work-order inventory commitments remain accurate after create, edit, conversion, removal, and cancellation.
 - Fractional quantities survive all workflows without rounding.
 - Customer pricing and tax changes recalculate consistently.
-- Direct-mode orders can be recalled without queue rows.
+- Direct-mode orders can be recalled using their ownership headers. Recall without queue rows is a future exit criterion after the section 5.3 metadata migration.
 - Queue-enabled orders move through controlled, auditable statuses.
 - Grouping is enabled only for compatible stores and orders.
 - Database constraints prevent duplicate queue headers.

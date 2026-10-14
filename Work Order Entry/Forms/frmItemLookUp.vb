@@ -27,6 +27,7 @@ Public Class frmItemLookUp
     Dim itemImage As Image
     Private imageLoadTimer As Windows.Forms.Timer
     Private isLoadingRecalledOrder As Boolean = False
+    Private recallCreditNoticeWaitMilliseconds As Double
     Public isBulkLoading As Boolean = False
     Private isRecalledOrderLocked As Boolean = False
     Private isSalesRepLockedToCustomer As Boolean = False
@@ -1007,6 +1008,9 @@ Public Class frmItemLookUp
 
     Public Sub SaveOrderHandler()
         Try
+            If activeRecallOrderID > 0 AndAlso recalledSnapshot Is Nothing Then
+                Throw New OrderEditConflictException()
+            End If
             If chkBoxQtoWo.Checked = True And chkQuote.Checked = True Then
 
                 Dim selectionForm As New frmRecallSelection("SaveToQuote")
@@ -1030,6 +1034,8 @@ Public Class frmItemLookUp
                     Exit Sub
                 End If
             End If
+        Catch ex As OrderEditConflictException
+            ShowOrderConflict(ex)
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0013", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -1048,9 +1054,9 @@ Public Class frmItemLookUp
 
     End Sub
 
-    Private Sub SaveOrder()
+    Private Function SaveOrder() As OrderSaveOutcome
         Try
-            If gridSelectItem.RowCount <= 0 Then Exit Sub
+            If gridSelectItem.RowCount <= 0 Then Return OrderSaveOutcome.ValidationFailed
 
             iErrCnt = 0
             Dim isWorkOrder As Boolean = chkWorkOrder.Checked
@@ -1074,7 +1080,7 @@ Public Class frmItemLookUp
                                 MessageBox.Show("Quantity must be greater than zero. Please correct the item before proceeding.", "Validation Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                                 gridSelectItem.CurrentCell = row.Cells(2)
                                 gridSelectItem.BeginEdit(True)
-                                Exit Sub
+                                Return OrderSaveOutcome.ValidationFailed
                             End If
                         End If
                     End If
@@ -1084,7 +1090,7 @@ Public Class frmItemLookUp
             ' === HANDLE VALIDATION ERRORS ===
             If iErrCnt > 0 Then
                 RefreshItemList()
-                Exit Sub
+                Return OrderSaveOutcome.ValidationFailed
             End If
 
             ' === PROCEED WITH ORDER SAVE ===
@@ -1092,16 +1098,17 @@ Public Class frmItemLookUp
 
             Dim orderNoParts() As String = Split(lblOrderNo.Text, ": ")
             If orderNoParts.Length > 1 AndAlso IsNumeric(orderNoParts(1)) Then
-                UpdateOrder(orderNoParts(1))
+                Return UpdateOrder(orderNoParts(1))
             Else
-                InsertEntry()
+                Return InsertEntry()
             End If
 
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0014", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount += 1
+            Return OrderSaveOutcome.Failed
         End Try
-    End Sub
+    End Function
     Private Sub RefreshItemList()
         Cursor.Current = Cursors.WaitCursor
 
@@ -1142,6 +1149,10 @@ Public Class frmItemLookUp
 
     Private Sub ConfigureProcessingModeUi()
         cmdForInvoice.Visible = StoreProcessingSettings.ShowForInvoiceButton
+        If readyStatus IsNot Nothing Then
+            readyStatus.Visible = StoreProcessingSettings.ShowForInvoiceButton AndAlso
+                                  StoreProcessingSettings.EnableReadyOrderNotifications
+        End If
         cmdImport.Visible = StoreProcessingSettings.ShowImportButton
         ResetProcessingModeForNewOrder()
     End Sub
@@ -1484,24 +1495,25 @@ Public Class frmItemLookUp
     '    End Sub
 
     'refactored version by google gemini flash
-    Private Sub InsertEntry()
+    Private Function InsertEntry() As OrderSaveOutcome
+        Dim committed As Boolean = False
         Try
             ' 1. Input Validation
             If String.IsNullOrWhiteSpace(Me.txtSales.Text) Then
                 MessageBox.Show("Please select a Sales Representative", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 frmSalesRep.Show()
-                Exit Sub
+                Return OrderSaveOutcome.ValidationFailed
             ElseIf String.IsNullOrWhiteSpace(Me.cboPayment.Text) AndAlso getEntryType() = 2 Then
                 MessageBox.Show("Please select a Payment Method", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 cboPayment.Focus()
-                Exit Sub
+                Return OrderSaveOutcome.ValidationFailed
             ElseIf String.IsNullOrWhiteSpace(Me.txtCustomer.Text) Then
                 MessageBox.Show("Please select a Customer", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 frmCustomer.Show()
-                Exit Sub
+                Return OrderSaveOutcome.ValidationFailed
             ElseIf gridSelectItem.Rows.Count = 0 Then
                 MessageBox.Show("Please select Item to order", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                Exit Sub
+                Return OrderSaveOutcome.ValidationFailed
             End If
 
             ' 2. O(N) Duplicate Item Validation (Fixes O(N^2) double-popup loop)
@@ -1522,7 +1534,7 @@ Public Class frmItemLookUp
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Exclamation)
 
-                If res = DialogResult.No Then Exit Sub
+                If res = DialogResult.No Then Return OrderSaveOutcome.Cancelled
             End If
 
             ' 3. Row Chunking Logic for Work Orders
@@ -1576,7 +1588,7 @@ Public Class frmItemLookUp
                 iReturnValue = MessageBox.Show("Do you want to save this entry as Sales Quotation ?", "Message!", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
             End If
 
-            If iReturnValue <> DialogResult.Yes Then Exit Sub
+            If iReturnValue <> DialogResult.Yes Then Return OrderSaveOutcome.Cancelled
 
             ' 5. Execution & Transaction Processing
             Cursor.Current = Cursors.WaitCursor
@@ -1588,120 +1600,123 @@ Public Class frmItemLookUp
             Dim useQueueing As Boolean = UseQueueingForCurrentOrder()
             Dim createdOrderIDs As New List(Of Integer)
 
-            Using dbSave = GetDB()
-                If dbSave.Connection.State = ConnectionState.Closed Then dbSave.Connection.Open()
+            Using timing = OrderPerformanceTiming.Start("InsertDatabase", 0, gridSelectItem.Rows.Count)
+                timing.Outcome = "Failed"
+                Using dbSave = GetDB()
+                    If dbSave.Connection.State = ConnectionState.Closed Then dbSave.Connection.Open()
 
-                Using saveTransaction = dbSave.Connection.BeginTransaction()
-                    dbSave.Transaction = saveTransaction
+                    OrderHistory.SetActor(dbSave, usrUsername, usrRegister)
 
-                    Try
-                        If Not QueueingTablesAvailable(dbSave) Then
-                            Throw New InvalidOperationException(
-                            "The Queueing compatibility tables are missing. " &
-                            "Install the Work Order database migration before using this application.")
-                        End If
+                    Using saveTransaction = dbSave.Connection.BeginTransaction()
+                        dbSave.Transaction = saveTransaction
 
-                        ' Pre-fetch all involved items in 1 query (Fixes N+1 database bottleneck)
-                        Dim itemIDs As List(Of Integer) = gridSelectItem.Rows.Cast(Of DataGridViewRow)() _
-                        .Select(Function(r) Convert.ToInt32(r.Cells(11).Value)) _
-                        .Distinct() _
-                        .ToList()
-
-                        Dim itemMap As Dictionary(Of Integer, Item) = dbSave.Items _
-                        .Where(Function(i) itemIDs.Contains(i.ID)) _
-                        .ToDictionary(Function(i) i.ID)
-
-                        For chunkIndex As Integer = 0 To rowChunks.Count - 1
-                            Dim chunk = rowChunks(chunkIndex)
-
-                            Dim dChunkTotal As Double = 0
-                            For Each r In chunk
-                                dChunkTotal += Convert.ToDouble(gridSelectItem.Item(5, r).Value)
-                            Next
-
-                            Dim dChunkVat As Double = If(bTaxExcempt, 0.0, dChunkTotal - (dChunkTotal / 1.12))
-
-                            Dim chunkComment As String = orderComment
-                            If rowChunks.Count > 1 Then
-                                chunkComment = orderComment & " (Split " & (chunkIndex + 1) & " of " & rowChunks.Count & ")"
+                        Try
+                            If Not QueueingTablesAvailable(dbSave) Then
+                                Throw New InvalidOperationException(
+                                "The Queueing compatibility tables are missing. " &
+                                "Install the Work Order database migration before using this application.")
                             End If
 
-                            ' Insert Quote Header
-                            Dim iOrderID As Integer = dbSave.SOD_sp_InsertQoute(
-                            sReg, iCusID, iSalesID,
-                            dChunkVat, dChunkTotal,
-                            chunkComment,
-                            usrUsername.ToUpper(),
-                            getEntryType())
+                            ' Pre-fetch all involved items in 1 query (Fixes N+1 database bottleneck)
+                            Dim itemIDs As List(Of Integer) = gridSelectItem.Rows.Cast(Of DataGridViewRow)() _
+                            .Select(Function(r) Convert.ToInt32(r.Cells(11).Value)) _
+                            .Distinct() _
+                            .ToList()
 
-                            EnsureRecallQueueHeader(dbSave, iOrderID)
-                            createdOrderIDs.Add(iOrderID)
+                            Dim itemMap As Dictionary(Of Integer, Item) = dbSave.Items _
+                            .Where(Function(i) itemIDs.Contains(i.ID)) _
+                            .ToDictionary(Function(i) i.ID)
 
-                            ' Insert Detail Entries
-                            For Each iRow In chunk
-                                Dim dCost As Double = Convert.ToDouble(gridSelectItem.Item(9, iRow).Value)
-                                Dim iItemID As Integer = Convert.ToInt32(gridSelectItem.Item(11, iRow).Value)
-                                Dim dFullPrice As Double = Convert.ToDouble(gridSelectItem.Item(12, iRow).Value)
-                                Dim dPrice As Double = Convert.ToDouble(gridSelectItem.Item(3, iRow).Value)
-                                Dim dQuantityOnOrder As Double = Convert.ToDouble(gridSelectItem.Item(2, iRow).Value)
-                                Dim iSalesRepID As Integer = iSalesID
-                                Dim iTaxable As Integer = If(bTaxExcempt, 0, Convert.ToInt32(gridSelectItem.Item(Taxable.Index, iRow).Value))
+                            For chunkIndex As Integer = 0 To rowChunks.Count - 1
+                                Dim chunk = rowChunks(chunkIndex)
 
-                                Dim sDescription As String = Convert.ToString(gridSelectItem.Item(13, iRow).Value)
-                                Dim sComment As String = Convert.ToString(gridSelectItem.Item(14, iRow).Value)
-                                Dim qtyPrep As Integer = Convert.ToInt32(gridSelectItem.Item(18, iRow).Value)
+                                Dim dChunkTotal As Double = 0
+                                For Each r In chunk
+                                    dChunkTotal += Convert.ToDouble(gridSelectItem.Item(5, r).Value)
+                                Next
 
-                                Dim ipickLoc As String = If(Convert.ToBoolean(gridSelectItem.Item(17, iRow).Value), "UP-STORE", "STORE")
+                                Dim dChunkVat As Double = If(bTaxExcempt, 0.0, dChunkTotal - (dChunkTotal / 1.12))
 
-                                dbSave.SOD_sp_InsertQouteEntry(
-                                dCost, iOrderID, iItemID, dFullPrice, dPrice,
-                                dQuantityOnOrder, iSalesRepID, iTaxable,
-                                sDescription, ipickLoc, qtyPrep, getEntryType())
-
-                                ' Retrieve item directly from pre-fetched dictionary
-                                Dim itemObj As Item = Nothing
-                                If Not itemMap.TryGetValue(iItemID, itemObj) Then
-                                    Throw New InvalidOperationException("Item " & iItemID & " was not found while saving the order.")
+                                Dim chunkComment As String = orderComment
+                                If rowChunks.Count > 1 Then
+                                    chunkComment = orderComment & " (Split " & (chunkIndex + 1) & " of " & rowChunks.Count & ")"
                                 End If
 
-                                If ispriceApproved = 1 AndAlso dPrice < GetApprovedMinPrice(itemObj) Then
-                                    AddPriceLog(dbSave, iOrderID, iItemID, dFullPrice, dPrice, frmPassword.txtPass.Text, "Inserted")
+                                ' Insert Quote Header
+                                Dim iOrderID As Integer = dbSave.SOD_sp_InsertQoute(
+                                sReg, iCusID, iSalesID,
+                                dChunkVat, dChunkTotal,
+                                chunkComment,
+                                usrUsername.ToUpper(),
+                                getEntryType())
+
+                                EnsureRecallQueueHeader(dbSave, iOrderID)
+                                createdOrderIDs.Add(iOrderID)
+
+                                ' Insert Detail Entries
+                                For Each iRow In chunk
+                                    Dim dCost As Double = Convert.ToDouble(gridSelectItem.Item(9, iRow).Value)
+                                    Dim iItemID As Integer = Convert.ToInt32(gridSelectItem.Item(11, iRow).Value)
+                                    Dim dFullPrice As Double = Convert.ToDouble(gridSelectItem.Item(12, iRow).Value)
+                                    Dim dPrice As Double = Convert.ToDouble(gridSelectItem.Item(3, iRow).Value)
+                                    Dim dQuantityOnOrder As Double = Convert.ToDouble(gridSelectItem.Item(2, iRow).Value)
+                                    Dim iSalesRepID As Integer = iSalesID
+                                    Dim iTaxable As Integer = If(bTaxExcempt, 0, Convert.ToInt32(gridSelectItem.Item(Taxable.Index, iRow).Value))
+
+                                    Dim sDescription As String = Convert.ToString(gridSelectItem.Item(13, iRow).Value)
+                                    Dim sComment As String = Convert.ToString(gridSelectItem.Item(14, iRow).Value)
+                                    Dim qtyPrep As Integer = Convert.ToInt32(gridSelectItem.Item(18, iRow).Value)
+
+                                    Dim ipickLoc As String = If(Convert.ToBoolean(gridSelectItem.Item(17, iRow).Value), "UP-STORE", "STORE")
+
+                                    dbSave.SOD_sp_InsertQouteEntry(
+                                    dCost, iOrderID, iItemID, dFullPrice, dPrice,
+                                    dQuantityOnOrder, iSalesRepID, iTaxable,
+                                    sDescription, ipickLoc, qtyPrep, getEntryType())
+
+                                    ' Retrieve item directly from pre-fetched dictionary
+                                    Dim itemObj As Item = Nothing
+                                    If Not itemMap.TryGetValue(iItemID, itemObj) Then
+                                        Throw New InvalidOperationException("Item " & iItemID & " was not found while saving the order.")
+                                    End If
+
+                                    If ispriceApproved = 1 AndAlso dPrice < GetApprovedMinPrice(itemObj) Then
+                                        AddPriceLog(dbSave, iOrderID, iItemID, dFullPrice, dPrice, frmPassword.txtPass.Text, "Inserted")
+                                    End If
+
+                                    If getEntryType() = 2 AndAlso itemObj.ItemType <> 7 Then
+                                        clsItemLookUp.ApplyQuantityCommittedDifference(dbSave, iItemID,
+                                            OrderCommitmentRules.CalculateChange(0, 2, 0R, dQuantityOnOrder, itemObj.ItemType))
+                                    End If
+
+                                    If useQueueing AndAlso dQuantityOnOrder = qtyPrep Then
+                                        MarkQueueItemPrepared(dbSave, iOrderID, iItemID)
+                                    End If
+                                Next
+
+                                PrepareNewOrderTaxReasons(dbSave, iOrderID, getEntryType())
+
+                                If getEntryType() = 3 OrElse Not useQueueing Then
+                                    If QueueingTablesAvailable(dbSave) Then
+                                        RemoveQueueProcessingItems(dbSave, iOrderID)
+                                    End If
                                 End If
 
-                                If getEntryType() = 2 AndAlso itemObj.ItemType <> 7 Then
-                                    clsItemLookUp.ApplyQuantityCommittedDifference(dbSave, iItemID, dQuantityOnOrder)
-                                End If
+                            Next chunkIndex
 
-                                If useQueueing AndAlso dQuantityOnOrder = qtyPrep Then
-                                    MarkQueueItemPrepared(dbSave, iOrderID, iItemID)
-                                End If
-                            Next
+                            ' Commit all headers, lines, logs, and queue items as a single unit
+                            dbSave.SubmitChanges()
+                            saveTransaction.Commit()
+                            committed = True
+                            timing.Outcome = "Saved"
 
-                            ApplyTaxChangeReasonCode(dbSave, iOrderID)
-
-                            If getEntryType() = 3 OrElse Not useQueueing Then
-                                If QueueingTablesAvailable(dbSave) Then
-                                    RemoveQueueProcessingItems(dbSave, iOrderID)
-                                End If
-                            End If
-
-                            If getEntryType() = 2 Then
-                                dbSave.ExecuteCommand(
-                                "UPDATE dbo.OrderEntry SET VoucherID = 0 " &
-                                "WHERE ID = (SELECT TOP 1 ID FROM dbo.OrderEntry WHERE OrderID = {0} ORDER BY ID DESC)",
-                                iOrderID)
-                            End If
-                        Next chunkIndex
-
-                        ' Commit all headers, lines, logs, and queue items as a single unit
-                        dbSave.SubmitChanges()
-                        saveTransaction.Commit()
-
-                    Catch
-                        saveTransaction.Rollback()
-                        Throw
-                    End Try
+                        Catch
+                            saveTransaction.Rollback()
+                            Throw
+                        End Try
+                    End Using
                 End Using
+
             End Using
 
             ' 6. Post-Save UI Notification & Forms
@@ -1743,14 +1758,16 @@ Public Class frmItemLookUp
 
             RefreshDetails(True)
             clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
+            Return OrderSaveOutcome.Saved
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0015", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowSaveFailure(ex, committed, "MESSAGE : ERROR 0015")
             ErrorCount += 1
+            Return If(committed, OrderSaveOutcome.Saved, OrderSaveOutcome.Failed)
         Finally
             Cursor.Current = Cursors.Default
         End Try
-    End Sub
+    End Function
 
 
     'comment
@@ -1799,23 +1816,24 @@ Public Class frmItemLookUp
 
     End Sub
 
-    Private Sub UpdateOrder(ByVal orderid As Integer)
+    Private Function UpdateOrder(ByVal orderid As Integer) As OrderSaveOutcome
 
+        Dim committed As Boolean = False
         Try
             Dim iReturnValue As Integer
 
             If Me.txtSales.Text = "" And getEntryType() = 2 Then
                 MsgBox("Please select sales representative", vbExclamation, "Message!")
-                Exit Sub
+                Return OrderSaveOutcome.ValidationFailed
             ElseIf Me.txtCustomer.Text = "" And getEntryType() = 2 Then
                 MsgBox("Please select customer", vbExclamation, "Message!")
-                Exit Sub
+                Return OrderSaveOutcome.ValidationFailed
             ElseIf Me.cboPayment.Text = "" And getEntryType() = 2 Then
                 MsgBox("Please select Payment Type", vbExclamation, "Message!")
-                Exit Sub
+                Return OrderSaveOutcome.ValidationFailed
             ElseIf gridSelectItem.Rows.Count = 0 Then
                 MsgBox("Please select item to order", vbExclamation, "Message!")
-                Exit Sub
+                Return OrderSaveOutcome.ValidationFailed
             End If
 
             If Not StoreProcessingSettings.AllowDuplicateItemEntry Then
@@ -1828,7 +1846,7 @@ Public Class frmItemLookUp
                             If res = MsgBoxResult.Yes Then
                                 GoTo Proceed
                             ElseIf res = MsgBoxResult.No Then
-                                Exit Sub
+                                Return OrderSaveOutcome.Cancelled
                             End If
                         End If
                     Next
@@ -1849,6 +1867,9 @@ Proceed:
                 End If
 
                 SaveExistingOrderChanges(orderid, orderComment)
+                committed = True
+                delitems.Clear()
+                CompleteShortageReductions()
 
                 If getEntryType() = 2 Then
                     MessageBox.Show("Work Order Successfully Updated !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -1866,218 +1887,256 @@ Proceed:
 
                 RefreshDetails(True)
                 clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
+                Return OrderSaveOutcome.Saved
 
             End If
 
+            Return OrderSaveOutcome.Cancelled
+        Catch ex As OrderEditConflictException
+            ShowOrderConflict(ex)
+            Return If(committed, OrderSaveOutcome.Saved, OrderSaveOutcome.Conflict)
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0017", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            ShowSaveFailure(ex, committed, "MESSAGE : ERROR 0017")
             ErrorCount = ErrorCount + 1
+            Return If(committed, OrderSaveOutcome.Saved, OrderSaveOutcome.Failed)
         End Try
 
+    End Function
+
+    Private Sub ShowSaveFailure(ex As Exception, committed As Boolean, errorTitle As String)
+        If committed Then
+            MessageBox.Show("Order data was saved. A follow-up step could not finish." & vbCrLf &
+                            "Check the saved order before trying again." & vbCrLf & vbCrLf & ex.Message,
+                            "Order Saved - Follow-up Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Else
+            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message,
+                            errorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End If
     End Sub
 
     Private Sub SaveExistingOrderChanges(ByVal orderID As Integer, ByVal orderComment As String)
-        Using dbSave = GetDB()
-            If dbSave.Connection.State = ConnectionState.Closed Then dbSave.Connection.Open()
+        Using timing = OrderPerformanceTiming.Start("UpdateDatabase", orderID, gridSelectItem.Rows.Count)
+            timing.Outcome = "Failed"
+            Using dbSave = GetDB()
+                If dbSave.Connection.State = ConnectionState.Closed Then dbSave.Connection.Open()
 
-            Using saveTransaction = dbSave.Connection.BeginTransaction()
-                dbSave.Transaction = saveTransaction
+                OrderHistory.SetActor(dbSave, usrUsername, usrRegister)
 
-                Try
-                    clsItemLookUp.AcquireOrderTransactionLock(dbSave, orderID)
+                Using saveTransaction = dbSave.Connection.BeginTransaction()
+                    dbSave.Transaction = saveTransaction
 
-                    Dim orderRecord = (From candidate In dbSave.Orders
-                                       Where candidate.ID = orderID
-                                       Select candidate).SingleOrDefault()
+                    Try
+                        clsItemLookUp.AcquireOrderTransactionLock(dbSave, orderID)
 
-                    If orderRecord Is Nothing Then
-                        Throw New InvalidOperationException("Order " & orderID & " was not found.")
-                    End If
+                        OrderEditGuard.EnsureUnchanged(recalledSnapshot,
+                            OrderEditGuard.Capture(dbSave, orderID, True))
 
-                    Dim originalOrderType As Integer = orderRecord.Type
-                    Dim targetOrderType As Integer = getEntryType()
-                    Dim useQueueing As Boolean = UseQueueingForCurrentOrder()
-                    Dim queueTablesAvailable As Boolean = QueueingTablesAvailable(dbSave)
+                        Dim shortageRequests = GetShortageRequestsForSave()
+                        ShortageReductionService.ValidateBeforeSave(dbSave, orderID, shortageRequests)
+                        Dim shortageByEntry = shortageRequests.ToDictionary(Function(request) request.EntryID)
 
-                    If Not queueTablesAvailable Then
-                        Throw New InvalidOperationException(
-                            "The Queueing compatibility tables are missing. " &
-                            "Install the Work Order database migration before updating this order.")
-                    End If
+                        Dim orderRecord = (From candidate In dbSave.Orders
+                                           Where candidate.ID = orderID
+                                           Select candidate).SingleOrDefault()
 
-                    orderRecord.Type = targetOrderType
-                    orderRecord.CustomerID = iCusID
-                    orderRecord.SalesRepID = iSalesID
-                    orderRecord.Tax = Decimal.Parse(txtVat.Text)
-                    orderRecord.Total = Decimal.Parse(txtTotal.Text)
-                    orderRecord.Comment = orderComment
-                    orderRecord.LastUpdated = DateTime.Now
-
-                    Dim queueHeader As Queueing = Nothing
-                    queueHeader = (From candidate In dbSave.Queueings
-                                   Where candidate.OrderID = orderID
-                                   Select candidate).FirstOrDefault()
-
-                    ' The deployed legacy line-insert procedure always writes a
-                    ' QueueingItems row. Direct orders therefore use a temporary
-                    ' compatibility header that is removed before commit.
-                    If queueHeader Is Nothing Then
-                        queueHeader = New Queueing With {
-                            .OrderID = orderID,
-                            .Status = 0,
-                            .GroupTo = orderID,
-                            .OPIS = usrUsername.ToUpperInvariant()
-                        }
-                        dbSave.Queueings.InsertOnSubmit(queueHeader)
-                    End If
-
-                    ' Persist the target type and any new queue header before invoking
-                    ' the legacy line-insert procedure. Both writes remain inside the
-                    ' same transaction and are rolled back together on failure.
-                    dbSave.SubmitChanges()
-
-                    For rowIndex As Integer = 0 To gridSelectItem.Rows.Count - 1
-                        Dim itemID As Integer = Convert.ToInt32(gridSelectItem.Item(11, rowIndex).Value)
-                        Dim orderEntryID As Integer = Convert.ToInt32(gridSelectItem.Item(16, rowIndex).Value)
-                        Dim cost As Decimal = Convert.ToDecimal(gridSelectItem.Item(9, rowIndex).Value)
-                        Dim fullPrice As Decimal = Convert.ToDecimal(gridSelectItem.Item(12, rowIndex).Value)
-                        Dim price As Decimal = Convert.ToDecimal(gridSelectItem.Item(3, rowIndex).Value)
-                        Dim quantityOnOrder As Double = Convert.ToDouble(gridSelectItem.Item(2, rowIndex).Value)
-                        Dim description As String = Convert.ToString(gridSelectItem.Item(13, rowIndex).Value)
-                        Dim preparedQuantity As Integer = Convert.ToInt32(gridSelectItem.Item(18, rowIndex).Value)
-                        Dim pickLocation As String = If(Convert.ToBoolean(gridSelectItem.Item(17, rowIndex).Value),
-                                                        "UP-STORE", "STORE")
-                        Dim taxable As Integer = If(bTaxExcempt,
-                                                    0,
-                                                    Convert.ToInt32(gridSelectItem.Item(Me.Taxable.Index, rowIndex).Value))
-
-                        Dim existingEntry = (From candidate In dbSave.OrderEntries
-                                             Where candidate.OrderID = orderID AndAlso
-                                                   candidate.ID = orderEntryID
-                                             Select candidate).SingleOrDefault()
-                        Dim entryAlreadyExisted As Boolean = existingEntry IsNot Nothing
-                        Dim previousQuantity As Double = If(entryAlreadyExisted,
-                                                            existingEntry.QuantityOnOrder,
-                                                            0R)
-
-                        If entryAlreadyExisted Then
-                            existingEntry.Cost = cost
-                            existingEntry.FullPrice = fullPrice
-                            existingEntry.Price = price
-                            existingEntry.QuantityOnOrder = quantityOnOrder
-                            existingEntry.Description = description
-                            existingEntry.Taxable = taxable
-                            existingEntry.SalesRepID = iSalesID
-                            existingEntry.LastUpdated = DateTime.Now
-                        Else
-                            dbSave.SOD_sp_InsertQouteEntry(cost, orderID, itemID, fullPrice, price,
-                                                         quantityOnOrder, iSalesID, taxable, description,
-                                                         pickLocation, preparedQuantity, targetOrderType)
+                        If orderRecord Is Nothing Then
+                            Throw New InvalidOperationException("Order " & orderID & " was not found.")
                         End If
 
-                        Dim item = (From candidate In dbSave.Items
-                                    Where candidate.ID = itemID
-                                    Select candidate).SingleOrDefault()
+                        Dim originalOrderType As Integer = orderRecord.Type
+                        Dim targetOrderType As Integer = getEntryType()
+                        Dim useQueueing As Boolean = UseQueueingForCurrentOrder()
+                        Dim queueTablesAvailable As Boolean = QueueingTablesAvailable(dbSave)
 
-                        If item Is Nothing Then
-                            Throw New InvalidOperationException("Item " & itemID & " was not found while updating the order.")
+                        If Not queueTablesAvailable Then
+                            Throw New InvalidOperationException(
+                                "The Queueing compatibility tables are missing. " &
+                                "Install the Work Order database migration before updating this order.")
                         End If
 
-                        If item.ItemType <> 7 Then
-                            Dim commitmentDifference As Double = 0R
-                            If originalOrderType = 2 Then commitmentDifference -= previousQuantity
-                            If targetOrderType = 2 Then commitmentDifference += quantityOnOrder
-                            clsItemLookUp.ApplyQuantityCommittedDifference(
-                                dbSave, itemID, commitmentDifference)
+                        orderRecord.Type = targetOrderType
+                        orderRecord.CustomerID = iCusID
+                        orderRecord.SalesRepID = iSalesID
+                        orderRecord.Tax = Decimal.Parse(txtVat.Text)
+                        orderRecord.Total = Decimal.Parse(txtTotal.Text)
+                        orderRecord.Comment = orderComment
+                        orderRecord.LastUpdated = DateTime.Now
+
+                        Dim queueHeader As Queueing = Nothing
+                        queueHeader = (From candidate In dbSave.Queueings
+                                       Where candidate.OrderID = orderID
+                                       Select candidate).FirstOrDefault()
+
+                        ' The deployed legacy line-insert procedure always writes a
+                        ' QueueingItems row. Direct orders therefore use a temporary
+                        ' compatibility header that is removed before commit.
+                        If queueHeader Is Nothing Then
+                            queueHeader = New Queueing With {
+                                .OrderID = orderID,
+                                .Status = 0,
+                                .GroupTo = orderID,
+                                .OPIS = usrUsername.ToUpperInvariant()
+                            }
+                            dbSave.Queueings.InsertOnSubmit(queueHeader)
                         End If
 
-                        If ispriceApproved = 1 AndAlso price < GetApprovedMinPrice(item) Then
-                            AddPriceLog(dbSave, orderID, itemID, fullPrice, price,
-                                        frmPassword.txtPass.Text,
-                                        If(entryAlreadyExisted, "Updated", "Inserted"))
-                        End If
+                        ' Persist the target type and any new queue header before invoking
+                        ' the legacy line-insert procedure. Both writes remain inside the
+                        ' same transaction and are rolled back together on failure.
+                        dbSave.SubmitChanges()
 
-                        If targetOrderType = 2 AndAlso useQueueing Then
-                            Dim queueItem = (From candidate In dbSave.QueueingItems
-                                             Where candidate.QueueingID = queueHeader.id AndAlso
-                                                   candidate.ItemID = itemID
-                                             Select candidate).FirstOrDefault()
+                        ' Read once after the locked snapshot check, inside the same transaction.
+                        Dim entryMap = dbSave.OrderEntries.Where(Function(entry) entry.OrderID = orderID).
+                            ToDictionary(Function(entry) entry.ID)
+                        Dim itemIDs = gridSelectItem.Rows.Cast(Of DataGridViewRow)().
+                            Select(Function(row) Convert.ToInt32(row.Cells(11).Value)).
+                            Concat(entryMap.Values.Select(Function(entry) entry.ItemID)).Distinct().ToList()
+                        Dim itemMap = dbSave.Items.Where(Function(item) itemIDs.Contains(item.ID)).
+                            ToDictionary(Function(item) item.ID)
 
-                            If queueItem Is Nothing Then
-                                queueItem = New QueueingItem With {
-                                    .QueueingID = queueHeader.id,
-                                    .ItemID = itemID
-                                }
-                                dbSave.QueueingItems.InsertOnSubmit(queueItem)
+                        For rowIndex As Integer = 0 To gridSelectItem.Rows.Count - 1
+                            Dim itemID As Integer = Convert.ToInt32(gridSelectItem.Item(11, rowIndex).Value)
+                            Dim orderEntryID As Integer = Convert.ToInt32(gridSelectItem.Item(16, rowIndex).Value)
+                            Dim cost As Decimal = Convert.ToDecimal(gridSelectItem.Item(9, rowIndex).Value)
+                            Dim fullPrice As Decimal = Convert.ToDecimal(gridSelectItem.Item(12, rowIndex).Value)
+                            Dim price As Decimal = Convert.ToDecimal(gridSelectItem.Item(3, rowIndex).Value)
+                            Dim quantityOnOrder As Double = Convert.ToDouble(gridSelectItem.Item(2, rowIndex).Value)
+                            Dim description As String = Convert.ToString(gridSelectItem.Item(13, rowIndex).Value)
+                            Dim preparedQuantity As Integer = Convert.ToInt32(gridSelectItem.Item(18, rowIndex).Value)
+                            Dim pickLocation As String = If(Convert.ToBoolean(gridSelectItem.Item(17, rowIndex).Value),
+                                                            "UP-STORE", "STORE")
+                            Dim taxable As Integer = If(bTaxExcempt,
+                                                        0,
+                                                        Convert.ToInt32(gridSelectItem.Item(Me.Taxable.Index, rowIndex).Value))
+
+                            Dim existingEntry As OrderEntry = Nothing
+                            entryMap.TryGetValue(orderEntryID, existingEntry)
+                            Dim entryAlreadyExisted As Boolean = existingEntry IsNot Nothing
+                            Dim previousQuantity As Double = If(entryAlreadyExisted,
+                                                                existingEntry.QuantityOnOrder,
+                                                                0R)
+
+                            If entryAlreadyExisted Then
+                                existingEntry.Cost = cost
+                                existingEntry.FullPrice = fullPrice
+                                existingEntry.Price = price
+                                existingEntry.QuantityOnOrder = quantityOnOrder
+                                existingEntry.Description = description
+                                existingEntry.Taxable = taxable
+                                existingEntry.SalesRepID = iSalesID
+                                existingEntry.LastUpdated = DateTime.Now
+                            Else
+                                dbSave.SOD_sp_InsertQouteEntry(cost, orderID, itemID, fullPrice, price,
+                                                             quantityOnOrder, iSalesID, taxable, description,
+                                                             pickLocation, preparedQuantity, targetOrderType)
                             End If
 
-                            queueItem.PickLoc = pickLocation
-                            queueItem.QtyPre = preparedQuantity
-
-                            If quantityOnOrder = preparedQuantity Then
-                                queueItem.Picker = "CUST"
-                                queueItem.Status = "Prepared"
-                            End If
-                        End If
-                    Next
-
-                    For Each deletedEntryID In delitems.Distinct().ToList()
-                        Dim deletedEntry = (From candidate In dbSave.OrderEntries
-                                            Where candidate.OrderID = orderID AndAlso
-                                                  candidate.ID = deletedEntryID
-                                            Select candidate).SingleOrDefault()
-
-                        If deletedEntry Is Nothing Then Continue For
-
-                        If originalOrderType = 2 Then
-                            Dim item = (From candidate In dbSave.Items
-                                        Where candidate.ID = deletedEntry.ItemID
-                                        Select candidate).SingleOrDefault()
+                            Dim item As Item = Nothing
+                            itemMap.TryGetValue(itemID, item)
 
                             If item Is Nothing Then
-                                Throw New InvalidOperationException(
-                                    "Item " & deletedEntry.ItemID & " was not found while deleting an order line.")
+                                Throw New InvalidOperationException("Item " & itemID & " was not found while updating the order.")
                             End If
 
                             If item.ItemType <> 7 Then
+                                Dim commitmentDifference = OrderCommitmentRules.CalculateChange(
+                                    originalOrderType, targetOrderType, previousQuantity, quantityOnOrder, item.ItemType)
                                 clsItemLookUp.ApplyQuantityCommittedDifference(
-                                    dbSave, deletedEntry.ItemID, -deletedEntry.QuantityOnOrder)
+                                    dbSave, itemID, commitmentDifference)
+                            End If
+
+                            If ispriceApproved = 1 AndAlso price < GetApprovedMinPrice(item) Then
+                                AddPriceLog(dbSave, orderID, itemID, fullPrice, price,
+                                            frmPassword.txtPass.Text,
+                                            If(entryAlreadyExisted, "Updated", "Inserted"))
+                            End If
+
+                            If targetOrderType = 2 AndAlso useQueueing Then
+                                Dim queueItem = (From candidate In dbSave.QueueingItems
+                                                 Where candidate.QueueingID = queueHeader.id AndAlso
+                                                       candidate.ItemID = itemID
+                                                 Select candidate).FirstOrDefault()
+
+                                If queueItem Is Nothing Then
+                                    queueItem = New QueueingItem With {
+                                        .QueueingID = queueHeader.id,
+                                        .ItemID = itemID
+                                    }
+                                    dbSave.QueueingItems.InsertOnSubmit(queueItem)
+                                End If
+
+                                queueItem.PickLoc = pickLocation
+                                If shortageByEntry.ContainsKey(orderEntryID) Then
+                                    ShortageReductionService.ApplyToQueueItem(queueItem, shortageByEntry(orderEntryID))
+                                Else
+                                    queueItem.QtyPre = preparedQuantity
+                                    If quantityOnOrder = preparedQuantity Then
+                                        queueItem.Picker = "CUST"
+                                        queueItem.Status = "Prepared"
+                                    End If
+                                End If
+                            End If
+                        Next
+
+                        For Each deletedEntryID In delitems.Distinct().ToList()
+                            Dim deletedEntry As OrderEntry = Nothing
+                            entryMap.TryGetValue(deletedEntryID, deletedEntry)
+
+                            If deletedEntry Is Nothing Then Continue For
+
+                            If originalOrderType = 2 Then
+                                Dim item As Item = Nothing
+                                itemMap.TryGetValue(deletedEntry.ItemID, item)
+
+                                If item Is Nothing Then
+                                    Throw New InvalidOperationException(
+                                        "Item " & deletedEntry.ItemID & " was not found while deleting an order line.")
+                                End If
+
+                                If item.ItemType <> 7 Then
+                                    clsItemLookUp.ApplyQuantityCommittedDifference(
+                                        dbSave, deletedEntry.ItemID,
+                                        OrderCommitmentRules.CalculateChange(2, 0, deletedEntry.QuantityOnOrder, 0R, item.ItemType))
+                                End If
+                            End If
+
+                            If targetOrderType = 2 Then
+                                AddPriceLog(dbSave, orderID, deletedEntry.ItemID,
+                                            deletedEntry.FullPrice, deletedEntry.Price, "", "Deleted")
+                            End If
+
+                            If targetOrderType = 2 AndAlso useQueueing Then
+                                Dim deletedQueueItems = (From queueItem In dbSave.QueueingItems
+                                                         Join header In dbSave.Queueings
+                                                             On queueItem.QueueingID Equals header.id
+                                                         Where header.OrderID = orderID AndAlso
+                                                               queueItem.ItemID = deletedEntry.ItemID
+                                                         Select queueItem).ToList()
+                                dbSave.QueueingItems.DeleteAllOnSubmit(deletedQueueItems)
+                            End If
+
+                            dbSave.OrderEntries.DeleteOnSubmit(deletedEntry)
+                        Next
+
+                        ApplyTaxChangeReasonCode(dbSave, orderID)
+
+                        If targetOrderType = 3 OrElse Not useQueueing Then
+                            If QueueingTablesAvailable(dbSave) Then
+                                RemoveQueueProcessingItems(dbSave, orderID)
                             End If
                         End If
 
-                        If targetOrderType = 2 Then
-                            AddPriceLog(dbSave, orderID, deletedEntry.ItemID,
-                                        deletedEntry.FullPrice, deletedEntry.Price, "", "Deleted")
-                        End If
-
-                        If targetOrderType = 2 AndAlso useQueueing Then
-                            Dim deletedQueueItems = (From queueItem In dbSave.QueueingItems
-                                                     Join header In dbSave.Queueings
-                                                         On queueItem.QueueingID Equals header.id
-                                                     Where header.OrderID = orderID AndAlso
-                                                           queueItem.ItemID = deletedEntry.ItemID
-                                                     Select queueItem).ToList()
-                            dbSave.QueueingItems.DeleteAllOnSubmit(deletedQueueItems)
-                        End If
-
-                        dbSave.OrderEntries.DeleteOnSubmit(deletedEntry)
-                    Next
-
-                    ApplyTaxChangeReasonCode(dbSave, orderID)
-
-                    If targetOrderType = 3 OrElse Not useQueueing Then
-                        If QueueingTablesAvailable(dbSave) Then
-                            RemoveQueueProcessingItems(dbSave, orderID)
-                        End If
-                    End If
-
-                    dbSave.SubmitChanges()
-                    saveTransaction.Commit()
-                    delitems.Clear()
-                Catch
-                    saveTransaction.Rollback()
-                    Throw
-                End Try
+                        dbSave.SubmitChanges()
+                        For Each request In shortageRequests
+                            ShortageReductionService.RecordDecision(dbSave, request)
+                        Next
+                        saveTransaction.Commit()
+                        timing.Outcome = "Saved"
+                    Catch
+                        saveTransaction.Rollback()
+                        Throw
+                    End Try
+                End Using
             End Using
         End Using
     End Sub
@@ -2177,7 +2236,7 @@ Proceed:
             iMsg = MsgBox("Do you want to cancel this order?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
             If iMsg = MsgBoxResult.Yes Then
 
-                clsRecall.CancelOrder(Split(lblOrderNo.Text, ": ")(1))
+                clsRecall.CancelOrder(Split(lblOrderNo.Text, ": ")(1), recalledSnapshot)
                 RefreshDetails(True)
                 clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
 
@@ -2187,6 +2246,8 @@ Proceed:
                 MsgBox("Order was not cancelled!", vbExclamation, "Message")
             End If
 
+        Catch ex As OrderEditConflictException
+            ShowOrderConflict(ex)
         Catch ex As Exception
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0020", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -2434,7 +2495,6 @@ Proceed:
 
             ' System.Windows.Forms.Control.CheckForIllegalCrossThreadCalls = False
 
-            clsItemLookUp.getItemtoGrid()
             'itemData.DataSource = load_data("Select * FROM SOD_ViewItems"
             BindGridItemSource(getItem())
             ' SearchItem()
@@ -2969,6 +3029,11 @@ Proceed:
 
     Public Sub RefreshDetails(ByVal reloaditem As Boolean)
 
+        Dim timing = OrderPerformanceTiming.Start("RefreshDetails", activeRecallOrderID, gridSelectItem.Rows.Count)
+        ResetShortageReductions()
+        recalledSnapshot = Nothing
+        activeRecallOrderID = 0
+
         Try
 
             Cursor.Current = Cursors.WaitCursor
@@ -3034,7 +3099,9 @@ Proceed:
             ispriceApproved = 0
 
             If reloaditem = True Then
-                loadData()
+                Using catalogueTiming = OrderPerformanceTiming.Start("CatalogueReload", 0, 0)
+                    loadData()
+                End Using
                 GridColumnWidth()
             End If
             chkBoxQtoWo.Checked = False
@@ -3042,8 +3109,12 @@ Proceed:
 
             Cursor.Current = Cursors.Default
         Catch ex As Exception
+            timing.Outcome = "Failed"
+            timing.Dispose()
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0037", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
+        Finally
+            timing.Dispose()
         End Try
 
     End Sub
@@ -4373,8 +4444,20 @@ err_flag:
     End Sub
     Public Sub RecallQuote(ByVal orderid As Integer)
 
+        Dim timing = OrderPerformanceTiming.Start("RecallReadAndPopulate", orderid, 0)
+        recallCreditNoticeWaitMilliseconds = 0
+        Dim populationTiming As OrderPerformanceTiming = Nothing
+        ResetShortageReductions()
+        recalledSnapshot = Nothing
+        activeRecallOrderID = orderid
+        delitems.Clear()
         isLoadingRecalledOrder = True
         Try
+            Dim recallStart As OrderEditSnapshot
+            Using snapshotDb = GetDB()
+                recallStart = OrderPerformanceTiming.Measure("RecallStartSnapshot", orderid, 0,
+                    Function() OrderEditGuard.Capture(snapshotDb, orderid))
+            End Using
             gridSelectItem.Rows.Clear()
             Dim previousAllowUserToAddRows = gridSelectItem.AllowUserToAddRows
             gridSelectItem.AllowUserToAddRows = True
@@ -4384,10 +4467,12 @@ err_flag:
             Dim manualTaxExemptionReasonID As Integer?
             Using reasonDb = GetDB()
                 manualTaxExemptionReasonID =
-                    TryResolveManualTaxExemptionReasonID(reasonDb)
+                    OrderPerformanceTiming.Measure("RecallTaxReason", orderid, 0,
+                        Function() TryResolveManualTaxExemptionReasonID(reasonDb))
             End Using
 
-            For Each x In clsRecall.RecallOrder(orderid)
+            For Each x In OrderPerformanceTiming.Measure("RecallHeaderRead", orderid, 0,
+                                                        Function() clsRecall.RecallOrder(orderid))
                 sAcctNum = x.AccountNumber
                 iPrice = x.PriceLevel
                 txtPriceLevel.Text = PriceLevelTextFromIndex(iPrice)
@@ -4400,7 +4485,9 @@ err_flag:
                 iCusID = x.CustID
                 txtCustomer.Text = x.Company
                 txtType.Text = x.CustomText5
-                GetCustomerPriceLevel()
+                Using customerSetupTiming = OrderPerformanceTiming.Start("RecallCustomerSetup", orderid, 0)
+                    GetCustomerPriceLevel()
+                End Using
 
                 iSalesID = x.SalesRepID
                 txtSales.Text = x.SaleRepName
@@ -4456,8 +4543,46 @@ err_flag:
 
             Dim shortageAlertList As New List(Of String)()
 
+            Dim recalledEntries = OrderPerformanceTiming.Measure("RecallEntryRead", orderid, 0,
+                                                                 Function() clsRecall.RecallOrderEntry(orderid))
+            Dim lastPrices As New Dictionary(Of String, Decimal)(StringComparer.Ordinal)
+            Dim recallCodes As New List(Of String)()
+            For Each entry In recalledEntries
+                recallCodes.Add(CStr(entry.ItemLookUpcode))
+            Next
+            Using priceTiming = OrderPerformanceTiming.Start("RecallLastPrices", orderid, recallCodes.Count)
+                Try
+                    Using priceDb = GetDB()
+                        Dim priceCustomerID = RecallReadData.ResolveCustomer(priceDb, iCusID, txtCustomer.Text)
+                        lastPrices = RecallReadData.LoadLastPrices(priceDb, priceCustomerID, recallCodes)
+                    End Using
+                Catch
+                    priceTiming.Outcome = "Fallback"
+                    ' Preserve the previous per-item failure handling if the batch read fails.
+                    For Each code In recallCodes.Distinct(StringComparer.Ordinal)
+                        lastPrices(If(code, "").Trim()) = If(iCusID > 0,
+                            clsRecall.GetItemLastPrice(iCusID, code), clsRecall.GetItemLastPrice(txtCustomer.Text, code))
+                    Next
+                End Try
+            End Using
+            Dim queueDetails As New Dictionary(Of Integer, RecallQueueDetail)()
+            If recalledOrderUsesQueueing Then
+                Using queueTiming = OrderPerformanceTiming.Start("RecallQueueRead", orderid, recallCodes.Count)
+                    Try
+                        Using queueDb = GetDB()
+                            queueDetails = RecallReadData.LoadQueue(queueDb, orderid)
+                        End Using
+                    Catch
+                        queueTiming.Outcome = "Failed"
+                        ' Retain the existing zero/blank defaults when queue information cannot be read.
+                    End Try
+                End Using
+            End If
+
             gridSelectItem.SuspendLayout()
-            For Each n In clsRecall.RecallOrderEntry(orderid)
+            populationTiming = OrderPerformanceTiming.Start("RecallPopulateAndPricing", orderid, recallCodes.Count)
+            populationTiming.Outcome = "Failed"
+            For Each n In recalledEntries
 
                 clsItemLookUp.GetPrice(1, n.Taxable, n.Price)
                 Dim newTimeRecord As DataGridViewRow = gridSelectItem.Rows(gridSelectItem.NewRowIndex).Clone
@@ -4480,7 +4605,7 @@ err_flag:
                     newTimeRecord.Cells(Extended.Index).Value = n.ExtendedDescription
                     newTimeRecord.Cells(DiscAmount.Index).Value = n.DiscAmount
                     newTimeRecord.Cells(OrderEntryID.Index).Value = n.ID
-                    newTimeRecord.Cells(LASTPURCHASEDPRICE.Index).Value = If(iCusID > 0, clsRecall.GetItemLastPrice(iCusID, n.ItemLookUpcode), clsRecall.GetItemLastPrice(txtCustomer.Text, n.ItemLookUpcode))
+                    newTimeRecord.Cells(LASTPURCHASEDPRICE.Index).Value = RecallReadData.LastPriceOrZero(lastPrices, CStr(n.ItemLookUpcode))
                     If n.PickLoc = "UP-STORE" Then
                         newTimeRecord.Cells(chkPickLoc.Index).Value = True
                     Else
@@ -4496,19 +4621,12 @@ err_flag:
                         vqty = 0
                     Else
 
-                        Try
-                            Dim qi = (From a In db.QueueingItems
-                                      Join b In db.Queueings On a.QueueingID Equals b.id
-                                      Where a.ItemID.Equals(iItemID) And b.OrderID.Equals(orderid)
-                                      Select a.QtyPre, a.Status, a.Picker).FirstOrDefault()
-                            If qi IsNot Nothing Then
-                                vqty = qi.QtyPre
-                                qStatus = If(qi.Status, "")
-                                qPicker = If(qi.Picker, "")
-                            End If
-                        Catch ex As Exception
-                            vqty = 0
-                        End Try
+                        Dim qi As RecallQueueDetail = Nothing
+                        If queueDetails.TryGetValue(CInt(iItemID), qi) AndAlso qi.Prepared.HasValue Then
+                            vqty = qi.Prepared.Value
+                            qStatus = If(qi.Status, "")
+                            qPicker = If(qi.Picker, "")
+                        End If
 
                     End If
 
@@ -4532,17 +4650,54 @@ err_flag:
                 gridSelectItem.Rows.Add(newTimeRecord)
 
             Next
+            populationTiming.Outcome = "Completed"
+            populationTiming.Dispose()
             gridSelectItem.ResumeLayout()
 
             gridSelectItem.AllowUserToAddRows = previousAllowUserToAddRows
             'gridSelectItem.CurrentCell = gridSelectItem(0, gridSelectItem.RowCount - 1)
 
+            Using validationTiming = OrderPerformanceTiming.Start("RecallFinalValidation", orderid, recallCodes.Count),
+                  snapshotDb = GetDB()
+                validationTiming.Outcome = "Failed"
+                If iOrderType = 2 AndAlso StoreProcessingSettings.QueueingEnabled Then
+                    shortageLines = ShortageReductionService.Load(snapshotDb, orderid).
+                        GroupBy(Function(line) line.EntryID).ToDictionary(Function(group) group.Key, Function(group) group.First())
+                End If
+                OrderEditGuard.EnsureUnchanged(recallStart, OrderEditGuard.Capture(snapshotDb, orderid))
+                validationTiming.Outcome = "Completed"
+            End Using
+            recalledSnapshot = recallStart
             lblOrderNo.Text = IIf(iOrderType = 3, "Sales Quotation #: ", "Work Order #: ") & orderid
             lblStatItemSelected.Text = gridSelectItem.Rows.Count & " items selected"
-            ApplyCustomerTaxStatusToRows()
-            UpdateAmt()
-            GetCustomerPriceLevel()
+            Using totalsTiming = OrderPerformanceTiming.Start("RecallTaxAndTotals", orderid, recallCodes.Count)
+                totalsTiming.Outcome = "Failed"
+                Dim totalsNoticeWaitBefore = recallCreditNoticeWaitMilliseconds
+                Using taxTiming = OrderPerformanceTiming.Start("RecallItemTaxReadAndApply", orderid, recallCodes.Count)
+                    taxTiming.Outcome = "Failed"
+                    ApplyCustomerTaxStatusToRows()
+                    taxTiming.Outcome = "Completed"
+                End Using
+                Using calculationTiming = OrderPerformanceTiming.Start("RecallTotalsCalculation", orderid, recallCodes.Count)
+                    calculationTiming.Outcome = "Failed"
+                    Dim noticeWaitBefore = recallCreditNoticeWaitMilliseconds
+                    Try
+                        UpdateAmt()
+                        calculationTiming.Outcome = "Completed"
+                    Finally
+                        calculationTiming.ExcludeElapsed(recallCreditNoticeWaitMilliseconds - noticeWaitBefore)
+                    End Try
+                End Using
+                totalsTiming.ExcludeElapsed(recallCreditNoticeWaitMilliseconds - totalsNoticeWaitBefore)
+                totalsTiming.Outcome = "Completed"
+            End Using
+            Using customerTiming = OrderPerformanceTiming.Start("RecallCustomerSummary", orderid, recallCodes.Count)
+                GetCustomerPriceLevel()
+            End Using
 
+            timing.LineCount = gridSelectItem.Rows.Count
+            timing.ExcludeElapsed(recallCreditNoticeWaitMilliseconds)
+            timing.Dispose() ' Exclude time spent reading modal notices.
             If shortageAlertList.Count > 0 Then
                 Dim alertMsg As String = "⚠️ WAREHOUSE SHORTAGE ALERT (OUT OF STOCK)" & vbCrLf & vbCrLf &
                                          "The warehouse picker has flagged shortage on Work Order #" & orderid & ":" & vbCrLf & vbCrLf &
@@ -4552,6 +4707,8 @@ err_flag:
                 MessageBox.Show(alertMsg, "Warehouse Shortage Notice", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End If
 
+            AcknowledgeShortageAlert(orderid)
+
             If iOrderType = 3 Then
                 MessageBox.Show(
                     "Sales Quotation # " & orderid & " has been recalled." & vbCrLf & vbCrLf &
@@ -4560,10 +4717,24 @@ err_flag:
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Information)
             End If
+        Catch ex As OrderEditConflictException
+            If populationTiming IsNot Nothing Then populationTiming.Outcome = "Conflict"
+            timing.Outcome = "Conflict"
+            timing.ExcludeElapsed(recallCreditNoticeWaitMilliseconds)
+            timing.Dispose()
+            ShowOrderConflict(ex)
         Catch ex As Exception
+            If populationTiming IsNot Nothing Then populationTiming.Outcome = "Failed"
+            timing.Outcome = "Failed"
+            timing.ExcludeElapsed(recallCreditNoticeWaitMilliseconds)
+            timing.Dispose()
+            recalledSnapshot = Nothing
             MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0051", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         Finally
+            If populationTiming IsNot Nothing Then populationTiming.Dispose()
+            timing.ExcludeElapsed(recallCreditNoticeWaitMilliseconds)
+            timing.Dispose()
             gridSelectItem.ResumeLayout()
             isLoadingRecalledOrder = False
         End Try
@@ -5051,7 +5222,7 @@ err_flag:
                             MessageBoxIcon.Information)
             Exit Sub
         End If
-        frmForInvoice.ShowDialog()
+        ShowReadyOrders()
     End Sub
 
     Private Sub chkWorkOrder_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkWorkOrder.CheckedChanged
@@ -6126,7 +6297,19 @@ inputCust:
             ' Try parsing both textboxes safely
             If Decimal.TryParse(txtTotal.Text, total) AndAlso Decimal.TryParse(txtAvailable.Text, available) Then
                 If total > available Then
-                    MessageBox.Show("Exceeded available credit limit.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    If isLoadingRecalledOrder Then
+                        Using noticeTiming = OrderPerformanceTiming.Start("RecallCreditNoticeWait", activeRecallOrderID, gridSelectItem.Rows.Count)
+                            Dim noticeWatch = Diagnostics.Stopwatch.StartNew()
+                            Try
+                                MessageBox.Show("Exceeded available credit limit.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                            Finally
+                                noticeWatch.Stop()
+                                recallCreditNoticeWaitMilliseconds += noticeWatch.Elapsed.TotalMilliseconds
+                            End Try
+                        End Using
+                    Else
+                        MessageBox.Show("Exceeded available credit limit.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    End If
                 End If
             End If
         End If
@@ -6761,45 +6944,21 @@ inputCust:
             Dim minPrice As Decimal = GetApprovedMinPrice(item)
             txtPrice.Text = minPrice.ToString("N2")
 
-            Dim requiresOverride As Boolean = False
-
-            If WoRecallType = 0 Then
-                ' --- New order: price must not be below minimum ---
-                If currentPrice < minPrice Then
-                    requiresOverride = True
-                End If
-
-            ElseIf WoRecallType = 1 Then
-                ' --- Recall order ---
+            Dim savedPrice As Decimal? = Nothing
+            Dim ruleRecallType As Integer = WoRecallType
+            If WoRecallType = 1 Then
                 Dim orderID As Integer
                 Dim lastPart = lblOrderNo.Text.Split(" "c).Last().Trim()
-                If Not Integer.TryParse(lastPart, orderID) Then
-                    'Throw New Exception("Invalid Work Order number: " & lblOrderNo.Text)
-                    WoRecallType = 0
-                End If
-
+                If Not Integer.TryParse(lastPart, orderID) Then WoRecallType = 0
+                ' Preserve the legacy treatment of this row if the label is invalid.
                 Dim orderEntry = (From o In db.OrderEntries
                                   Join i In db.Items On i.ID Equals o.ItemID
                                   Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
                                   Select o).FirstOrDefault()
-
-                If orderEntry IsNot Nothing Then
-                    Dim woOrderPrice As Decimal = orderEntry.Price
-
-                    ' Valid if: matches WO price OR at/above minimum price
-                    Dim isValidPrice As Boolean = (currentPrice = woOrderPrice) OrElse
-                                              (currentPrice >= minPrice)
-
-                    If Not isValidPrice Then
-                        requiresOverride = True
-                    End If
-                Else
-                    ' New item in recall: treat as new order
-                    If currentPrice < minPrice Then
-                        requiresOverride = True
-                    End If
-                End If
+                If orderEntry IsNot Nothing Then savedPrice = orderEntry.Price
             End If
+            Dim requiresOverride = OrderPriceApprovalRules.RequiresOverride(
+                currentPrice, minPrice, ruleRecallType, savedPrice)
 
             If requiresOverride Then
                 needsPassword = True
@@ -6820,8 +6979,7 @@ inputCust:
             Next
         End If
 
-        SaveOrder()
-        Return True
+        Return SaveOrder() = OrderSaveOutcome.Saved
     End Function
 
     Private Function ResolvePriceLevelIndex() As Integer
@@ -7179,38 +7337,18 @@ inputCust:
             Dim minPrice As Decimal = GetApprovedMinPrice(item)
             txtPrice.Text = minPrice.ToString("N2")
 
-            Dim highlight As Boolean = False
-
-            ' --- Step 4: Validation logic (only check lower bound) ---
-            If type = 0 Then
-                ' --- New order: price must not be below minimum ---
-                highlight = (currentPrice < minPrice)
-
-            ElseIf type = 1 Then
-                ' --- Recall order ---
+            Dim savedPrice As Decimal? = Nothing
+            If type = 1 Then
                 Dim orderID As Integer
                 Dim lastPart = lblOrderNo.Text.Split(" "c).Last().Trim()
                 If Not Integer.TryParse(lastPart, orderID) Then Exit Sub
-
                 Dim orderEntry = (From o In db.OrderEntries
                                   Join i In db.Items On i.ID Equals o.ItemID
                                   Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
                                   Select o).FirstOrDefault()
-
-                If orderEntry IsNot Nothing Then
-                    ' --- Existing item in WO ---
-                    Dim woOrderPrice As Decimal = orderEntry.Price
-
-                    ' Valid if: matches WO price OR at/above minimum price
-                    Dim isValidPrice As Boolean = (currentPrice = woOrderPrice) OrElse
-                                              (currentPrice >= minPrice)
-
-                    highlight = Not isValidPrice
-                Else
-                    ' --- New item added to recall: treat as new order ---
-                    highlight = (currentPrice < minPrice)
-                End If
+                If orderEntry IsNot Nothing Then savedPrice = orderEntry.Price
             End If
+            Dim highlight = OrderPriceApprovalRules.RequiresOverride(currentPrice, minPrice, type, savedPrice)
 
             ' --- Step 5: Apply coloring ---
             If highlight Then
@@ -7401,23 +7539,39 @@ inputCust:
         If gridSelectItem.Rows.Count = 0 Then Exit Sub
 
         Using dbx = GetDB()
-            For Each row As DataGridViewRow In gridSelectItem.Rows
-                If row.IsNewRow Then Continue For
-
-                If bTaxExcempt Then
-                    row.Cells(Taxable.Index).Value = 0
-                Else
-                    Dim lookupCode As String = If(row.Cells(ItemCode.Index).Value, "").ToString()
-                    If lookupCode = String.Empty Then Continue For
-
-                    Dim itemTaxable = (From item In dbx.Items
-                                       Where item.ItemLookupCode = lookupCode
-                                       Select item.Taxable).FirstOrDefault()
-
-                    row.Cells(Taxable.Index).Value = itemTaxable
-                End If
-            Next
+            ApplyCustomerTaxStatusToRows(dbx, isLoadingRecalledOrder)
         End Using
+    End Sub
+
+    Private Sub ApplyCustomerTaxStatusToRows(dbx As ItemLookUpDataContext, batchRead As Boolean)
+        Dim taxFlags As Dictionary(Of String, Boolean) = Nothing
+        If batchRead AndAlso Not bTaxExcempt Then
+            Dim codes = gridSelectItem.Rows.Cast(Of DataGridViewRow)().
+                Where(Function(row) Not row.IsNewRow).
+                Select(Function(row) If(row.Cells(ItemCode.Index).Value, "").ToString())
+            taxFlags = RecallReadData.LoadTaxability(dbx, codes)
+        End If
+        For Each row As DataGridViewRow In gridSelectItem.Rows
+            If row.IsNewRow Then Continue For
+
+            If bTaxExcempt Then
+                row.Cells(Taxable.Index).Value = 0
+            Else
+                Dim lookupCode As String = If(row.Cells(ItemCode.Index).Value, "").ToString()
+                If lookupCode = String.Empty Then Continue For
+
+                Dim itemTaxable As Boolean
+                If taxFlags IsNot Nothing Then
+                    taxFlags.TryGetValue(lookupCode, itemTaxable)
+                Else
+                    itemTaxable = (From item In dbx.Items
+                                   Where item.ItemLookupCode = lookupCode
+                                   Select item.Taxable).FirstOrDefault()
+                End If
+
+                row.Cells(Taxable.Index).Value = itemTaxable
+            End If
+        Next
     End Sub
 
     'Private Sub SetTaxChangeReasonCode(ByVal orderID As Integer)
@@ -7428,6 +7582,19 @@ inputCust:
     '        dbx.SubmitChanges()
     '    End Using
     'End Sub
+
+    Private Sub PrepareNewOrderTaxReasons(dbx As ItemLookUpDataContext, orderID As Integer,
+                                         orderType As Integer)
+        If orderType = 2 Then
+            ' Do direct writes before tax processing loads tracked OrderEntry entities.
+            ' Even setting VoucherID to its current value advances the RMS rowversion.
+            dbx.ExecuteCommand(
+                "UPDATE dbo.OrderEntry SET VoucherID = 0 " &
+                "WHERE ID = (SELECT TOP 1 ID FROM dbo.OrderEntry WHERE OrderID = {0} ORDER BY ID DESC)",
+                orderID)
+        End If
+        ApplyTaxChangeReasonCode(dbx, orderID)
+    End Sub
 
     Private Sub ApplyTaxChangeReasonCode(ByVal dbx As ItemLookUpDataContext, ByVal orderID As Integer)
         Dim order = (From currentOrder In dbx.Orders

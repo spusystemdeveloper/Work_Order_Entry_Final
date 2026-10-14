@@ -6,13 +6,36 @@
 
 The live database comparison is documented separately in `DVO_STORE_DB_AUDIT.md`.
 
+**Documentation status checked:** October 7, 2026. The findings and source
+line numbers below describe the original July review. Historical build and
+database results are not new verification results. Later changes are described
+in the remediation notes.
+
 ## Remediation status
 
-The recommended data-integrity milestone was implemented on July 23, 2026. Findings 1, 3, 4, 6, 8, and the source-level portion of finding 9 are corrected in the active form workflows. Finding 2 is corrected for the set/clear transition and branch-safe reason lookup: the application resolves reason code `701`, type `6`, rather than assuming ID `39`. RMS privilege and received-entry enforcement remain. New-order and existing-order saves now use a local transaction covering the order, lines, inventory commitments, same-database queue records, price logs, and tax reasons. Credential remediation in finding 5 remains a deployment and data-migration task.
+The recommended data-integrity milestone was implemented on July 23, 2026. Findings 3, 4, 6, 8, and the source-level portion of finding 9 are corrected in the active form workflows. Finding 1 has a current-behavior note below: the Price Level form initially highlights its top row. Finding 2 is corrected for the set/clear transition and branch-safe reason lookup: the application resolves reason code `701`, type `6`, rather than assuming ID `39`. RMS privilege and received-entry enforcement remain. New-order and existing-order saves now use a local transaction covering the order, lines, inventory commitments, same-database queue records, price logs, and tax reasons. Credential remediation in finding 5 remains a deployment and data-migration task.
 
 The post-change solution builds successfully. Runtime and rollback behavior still require integration testing against a disposable RMS-compatible database before production use.
 
 ## Review scope
+
+The October 14, 2026 change separates recall item-tax reads, total calculation,
+and credit-warning wait time. Recalled item tax flags are read in batches, while
+normal customer/Set Tax flows retain their previous reads. Calculation and credit
+warning rules remain unchanged. The older tax/totals phase included modal-warning
+waits; its long samples do not by themselves prove slow tax computation.
+
+The October 13, 2026 recall change batches last purchase prices and warehouse
+details using data local to one recall. It adds component timings and preserves
+the snapshot/save-lock checks. Approval-price, item-tax, and customer-summary
+reads remain candidates for measurement. No production capacity claim follows
+from the isolated multi-session tests or the local SELECT-only comparison.
+
+The October 7, 2026 focused refactor shares price approval logic, batches existing
+save reads after the locked edit check, and distinguishes committed saves from
+cancellations and failures. Optional phase timing is available for save/recall
+and refresh. Tax rules were not changed; mixed-tax total calculation still needs
+a separate business review. See `ORDER_TOOLS_GUIDE.md` for timing instructions.
 
 This was an initial static review of the current working tree, with particular attention to the modified database-selection, login, price-level, and tax-exemption flows. Existing source changes were not modified or reverted.
 
@@ -24,7 +47,13 @@ The solution builds successfully in the Debug configuration using MSBuild 18.8.2
 Work Order Entry -> Work Order Entry\bin\Debug\Work Order Entry_V4.exe
 ```
 
-No automated test project was found. The successful build therefore confirms compilation only; it does not verify behavior against a live RMS database or Windows registry.
+At the initial review, no automated test project was found. The repository now
+contains `Work Order Entry.Tests` with 101 database-free test methods. Run them
+with `Run-UnitTests.ps1` from the repository root. This documentation update
+did not rerun the original review's builds or database checks. The subsequent
+order-tools implementation passed the current 101-test suite; see
+`ORDER_TOOLS_GUIDE.md` for separate isolated SQL validation. Unit tests do not
+verify live RMS database or Windows registry behavior.
 
 ## Findings
 
@@ -43,7 +72,12 @@ Row zero is `PRICE (RETAIL)`. Consequently, Price A, Price B, and Price C custom
 
 The RMS Customization Guide confirms that customer price-level values are `0 = Default`, `1 = Price Level A`, `2 = Price Level B`, and `3 = Price Level C`. It also documents that setting a customer applies the new customer's default price level and recalculates prices and totals.
 
-**Recommended fix:** Restore label-based selection using the customer's configured price level, preferably through one shared helper used by both price-level forms.
+**Original recommendation:** Restore label-based selection using the customer's configured price level, preferably through one shared helper used by both price-level forms.
+
+**Current behavior (October 6, 2026):** `frmPriceLevel.LoadLevels` loads rows
+through the customer's permitted level, then calls `SelectTopPriceLevel` to
+highlight row zero. `PriceLevelFormSelectionTests` explicitly verifies top-row
+selection. Automatic customer-level selection is not implemented in this form.
 
 ### 2. High: Manual tax exemption can remain attached to a taxable order
 

@@ -50,17 +50,20 @@ Public Class clsQueueing
 
     End Function
 
-    Public Shared Function LoadOrders(ByVal groupID As Integer, ByVal picLoc As String, ByVal rType As String) As Object
+    Public Shared Function LoadOrders(ByVal groupID As Integer, ByVal picLoc As String, ByVal rType As String,
+                                     Optional ByVal connectionString As String = Nothing) As Object
         Try
-            Dim res = (From a In db.Queueings
-                 Join b In db.QueueingItems On a.id Equals b.QueueingID
-                 Join c In db.Items On b.ItemID Equals c.ID
-                 Join d In db.Orders On a.OrderID Equals d.ID
+            Using readDb As New DatabaseDataContext(If(connectionString, db.Connection.ConnectionString))
+            Dim res = (From a In readDb.Queueings
+                 Join b In readDb.QueueingItems On a.id Equals b.QueueingID
+                 Join c In readDb.Items On b.ItemID Equals c.ID
+                 Join d In readDb.Orders On a.OrderID Equals d.ID
                  Where a.GroupTo = groupID And b.PickLoc.Equals(picLoc) And d.Comment.Contains(rType)
                  Order By b.id Ascending
                 Select New With {a.GroupTo, a.id, a.OrderID, b.ItemID, .ItemCode = c.ItemLookupCode, .Description = c.Description + c.ExtendedDescription.ToString, b.QtyPre, b.Picker, b.Status, b.QueueingID, a.OPIS, .OrderTime = d.Time}).Distinct.ToList
 
             Return res
+            End Using
         Catch ex As Exception
             MessageBox.Show("FROM : clsQueueing Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -250,18 +253,24 @@ Public Class clsQueueing
         End Try
     End Sub
 
-    Public Shared Sub UpdateQtyPrep(ByVal queueid As Integer, ByVal itemid As Integer, ByVal qty As String)
+    Public Shared Sub UpdateQtyPrep(ByVal queueid As Integer, ByVal itemid As Integer, ByVal qty As String,
+                                   Optional ByVal connectionString As String = Nothing)
         Try
-
-            Dim upd = (From a In db.QueueingItems
+            Using writeDb As New DatabaseDataContext(If(connectionString, db.Connection.ConnectionString))
+            writeDb.Connection.Open()
+            Using transaction = writeDb.Connection.BeginTransaction()
+            writeDb.Transaction = transaction
+            Dim upd = (From a In writeDb.QueueingItems
                   Where a.QueueingID.Equals(queueid) And a.ItemID.Equals(itemid)).ToList()(0)
 
             upd.QtyPre = qty
             If upd.Status = "Shortage" OrElse upd.Status = "Check Stock" Then
                 upd.Status = "Processing"
             End If
-            TouchOrderLastUpdated({CLng(queueid)})
-            db.SubmitChanges()
+            SaveFreshQueueChange(writeDb, queueid)
+            transaction.Commit()
+            End Using
+            End Using
         Catch ex As Exception
             MessageBox.Show("FROM : clsQueueing Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0008", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -336,17 +345,23 @@ Public Class clsQueueing
 
     End Function
 
-    Public Shared Sub UpdateStatus(ByVal queueid As Integer, ByVal itemid As Integer, ByVal stat As String)
+    Public Shared Sub UpdateStatus(ByVal queueid As Integer, ByVal itemid As Integer, ByVal stat As String,
+                                  Optional ByVal connectionString As String = Nothing)
         Try
-
-            Dim upt = (From a In db.QueueingItems Where a.QueueingID.Equals(queueid) And a.ItemID.Equals(itemid)
+            Using writeDb As New DatabaseDataContext(If(connectionString, db.Connection.ConnectionString))
+            writeDb.Connection.Open()
+            Using transaction = writeDb.Connection.BeginTransaction()
+            writeDb.Transaction = transaction
+            Dim upt = (From a In writeDb.QueueingItems Where a.QueueingID.Equals(queueid) And a.ItemID.Equals(itemid)
                  Select a).ToList
 
             For Each x In upt
                 x.Status = stat
             Next
-            TouchOrderLastUpdated({CLng(queueid)})
-            db.SubmitChanges()
+            SaveFreshQueueChange(writeDb, queueid)
+            transaction.Commit()
+            End Using
+            End Using
         Catch ex As Exception
             MessageBox.Show("FROM : clsQueueing Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -420,12 +435,13 @@ Public Class clsQueueing
 
     End Function
 
-    Public Shared Function checkTableUpdate() As String
+    Public Shared Function checkTableUpdate(Optional ByVal connectionString As String = Nothing) As String
 
         Dim str = ""
         Try
 
-            Dim upt = (From a In db.SOD_viewTableLastUpdates Where Not a.TableName.Equals("Item")
+            Using readDb As New DatabaseDataContext(If(connectionString, db.Connection.ConnectionString))
+            Dim upt = (From a In readDb.SOD_viewTableLastUpdates Where Not a.TableName.Equals("Item")
                       Select a).ToList
 
             'Dim upt = (From a In db.SOD_viewTableLastUpdates Where Not a.TableName.Equals("Item")
@@ -442,6 +458,7 @@ Public Class clsQueueing
                 Return str
 
             End If
+            End Using
 
 
         Catch ex As Exception
@@ -648,9 +665,14 @@ Public Class clsQueueing
         Return list
     End Function
 
-    Public Shared Function FlagItemShortage(ByVal queueid As Long, ByVal itemid As Integer, ByVal qtyFound As Integer) As Boolean
+    Public Shared Function FlagItemShortage(ByVal queueid As Long, ByVal itemid As Integer, ByVal qtyFound As Integer,
+                                          Optional ByVal connectionString As String = Nothing) As Boolean
         Try
-            Dim items = (From qi In db.QueueingItems
+            Using writeDb As New DatabaseDataContext(If(connectionString, db.Connection.ConnectionString))
+            writeDb.Connection.Open()
+            Using transaction = writeDb.Connection.BeginTransaction()
+            writeDb.Transaction = transaction
+            Dim items = (From qi In writeDb.QueueingItems
                          Where qi.QueueingID.HasValue AndAlso qi.QueueingID.Value = queueid AndAlso
                                qi.ItemID.HasValue AndAlso qi.ItemID.Value = itemid
                          Select qi).ToList()
@@ -662,14 +684,21 @@ Public Class clsQueueing
                 qi.Status = "Shortage"
             Next
 
-            TouchOrderLastUpdated({queueid})
-            db.SubmitChanges()
+            SaveFreshQueueChange(writeDb, queueid)
+            transaction.Commit()
             Return True
+            End Using
+            End Using
         Catch ex As Exception
             Return False
         End Try
     End Function
 
+    Private Shared Sub SaveFreshQueueChange(context As DatabaseDataContext, queueID As Long)
+        context.SubmitChanges()
+        context.ExecuteCommand("UPDATE o SET LastUpdated=GETDATE() FROM dbo.[Order] o " &
+                               "JOIN dbo.Queueing q ON q.OrderID=o.ID WHERE q.id={0};", queueID)
+    End Sub
 End Class
 
 

@@ -1,0 +1,141 @@
+
+
+   TypeName: System.__ComObject#{d223abdc-2506-4964-a15f-9a1a19d46edb}
+
+Name                            MemberType            Definition                                                       
+----                            ----------            ----------                                                       
+AutoBalance                     Method                void AutoBalance (string)                                        
+CalculateTotals                 Method                void CalculateTotals ()                                          
+ClearCustomer                   Method                void ClearCustomer ()                                            
+ClearSalesRep                   Method                void ClearSalesRep ()                                            
+CreateGlobalRequest             Method                _Recordset CreateGlobalRequest (bool)                            
+IsAddMoneyTransaction           Method                bool IsAddMoneyTransaction ()                                    
+LoadSalesRep                    Method                StatusCategoryEnum LoadSalesRep (int)                            
+MaximumFoodStampsAllowed        Method                currency MaximumFoodStampsAllowed ()                             
+Post                            Method                StatusCategoryEnum Post (int, Variant, bool)                     
+PostReceipt                     Method                StatusCategoryEnum PostReceipt (string, int)                     
+PostTenderValidate              Method                StatusCategoryEnum PostTenderValidate ()                         
+PreTenderValidate               Method                StatusCategoryEnum PreTenderValidate ()                          
+RevertToSavedPrices             Method                void RevertToSavedPrices ()                                      
+SavePrices                      Method                void SavePrices ()                                               
+SetCustomer                     Method                StatusCategoryEnum SetCustomer (int, bool)                       
+SetDepositTotal                 Method                StatusCategoryEnum SetDepositTotal (currency)                    
+SetDiscountPercentage           Method                StatusCategoryEnum SetDiscountPercentage (discountmethodEnum, ...
+SetDrop                         Method                StatusCategoryEnum SetDrop (currency, string)                    
+SetDummyPostData                Method                void SetDummyPostData (int, int)                                 
+SetEntryDiscountReasonCodes     Method                void SetEntryDiscountReasonCodes (_ReasonCode)                   
+SetEntryReturnReasonCodes       Method                void SetEntryReturnReasonCodes (_ReasonCode)                     
+SetEntryTaxChangeReasonCodes    Method                void SetEntryTaxChangeReasonCodes (_ReasonCode)                  
+SetLayawayPaymentCurrent        Method                StatusCategoryEnum SetLayawayPaymentCurrent (currency)           
+SetPayout                       Method                StatusCategoryEnum SetPayout (currency, string, string)          
+SetPriceLevel                   Method                StatusCategoryEnum SetPriceLevel (pricelevelEnum)                
+SetTaxable                      Method                StatusCategoryEnum SetTaxable (bool, bool)                       
+SetTenderDefault                Method                void SetTenderDefault ()                                         
+SetTransactionAmountOffOnce     Method                StatusCategoryEnum SetTransactionAmountOffOnce (currency)        
+SetTransactionAmountOnce        Method                StatusCategoryEnum SetTransactionAmountOnce (currency)           
+SetTransactionPercentageOffOnce Method                StatusCategoryEnum SetTransactionPercentageOffOnce (double)      
+SetTransactionType              Method                StatusCategoryEnum SetTransactionType (transactiontypeEnum)      
+TendersForceValidation          Method                void TendersForceValidation ()                                   
+TendersResetValidations         Method                void TendersResetValidations ()                                  
+ValidateCustomerAccount         Method                StatusCategoryEnum ValidateCustomerAccount ()                    
+ValidateFloorLimit              Method                StatusCategoryEnum ValidateFloorLimit ()                         
+Balance                         ParameterizedProperty currency Balance (string) {get}                                  
+TotalDue                        ParameterizedProperty currency TotalDue (string) {get}                                 
+TotalQuantityPurchasedForItem   ParameterizedProperty double TotalQuantityPurchasedForItem (int) {get}                 
+TotalTendered                   ParameterizedProperty currency TotalTendered (string) {get}                            
+TotalTenderIn                   ParameterizedProperty currency TotalTenderIn (string) {get}                            
+TotalTenderOut                  ParameterizedProperty currency TotalTenderOut (string) {get}                           
+AnyItemsOrdered                 Property              bool AnyItemsOrdered () {get}                                    
+CashBackSurcharge               Property              currency CashBackSurcharge () {get}                              
+ChangeFoodStamp                 Property              currency ChangeFoodStamp () {get}                                
+Comment                         Property              string Comment () {get} {set}                                    
+ContactHqServer                 Property              bool ContactHqServer () {get}                                    
+CurrencyDescriptorDisplay       Property              _CurrencyDescriptor CurrencyDescriptorDisplay () {get} {set by...
+CurrentEntryKey                 Property              string CurrentEntryKey () {get} {set}                            
+Customer                        Property              _Customer Customer () {get}                                      
+DebitAllSurcharges              Property              currency DebitAllSurcharges () {get}                             
+DebitSurcharge                  Property              currency DebitSurcharge () {get}                                 
+DefaultDiscountReasonCode       Property              _ReasonCode DefaultDiscountReasonCode () {get} {set by ref}      
+DefaultReturnReasonCode         Property              _ReasonCode DefaultReturnReasonCode () {get} {set by ref}        
+DefaultTaxChangeReasonCode      Property              _ReasonCode DefaultTaxChangeReasonCode () {get} {set by ref}     
+Deposit                         Property              currency Deposit () {get}                                        
+DepositOverride                 Property              bool DepositOverride () {get} {set}                              
+DepositPrevious                 Property              currency DepositPrevious () {get}                                
+DepositTotal                    Property              currency DepositTotal () {get}                                   
+Discount                        Property              currency Discount () {get}                                       
+DiscountMethod                  Property              discountmethodEnum DiscountMethod () {get}                       
+DiscountPercent                 Property              double DiscountPercent () {get}                                  
+DiscountPurchased               Property              currency DiscountPurchased () {get}                              
+DropAmount                      Property              currency DropAmount () {get}                                     
+DropPayoutID                    Property              int DropPayoutID () {get}                                        
+Entries                         Property              _TransactionEntries Entries () {get}                             
+ExchangeID                      Property              int ExchangeID () {get} {set}                                    
+ExchangeStatus                  Property              int ExchangeStatus () {get} {set}                                
+ExpirationOrDueDate             Property              Date ExpirationOrDueDate () {get} {set}                          
+HoldComment                     Property              string HoldComment () {get}                                      
+InProgress                      Property              bool InProgress () {get}                                         
+IsOrder                         Property              bool IsOrder () {get}                                            
+IsPartialPick                   Property              bool IsPartialPick () {get} {set}                                
+IsVATEnabled                    Property              bool IsVATEnabled () {get}                                       
+ItemTaxes                       Property              _ItemTaxes ItemTaxes () {get}                                    
+KeptDeposit                     Property              bool KeptDeposit () {get} {set}                                  
+LayawayPaymentCurrent           Property              currency LayawayPaymentCurrent () {get}                          
+LayawayPaymentOverride          Property              bool LayawayPaymentOverride () {get} {set}                       
+NonTenderTransactionID          Property              int NonTenderTransactionID () {get}                              
+OrderBalance                    Property              currency OrderBalance () {get}                                   
+OrderBalanceNew                 Property              currency OrderBalanceNew () {get}                                
+OrderClosed                     Property              bool OrderClosed () {get}                                        
+OrderHistoryID                  Property              int OrderHistoryID () {get}                                      
+OrderID                         Property              int OrderID () {get}                                             
+PaymentID                       Property              int PaymentID () {get}                                           
+PayoutAmount                    Property              currency PayoutAmount () {get}                                   
+PayoutRecipient                 Property              string PayoutRecipient () {get}                                  
+Points                          Property              double Points () {get}                                           
+PoleDisplayShowTenderInfo       Property              bool PoleDisplayShowTenderInfo () {get} {set}                    
+PriceLevel                      Property              pricelevelEnum PriceLevel () {get}                               
+Purchases                       Property              currency Purchases () {get}                                      
+ReasonCode                      Property              _ReasonCode ReasonCode () {get} {set by ref}                     
+Recalled                        Property              bool Recalled () {get}                                           
+RecallID                        Property              int RecallID () {get}                                            
+RecallType                      Property              recallEnum RecallType () {get} {set}                             
+ReceiptReferenceNumber          Property              int ReceiptReferenceNumber () {get}                              
+ReceiptReferenceType            Property              transactiontypeEnum ReceiptReferenceType () {get}                
+ReceiptTransactionNumber        Property              int ReceiptTransactionNumber () {get}                            
+ReceiptTransactionType          Property              transactiontypeEnum ReceiptTransactionType () {get}              
+ReferenceID                     Property              int ReferenceID () {get}                                         
+ReferenceNumber                 Property              string ReferenceNumber () {get} {set}                            
+ReturningItems                  Property              bool ReturningItems () {get}                                     
+ReturnMode                      Property              bool ReturnMode () {get} {set}                                   
+SalesRep                        Property              _SalesRep SalesRep () {get}                                      
+SalesTax                        Property              currency SalesTax () {get}                                       
+SalesTaxes                      Property              _SalesTaxes SalesTaxes () {get}                                  
+SalesTaxOnOrder                 Property              currency SalesTaxOnOrder () {get}                                
+SalesTaxPurchased               Property              currency SalesTaxPurchased () {get}                              
+Session                         Property              _SessionClass Session () {get}                                   
+Shipping                        Property              _Shipping Shipping () {get}                                      
+SubReferenceID                  Property              int SubReferenceID () {get}                                      
+Subtotal                        Property              currency Subtotal () {get}                                       
+SubTotalOnOrder                 Property              currency SubTotalOnOrder () {get}                                
+SubTotalPurchased               Property              currency SubTotalPurchased () {get}                              
+Taxable                         Property              bool Taxable () {get}                                            
+TaxPrevious                     Property              currency TaxPrevious () {get}                                    
+TenderDefault                   Property              _Tender TenderDefault () {get}                                   
+TenderedFoodStamps              Property              currency TenderedFoodStamps () {get}                             
+TenderedInFoodStamps            Property              currency TenderedInFoodStamps () {get}                           
+TenderPopsCashDrawer            Property              bool TenderPopsCashDrawer () {get}                               
+Tenders                         Property              _Tenders Tenders () {get}                                        
+Total                           Property              currency Total () {get}                                          
+TotalOnOrder                    Property              currency TotalOnOrder () {get}                                   
+TotalPreviousPaid               Property              currency TotalPreviousPaid () {get}                              
+TotalPurchased                  Property              currency TotalPurchased () {get}                                 
+TotalQuantity                   Property              double TotalQuantity () {get}                                    
+TotalQuantityOnOrder            Property              double TotalQuantityOnOrder () {get}                             
+TotalQuantityPurchased          Property              double TotalQuantityPurchased () {get}                           
+TotalWeight                     Property              double TotalWeight () {get}                                      
+TotalWeightOnOrder              Property              double TotalWeightOnOrder () {get}                               
+TotalWeightPurchased            Property              double TotalWeightPurchased () {get}                             
+TransactionNumber               Property              double TransactionNumber () {get}                                
+TransactionTime                 Property              Date TransactionTime () {get}                                    
+TransactionType                 Property              transactiontypeEnum TransactionType () {get}                     
+
+

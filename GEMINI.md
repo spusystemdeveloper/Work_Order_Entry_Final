@@ -21,3 +21,17 @@
   4. `CornflowerBlue` (For Invoicing)
 - **Do Not Filter "For Invoicing" Orders**: Orders marked "For Invoicing" are still active and must display on screen with the CornflowerBlue card and be counted in the bottom "For Invoice" panel (`lblForInvoice`). NEVER exclude `Status = 'For Invoicing'` in `LoadOpenWO` or `LoadOpenWOUpdate`. Orders only exit the queue when tendered in RMS POS (where trigger `trg_Transaction_closeQueue` sets `Queueing.Status = 1`).
 
+## Microsoft Dynamics RMS Tender Configuration & Knowledge
+- **Withholding Tax (WTax) & Adjustment Tender Types**:
+  - `dbo.Tender.PreventOverTendering` must be set to `0` (False / unchecked) for withholding tax and adjustment tender types (e.g., `WTax 1% or 2%` [ID 17], `WTax 5%` [ID 18], `WTax 15%` [ID 41], `Municipal tax` [ID 19]).
+  - **Root Cause in RMS**: In Store Operations POS (`QSRules.dll!Tender.ValidateAmount`), Receive Payment / Account Payment (`Shift+F4`) transactions have no item purchase lines (`PurchaseAmount = 0.00`). If a tender under category `Other` has `PreventOverTendering = 1`, RMS POS evaluates the payment against purchase amounts and blocks the cashier with:
+    > *"Overtendering is not allowed for the following tender types: Other:WTax 1% or 2%. Adjust the payment amounts and try again."*
+    even when `Total Tendered` exactly equals `Total Due` and `Change = 0.00`.
+  - **Resolution**:
+    ```sql
+    UPDATE dbo.Tender
+    SET PreventOverTendering = 0
+    WHERE ID IN (17, 18, 19, 41);
+    ```
+    Or uncheck **"Prevent over tendering"** in RMS Store Operations Manager under `Database` → `Tender Types` → `Properties`.
+
