@@ -23,6 +23,7 @@ $checks = 0
 $connection = $null
 $master = $null
 $created = $false
+$hoFixtureCreated = $false
 function Check([bool]$condition, [string]$label) {
     if (-not $condition) { throw "FAILED: $label" }
     $script:checks++
@@ -49,6 +50,9 @@ function Script([string]$name, [string]$sql) {
 }
 function Apply($scripts) {
     return [WorkOrderDatabaseUpdater.UpdateRunner]::Apply($cs, $dbName, [WorkOrderDatabaseUpdater.UpdateScript[]]$scripts, (Join-Path $directory 'Runs'))
+}
+function Apply-HoMigration($scripts) {
+    return [WorkOrderDatabaseUpdater.UpdateRunner]::Apply($hoCs, 'HO_PO_DB', [WorkOrderDatabaseUpdater.UpdateScript[]]$scripts, (Join-Path $directory 'Runs'))
 }
 function Initialize-RenderControl($control) {
     $null = $control.Handle
@@ -194,13 +198,70 @@ INSERT dbo.Invariant VALUES(1,7);
     Check ((Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory') -eq $count) 'Rejected concurrent attempt leaves history unchanged'
     $schema = Scalar "SELECT definition FROM sys.sql_modules WHERE object_id=OBJECT_ID('dbo.SOD_UpdateTest')"
     Check ($schema -match 'RETURN 9') 'All rejected updates preserve the committed function'
+    $hoPath = Join-Path $components 'Migrations\Add_HO_PO_WorkOrder_Password_Columns.sql'
+    $hoScript = [WorkOrderDatabaseUpdater.UpdateScript]::Load($hoPath, 'Custom/Add_HO_PO_WorkOrder_Password_Columns.sql', 'Custom SQL', 'HO target column migration', $false)
+    $beforeWrongTarget = Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory'
+    Reject { Apply @($hoScript) } 'targets HO_PO_DB only' 'HO migration rejects a different target database'
+    Check ((Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory') -eq $beforeWrongTarget) 'Wrong-target HO attempt leaves deployment records unchanged'
+    # HO_PO_DB below exists only in this GUID-owned disposable LocalDB instance.
+    $cmd = $master.CreateCommand()
+    try { $cmd.CommandText = 'CREATE DATABASE HO_PO_DB; ALTER DATABASE HO_PO_DB SET COMPATIBILITY_LEVEL=130;'; $null = $cmd.ExecuteNonQuery(); $hoFixtureCreated = $true }
+    finally { $cmd.Dispose() }
+    $hoCs = [WorkOrderDatabaseUpdater.UpdateRunner]::ConnectionString($server, 'HO_PO_DB', '', '', $true)
+    $hoConnection = [Data.SqlClient.SqlConnection]::new($hoCs); $hoConnection.Open()
+    $previousConnection = $connection
+    $connection = $hoConnection
+    try {
+        Sql @'
+CREATE TABLE dbo.Item(ID int NOT NULL PRIMARY KEY,ItemLookupCode nvarchar(25),Taxable bit);
+CREATE TABLE dbo.[Order](ID int NOT NULL PRIMARY KEY);
+CREATE TABLE dbo.OrderEntry(ID int NOT NULL PRIMARY KEY);
+CREATE TABLE dbo.SOD_WO_Conf (
+ id int IDENTITY(1,1) NOT NULL PRIMARY KEY,[Password] nvarchar(50) NULL,
+ LimitEntry int NULL,PriceLevel nvarchar(50) NULL,StoreID int NULL,AllowPriceChange bit NULL,CustType nvarchar(max) NULL);
+INSERT dbo.SOD_WO_Conf([Password],LimitEntry,PriceLevel,StoreID,AllowPriceChange,CustType)
+ VALUES(N'fixture-only-one',12,N'fixture-level',37,1,N'fixture-customer'),
+       (N'fixture-only-two',14,N'fixture-level',38,0,N'fixture-customer');
+'@
+        Reject { Sql $hoScript.Sql } 'active transaction' 'HO column script refuses execution without the updater transaction'
+        $null = Apply-HoMigration @($hoScript)
+        Check ((Scalar "SELECT COUNT(*) FROM sys.columns WHERE object_id=OBJECT_ID(N'dbo.SOD_WO_Conf') AND name IN(N'Password2',N'Password3',N'Pass2Username',N'Pass3Username') AND system_type_id=231 AND max_length=100 AND is_nullable=1") -eq 4) 'HO migration creates all four missing nullable nvarchar(50) fields'
+        Check ((Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_Conf WHERE Password2 IS NULL AND Password3 IS NULL AND Pass2Username IS NULL AND Pass3Username IS NULL') -eq 2) 'New HO password fields stay NULL; no credentials are generated'
+        Check ((Scalar "SELECT COUNT(*) FROM dbo.SOD_WO_Conf WHERE (id=1 AND [Password]=N'fixture-only-one' AND LimitEntry=12 AND StoreID=37 AND AllowPriceChange=1) OR (id=2 AND [Password]=N'fixture-only-two' AND LimitEntry=14 AND StoreID=38 AND AllowPriceChange=0)") -eq 2 -and (Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_Conf') -eq 2) 'HO configuration rows, existing credentials, and settings are preserved'
+        Sql "UPDATE dbo.SOD_WO_Conf SET Password2=N'fixture-secondary',Password3=N'fixture-third',Pass2Username=N'fixture-user'; ALTER TABLE dbo.SOD_WO_Conf DROP COLUMN Pass3Username;"
+        $null = Apply-HoMigration @($hoScript)
+        Check ((Scalar "SELECT COUNT(*) FROM dbo.SOD_WO_Conf WHERE Password2=N'fixture-secondary' AND Password3=N'fixture-third' AND Pass2Username=N'fixture-user' AND Pass3Username IS NULL") -eq 2) 'Partial HO schema upgrade adds only the missing field and preserves populated fields'
+        $columnDefinition = Scalar "SELECT column_id,name,system_type_id,max_length,is_nullable,collation_name FROM sys.columns WHERE object_id=OBJECT_ID(N'dbo.SOD_WO_Conf') ORDER BY column_id FOR XML PATH('Column'),ROOT('Columns')"
+        $null = Apply-HoMigration @($hoScript)
+        $repeatedDefinition = Scalar "SELECT column_id,name,system_type_id,max_length,is_nullable,collation_name FROM sys.columns WHERE object_id=OBJECT_ID(N'dbo.SOD_WO_Conf') ORDER BY column_id FOR XML PATH('Column'),ROOT('Columns')"
+        Check ($columnDefinition -eq $repeatedDefinition -and (Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory') -eq 3) 'Repeated HO deployment preserves schema definitions and records explicit runs'
+        Sql 'ALTER TABLE dbo.SOD_WO_Conf ALTER COLUMN Password3 nvarchar(100) NULL; ALTER TABLE dbo.SOD_WO_Conf DROP COLUMN Pass2Username;'
+        Reject { Apply-HoMigration @($hoScript) } 'not a regular nvarchar' 'Incompatible HO column definition stops the migration'
+        Check ((Scalar "SELECT COL_LENGTH(N'dbo.SOD_WO_Conf',N'Pass2Username')") -is [DBNull] -and (Scalar "SELECT COL_LENGTH(N'dbo.SOD_WO_Conf',N'Password3')") -eq 200 -and (Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory') -eq 3) 'Incompatible HO schema is left intact and missing columns are not partially added'
+        Sql 'ALTER TABLE dbo.SOD_WO_Conf ALTER COLUMN Password3 nvarchar(50) NULL;'
+        Reject { Apply-HoMigration @($hoScript,$failure) } 'Fixture failure' 'HO additions roll back when a later selected script fails'
+        Check ((Scalar "SELECT COL_LENGTH(N'dbo.SOD_WO_Conf',N'Pass2Username')") -is [DBNull] -and (Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory') -eq 3 -and (Scalar "SELECT COUNT(*) FROM dbo.SOD_WO_Conf WHERE Password3=N'fixture-third'") -eq 2) 'Rolled-back HO plan preserves prior fields and deployment history'
+        Sql 'DROP TABLE dbo.SOD_WO_Conf;'
+        Reject { Apply-HoMigration @($hoScript) } 'existing dbo.SOD_WO_Conf table' 'Missing HO configuration table requires review'
+        Check ((Scalar "SELECT OBJECT_ID(N'dbo.SOD_WO_Conf')") -is [DBNull]) 'HO migration does not invent a missing branch configuration table'
+        Sql 'CREATE VIEW dbo.SOD_WO_Conf AS SELECT 1 AS id;'
+        Reject { Apply-HoMigration @($hoScript) } 'existing dbo.SOD_WO_Conf table' 'HO configuration object type conflict is rejected'
+        Check ((Scalar "SELECT OBJECT_ID(N'dbo.SOD_WO_Conf',N'V')") -isnot [DBNull] -and (Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory') -eq 3) 'Rejected HO object conflict preserves the existing view and history'
+    } finally { $connection = $previousConnection; $hoConnection.Dispose() }
     Write-Output "PASS: $checks updater checks; artifacts: $directory"
 } finally {
     if ($null -ne $connection) { $connection.Dispose() }
     if ($null -ne $master) {
         if ($master.State -eq [Data.ConnectionState]::Open) {
             $cmd = $master.CreateCommand()
-            try { $cmd.CommandText = "IF DB_ID(N'$dbName') IS NOT NULL BEGIN ALTER DATABASE [$dbName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [$dbName]; END"; $null = $cmd.ExecuteNonQuery() }
+            try {
+                $cmd.CommandText = "IF DB_ID(N'$dbName') IS NOT NULL BEGIN ALTER DATABASE [$dbName] SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE [$dbName]; END"
+                $null = $cmd.ExecuteNonQuery()
+                if ($hoFixtureCreated) {
+                    $cmd.CommandText = 'ALTER DATABASE HO_PO_DB SET SINGLE_USER WITH ROLLBACK IMMEDIATE; DROP DATABASE HO_PO_DB;'
+                    $null = $cmd.ExecuteNonQuery()
+                }
+            }
             finally { $cmd.Dispose() }
         }
         $master.Dispose()

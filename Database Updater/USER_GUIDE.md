@@ -175,6 +175,24 @@ used by the app can change behavior immediately; review its business rules.
 
 ## 7. Add a column or an index
 
+**History compatibility fix:** when an existing `SOD_WO_History.EventID` is an
+IDENTITY, select `Fix_WorkOrder_History_Identity.sql` first. It preserves event
+records and replaces identity generation with a sequence so RMS receives its own
+transaction/order number. Run it before `Enable_WorkOrder_History.sql`; the
+installer stops on unsafe legacy history. Already incorrect transaction links
+need a separate incident-specific recovery. The
+[HO recovery guide](../Database%20Components/Recovery/README.md) provides a
+self-contained SSMS file with rollback rehearsal enabled by default.
+
+For the existing password-slot fields specifically in **HO_PO_DB**, use
+`Database Components/Migrations/Add_HO_PO_WorkOrder_Password_Columns.sql` through
+**Add SQL script...**. Set the actual server and **HO_PO_DB** as the database; you
+can leave the profile at **GSC** for this focused import. Select only the imported
+migration. It adds missing Password2/Password3/Pass2Username/Pass3Username fields
+and preserves existing values. Test a restore and back up before live deployment.
+Selecting the GSC profile alone does not add missing columns to an existing table
+or confirm that its branch functions match HO_PO_DB.
+
 Two more test-restore examples are included:
 
 | File | Demonstration |

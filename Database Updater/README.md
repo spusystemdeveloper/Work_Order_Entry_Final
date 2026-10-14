@@ -57,6 +57,15 @@ made using SSMS or earlier tools have no entry in this updater's history.
 
 ## Future migrations and function fixes
 
+For existing Work Order audit history, apply `Fix_WorkOrder_History_Identity.sql`
+before `Enable_WorkOrder_History.sql`. RMS uses `@@IDENTITY`; the former history
+IDENTITY column could cause transaction children to reference an audit event ID.
+The compatibility migration retains all audit events/IDs using a sequence and
+preserves existing audit trigger definitions. The updated installer uses sequences
+for new databases and refuses an unsafe legacy table. Back up first. These
+migrations prevent recurrence; they do not repair already mislinked sales. See
+[the incident recovery instructions](../Database%20Components/Recovery/README.md).
+
 Use **Add SQL script** for trusted, reviewed `.sql` files. Functions can use
 `CREATE FUNCTION` or `ALTER FUNCTION` as their own batches separated by `GO`.
 For create-or-update behavior on SQL Server 2016 RTM, use the existing packaged
@@ -117,5 +126,8 @@ function creation/update, migrations/index reuse, transaction rollback, history,
 concurrent deployment rejection, target and permission checks, file changes,
 catalog loading, SQL batch handling, and form initialization. It never connects
 to an existing store database. Build the Debug updater before running it.
-All 44 checks passed on October 14, 2026, including the guide's runnable examples
+All 60 checks passed on October 14, 2026, including the guide's runnable examples
 and the documented change from doubling to tripling the example function result.
+The HO_PO_DB column migration also passed target/type guards, value preservation,
+repeat deployment, and rollback checks in a separate database on the owned fixture
+instance. The live HO_PO_DB server has not been updated by these tests.

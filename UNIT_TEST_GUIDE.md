@@ -5,6 +5,30 @@ connecting to DVO/GSC, or changing database records.
 
 ## What is tested
 
+Two additional disposable SQL suites cover the October 14 identity incident:
+
+```powershell
+& '.\Database Components\Tests\HistoryIdentity_LocalDB_Test.ps1'
+& '.\Database Components\Tests\HO_RecoveryScript_LocalDB_Test.ps1'
+```
+
+The first passed 20 checks: actual legacy `@@IDENTITY` reproduction, preserving
+audit events/permissions, conversion rollback, custom-schema rejection, nested
+queue triggers, and fresh/repeated sequence installation. The second passed 27
+checks running the entire standalone HO SSMS script on synthetic data, including
+default rehearsal rollback, explicit commit, unchanged unrelated old invoice
+records, tax/receivable/payment links, repeat runs, optional log references and
+rejection after subsequent receivable activity. Five additional checks exercise
+copied non-checksummed backups without local history, local-mode rehearsal,
+wrong-machine rejection, missing-file rejection and unchanged live requirements.
+Five further checks verify the local backup helper, its copy-only/no-checksum
+settings, accepted output path, rejection outside the local test machine, and
+stopping after backup creation fails.
+Three path-editing checks cover unedited placeholders, whitespace-only values,
+and successful rehearsal after replacing every occurrence of the placeholder.
+Both own and remove their LocalDB
+instances. Neither suite writes to live HO_PO_DB.
+
 The separate database updater has its own disposable integration checks:
 
 ```powershell
@@ -16,9 +40,13 @@ create and remove their own LocalDB instance; they never use store databases or
 application credentials. See [the updater guide](Database%20Updater/README.md)
 for deployment, rollback, and snapshot limitations.
 
-All 44 updater checks passed on October 14, 2026. The included user-guide SQL
+All 60 updater checks passed on October 14, 2026. The included user-guide SQL
 examples are executed through the actual updater runner, including repeat
 deployment and function body/verification changes, on its disposable fixture.
+Sixteen additional checks exercise HO_PO_DB's focused password-slot column
+migration, including preserved values, target/type rejection, repeat deployment,
+and rollback on later failure. This HO_PO_DB exists only in the owned LocalDB
+instance; the tests do not connect to the live HO server.
 
 - Price labels map to the correct RMS price-level number.
 - The Price Level form initially highlights its top row.

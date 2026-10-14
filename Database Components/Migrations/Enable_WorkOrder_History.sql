@@ -29,9 +29,18 @@ IF EXISTS (SELECT 1 FROM sys.columns
 
 BEGIN TRY
     BEGIN TRANSACTION;
+    IF OBJECT_ID(N'dbo.SOD_WO_History',N'U') IS NOT NULL AND
+       COLUMNPROPERTY(OBJECT_ID(N'dbo.SOD_WO_History'),N'EventID','IsIdentity')=1
+        THROW 52104, 'Legacy history IDENTITY interferes with RMS. Apply Fix_WorkOrder_History_Identity.sql first.', 1;
+    IF OBJECT_ID(N'dbo.SOD_WO_History_EventSequence') IS NOT NULL AND
+       OBJECT_ID(N'dbo.SOD_WO_History_EventSequence',N'SO') IS NULL
+        THROW 52105, 'History EventSequence has an incompatible object type.', 1;
+    IF OBJECT_ID(N'dbo.SOD_WO_History_EventSequence',N'SO') IS NULL
+        EXEC sys.sp_executesql N'CREATE SEQUENCE dbo.SOD_WO_History_EventSequence AS bigint START WITH 1 INCREMENT BY 1 MINVALUE 1 NO CYCLE CACHE 100;';
     IF OBJECT_ID(N'dbo.SOD_WO_History', N'U') IS NULL
         CREATE TABLE dbo.SOD_WO_History (
-            EventID bigint IDENTITY(1,1) NOT NULL CONSTRAINT PK_SOD_WO_History PRIMARY KEY,
+            EventID bigint NOT NULL CONSTRAINT PK_SOD_WO_History PRIMARY KEY
+                CONSTRAINT DF_SOD_WO_History_EventID DEFAULT(NEXT VALUE FOR dbo.SOD_WO_History_EventSequence),
             OrderID int NOT NULL,
             EventTime datetime2(3) NOT NULL CONSTRAINT DF_SOD_WO_History_Time DEFAULT SYSDATETIME(),
             EventName nvarchar(60) NOT NULL,
@@ -57,8 +66,16 @@ BEGIN TRY
         EXCEPT
         SELECT c.name, TYPE_NAME(c.user_type_id), c.max_length, c.is_nullable
         FROM sys.columns c WHERE c.object_id = OBJECT_ID(N'dbo.SOD_WO_History')
-    ) OR COLUMNPROPERTY(OBJECT_ID(N'dbo.SOD_WO_History'), N'EventID', 'IsIdentity') <> 1
+    ) OR COLUMNPROPERTY(OBJECT_ID(N'dbo.SOD_WO_History'), N'EventID', 'IsIdentity') <> 0
         THROW 52102, 'SOD_WO_History schema is incompatible. Review the existing table before deployment.', 1;
+    IF NOT EXISTS(SELECT 1 FROM sys.sql_expression_dependencies WHERE
+        referencing_id=(SELECT default_object_id FROM sys.columns WHERE object_id=OBJECT_ID(N'dbo.SOD_WO_History') AND name=N'EventID')
+        AND referenced_id=OBJECT_ID(N'dbo.SOD_WO_History_EventSequence'))
+        THROW 52106, 'History EventID requires its sequence default.', 1;
+    IF NOT EXISTS(SELECT 1 FROM sys.sequences WHERE object_id=OBJECT_ID(N'dbo.SOD_WO_History_EventSequence')
+        AND system_type_id=127 AND CONVERT(bigint,increment)=1 AND is_cycling=0
+        AND CONVERT(bigint,current_value)>=ISNULL((SELECT MAX(EventID) FROM dbo.SOD_WO_History),0))
+        THROW 52107, 'History sequence is incompatible or behind existing event IDs.', 1;
 
     IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE object_id = OBJECT_ID(N'dbo.SOD_WO_History')
                    AND name = N'IX_SOD_WO_History_Order')

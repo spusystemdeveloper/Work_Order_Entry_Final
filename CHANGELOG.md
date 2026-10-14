@@ -4,6 +4,74 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-14
 
+### Critical RMS audit identity compatibility and recovery
+
+- Simplified the backup-path placeholder guard after a user-edited script had
+  replaced both the declaration and the comparison with the same real path,
+  making error 52702 unconditional. The placeholder now occurs only in the
+  declaration; validation checks its prefix and blank values. Regenerated the
+  local script with the supplied backup path, preserving rollback-only default
+  and live backup requirements. All 27 isolated recovery checks pass, including
+  placeholder, whitespace and replace-all regression checks. No store repair ran.
+
+- Added a local-only SQL backup helper for users without a `.bak` file. Creates
+  a unique copy-only backup without checksums, verifies it, and returns the exact
+  backup-path declaration for local recovery. No repair runs in the helper, and
+  it rejects other machines. All 24 disposable recovery checks pass, including
+  five new helper checks. The assistant did not create a store backup or execute
+  a store repair for this addition; the user runs the helper personally.
+
+- Added a separate local-restore recovery SQL file at the user's request. Only
+  computer MSI can use local-test mode, which accepts copied backups without
+  requiring checksums or a local backup-history record. File verification and
+  all repair guards remain. Live mode retains the checksum/copy-only backup
+  requirement. All 19 disposable recovery checks pass, including five new local
+  exception checks. No additional store repair was executed for this change.
+
+- Recorded the incident's cause and future identity/trigger review requirements
+  in GEMINI.md as persistent project knowledge at the user's request.
+
+- Diagnosed missing transaction children: RMS uses `SELECT @@IDENTITY`, and
+  inserts through invoice or nested queue audit triggers into the old history
+  IDENTITY table could return an audit event ID instead of the actual invoice.
+- Added an atomic history conversion to a bigint sequence, retaining every event
+  ID/field, index and object/column permission. Unsupported custom dependencies
+  stop migration. Existing audit triggers and RMS posting rules are preserved.
+  Fresh history uses the sequence; the installer rejects unsafe legacy history.
+  The updater orders the compatibility fix before history installation.
+- Verified a copy-only/checksum local GSC backup, rehearsed the repair with a full
+  rollback, then committed the local transaction 289655 recovery. Relinked its two
+  items, two tax rows, tender, receivable, order history and exact item-log references.
+  Amounts, inventory/commitment values, original events and triggers were checked.
+- Prepared a self-contained SSMS recovery for live HO_PO_DB transaction 23266
+  (order 18870): exact four item/tax links, tender, receivable and order history,
+  guarded preservation of unrelated old transaction 17, verified-backup requirement,
+  rollback rehearsal by default and optional item-log relinking. **No live repair
+  executed**; user will run the file personally. A verified live copy-only full
+  backup was created before the user requested script-only recovery. Original
+  compressed receipt remains historical evidence and can retain the wrong number.
+- Both solutions build in x86 Debug/Release. All 103 unit tests, 60 updater checks,
+  99 workflow checks, 20 identity checks and 14 standalone HO recovery checks pass.
+  Initial unit-test startup was blocked by sandbox socket access; the authorized
+  rerun passed. The workstation Debug configuration was restored byte-for-byte.
+
+### HO_PO_DB password-slot column migration
+
+- Added a focused importable migration for HO_PO_DB's existing SOD_WO_Conf table.
+  Adds missing Password2, Password3, Pass2Username, and Pass3Username columns as
+  nullable nvarchar(50), preserving existing settings and password values.
+- Guards the target database, active transaction, table presence, and existing
+  field types. No default passwords, data updates, or branch-function replacement.
+- Included live-server/GSC-profile import instructions and the migration in the
+  updater package. This change prepares the script; no live HO_PO_DB deployment
+  has been performed by the assistant.
+- Both solutions build in x86 Debug/Release; all 103 unit tests and 60 isolated
+  updater checks passed. Sixteen new HO checks cover target/transaction guards,
+  nullable additions, existing-value preservation, partial schemas, repeat runs,
+  incompatible types, rollback, and missing/conflicting configuration objects.
+  Tests use an HO_PO_DB database only inside a GUID-owned disposable LocalDB
+  instance; the workstation's local Debug configuration was restored and verified.
+
 ### Work Order Database Updater
 
 - Added an offline step-by-step user guide, quick-start text, and an in-tool
@@ -31,11 +99,13 @@ All notable changes to the **Work Order Entry** application are documented in th
   rejection, function create/update, real index reuse, history, multi-script rollback,
   edited files, concurrent updater rejection, and WinForms initialization.
 - Both existing solutions and the updater build in x86 Debug/Release. All 103
-  existing unit tests and 44 isolated updater checks passed, including the six
+  existing unit tests and 60 isolated updater checks passed, including the six
   guide-example checks for creation, updates, repeat deployment, and deliberate
   reapplication of a prior compatible function definition; the local Debug
-  configuration was restored byte-for-byte. No updater deployment was run on a
-  store database. Desktop launch approval timed out; form initialization and
+  configuration was restored byte-for-byte. Automated SQL checks used disposable
+  databases. The user subsequently confirmed a local GSC item-index deployment
+  committed and its record appeared; that run log was verified. Desktop launch
+  approval timed out for assistant-driven screen checks; form initialization and
   package loading were exercised in the isolated harness.
 - Application workflows and rules are unchanged by adding the tool. Applying a
   selected function/migration still requires review of that script's branch rules.

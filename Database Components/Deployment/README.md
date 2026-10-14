@@ -5,6 +5,21 @@ GSC_STORE_DB. Generation does not modify either database.
 
 ## Scope
 
+Existing identity-based Work Order history requires
+`../Migrations/Fix_WorkOrder_History_Identity.sql` before reinstalling history.
+The old audit IDENTITY could interfere with RMS's `@@IDENTITY` lookup. This
+compatibility migration preserves events/IDs and existing triggers; fresh history
+uses a sequence. Already mislinked transactions need separate, guarded recovery:
+see [the recovery guide](../Recovery/README.md). Recovery files are not automatic
+branch deployments or updater catalog items.
+
+For password-slot column alignment on an existing **HO_PO_DB** configuration
+table, use the focused migration and
+[HO deployment guide](../Migrations/HO_PO_PASSWORD_COLUMNS_GUIDE.md).
+Select only that imported migration in the updater; a GSC/DVO table creation file
+does not alter an existing table's missing columns. Branch functions require
+separate compatibility review when targeting a different database name.
+
 For an interactive way to select and preview these objects, see
 [Work Order Database Updater](../../Database%20Updater/README.md).
 It discovers the ordered object files from each branch driver and excludes

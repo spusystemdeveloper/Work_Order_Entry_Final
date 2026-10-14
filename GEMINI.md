@@ -12,6 +12,8 @@
 - **Keep it Simple**: Do not overengineer solutions.
 - **Changelog Integrity**: After each change or set of changes, encode the details into `CHANGELOG.md`.
 - **Validation**: Ensure both `Work Order Entry.sln` and `OrderProcessingQueueing.sln` compile cleanly and all unit tests in `.\Run-UnitTests.ps1` pass before finishing.
+- **RMS identity compatibility**: RMS uses `SELECT @@IDENTITY` after inserting orders, entries and transactions. Audit triggers, including nested queue triggers, must never insert into an IDENTITY table. Use sequence-backed history EventID values. Existing identity-based history requires `Fix_WorkOrder_History_Identity.sql`; test legacy identity lookup, not just `SCOPE_IDENTITY()`.
+- **Remember the October 14, 2026 incident**: The old WO history IDENTITY was a compatibility bug introduced by our history addition interacting with RMS's legacy `@@IDENTITY` lookup. It did not change RMS's identity column or real transaction number; it caused child records to use the wrong returned number. Do not describe it as a confirmed standalone RMS bug or change/reseed RMS identity columns to fix it. Preserve history with sequence-backed numbering, test direct and nested trigger paths using `HistoryIdentity_LocalDB_Test.ps1`, and handle already mislinked sales with a separate guarded recovery. Do not claim all branch-specific custom triggers are safe based only on the packaged objects reviewed.
 
 ## Order Processing Queueing Business Rules
 - **Queue Tile Stages**: Orders in `OrderProcessingQueueing` remain active on screen through all 4 color stages:
