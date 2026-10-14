@@ -26,11 +26,11 @@ Public NotInheritable Class ShortageNotifications
         Dim current = lines.GroupBy(Function(line) line.OrderID).ToDictionary(
             Function(group) group.Key,
             Function(group) String.Join(";", group.Select(Function(line)
-                Return line.QueueItemID.ToString(CultureInfo.InvariantCulture) & "/" &
+                                                              Return line.QueueItemID.ToString(CultureInfo.InvariantCulture) & "/" &
                     line.ItemID.ToString(CultureInfo.InvariantCulture) & "/" &
                     line.OrderedQuantity.ToString("R", CultureInfo.InvariantCulture) & "/" &
                     If(line.FoundQuantity.HasValue, line.FoundQuantity.Value.ToString(CultureInfo.InvariantCulture), "missing")
-            End Function).Distinct().OrderBy(Function(signature) signature)))
+                                                          End Function).Distinct().OrderBy(Function(signature) signature)))
         Dim changed As New List(Of Integer)()
         If initialized Then
             For Each entry In current
@@ -46,7 +46,7 @@ Public NotInheritable Class ShortageNotifications
     Public Shared Function Load(connectionString As String) As List(Of WarehouseShortage)
         Dim result As New List(Of WarehouseShortage)()
         Using connection As New SqlConnection(connectionString), command = connection.CreateCommand()
-            command.CommandTimeout = 5
+            command.CommandTimeout = 30
             command.CommandText =
                 "SELECT o.ID, qi.id, qi.ItemID, COALESCE(c.Company,N''), i.ItemLookupCode, i.Description, " &
                 "oe.Quantity, qi.QtyPre, qi.Picker FROM dbo.QueueingItems qi " &

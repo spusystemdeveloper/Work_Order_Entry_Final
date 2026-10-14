@@ -1008,6 +1008,7 @@ Public Class frmItemLookUp
 
     Public Sub SaveOrderHandler()
         Try
+            Using LoadingOverlay.Show(Me, "Saving order...")
             If activeRecallOrderID > 0 AndAlso recalledSnapshot Is Nothing Then
                 Throw New OrderEditConflictException()
             End If
@@ -1034,6 +1035,7 @@ Public Class frmItemLookUp
                     Exit Sub
                 End If
             End If
+            End Using
         Catch ex As OrderEditConflictException
             ShowOrderConflict(ex)
         Catch ex As Exception
@@ -4067,15 +4069,19 @@ err_flag:
                         uploader.lblFile.Text = clsImport.importFileName_
                         uploader.ShowDialog(Me)
                     Else
-                        ImportQuote()
-                        SearchItemImport()
+                        Using LoadingOverlay.Show(Me, "Importing items...")
+                            ImportQuote()
+                            SearchItemImport()
+                        End Using
                     End If
 
                 Case ImportFileRules.TransferOrPurchaseImport
                     frmCustomer.ShowDialog()
                     frmSalesRep.ShowDialog()
-                    ImportPO()
-                    SearchItemImport()
+                    Using LoadingOverlay.Show(Me, "Importing items...")
+                        ImportPO()
+                        SearchItemImport()
+                    End Using
 
                 Case ImportFileRules.WebsiteImport
                     frmWebsiteImport.ShowDialog(Me)

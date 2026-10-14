@@ -1,6 +1,6 @@
 :on error exit
 /* Run with SQLCMD after editing the target database below. */
-:setvar TargetDatabase "CHANGE_ME"
+:setvar TargetDatabase "GSC_STORE_DB"
 USE [$(TargetDatabase)];
 GO
 :r .\Validation\00_Preflight.sql

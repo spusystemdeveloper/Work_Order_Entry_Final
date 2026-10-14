@@ -61,26 +61,6 @@ Namespace My.Resources
         End Property
         
         '''<summary>
-        '''  Looks up a localized resource of type System.Byte[].
-        '''</summary>
-        Friend ReadOnly Property ExcelDataReader() As Byte()
-            Get
-                Dim obj As Object = ResourceManager.GetObject("ExcelDataReader", resourceCulture)
-                Return CType(obj,Byte())
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized resource of type System.Byte[].
-        '''</summary>
-        Friend ReadOnly Property ExcelDataReader_DataSet() As Byte()
-            Get
-                Dim obj As Object = ResourceManager.GetObject("ExcelDataReader_DataSet", resourceCulture)
-                Return CType(obj,Byte())
-            End Get
-        End Property
-        
-        '''<summary>
         '''  Looks up a localized resource of type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property icons8_invoice_15() As System.Drawing.Bitmap
@@ -97,16 +77,6 @@ Namespace My.Resources
             Get
                 Dim obj As Object = ResourceManager.GetObject("icons8-print-15", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Looks up a localized resource of type System.Byte[].
-        '''</summary>
-        Friend ReadOnly Property ICSharpCode_SharpZipLib() As Byte()
-            Get
-                Dim obj As Object = ResourceManager.GetObject("ICSharpCode_SharpZipLib", resourceCulture)
-                Return CType(obj,Byte())
             End Get
         End Property
         

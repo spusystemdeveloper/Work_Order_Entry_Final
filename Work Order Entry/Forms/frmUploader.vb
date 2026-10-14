@@ -17,7 +17,9 @@ Public Class frmUploader
             Me.Close()
         Else
             panelInfo.Visible = False
-            VerifyImportFile()
+            Using LoadingOverlay.Show(Me, "Importing items...")
+                VerifyImportFile()
+            End Using
             If SaveLogToTxt() = False Then Exit Sub
 
             cmdImport.Text = "&Finish"

@@ -1,0 +1,4 @@
+<Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
+  <!-- Packs every referenced DLL into the exe so only the exe needs to be deployed. -->
+  <Costura />
+</Weavers>

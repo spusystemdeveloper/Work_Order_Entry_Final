@@ -62,7 +62,9 @@
 
         Dim xID = gridOrders.Rows(iRowIndex).Cells(0).Value
         Me.Hide()
-        frmItemLookUp.ImportFromWebsite(xID)
+        Using LoadingOverlay.Show(frmItemLookUp, "Importing website order...")
+            frmItemLookUp.ImportFromWebsite(xID)
+        End Using
         Me.Close()
     End Sub
 
