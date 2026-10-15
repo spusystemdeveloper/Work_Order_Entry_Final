@@ -65,6 +65,7 @@ Partial Class frmSettings
         Me.txtExpectedDatabase = New System.Windows.Forms.TextBox()
         Me.chkShowForInvoice = New System.Windows.Forms.CheckBox()
         Me.chkShowImportButton = New System.Windows.Forms.CheckBox()
+        Me.chkEnableSetTaxButton = New System.Windows.Forms.CheckBox()
         Me.chkAllowDuplicateItemEntry = New System.Windows.Forms.CheckBox()
         Me.chkAllowOrderGrouping = New System.Windows.Forms.CheckBox()
         Me.chkEnableBranchQueue = New System.Windows.Forms.CheckBox()
@@ -559,6 +560,17 @@ Partial Class frmSettings
         Me.chkShowImportButton.Text = "Show Import [F6]"
         Me.chkShowImportButton.UseVisualStyleBackColor = True
         '
+        'chkEnableSetTaxButton
+        '
+        Me.chkEnableSetTaxButton.AutoSize = True
+        Me.chkEnableSetTaxButton.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkEnableSetTaxButton.Location = New System.Drawing.Point(248, 78)
+        Me.chkEnableSetTaxButton.Name = "chkEnableSetTaxButton"
+        Me.chkEnableSetTaxButton.Size = New System.Drawing.Size(125, 17)
+        Me.chkEnableSetTaxButton.TabIndex = 18
+        Me.chkEnableSetTaxButton.Text = "Enable Set Tax button"
+        Me.chkEnableSetTaxButton.UseVisualStyleBackColor = True
+        '
         'chkAllowDuplicateItemEntry
         '
         Me.chkAllowDuplicateItemEntry.AutoSize = True
@@ -794,6 +806,7 @@ Partial Class frmSettings
         Me.GroupBox8.Controls.Add(Me.chkAllowOrderGrouping)
         Me.GroupBox8.Controls.Add(Me.chkAllowDuplicateItemEntry)
         Me.GroupBox8.Controls.Add(Me.chkShowImportButton)
+        Me.GroupBox8.Controls.Add(Me.chkEnableSetTaxButton)
         Me.GroupBox8.Font = New System.Drawing.Font("Century Gothic", 8.25!, System.Drawing.FontStyle.Bold)
         Me.GroupBox8.Location = New System.Drawing.Point(431, 376)
         Me.GroupBox8.Name = "GroupBox8"
@@ -886,6 +899,7 @@ Partial Class frmSettings
     Friend WithEvents chkAllowOrderGrouping As System.Windows.Forms.CheckBox
     Friend WithEvents chkEnableBranchQueue As System.Windows.Forms.CheckBox
     Friend WithEvents chkShowImportButton As System.Windows.Forms.CheckBox
+    Friend WithEvents chkEnableSetTaxButton As System.Windows.Forms.CheckBox
     Friend WithEvents chkAllowDuplicateItemEntry As System.Windows.Forms.CheckBox
     Friend WithEvents chkAllowBranchSelection As System.Windows.Forms.CheckBox
     Friend WithEvents chkLockCustomerSalesRepOnRecall As System.Windows.Forms.CheckBox

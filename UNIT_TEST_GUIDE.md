@@ -5,6 +5,68 @@ connecting to DVO/GSC, or changing database records.
 
 ## What is tested
 
+For the manual Set Tax availability check, open **Settings > Work Order and Queue
+Options**, clear **Enable Set Tax button**, click **Save**, and close Settings.
+The main Set Tax button should be disabled. Reopen Settings/application to verify
+the checkbox stays cleared; enable it again and confirm the button is available.
+Existing deployments without `EnableSetTaxButton` keep it enabled by default.
+This switch controls only the manual action: selecting an RMS tax-exempt customer
+must still apply the existing customer tax rules. VAT/save calculations and
+existing customer-type/website-import settings are unchanged.
+An isolated temporary-config probe verified the default, persistence across fresh
+AppDomains, disabled click guard, re-enable behavior and preserved branch settings;
+the Settings options layout was rendered and inspected without loading store data.
+
+Two overlapping existing-order save scenarios are covered separately by:
+
+```powershell
+& '.\Database Components\Tests\MultiUser_Save_LocalDB_Test.ps1'
+& '.\Database Components\Tests\MultiUser_Save_LocalDB_Test.ps1' -VersionedReads
+```
+
+Build the current Debug Work Order Entry application first. This suite runs 17
+checks per mode using separate hidden x86/STA Windows PowerShell cashier processes and
+independent SQL sessions on a uniquely owned LocalDB database (compatibility 130).
+It invokes the actual compiled `SaveExistingOrderChanges` transaction through
+reflection; no application source, registry setting or business rule is changed.
+
+- Two different orders edit the same item with fractional quantities. A held
+  shared stock lock establishes overlap. With default SQL locking, a queued
+  stock update can block the second stock reader. SQL request snapshots verify
+  both actual save transactions reached stock access before release. Both
+  deltas, each original line, amounts, tax and cashier history must survive.
+  The optional `-VersionedReads` run enables READ_COMMITTED_SNAPSHOT only in its
+  disposable fixture, letting both cashiers read the earlier committed item
+  state. That stricter lost-update case requires both stock UPDATE statements to
+  be waiting before release. No store isolation setting is changed. Explicit
+  order snapshot/app-lock protection is exercised in both modes.
+- Two cashiers recall the same order before either saves. A fixture-only trigger
+  pauses the first inside its header update. The second must wait on its
+  application lock, then reject the stale snapshot after the first commits.
+  Quantity, commitments, amounts, queue ownership/status and history are checked
+  for partial writes. Physical stock remains unchanged in both scenarios.
+
+The coordinator uses controlled locks and bounded condition waits, rather than
+assuming overlap from a fixed delay. A spacer order and 1,000 synthetic filler
+orders make normal lookup indexes selective enough to avoid incidental broad
+scans serializing the shared-item scenario before it reaches stock arithmetic.
+`SharedItem-Overlap.json`, `SameOrder-Overlap.json` and per-cashier results/logs
+are retained under the owned `TestResults\MultiUser-<id>` directory. Only the
+suite's own database, LocalDB instance and child processes are cleaned up.
+
+The workers validate the GUID-named LocalDB endpoint and use Windows authentication
+only. The legacy application module initializer may read existing RMS registry
+defaults when its assembly initializes; workers dispose its unopened contexts,
+replace connection fields only in their own process, and validate the fixture
+target before application SQL runs. Consequently this harness expects the same
+RMS registry prerequisite as the existing form-based smoke tests. It never opens
+a store SQL connection, persists store credentials or changes registry values.
+
+These are default queued Work Order **edit transaction** tests. They do not
+automate login, F12 confirmation, printing, full Recall UI, new-order/import saves,
+RMS settlement, cancellation races, branch-specific trigger stacks or load tests.
+`Run-UnitTests.ps1` still runs the unit suite only; run this LocalDB suite explicitly.
+
 The separate HO new-line Save timeout fixture is
 `Database Components/Tests/HO_SaveTimeout_LocalDB_Test.ps1`. Its 16 checks
 verify the fingerprinted legacy trigger fix, rehearsal/commit/repeat guards,

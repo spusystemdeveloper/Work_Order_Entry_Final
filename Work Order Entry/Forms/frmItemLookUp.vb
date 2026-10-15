@@ -1150,6 +1150,7 @@ Public Class frmItemLookUp
 
     Private Sub ConfigureProcessingModeUi()
         cmdForInvoice.Visible = StoreProcessingSettings.ShowForInvoiceButton
+        btnTax.Enabled = StoreProcessingSettings.EnableSetTaxButton
         If readyStatus IsNot Nothing Then
             readyStatus.Visible = StoreProcessingSettings.ShowForInvoiceButton AndAlso
                                   StoreProcessingSettings.EnableReadyOrderNotifications
@@ -7628,6 +7629,8 @@ inputCust:
     End Sub
 
     Private Sub btnTax_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnTax.Click
+        If Not StoreProcessingSettings.EnableSetTaxButton Then Exit Sub
+
         If iCusID <= 0 OrElse txtCustomer.Text.Trim() = String.Empty Then
             MsgBox("Please select customer first!", vbExclamation, "Message")
             Exit Sub

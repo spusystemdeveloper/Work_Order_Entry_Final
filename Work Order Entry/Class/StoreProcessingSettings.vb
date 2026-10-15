@@ -59,6 +59,20 @@ Public NotInheritable Class StoreProcessingSettings
         End Get
     End Property
 
+    Public Shared ReadOnly Property EnableSetTaxButton As Boolean
+        Get
+            Return ReadBoolean("EnableSetTaxButton", True)
+        End Get
+    End Property
+
+    Public Shared Sub SaveEnableSetTaxButton(ByVal isEnabled As Boolean)
+        Dim configuration = ConfigurationManager.OpenExeConfiguration(
+            ConfigurationUserLevel.None)
+        SetBoolean(configuration, "EnableSetTaxButton", isEnabled)
+        configuration.Save(ConfigurationSaveMode.Modified)
+        ConfigurationManager.RefreshSection("appSettings")
+    End Sub
+
     Public Shared ReadOnly Property EnableReadyOrderNotifications As Boolean
         Get
             Return QueueingEnabled AndAlso ReadBoolean("EnableReadyOrderNotifications", True)

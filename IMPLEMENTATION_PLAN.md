@@ -223,6 +223,7 @@ The current unified build reads these settings from `App.config`:
 | `AllowOrderGrouping` | Enables the existing customer Work Order grouping prompt for queued orders. |
 | `ShowForInvoiceButton` | Controls whether `cmdForInvoice` is visible at the deployed branch. It also requires queueing to be enabled. |
 | `ShowImportButton` | Controls whether the main `Import [F6]` button and its F6 action are available at the deployed branch. |
+| `EnableSetTaxButton` | Settings > Work Order and Queue Options > Enable Set Tax button. Defaults to true for existing deployments; false disables the manual Set Tax action. Customer tax status, VAT calculations and saved-order tax handling are unchanged. |
 
 Authorized users can configure **Enable Branch Queue**, **Allow order
 grouping**, and **Show For Invoicing button** from **Settings → Branch

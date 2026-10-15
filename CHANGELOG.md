@@ -4,6 +4,45 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-15
 
+### Set Tax availability setting
+
+- Added **Enable Set Tax button** under Settings > Work Order and Queue Options.
+  The installation's `EnableSetTaxButton` setting defaults to true, persists with
+  the existing branch settings, and updates the main button after Settings closes.
+  Disabled clicks also exit before reading customer tax state or changing rows.
+  Existing VAT calculations, customer exemptions, tax reasons and save rules are
+  unchanged. No database migration is required.
+- Reviewed the highlighted legacy Settings sections: customer-type price bounds
+  and approver assignments remain active, and WEBSITE imports still consume the
+  import defaults. The legacy website-import button and website list Refresh also
+  call the MySQL helper. Kept the existing sections/data to preserve active
+  pricing/import behavior despite the website section's deprecated label.
+- Both solutions build Release/x86 and all 101 existing unit tests pass. An
+  isolated configuration probe verifies default/on/off persistence, disabled
+  action guarding, re-enable behavior and preservation of other branch settings.
+  The new checkbox layout was rendered and inspected. The local store's Debug
+  configuration was restored byte-for-byte; no store data was changed.
+
+### Existing-order multi-user regression tests
+
+- Added a disposable LocalDB suite calling the unchanged compiled existing-order
+  save transaction in two independent x86/STA cashier processes. Controlled locks
+  and saved SQL request evidence establish actual overlap, rather than treating
+  sequential stale-snapshot checks as simultaneous saves.
+- Shared-item edits verify both fractional reservation differences and each
+  original order line survive with correct amounts, tax and cashier history.
+  Same-order edits verify application-lock waiting, one committed winner and one
+  stale rejection without partial stock, amount, queue or audit changes.
+- Added 17 assertions per run in default-locking and optional fixture-only
+  versioned-read modes. The latter forces both cashiers past their original item
+  reads before either stock update completes, strengthening lost-update coverage.
+  Documented invocation, fixture ownership, synthetic
+  selectivity, endpoint isolation and remaining UI/branch/load-test limits.
+  No production application code, SQL migration or business rule was changed.
+- Both concurrency modes pass all 17 assertions, both solutions build Release/x86
+  and all 101 existing unit tests pass. Store-specific Debug configuration was
+  preserved byte-for-byte; no live database or store isolation setting changed.
+
 ### Requested manual HO Order ID renumbering
 
 - Saved a separate guarded `Reseed_HO_Order_After_Renumber.sql` beside the
