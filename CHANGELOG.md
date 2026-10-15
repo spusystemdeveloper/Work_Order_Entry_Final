@@ -4,6 +4,37 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-15
 
+### Shared contributor and AI guidance
+
+- Added AGENTS.md as shared guidance for preserving business rules, SQL Server
+  2016 and RMS identity compatibility, branch configuration, safe database work,
+  required validation and complete application packaging.
+- Added CLAUDE.md and linked the existing Gemini guidance and README to the shared
+  rules so GitHub collaborators can use consistent instructions across AI tools.
+- Documentation only; no application code, SQL deployment or business rule changed.
+
+### Save versus closing and failed-save recovery tests
+
+- Extended the disposable multi-user suite from 17 to 39 checks per isolation
+  mode, retaining its original shared-item and same-order save scenarios.
+- Added actual `clsRecall.CancelOrder` versus stale-save overlap. The cancelling
+  transaction wins, stock is released only for that order, another reservation
+  survives and the stale save cannot reopen the order or add partial history.
+- Added a synthetic POS settlement participant with the unchanged packaged
+  queue-closing trigger, legacy identity lookup and linked item/tax/tender rows.
+  A stale real save waits on its Order row lock and is rejected after commit.
+  This is a fixture posting contract, not execution of RMS POS/QSRules or a claim
+  that every branch's complete posting stack has been tested.
+- Injected a late pre-commit failure only after header, two lines, commitments,
+  prepared queue rows and history are verified inside the real save transaction.
+  Full rollback snapshots must match, and a second cashier must subsequently
+  save its original recalled version without partial changes or double reservation.
+- Changes are confined to tests and documentation; no application code, business
+  rule, deployment SQL or store database/isolation setting is changed.
+- All 39 checks pass in each of the default-locking and fixture-only versioned
+  modes. Rollback XML files match byte-for-byte. Both solutions build Release/x86
+  and all 101 existing unit tests pass; local store configuration was preserved.
+
 ### Set Tax availability setting
 
 - Added **Enable Set Tax button** under Settings > Work Order and Queue Options.

@@ -17,18 +17,19 @@ An isolated temporary-config probe verified the default, persistence across fres
 AppDomains, disabled click guard, re-enable behavior and preserved branch settings;
 the Settings options layout was rendered and inspected without loading store data.
 
-Two overlapping existing-order save scenarios are covered separately by:
+Five existing-order concurrency and rollback scenarios are covered separately by:
 
 ```powershell
 & '.\Database Components\Tests\MultiUser_Save_LocalDB_Test.ps1'
 & '.\Database Components\Tests\MultiUser_Save_LocalDB_Test.ps1' -VersionedReads
 ```
 
-Build the current Debug Work Order Entry application first. This suite runs 17
+Build the current Debug Work Order Entry application first. This suite runs 39
 checks per mode using separate hidden x86/STA Windows PowerShell cashier processes and
 independent SQL sessions on a uniquely owned LocalDB database (compatibility 130).
 It invokes the actual compiled `SaveExistingOrderChanges` transaction through
-reflection; no application source, registry setting or business rule is changed.
+reflection and calls the existing `clsRecall.CancelOrder` method. No application
+source, registry setting or business rule is changed.
 
 - Two different orders edit the same item with fractional quantities. A held
   shared stock lock establishes overlap. With default SQL locking, a queued
@@ -45,6 +46,27 @@ reflection; no application source, registry setting or business rule is changed.
   application lock, then reject the stale snapshot after the first commits.
   Quantity, commitments, amounts, queue ownership/status and history are checked
   for partial writes. Physical stock remains unchanged in both scenarios.
+- A real cancellation pauses at stock release while the already-recalled save
+  waits on its application lock. Cancellation wins, zeroes its line, closes the
+  order and sets queue status 2. The stale save is rejected. Another order's
+  reservation and physical stock survive; a second recall for cancellation is
+  rejected without another stock release or cancellation history event.
+- A **synthetic POS participant** closes an order, adjusts fixture stock and
+  posts transaction/item/tax/tender records in one transaction. It deliberately
+  does not acquire the add-in application lock. The actual packaged
+  `trg_Transaction_closeQueue.sql` is installed unchanged in the fixture, and
+  legacy `@@IDENTITY` supplies the transaction link. A held gate makes the stale
+  save wait on the POS-held Order row. After settlement commits, the save must
+  reject Closed, preserve all posting links/amounts/stock, and leave queue status 1.
+  This verifies the save guard against a posting contract; **it does not execute
+  RMS POS/QSRules**, validate every branch trigger, or prove a full RMS sale.
+- A fixture-only history trigger injects SQL error 52941 **before commit**, but
+  only after verifying the header, both line quantities, both stock commitments,
+  both prepared picking rows and both item audit events exist in the transaction.
+  The test compares complete pre/post rollback XML, including actual rowversions,
+  queue and approval/history rows. A second cashier's previously captured
+  original snapshot must then save successfully, applying each difference once.
+  Sequence allocations can have gaps after rollback; no counter is reseeded.
 
 The coordinator uses controlled locks and bounded condition waits, rather than
 assuming overlap from a fixed delay. A spacer order and 1,000 synthetic filler
@@ -53,6 +75,9 @@ scans serializing the shared-item scenario before it reaches stock arithmetic.
 `SharedItem-Overlap.json`, `SameOrder-Overlap.json` and per-cashier results/logs
 are retained under the owned `TestResults\MultiUser-<id>` directory. Only the
 suite's own database, LocalDB instance and child processes are cleaned up.
+The new cases also retain `SaveVsCancel-Overlap.json`,
+`SaveVsSettlement-Overlap.json`, `MidSaveFailure-Overlap.json` and the matching
+`MidSaveFailure-Before.xml` / `MidSaveFailure-After.xml` rollback evidence.
 
 The workers validate the GUID-named LocalDB endpoint and use Windows authentication
 only. The legacy application module initializer may read existing RMS registry
@@ -62,9 +87,11 @@ target before application SQL runs. Consequently this harness expects the same
 RMS registry prerequisite as the existing form-based smoke tests. It never opens
 a store SQL connection, persists store credentials or changes registry values.
 
-These are default queued Work Order **edit transaction** tests. They do not
+These are default queued Work Order **edit/cancellation transaction** tests and
+a synthetic POS posting contract. They do not
 automate login, F12 confirmation, printing, full Recall UI, new-order/import saves,
-RMS settlement, cancellation races, branch-specific trigger stacks or load tests.
+the RMS POS executable, reverse-winner closing races, disconnection after an
+uncertain commit, arbitrary deadlocks, branch-specific trigger stacks or load tests.
 `Run-UnitTests.ps1` still runs the unit suite only; run this LocalDB suite explicitly.
 
 The separate HO new-line Save timeout fixture is

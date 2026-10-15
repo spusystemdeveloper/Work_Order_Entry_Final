@@ -2,6 +2,15 @@
 
 VB.NET RMS add-ins for Work Order Entry and Order Processing Queueing.
 
+## Contributor and AI instructions
+
+Read [AGENTS.md](AGENTS.md) before making changes. It covers preserving business
+rules, safe SQL changes, branch configuration, required tests and deployment.
+[CLAUDE.md](CLAUDE.md) directs Claude collaborators to the same rules;
+[GEMINI.md](GEMINI.md) also retains RMS incident knowledge. Contributors using
+other tools should explicitly include AGENTS.md in their working context.
+These documents support human review; they do not enforce GitHub permissions or CI.
+
 ## Application deployment and printing
 
 Build `Work Order Entry.sln` in Release / x86. Deploy the **whole**

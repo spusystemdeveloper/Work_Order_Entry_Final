@@ -19,6 +19,8 @@ try {
     if($request.Server -notmatch '^\(localdb\)\\SODWO_Multi_[a-f0-9]{8}$' -or
        $request.Database -notmatch '^SODWO_Multi_[a-f0-9]{8}$' -or
        $request.Actor -notmatch '^MultiUser_[AB]_[a-f0-9]{8}$') {throw 'Only the owned synthetic LocalDB target is permitted.'}
+    $operation=if($request.PSObject.Properties['Operation']){[string]$request.Operation}else{'Save'}
+    if($operation -notin @('Save','Cancel','Settle')){throw 'Unknown fixture operation.'}
     Add-Type -AssemblyName System.Data,System.Data.Linq,System.Windows.Forms,System.Drawing
     $assembly=[Reflection.Assembly]::LoadFrom($request.Assembly)
     $module=$assembly.GetType('WorkOrderEntry.ModConnectDB',$true)
@@ -56,24 +58,29 @@ try {
     $grid=$form.GetType().GetProperty('gridSelectItem',$instanceFlags).GetValue($form)
     $grid.AllowUserToAddRows=$false
     $grid.Rows.Clear()
+    $lines=if($null -ne $request.Lines -and @($request.Lines).Count -gt 0){@($request.Lines)}else{@([pscustomobject]@{ItemID=$request.ItemID;EntryID=$request.EntryID;Quantity=$request.Quantity;PreparedQuantity=0})}
+    $totalQuantity=[decimal]0
+    foreach($line in $lines){
     $row=$grid.Rows.Add()
     foreach($cell in $grid.Rows[$row].Cells){if($cell -is [Windows.Forms.DataGridViewCheckBoxCell]){$cell.Value=$false}else{$cell.Value=0}}
     $grid.Item(0,$row).Value='FIXTURE-SKU'
     $grid.Item(1,$row).Value='Synthetic multi-user item'
-    $grid.Item(2,$row).Value=[double]$request.Quantity
+    $grid.Item(2,$row).Value=[double]$line.Quantity
     $grid.Item(3,$row).Value=[decimal]112
     $grid.Item(9,$row).Value=[decimal]80
-    $grid.Item(11,$row).Value=[int]$request.ItemID
+    $grid.Item(11,$row).Value=[int]$line.ItemID
     $grid.Item(12,$row).Value=[decimal]112
     $grid.Item(13,$row).Value='Synthetic multi-user item'
-    $grid.Item(16,$row).Value=[int]$request.EntryID
+    $grid.Item(16,$row).Value=[int]$line.EntryID
     $grid.Item(17,$row).Value=$false
-    $grid.Item(18,$row).Value=0
+    $grid.Item(18,$row).Value=[int]$line.PreparedQuantity
     $grid.Rows[$row].Cells['Taxable'].Value=1
+    $totalQuantity += [decimal]$line.Quantity
+    }
     $vat=$form.GetType().GetProperty('txtVat',$instanceFlags).GetValue($form)
     $total=$form.GetType().GetProperty('txtTotal',$instanceFlags).GetValue($form)
-    $vat.Text=([decimal]$request.Quantity*12).ToString()
-    $total.Text=([decimal]$request.Quantity*112).ToString()
+    $vat.Text=($totalQuantity*12).ToString()
+    $total.Text=($totalQuantity*112).ToString()
     $context=[WorkOrderEntry.ItemLookUpDataContext]::new($connectionString)
     try{$snapshot=[WorkOrderEntry.OrderEditGuard]::Capture($context,[int]$request.OrderID)}finally{$context.Dispose()}
     $form.GetType().GetField('recalledSnapshot',$instanceFlags).SetValue($form,$snapshot)
@@ -86,13 +93,60 @@ try {
     # Invoke the actual compiled save transaction, unchanged. This includes its
     # application lock, snapshot check, line/stock/queue/tax/history and commit.
     $null=Assert-FixtureEndpoint
-    $method=$form.GetType().GetMethod('SaveExistingOrderChanges',$instanceFlags)
-    $null=$method.Invoke($form,@([int]$request.OrderID,[string]$request.Comment))
-    Publish-Result ([pscustomobject]@{Status='Committed';Actor=$request.Actor})
+    $transactionNumber=$null
+    switch($operation){
+        'Save' {
+            $method=$form.GetType().GetMethod('SaveExistingOrderChanges',$instanceFlags)
+            $null=$method.Invoke($form,@([int]$request.OrderID,[string]$request.Comment))
+        }
+        'Cancel' {[WorkOrderEntry.clsRecall]::CancelOrder([int]$request.OrderID,$snapshot)}
+        'Settle' {
+            # A synthetic POS participant, NOT QSRules/RMS POS automation. It
+            # writes the known closed-order/stock/posting contract atomically,
+            # using the unmodified deployed close-queue trigger and @@IDENTITY.
+            $context=[WorkOrderEntry.ItemLookUpDataContext]::new($connectionString)
+            try {
+                $context.Connection.Open()
+                [WorkOrderEntry.OrderHistory]::SetActor($context,$request.Actor,'FIXTURE-POS')
+                $tx=$context.Connection.BeginTransaction()
+                try {
+                    $cmd=$context.Connection.CreateCommand()
+                    try {
+                        $cmd.Transaction=$tx;$cmd.CommandTimeout=20
+                        $null=$cmd.Parameters.AddWithValue('@order',[int]$request.OrderID)
+                        $cmd.CommandText=@'
+UPDATE dbo.[Order] SET Closed=1,LastUpdated=GETDATE() WHERE ID=@order AND Closed=0;
+IF @@ROWCOUNT<>1 THROW 52930,'Fixture settlement requires an open order.',1;
+UPDATE i SET Quantity=i.Quantity-e.QuantityOnOrder,QuantityCommitted=i.QuantityCommitted-e.QuantityOnOrder
+ FROM dbo.Item i JOIN dbo.OrderEntry e ON e.ItemID=i.ID WHERE e.OrderID=@order;
+INSERT dbo.[Transaction](RecallID,CashierID,StoreID,RecallType,Total,SalesTax)
+ SELECT ID,2,1,4,Total,Tax FROM dbo.[Order] WHERE ID=@order;
+DECLARE @number int=CONVERT(int,@@IDENTITY);
+INSERT dbo.TransactionEntry(TransactionNumber,ItemID,Quantity,Price,SalesTax)
+ SELECT @number,ItemID,QuantityOnOrder,Price,QuantityOnOrder*12 FROM dbo.OrderEntry WHERE OrderID=@order;
+INSERT dbo.TaxEntry(TransactionNumber,TransactionEntryID,SalesTax)
+ SELECT @number,ID,SalesTax FROM dbo.TransactionEntry WHERE TransactionNumber=@number;
+INSERT dbo.TenderEntry(TransactionNumber,Amount)
+ SELECT @number,Total FROM dbo.[Order] WHERE ID=@order;
+-- Pause with all settlement writes still uncommitted so the stale cashier
+-- attempts its real save against the POS-held Order lock.
+DECLARE @gate int;
+SELECT @gate=ID FROM dbo.TestSaveGate WITH(UPDLOCK,HOLDLOCK) WHERE ID=1;
+SELECT @number;
+'@
+                        $transactionNumber=[int]$cmd.ExecuteScalar()
+                    }finally{$cmd.Dispose()}
+                    $tx.Commit()
+                }catch{$tx.Rollback();throw}finally{$tx.Dispose()}
+            }finally{$context.Dispose()}
+        }
+    }
+    Publish-Result ([pscustomobject]@{Status='Committed';Actor=$request.Actor;Operation=$operation;TransactionNumber=$transactionNumber})
 } catch {
     $errorObject=$_.Exception
     while($null -ne $errorObject.InnerException){$errorObject=$errorObject.InnerException}
     $status=if($errorObject.GetType().FullName -eq 'WorkOrderEntry.OrderEditConflictException'){'Conflict'}else{'Error'}
-    if($null -ne $request){Publish-Result ([pscustomobject]@{Status=$status;Type=$errorObject.GetType().FullName;Message=$errorObject.Message})}
+    $sqlNumber=if($errorObject -is [Data.SqlClient.SqlException]){$errorObject.Number}else{$null}
+    if($null -ne $request){Publish-Result ([pscustomobject]@{Status=$status;Type=$errorObject.GetType().FullName;Message=$errorObject.Message;SqlNumber=$sqlNumber})}
     if($status -eq 'Error'){Write-Error $errorObject.Message;exit 1}
 } finally {if($null -ne $form){$form.Dispose()}}

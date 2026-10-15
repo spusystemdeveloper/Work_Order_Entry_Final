@@ -1,5 +1,11 @@
 # Project Rules & Persistent Knowledge
 
+Read and follow [AGENTS.md](AGENTS.md) first for the shared contributor rules.
+This file retains additional RMS and incident knowledge for all collaborators.
+Keep project-wide workflow rules in AGENTS.md and maintain the details below
+when related behavior or incident evidence changes. Branch-specific examples
+below require target verification; they are not automatic deployment instructions.
+
 ## Target Database Environment
 - **Database Engine**: Microsoft SQL Server 2016 is used across store instances (e.g., `GSC_STORE_DB`, `DVO_STORE_DB`).
 - **Microsoft Dynamics RMS Schema Conventions**:
