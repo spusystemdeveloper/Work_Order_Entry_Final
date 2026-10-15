@@ -631,6 +631,67 @@ Public Class clsItemLookUp
 
     End Function
 
+    ' Fetches only the named items in one query. Joining a list against db.Items in
+    ' memory would instead download the entire Items table.
+    ' The codes go into a temp table rather than a Contains() IN-list: many stores have
+    ' no index on Item.ItemLookupCode, and a large IN-list then compares every Item row
+    ' against every code, which timed out on HO. A join reads Item once either way.
+    Public Shared Function GetItemsByCodes(ByVal itemCodes As IEnumerable(Of String)) As List(Of Item)
+        Dim codes = itemCodes.Where(Function(c) Not String.IsNullOrEmpty(c)).Distinct().ToList()
+        Dim items As New List(Of Item)
+        If codes.Count = 0 Then Return items
+
+        Dim codeTable As New DataTable()
+        codeTable.Columns.Add("Code", GetType(String))
+        For Each code In codes
+            codeTable.Rows.Add(code)
+        Next
+
+        Using dbx = GetDB()
+            dbx.ObjectTrackingEnabled = False
+            ' The temp table lives on this connection, so keep it open for both commands.
+            dbx.Connection.Open()
+            Dim connection = DirectCast(dbx.Connection, SqlClient.SqlConnection)
+
+            Using create = connection.CreateCommand()
+                create.CommandText = "CREATE TABLE #SOD_ItemCodes (Code nvarchar(255) COLLATE DATABASE_DEFAULT NOT NULL)"
+                create.ExecuteNonQuery()
+            End Using
+            Using bulk As New SqlClient.SqlBulkCopy(connection)
+                bulk.DestinationTableName = "#SOD_ItemCodes"
+                bulk.WriteToServer(codeTable)
+            End Using
+
+            Dim seenIds As New HashSet(Of Integer)
+            ' Codes differing only by case match the same row, so keep each item once.
+            For Each item In dbx.ExecuteQuery(Of Item)(
+                "SELECT i.* FROM dbo.Item i " &
+                "WHERE EXISTS (SELECT 1 FROM #SOD_ItemCodes c " &
+                "WHERE c.Code COLLATE DATABASE_DEFAULT = i.ItemLookupCode)")
+                If seenIds.Add(item.ID) Then items.Add(item)
+            Next
+        End Using
+
+        Return items
+    End Function
+
+    ' Item type and available quantity for every code in one query, matching what
+    ' GetItemType and getItemQty return per item. Codes left out of the dictionaries
+    ' (or everything, if the query fails) should fall back to those per-item lookups.
+    Public Shared Sub PrefetchStock(ByVal itemCodes As IEnumerable(Of String),
+                                    ByVal itemTypes As IDictionary(Of String, Integer),
+                                    ByVal availableQty As IDictionary(Of String, Integer))
+        Try
+            For Each item In GetItemsByCodes(itemCodes)
+                itemTypes(item.ItemLookupCode) = item.ItemType
+                availableQty(item.ItemLookupCode) = CInt(item.Quantity - item.QuantityCommitted)
+            Next
+        Catch
+            itemTypes.Clear()
+            availableQty.Clear()
+        End Try
+    End Sub
+
     Public Shared Function GetItemType(ByVal sItemCode As String) As Integer
 
         Try

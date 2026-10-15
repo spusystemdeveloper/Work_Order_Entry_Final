@@ -73,6 +73,20 @@ Public NotInheritable Class StoreProcessingSettings
         ConfigurationManager.RefreshSection("appSettings")
     End Sub
 
+    Public Shared ReadOnly Property ShowLoadingAnimation As Boolean
+        Get
+            Return ReadBoolean("ShowLoadingAnimation", True)
+        End Get
+    End Property
+
+    Public Shared Sub SaveShowLoadingAnimation(ByVal isShown As Boolean)
+        Dim configuration = ConfigurationManager.OpenExeConfiguration(
+            ConfigurationUserLevel.None)
+        SetBoolean(configuration, "ShowLoadingAnimation", isShown)
+        configuration.Save(ConfigurationSaveMode.Modified)
+        ConfigurationManager.RefreshSection("appSettings")
+    End Sub
+
     Public Shared ReadOnly Property EnableReadyOrderNotifications As Boolean
         Get
             Return QueueingEnabled AndAlso ReadBoolean("EnableReadyOrderNotifications", True)

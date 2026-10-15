@@ -1,32 +1,69 @@
 ﻿Public Class clsImportQuotation
 
-    Public Shared Function CheckExistItem(ByVal sItemcode As String)
-        Using dbx = GetDB()
-            Dim bExist = (From i In dbx.GetTable(Of Item)() _
-                          Where i.ItemLookupCode.Equals(sItemcode) _
-                          Select i).SingleOrDefault
+    ' While an import runs, each item and customer is fetched once. Without this a CSV
+    ' row queries the same item up to seven times (exists check plus each property).
+    Private Shared itemCache As Dictionary(Of String, Item())
+    Private Shared customerCache As Dictionary(Of String, Customer())
 
-            If bExist Is Nothing Then
-                Return False
-            Else
-                Return True
-            End If
+    Public Shared Sub BeginLookupCache()
+        itemCache = New Dictionary(Of String, Item())(StringComparer.Ordinal)
+        customerCache = New Dictionary(Of String, Customer())(StringComparer.Ordinal)
+    End Sub
+
+    Public Shared Sub EndLookupCache()
+        itemCache = Nothing
+        customerCache = Nothing
+    End Sub
+
+    Private Shared Function FindItems(ByVal sItemCode As String) As Item()
+        Dim found As Item() = Nothing
+        If itemCache IsNot Nothing AndAlso sItemCode IsNot Nothing AndAlso itemCache.TryGetValue(sItemCode, found) Then Return found
+
+        Using dbx = GetDB()
+            dbx.ObjectTrackingEnabled = False
+            found = (From i In dbx.Items
+                     Where i.ItemLookupCode.Equals(sItemCode)
+                     Select i).ToArray
         End Using
+
+        If itemCache IsNot Nothing AndAlso sItemCode IsNot Nothing Then itemCache(sItemCode) = found
+        Return found
+    End Function
+
+    Private Shared Function FindCustomers(ByVal sAcctNo As String) As Customer()
+        Dim found As Customer() = Nothing
+        If customerCache IsNot Nothing AndAlso sAcctNo IsNot Nothing AndAlso customerCache.TryGetValue(sAcctNo, found) Then Return found
+
+        Using dbx = GetDB()
+            dbx.ObjectTrackingEnabled = False
+            found = (From c In dbx.Customers
+                     Where c.AccountNumber.Equals(sAcctNo)
+                     Select c).ToArray
+        End Using
+
+        If customerCache IsNot Nothing AndAlso sAcctNo IsNot Nothing Then customerCache(sAcctNo) = found
+        Return found
+    End Function
+
+    Public Shared Function CheckExistItem(ByVal sItemcode As String)
+        Dim bExist = FindItems(sItemcode).SingleOrDefault
+
+        If bExist Is Nothing Then
+            Return False
+        Else
+            Return True
+        End If
 
     End Function
 
     Public Shared Function CheckExistCustomer(ByVal sAcctNo As String)
-        Using dbx = GetDB()
-            Dim bExist = (From c In dbx.GetTable(Of Customer)() _
-                      Where c.AccountNumber.Equals(sAcctNo) _
-                      Select c).SingleOrDefault
+        Dim bExist = FindCustomers(sAcctNo).SingleOrDefault
 
-            If bExist Is Nothing Then
-                Return False
-            Else
-                Return True
-            End If
-        End Using
+        If bExist Is Nothing Then
+            Return False
+        Else
+            Return True
+        End If
 
     End Function
 
@@ -61,67 +98,47 @@
     End Function
 
     Public Shared Function GetItemProperties(ByVal sItemCode As String, ByVal sColName As String)
-        Using dbx = GetDB()
-            Dim item = (From i In dbx.Items
-                        Where i.ItemLookupCode.Equals(sItemCode) _
-                        Select i).ToArray
+        Dim sVal As String = String.Empty
 
-            Dim sVal As String = String.Empty
+        For Each x In FindItems(sItemCode)
 
-            If item Is Nothing Then
-                Return String.Empty
-            Else
-                For Each x In item
+            Select Case sColName
+                Case "Description"
+                    sVal = x.Description.ToString
+                Case "Cost"
+                    sVal = x.Cost.ToString
+                Case "Taxable"
+                    sVal = 1
+                Case "Id"
+                    sVal = x.ID.ToString
+                Case "ExtDesc"
+                    sVal = x.ExtendedDescription.ToString
+                Case Else
+                    sVal = String.Empty
+            End Select
 
-                    Select Case sColName
-                        Case "Description"
-                            sVal = x.Description.ToString
-                        Case "Cost"
-                            sVal = x.Cost.ToString
-                        Case "Taxable"
-                            sVal = 1
-                        Case "Id"
-                            sVal = x.ID.ToString
-                        Case "ExtDesc"
-                            sVal = x.ExtendedDescription.ToString
-                        Case Else
-                            sVal = String.Empty
-                    End Select
-
-                Next
-                Return sVal
-            End If
-        End Using
+        Next
+        Return sVal
 
     End Function
     Public Shared Function GetCustomerProperties(ByVal sAcctNo As String, ByVal sColName As String)
-        Using dbx = GetDB()
-            Dim cust = (From c In dbx.Customers
-                        Where c.AccountNumber.Equals(sAcctNo) _
-                        Select c).ToArray
+        Dim sVal As String = String.Empty
 
-            Dim sVal As String = String.Empty
+        For Each x In FindCustomers(sAcctNo)
 
-            If cust Is Nothing Then
-                Return String.Empty
-            Else
-                For Each x In cust
+            Select Case sColName
+                Case "Company"
+                    sVal = x.Company.ToString
+                Case "TaxExempt"
+                    sVal = x.TaxExempt.ToString
+                Case "Taxable"
+                    sVal = 1
+                Case Else
+                    sVal = String.Empty
+            End Select
 
-                    Select Case sColName
-                        Case "Company"
-                            sVal = x.Company.ToString
-                        Case "TaxExempt"
-                            sVal = x.TaxExempt.ToString
-                        Case "Taxable"
-                            sVal = 1
-                        Case Else
-                            sVal = String.Empty
-                    End Select
-
-                Next
-                Return sVal
-            End If
-        End Using
+        Next
+        Return sVal
 
     End Function
 

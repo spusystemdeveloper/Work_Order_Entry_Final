@@ -3608,6 +3608,12 @@ err_flag:
 
 
     'End Function
+    Private Shared Function CachedItemQty(ByVal itemCode As String, ByVal cache As Dictionary(Of String, Integer)) As Integer
+        Dim qty As Integer
+        If cache.TryGetValue(itemCode, qty) Then Return qty
+        Return clsItemLookUp.getItemQty(itemCode)
+    End Function
+
     Public Function ValidateAllQty() As DialogResult
 
         Try
@@ -3636,6 +3642,8 @@ err_flag:
             ' Local caches to eliminate duplicate database queries for the same item
             Dim itemTypeCache As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
             Dim netAvailableCache As New Dictionary(Of String, Double)(StringComparer.OrdinalIgnoreCase)
+            Dim availableQtyCache As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
+            clsItemLookUp.PrefetchStock(totalQtyByItem.Keys, itemTypeCache, availableQtyCache)
 
             For i As Integer = 0 To gridSelectItem.Rows.Count - 1
 
@@ -3674,9 +3682,9 @@ err_flag:
                     If Not netAvailableCache.TryGetValue(sPrevItemCode, dNetAvailable) Then
                         Dim orderParts As String() = Split(lblOrderNo.Text, ": ")
                         If orderParts.Length > 1 AndAlso IsNumeric(orderParts(1)) Then
-                            dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode) + clsRecall.CommittedWO(CInt(orderParts(1)), sCurIndex)
+                            dNetAvailable = CachedItemQty(sPrevItemCode, availableQtyCache) + clsRecall.CommittedWO(CInt(orderParts(1)), sCurIndex)
                         Else
-                            dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode)
+                            dNetAvailable = CachedItemQty(sPrevItemCode, availableQtyCache)
                         End If
                         netAvailableCache(sPrevItemCode) = dNetAvailable
                     End If
@@ -3859,6 +3867,8 @@ err_flag:
             ' Local caches to eliminate duplicate database queries for the same item
             Dim itemTypeCache As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
             Dim netAvailableCache As New Dictionary(Of String, Double)(StringComparer.OrdinalIgnoreCase)
+            Dim availableQtyCache As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
+            clsItemLookUp.PrefetchStock(totalQtyByItem.Keys, itemTypeCache, availableQtyCache)
 
             For i As Integer = 0 To gridSelectItem.Rows.Count - 1
 
@@ -3895,7 +3905,7 @@ err_flag:
                 If itemType = 0 OrElse itemType = 3 Then
 
                     If Not netAvailableCache.TryGetValue(sPrevItemCode, dNetAvailable) Then
-                        dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode)
+                        dNetAvailable = CachedItemQty(sPrevItemCode, availableQtyCache)
                         netAvailableCache(sPrevItemCode) = dNetAvailable
                     End If
 
@@ -6832,6 +6842,21 @@ inputCust:
         Dim needsPassword As Boolean = False
         Dim rowsNeedingOverride As New List(Of DataGridViewRow)
 
+        ' One query for every item on the order instead of one per row.
+        Dim itemsByCode As New Dictionary(Of String, Item)(StringComparer.OrdinalIgnoreCase)
+        Try
+            For Each loaded In clsItemLookUp.GetItemsByCodes(
+                gridSelectItem.Rows.Cast(Of DataGridViewRow)().
+                    Where(Function(r) Not r.IsNewRow).
+                    Select(Function(r) r.Cells(0).Value?.ToString()))
+                If Not itemsByCode.ContainsKey(loaded.ItemLookupCode) Then itemsByCode.Add(loaded.ItemLookupCode, loaded)
+            Next
+        Catch
+            ' Rows missing from the dictionary fall back to the per-row lookup below.
+            itemsByCode.Clear()
+        End Try
+        Dim savedPrices As Dictionary(Of String, Decimal) = Nothing
+
         For Each row As DataGridViewRow In gridSelectItem.Rows
             If row.IsNewRow Then Continue For
 
@@ -6856,9 +6881,12 @@ inputCust:
                 Return False
             End If
 
-            Dim item = (From a In db.Items
+            Dim item As Item = Nothing
+            If Not itemsByCode.TryGetValue(itemCode, item) Then
+                item = (From a In db.Items
                         Where a.ItemLookupCode.Equals(itemCode)
                         Select a).FirstOrDefault()
+            End If
 
             If item Is Nothing Then Continue For
 
@@ -6872,11 +6900,9 @@ inputCust:
                 Dim lastPart = lblOrderNo.Text.Split(" "c).Last().Trim()
                 If Not Integer.TryParse(lastPart, orderID) Then WoRecallType = 0
                 ' Preserve the legacy treatment of this row if the label is invalid.
-                Dim orderEntry = (From o In db.OrderEntries
-                                  Join i In db.Items On i.ID Equals o.ItemID
-                                  Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
-                                  Select o).FirstOrDefault()
-                If orderEntry IsNot Nothing Then savedPrice = orderEntry.Price
+                If savedPrices Is Nothing Then savedPrices = LoadSavedOrderPrices(orderID)
+                Dim saved As Decimal
+                If savedPrices.TryGetValue(itemCode, saved) Then savedPrice = saved
             End If
             Dim requiresOverride = OrderPriceApprovalRules.RequiresOverride(
                 currentPrice, minPrice, ruleRecallType, savedPrice)
@@ -6901,6 +6927,22 @@ inputCust:
         End If
 
         Return SaveOrder() = OrderSaveOutcome.Saved
+    End Function
+
+    ' Saved price per item code on a recalled order, in one query.
+    Private Function LoadSavedOrderPrices(ByVal orderID As Integer) As Dictionary(Of String, Decimal)
+        Dim prices As New Dictionary(Of String, Decimal)(StringComparer.OrdinalIgnoreCase)
+        Using dbx = GetDB()
+            dbx.ObjectTrackingEnabled = False
+            Dim entries = (From o In dbx.OrderEntries
+                           Join i In dbx.Items On i.ID Equals o.ItemID
+                           Where o.OrderID = orderID
+                           Select i.ItemLookupCode, o.Price).ToList()
+            For Each entry In entries
+                If Not prices.ContainsKey(entry.ItemLookupCode) Then prices.Add(entry.ItemLookupCode, entry.Price)
+            Next
+        End Using
+        Return prices
     End Function
 
     Private Function ResolvePriceLevelIndex() As Integer

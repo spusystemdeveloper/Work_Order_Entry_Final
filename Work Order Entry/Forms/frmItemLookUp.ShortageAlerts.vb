@@ -10,6 +10,7 @@ Partial Public Class frmItemLookUp
     Private shortageAlertWindowOpen As Boolean
     Private shortageAlertConnectionString As String
     Private shortageAlertFailureLogged As Boolean
+    Private shortageAlertRetryAt As DateTime = DateTime.MinValue
 
     Private Sub InitializeShortageAlerts()
         shortageAlertStatus = New ToolStripStatusLabel With {.IsLink = True, .Visible = False}
@@ -26,6 +27,7 @@ Partial Public Class frmItemLookUp
             pendingShortageAlerts.Clear()
             Return
         End If
+        If DateTime.Now < shortageAlertRetryAt Then Return
         shortageAlertPollRunning = True
         Try
             Dim connectionString = DB_Conn("constr")
@@ -43,10 +45,12 @@ Partial Public Class frmItemLookUp
             pendingShortageAlerts.IntersectWith(lines.Select(Function(line) line.OrderID))
             currentShortageAlerts = lines
             shortageAlertFailureLogged = False
+            shortageAlertRetryAt = DateTime.MinValue
             UpdateShortageAlertStatus()
         Catch ex As Exception
             If orderToolsClosing OrElse IsDisposed Then Return
-            shortageAlertStatus.Text = "Shortage check unavailable - retrying"
+            shortageAlertRetryAt = DateTime.Now.Add(PollRetryDelay)
+            shortageAlertStatus.Text = "Shortage check unavailable - retrying in " & PollRetryDelay.TotalMinutes & " min"
             shortageAlertStatus.IsLink = False
             shortageAlertStatus.ForeColor = Color.DarkOrange
             shortageAlertStatus.Visible = True

@@ -41,6 +41,7 @@ Public Class frmUploader
 
     Private Sub VerifyImportFile()
         Try
+            clsImportQuotation.BeginLookupCache()
             frmItemLookUp.isBulkLoading = True
             frmItemLookUp.gridSelectItem.SuspendLayout()
             Dim parser As New FileIO.TextFieldParser(lblFile.Text)
@@ -185,6 +186,7 @@ Public Class frmUploader
         Catch ex As Exception
             MsgBox(ex.ToString, vbCritical, "Program Error")
         Finally
+            clsImportQuotation.EndLookupCache()
             frmItemLookUp.gridSelectItem.ResumeLayout()
             frmItemLookUp.isBulkLoading = False
         End Try

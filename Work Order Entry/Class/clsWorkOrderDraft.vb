@@ -35,12 +35,17 @@ Public Class clsWorkOrderDraft
         Return key
     End Function
 
+    ' Tables don't disappear once found, so only the first successful check hits the database.
+    Private Shared tablesVerified As Boolean
+
     Public Shared Function EnsureTables() As Boolean
+        If tablesVerified Then Return True
         Try
             Using db = GetDB()
                 db.SOD_WO_DraftHeaders.Take(1).ToList()
                 db.SOD_WO_DraftDetails.Take(1).ToList()
             End Using
+            tablesVerified = True
             Return True
         Catch
             ' Draft recovery is optional. A store that has not deployed the custom

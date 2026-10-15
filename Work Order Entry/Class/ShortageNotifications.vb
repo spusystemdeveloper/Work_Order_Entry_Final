@@ -46,7 +46,9 @@ Public NotInheritable Class ShortageNotifications
     Public Shared Function Load(connectionString As String) As List(Of WarehouseShortage)
         Dim result As New List(Of WarehouseShortage)()
         Using connection As New SqlConnection(connectionString), command = connection.CreateCommand()
-            command.CommandTimeout = 30
+            ' Background poll: a healthy run is sub-second, so give up early rather than
+            ' tie up a busy server; the caller backs off and retries later.
+            command.CommandTimeout = 10
             command.CommandText =
                 "SELECT o.ID, qi.id, qi.ItemID, COALESCE(c.Company,N''), i.ItemLookupCode, i.Description, " &
                 "oe.Quantity, qi.QtyPre, qi.Picker FROM dbo.QueueingItems qi " &

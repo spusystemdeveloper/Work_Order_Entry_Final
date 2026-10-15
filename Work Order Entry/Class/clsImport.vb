@@ -138,9 +138,22 @@ Public Class clsImport
 
     Public Shared Sub importOrder()
 
-        Dim Order = (From x In clsImport.ImportData("Entry").AsEnumerable()
-                     Join c In db.Customers On Convert.ToInt32(x("CustomerID")) Equals c.ID
-                     Join s In db.SalesReps On Convert.ToInt32(x("SalesRepID")) Equals s.ID
+        ' Fetch only the referenced customer and sales rep; joining the sheet against
+        ' db.Customers/db.SalesReps directly downloads both whole tables.
+        Dim entries = clsImport.ImportData("Entry").AsEnumerable().ToList()
+        Dim customerIds = entries.Select(Function(x) Convert.ToInt32(x("CustomerID"))).Distinct().ToList()
+        Dim salesRepIds = entries.Select(Function(x) Convert.ToInt32(x("SalesRepID"))).Distinct().ToList()
+        Dim customers As List(Of Customer)
+        Dim salesReps As List(Of SalesRep)
+        Using dbx = GetDB()
+            dbx.ObjectTrackingEnabled = False
+            customers = (From c In dbx.Customers Where customerIds.Contains(c.ID)).ToList()
+            salesReps = (From s In dbx.SalesReps Where salesRepIds.Contains(s.ID)).ToList()
+        End Using
+
+        Dim Order = (From x In entries
+                     Join c In customers On Convert.ToInt32(x("CustomerID")) Equals c.ID
+                     Join s In salesReps On Convert.ToInt32(x("SalesRepID")) Equals s.ID
                            Select New With {
                          .Company = c.Company,
                          .AccountNumber = c.AccountNumber,
@@ -173,8 +186,11 @@ Public Class clsImport
 
     Public Shared Function importOrderEntry()
 
-        Dim Order = (From x In ImportData("Contents").AsEnumerable()
-                     Join i In db.Items On x.Field(Of String)("ItemLookupCode") Equals i.ItemLookupCode
+        Dim contents = ImportData("Contents").AsEnumerable().ToList()
+        Dim items = clsItemLookUp.GetItemsByCodes(contents.Select(Function(x) x.Field(Of String)("ItemLookupCode")))
+
+        Dim Order = (From x In contents
+                     Join i In items On x.Field(Of String)("ItemLookupCode") Equals i.ItemLookupCode
                      Select New With {
                       .ItemLookupCode = x("ItemLookupCode"),
                       .ItemName = i.Description.ToString() & i.ExtendedDescription.ToString(),
@@ -212,8 +228,11 @@ Public Class clsImport
                   Select New With {
                    .ItemLookupCode = x("ItemLookupCode")}).ToList()
 
-        Dim PO = (From x In ImportData("Contents").AsEnumerable()
-                      Join i In db.Items On x.Field(Of String)("ItemLookupCode") Equals i.ItemLookupCode
+        Dim contents = ImportData("Contents").AsEnumerable().ToList()
+        Dim items = clsItemLookUp.GetItemsByCodes(contents.Select(Function(x) x.Field(Of String)("ItemLookupCode")))
+
+        Dim PO = (From x In contents
+                      Join i In items On x.Field(Of String)("ItemLookupCode") Equals i.ItemLookupCode
                      Select New With {
                       .ItemLookupCode = x("ItemLookupCode"),
                       .ItemName = i.Description.ToString() & i.ExtendedDescription.ToString(),
@@ -284,8 +303,13 @@ Public Class clsImport
                    Select New With {
                    .ItemLookupCode = x("ItemLookupCode")}).ToList()
 
+        Dim items = clsItemLookUp.GetItemsByCodes(
+            From x In ImportDataCSV.AsEnumerable
+            Where x("OrderID").ToString().Equals(orderNumber)
+            Select TryCast(x("ItemLookupCode"), String))
+
         Dim _res = (From x In ImportDataCSV.AsEnumerable
-                      Join i In db.Items On x("ItemLookupCode") Equals i.ItemLookupCode
+                      Join i In items On x("ItemLookupCode") Equals i.ItemLookupCode
                        Where x("OrderID").ToString().Equals(orderNumber)
                      Select New With {
                       .ItemLookupCode = i.ItemLookupCode,

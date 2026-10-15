@@ -4,6 +4,33 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-15
 
+### Loading animation setting
+
+- Added **Show loading animation** under Settings > Work Order and Queue Options.
+  The installation's `ShowLoadingAnimation` setting defaults to true when missing,
+  persists with the existing branch settings and applies to the next save/import.
+  When cleared, `LoadingOverlay.Show` returns a no-op scope, so the same work runs
+  without the overlay. No business rule or database change; no migration needed.
+- Both projects build Debug/x86 and all 101 unit tests pass. A temporary-config
+  AppDomain probe verified missing/true show the overlay and false suppresses it.
+  The Settings options layout was rendered and inspected without loading store
+  data. The local Debug EXE configuration was restored byte-for-byte.
+
+### Save/import lookup performance, poll back-off and cat loading animation
+
+- Item lookups for save validation and Purchase/Transfer/website imports are now
+  batched: codes are bulk-copied into a session temp table and joined once, instead
+  of one query per line or downloading the whole Item table. Stock type/quantity
+  for validation is prefetched, with the previous per-item queries as fallback.
+  Quotation import verification caches item/customer lookups per import.
+- Ready-order and shortage polls wait 5 minutes after a failure before retrying,
+  and their command timeout was lowered to 10 seconds so a slow poll does not
+  hold the server. Optional `Improve_WorkOrder_ShortagePoll.sql` adds an index on
+  `QueueingItems.Status`; it was prepared only and has not been run anywhere.
+- The loading overlay now shows a cat jumping over boxes and yarn balls.
+- Pricing, stock, tax and save transaction rules are unchanged. All 101 unit tests
+  pass; no live-store timing has been measured yet.
+
 ### Shared contributor and AI guidance
 
 - Added AGENTS.md as shared guidance for preserving business rules, SQL Server

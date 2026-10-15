@@ -17,6 +17,12 @@ An isolated temporary-config probe verified the default, persistence across fres
 AppDomains, disabled click guard, re-enable behavior and preserved branch settings;
 the Settings options layout was rendered and inspected without loading store data.
 
+For the manual loading animation check, open **Settings > Work Order and Queue
+Options**, clear **Show loading animation**, click **Save**, and save or import an
+order: the work should run without the cat overlay. Select it again to restore the
+overlay. Existing deployments without `ShowLoadingAnimation` show it by default.
+A temporary-config AppDomain probe verified the missing/true/false cases.
+
 Five existing-order concurrency and rollback scenarios are covered separately by:
 
 ```powershell

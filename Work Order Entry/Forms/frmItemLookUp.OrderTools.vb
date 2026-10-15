@@ -12,6 +12,9 @@ Partial Public Class frmItemLookUp
     Private orderToolsClosing As Boolean
     Private readyConnectionString As String
     Private readyPollFailureLogged As Boolean
+    ' After a failed poll, wait before asking again so a slow server is not hit every 15 s.
+    Private Shared ReadOnly PollRetryDelay As TimeSpan = TimeSpan.FromMinutes(5)
+    Private readyPollRetryAt As DateTime = DateTime.MinValue
 
     Private Async Sub InitializeOrderTools(sender As Object, e As EventArgs) Handles MyBase.Shown
         If String.IsNullOrWhiteSpace(usrUsername) Then Return
@@ -72,6 +75,7 @@ Partial Public Class frmItemLookUp
             currentReadyGroups.Clear()
             Return
         End If
+        If DateTime.Now < readyPollRetryAt Then Return
         readyPollRunning = True
         Try
             Dim connectionString = DB_Conn("constr")
@@ -88,10 +92,12 @@ Partial Public Class frmItemLookUp
             pendingReadyGroups.IntersectWith(groups)
             currentReadyGroups = groups
             readyPollFailureLogged = False
+            readyPollRetryAt = DateTime.MinValue
             UpdateReadyStatus()
         Catch ex As Exception
             If orderToolsClosing OrElse IsDisposed Then Return
-            readyStatus.Text = "Ready status unavailable - retrying"
+            readyPollRetryAt = DateTime.Now.Add(PollRetryDelay)
+            readyStatus.Text = "Ready status unavailable - retrying in " & PollRetryDelay.TotalMinutes & " min"
             readyStatus.IsLink = False
             readyStatus.ForeColor = Color.DarkOrange
             readyStatus.Visible = True

@@ -40,6 +40,7 @@ Public Class frmSettings
         chkShowForInvoice.Checked = StoreProcessingSettings.ShowForInvoiceButton
         chkShowImportButton.Checked = StoreProcessingSettings.ShowImportButton
         chkEnableSetTaxButton.Checked = StoreProcessingSettings.EnableSetTaxButton
+        chkShowLoadingAnimation.Checked = StoreProcessingSettings.ShowLoadingAnimation
         chkAllowDuplicateItemEntry.Checked = StoreProcessingSettings.AllowDuplicateItemEntry
         chkAllowBranchSelection.Checked =
             StoreProcessingSettings.BranchSelectionEnabled
@@ -225,6 +226,8 @@ Public Class frmSettings
                 chkAllowDuplicateItemEntry.Checked)
             StoreProcessingSettings.SaveEnableSetTaxButton(
                 chkEnableSetTaxButton.Checked)
+            StoreProcessingSettings.SaveShowLoadingAnimation(
+                chkShowLoadingAnimation.Checked)
             MessageBox.Show(
                 "Branch settings were saved." & vbCrLf &
                 "Restart the application to apply branch selection changes.",

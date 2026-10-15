@@ -23,7 +23,9 @@ Public NotInheritable Class ReadyOrderNotifications
     Public Shared Function LoadPreparedGroups(connectionString As String) As List(Of Integer)
         Dim groups As New List(Of Integer)()
         Using connection As New SqlConnection(connectionString), command = connection.CreateCommand()
-            command.CommandTimeout = 30
+            ' Background poll: a healthy run is sub-second, so give up early rather than
+            ' tie up a busy server; the caller backs off and retries later.
+            command.CommandTimeout = 10
             ' Keep eligibility aligned with clsItemLookUp.getOrderForInvoicing.
             command.CommandText =
                 "SELECT DISTINCT v.GroupTo FROM dbo.SOD_ViewForInvoice v " &

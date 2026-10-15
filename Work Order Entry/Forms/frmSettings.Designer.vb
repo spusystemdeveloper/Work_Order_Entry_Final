@@ -66,6 +66,7 @@ Partial Class frmSettings
         Me.chkShowForInvoice = New System.Windows.Forms.CheckBox()
         Me.chkShowImportButton = New System.Windows.Forms.CheckBox()
         Me.chkEnableSetTaxButton = New System.Windows.Forms.CheckBox()
+        Me.chkShowLoadingAnimation = New System.Windows.Forms.CheckBox()
         Me.chkAllowDuplicateItemEntry = New System.Windows.Forms.CheckBox()
         Me.chkAllowOrderGrouping = New System.Windows.Forms.CheckBox()
         Me.chkEnableBranchQueue = New System.Windows.Forms.CheckBox()
@@ -571,6 +572,17 @@ Partial Class frmSettings
         Me.chkEnableSetTaxButton.Text = "Enable Set Tax button"
         Me.chkEnableSetTaxButton.UseVisualStyleBackColor = True
         '
+        'chkShowLoadingAnimation
+        '
+        Me.chkShowLoadingAnimation.AutoSize = True
+        Me.chkShowLoadingAnimation.Font = New System.Drawing.Font("Microsoft Sans Serif", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.chkShowLoadingAnimation.Location = New System.Drawing.Point(248, 95)
+        Me.chkShowLoadingAnimation.Name = "chkShowLoadingAnimation"
+        Me.chkShowLoadingAnimation.Size = New System.Drawing.Size(137, 17)
+        Me.chkShowLoadingAnimation.TabIndex = 26
+        Me.chkShowLoadingAnimation.Text = "Show loading animation"
+        Me.chkShowLoadingAnimation.UseVisualStyleBackColor = True
+        '
         'chkAllowDuplicateItemEntry
         '
         Me.chkAllowDuplicateItemEntry.AutoSize = True
@@ -807,6 +819,7 @@ Partial Class frmSettings
         Me.GroupBox8.Controls.Add(Me.chkAllowDuplicateItemEntry)
         Me.GroupBox8.Controls.Add(Me.chkShowImportButton)
         Me.GroupBox8.Controls.Add(Me.chkEnableSetTaxButton)
+        Me.GroupBox8.Controls.Add(Me.chkShowLoadingAnimation)
         Me.GroupBox8.Font = New System.Drawing.Font("Century Gothic", 8.25!, System.Drawing.FontStyle.Bold)
         Me.GroupBox8.Location = New System.Drawing.Point(431, 376)
         Me.GroupBox8.Name = "GroupBox8"
@@ -900,6 +913,7 @@ Partial Class frmSettings
     Friend WithEvents chkEnableBranchQueue As System.Windows.Forms.CheckBox
     Friend WithEvents chkShowImportButton As System.Windows.Forms.CheckBox
     Friend WithEvents chkEnableSetTaxButton As System.Windows.Forms.CheckBox
+    Friend WithEvents chkShowLoadingAnimation As System.Windows.Forms.CheckBox
     Friend WithEvents chkAllowDuplicateItemEntry As System.Windows.Forms.CheckBox
     Friend WithEvents chkAllowBranchSelection As System.Windows.Forms.CheckBox
     Friend WithEvents chkLockCustomerSalesRepOnRecall As System.Windows.Forms.CheckBox
