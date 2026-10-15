@@ -3,6 +3,9 @@
 ###############################################################################
 * text=auto
 
+# Exact SQL Server module bytes are required by the HO trigger fingerprint test.
+"Database Components/Tests/Fixtures/HO_OrderEntry_ItemLogs_Legacy.sql" -text
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #

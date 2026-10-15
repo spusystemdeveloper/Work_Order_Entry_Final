@@ -5,6 +5,13 @@ connecting to DVO/GSC, or changing database records.
 
 ## What is tested
 
+The separate HO new-line Save timeout fixture is
+`Database Components/Tests/HO_SaveTimeout_LocalDB_Test.ps1`. Its 16 checks
+verify the fingerprinted legacy trigger fix, rehearsal/commit/repeat guards,
+unchanged insert/edit log values and a synthetic logical-read reduction from
+5,884 to 1. See the [HO timeout guide](Database%20Components/Recovery/HO_PO_DB_SAVE_TIMEOUT_GUIDE.md).
+It uses a disposable LocalDB instance and never executes the fix on a live store.
+
 Five timing-helper tests were removed with the retired application logger,
 leaving 101 unit tests. Three overlay regressions check that ignored owners,
 disposed owners and handle-creation failures retain correct nested scope behavior.
@@ -213,3 +220,16 @@ The isolated SQL fixture does not execute every main-form save prompt or the ful
 RMS stored-procedure workflow. These manual checks cover that remaining scope.
 See `ORDER_TOOLS_GUIDE.md` for the refactor checklist; no database migration is
 required by this refactor.
+## HO manual Order renumber recovery tests
+
+Run `Database Components/Tests/HO_Renumber_LocalDB_Test.ps1` for the requested
+18870 -> 18869 / 18879 -> 18870 standalone recovery. All 26 checks run on a unique
+synthetic LocalDB instance and cover rollback, post-copy failures, unexpected
+value changes, dependency guards, overlapping IDs, posted/history/journal links,
+group membership, immutable receipt bytes, log domains, audit mapping events
+and unchanged inventory/identity allocation. The test changes only the in-memory
+fixture copy's server/backup checks; the distributed live script retains them.
+LocalDB requires local registry/socket access. No store database is modified.
+The same suite now includes ten checks for the separate saved reseed script,
+bringing the total to 36: committed links, unchanged repeats, preserved data,
+actual next allocation 18871 and rejection after later activity.

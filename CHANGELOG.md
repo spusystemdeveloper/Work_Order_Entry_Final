@@ -2,7 +2,78 @@
 
 All notable changes to the **Work Order Entry** application are documented in this file.
 
-## [Unreleased] - 2026-10-14
+## [Unreleased] - 2026-10-15
+
+### Requested manual HO Order ID renumbering
+
+- Saved a separate guarded `Reseed_HO_Order_After_Renumber.sql` beside the
+  renumber file for personal execution after commit. It verifies the renamed
+  headers, transaction/history/receipt links and committed mapping events before
+  setting current identity 18870, with next allocation 18871. Later activity is
+  rejected; an unchanged repeat is a no-op. Extended isolated coverage to 36
+  checks, including a real automatic allocation in the disposable fixture.
+- Prepared a standalone SSMS script for the explicitly requested mapping
+  18870 -> 18869 and 18879 -> 18870 after a read-only live dependency audit.
+  It relinks the audited order entries, queue/group references, posted transaction
+  23266, RMS history, order receipt, approvals, custom history and order-only
+  item logs while preserving monetary/quantity fields and all child identities.
+- Server, current-backup, original-header, identity, dependency and exact-trigger
+  guards reject drift. Default rehearsal rolls back; committed runs add explicit
+  mapping history. Stored receipt contents/free text remain historical. No live
+  renumber, rollback rehearsal or identity reseed was executed by the assistant.
+- All 26 disposable LocalDB checks pass, including overlapping destinations,
+  injected failures after header copy, unintended-value detection, reference
+  drift, archived bytes, unrelated log domains and unchanged identity allocation.
+  Added personal execution instructions and linked the original incident.
+- Both solutions build Release/x86 and all 101 application unit tests pass;
+  the local store configuration was restored byte-for-byte after validation.
+
+### HO new Work Order and import Save timeout
+
+- Read-only live diagnostics located recent approximately 30-second line saves
+  in the existing `trg_OrderEntry_ItemLogs` trigger (341,183 logical reads).
+  Its unconditional previous-log lookup targets an unindexed heap with roughly
+  71.7 million rows. New WO history triggers were fast and history was already
+  sequence-backed. No blocker was observed in the sampled active sessions.
+- Prepared a standalone, server/fingerprint-guarded SSMS script that skips the
+  unused previous-log lookup for new lines and zero/no-existing-order cases.
+  It retains the existing log inserts, edit lookup, quantities and business
+  rules. Default rehearsal rolls back; live application is left to the user.
+  No production trigger, row, index, timeout or order was changed by the assistant.
+- All 16 isolated LocalDB checks pass. Log values match the legacy trigger for
+  fractional insert/edit/zero cases; synthetic new-line log reads fall from
+  5,884 to 1. Documented deployment, reversal and the remaining existing-edit
+  lookup cost; this is not a claimed live throughput measurement.
+- Both solutions build Release/x86 and all 101 unit tests pass. Store-specific
+  local configuration was restored byte-for-byte. The exported trigger fixture
+  retains exact bytes in Git so fingerprint tests survive checkout.
+- Read-only cross-database metadata confirms shared trigger logic with different
+  log volumes: live HO approximately 71.67 million rows versus live GSC 9.64
+  million, local DVO 0.927 million and local QC 0.142 million; all four log tables
+  lack indexes. Documented the comparison and distinguished local copies from
+  live branch data. No live writes or expensive comparison scans were executed.
+- Later read-only checks found the fixed log-trigger fingerprint installed and
+  Order 18879 persisted. Recorded the user's 18868 → 18870 → 18879 ID gaps:
+  identity seed/increment remain 1; missing IDs have no current/history rows in
+  the inspected tables. Failed Save rollbacks are a supported explanation, not
+  proof of every gap's origin. No identity reseed/reuse or live write occurred.
+
+### HO_PO_DB incident reference
+
+- Documented the October 14 transaction-23266 / Work-Order-18870 history identity
+  incident, exact affected record IDs, root cause, recurrence prevention and
+  personal SSMS recovery procedure. Linked the incident record from the recovery
+  guide and project knowledge.
+- Recorded the October 15 live rehearsal's backup guard 52703 and the user's
+  subsequent backup-in-progress report. Explained why `@Commit=0` still requires
+  the live backup and retained the current backup query and closure evidence list.
+  That initial attempt stopped before the repair transaction began.
+- Updated the record after the user's SSMS screenshot showed `COMMITTED` in
+  live mode for transaction 23266, four item lines, four tax rows, matching totals
+  30,200.54, repaired receivable/order-history links and `HistoryUsesIdentity=0`.
+  Database recovery is committed; RMS acceptance checks remain pending. Actual
+  backup filename/duration and a separate successful rehearsal were not shown.
+  Documentation only; the assistant did not execute live SQL or the repair.
 
 ### Explicit ReportViewer SQL Types dependency
 

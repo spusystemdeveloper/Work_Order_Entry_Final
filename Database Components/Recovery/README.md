@@ -1,9 +1,33 @@
 # HO_PO_DB transaction 23266 recovery
 
+For the separately requested **18870 -> 18869 / 18879 -> 18870** Order ID change,
+see [the manual renumber instructions](RENUMBER_HO_WORKORDERS.md) and its linked
+standalone script. It defaults to rollback, requires a current verified backup,
+preserves transaction number 23266 and **does not reseed identity**. It has not
+been executed on live; it is not a Database Updater migration.
+After its **COMMITTED** result, use the separate
+[reseed file](Reseed_HO_Order_After_Renumber.sql) in this folder to set the next
+allocation to 18871, with all clients still closed. It validates the committed
+mapping and rejects later order activity. The assistant has not run it on live.
+
+For the separate October 15 **new Work Order / imported-order Save timeout**,
+see [the read-only diagnosis and guarded trigger fix](HO_PO_DB_SAVE_TIMEOUT_GUIDE.md).
+That issue is the legacy item-log lookup, separate from transaction-23266 link
+recovery. A later read-only check found the fixed trigger installed and Order
+18879 persisted. Full import/edit acceptance remains pending; see the guide's
+verification and Order ID gap notes.
+
 Use [HO_PO_DB_23266_Run_In_SSMS.sql](HO_PO_DB_23266_Run_In_SSMS.sql).
 This is a self-contained SQL file for personal execution in SSMS. Do not import
 it into the Database Updater: it supplies its own target and transaction.
 **The assistant has not applied this recovery to live HO_PO_DB.**
+
+Incident reference: [October 14 incident and October 15 live recovery follow-up](INCIDENT_2026-10-14_HO_PO_DB_23266.md).
+Latest status on October 15: the user supplied SSMS results showing `COMMITTED`,
+transaction 23266 / Work Order 18870, matching totals 30,200.54, four item lines,
+four tax rows and `HistoryUsesIdentity=0`, with live mode and commit enabled.
+Database recovery is committed; final invoice/receivable and next-posting checks
+in RMS remain pending. The earlier attempt stopped at backup guard 52703.
 
 ## Test a restored copy on localhost
 
