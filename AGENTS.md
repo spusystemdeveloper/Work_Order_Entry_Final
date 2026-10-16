@@ -99,6 +99,10 @@ rules instead of maintaining competing copies.
 - Preserve the existing Debug EXE configuration byte-for-byte around builds/tests;
   a test-project build can overwrite the local store's configuration. Do not
   include store configuration changes accidentally in a deployment or commit.
+- For grid styling or Designer checkbox changes, preserve Boolean checkbox
+  NullValue defaults and run `Database Components/Tests/RecallFormatting_UI_Test.ps1`
+  after a Debug build. A text NullValue can break blank checkbox formatting during
+  recall. Fix the style/type mismatch; do not suppress production DataErrors.
 - For save, cancellation, settlement, locking or commitment changes, run
   `Database Components/Tests/MultiUser_Save_LocalDB_Test.ps1` both normally and
   with `-VersionedReads`. Versioned reads belong only to that disposable fixture;

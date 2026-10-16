@@ -12,10 +12,14 @@ Partial Public Class frmItemLookUp
     Private orderToolsClosing As Boolean
     Private readyConnectionString As String
     Private readyPollFailureLogged As Boolean
+    Private orderActionsMenu As ToolStripDropDownButton
 
     Private Async Sub InitializeOrderTools(sender As Object, e As EventArgs) Handles MyBase.Shown
         If String.IsNullOrWhiteSpace(usrUsername) Then Return
-        Dim actions As New ToolStripDropDownButton("Order actions")
+        Dim actions As New ToolStripDropDownButton("Order actions") With {
+            .Visible = StoreProcessingSettings.ShowOrderActions
+        }
+        orderActionsMenu = actions
         actions.DropDownItems.Add("History...", Nothing,
             Sub(s, args)
                 Using history As New frmOrderHistory(activeRecallOrderID)
@@ -38,6 +42,23 @@ Partial Public Class frmItemLookUp
         readyTimer.Start()
         Await PollReadyOrdersAsync()
         Await PollShortageAlertsAsync()
+    End Sub
+
+    Private Sub ApplyOrderToolsVisibility()
+        If orderActionsMenu IsNot Nothing Then
+            orderActionsMenu.Visible = StoreProcessingSettings.ShowOrderActions
+        End If
+        If readyStatus IsNot Nothing Then
+            readyStatus.Visible = StoreProcessingSettings.ShowOrderNotifications AndAlso
+                StoreProcessingSettings.ShowForInvoiceButton AndAlso
+                StoreProcessingSettings.EnableReadyOrderNotifications AndAlso
+                Not String.IsNullOrEmpty(readyStatus.Text)
+        End If
+        If shortageAlertStatus IsNot Nothing Then
+            shortageAlertStatus.Visible = StoreProcessingSettings.ShowOrderNotifications AndAlso
+                StoreProcessingSettings.EnableShortageNotifications AndAlso
+                (shortageAlertFailureLogged OrElse currentShortageAlerts.Count > 0)
+        End If
     End Sub
 
     Private Sub ReloadCurrentOrder(sender As Object, e As EventArgs)
@@ -94,7 +115,7 @@ Partial Public Class frmItemLookUp
             readyStatus.Text = "Ready status unavailable - retrying"
             readyStatus.IsLink = False
             readyStatus.ForeColor = Color.DarkOrange
-            readyStatus.Visible = True
+            readyStatus.Visible = StoreProcessingSettings.ShowOrderNotifications
             cmdForInvoice.Text = "For Invoice"
             ' Keep the successful baseline when a poll fails. Log once until recovery.
             If Not readyPollFailureLogged Then
@@ -113,7 +134,9 @@ Partial Public Class frmItemLookUp
             "Ready for invoicing: " & currentReadyGroups.Count & " - open")
         readyStatus.IsLink = True
         readyStatus.LinkColor = If(pendingReadyGroups.Count > 0, Color.DarkGreen, Color.DarkBlue)
-        readyStatus.Visible = True
+        readyStatus.Visible = StoreProcessingSettings.ShowOrderNotifications AndAlso
+            StoreProcessingSettings.ShowForInvoiceButton AndAlso
+            StoreProcessingSettings.EnableReadyOrderNotifications
     End Sub
 
     Private Async Sub ShowReadyOrders()

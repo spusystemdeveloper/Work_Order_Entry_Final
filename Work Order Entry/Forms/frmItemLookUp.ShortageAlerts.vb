@@ -49,7 +49,7 @@ Partial Public Class frmItemLookUp
             shortageAlertStatus.Text = "Shortage check unavailable - retrying"
             shortageAlertStatus.IsLink = False
             shortageAlertStatus.ForeColor = Color.DarkOrange
-            shortageAlertStatus.Visible = True
+            shortageAlertStatus.Visible = StoreProcessingSettings.ShowOrderNotifications
             If Not shortageAlertFailureLogged Then
                 ErrorLogger.LogError(ex, "Warehouse shortage notification")
                 shortageAlertFailureLogged = True
@@ -70,7 +70,9 @@ Partial Public Class frmItemLookUp
         shortageAlertStatus.ToolTipText = String.Join(vbCrLf, orders.Take(10).Select(Function(id)
             Return "WO #" & id & " - " & currentShortageAlerts.First(Function(line) line.OrderID = id).Customer
         End Function))
-        shortageAlertStatus.Visible = orders.Count > 0 AndAlso StoreProcessingSettings.EnableShortageNotifications
+        shortageAlertStatus.Visible = orders.Count > 0 AndAlso
+            StoreProcessingSettings.EnableShortageNotifications AndAlso
+            StoreProcessingSettings.ShowOrderNotifications
     End Sub
 
     Private Sub AcknowledgeShortageAlert(orderID As Integer)

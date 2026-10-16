@@ -2,7 +2,297 @@
 
 All notable changes to the **Work Order Entry** application are documented in this file.
 
-## [Unreleased] - 2026-10-15
+## [Unreleased] - 2026-10-16
+
+### Larger print-choice dialog for readability
+
+- Enlarged the print-input dialog with stacked, full-width 14-point template
+  choices, a 24-point order-number field and a larger 14-point Print button.
+  Increased spacing and contrast; renamed the existing Order Number choice to
+  Work Order / Quotation to describe the same report route more clearly.
+- Layout is serialized in frmPrintType.Designer.vb. Default selection, radio
+  grouping, tab order, Enter action, input validation and print code are unchanged;
+  no report templates, preview code, printer/copy settings or business rules changed.
+- Both Release/x86 solutions build, all 101 unit tests and 91 isolated Print
+  checks pass, including larger click targets and label-fit checks. Clean-folder
+  PDF/ReportViewer packaging checks also pass. Inspected the rendered layout;
+  no SQL lookup, printer dialog or print job was executed. Debug configuration
+  was preserved; actual eyesight/workstation-scale feedback remains manual.
+
+### Print options and preview presentation
+
+- Aligned template choices, order-number entry and the Print button; added an
+  explicit order-number label and a distinct blue Print action. Preserved the
+  selected template default, radio grouping, tab order and Enter-to-Print action.
+- Added descriptive headings and toolbar guidance to Work Order/Sales Quotation
+  and Pick List previews, with consistent outer spacing and a larger restored
+  window size. The existing ReportViewer still fills the remaining space; its
+  toolbar and maximized opening behavior are preserved. All layout is serialized
+  in the three Designer files.
+- Print/template validation, data loading, calculations, page settings, printer
+  selection, copy-count handling, report templates and printing handlers are
+  unchanged. All three code-behind files were verified byte-for-byte unchanged;
+  no RDLC or dependency changes were made. Long text inside printed reports was
+  deliberately left as defined by the existing templates.
+- Both Release/x86 solutions build and all 101 unit tests plus 85 isolated Print
+  UI checks pass. Clean-folder packaging checks render both report PDFs and
+  verify packaged ReportViewer loading. Inspected empty-viewer/outer-layout
+  previews; no live order lookup, printer dialog or print job was executed.
+  Debug store configuration was preserved. Workstation printer/copy verification
+  remains manual; see UNIT_TEST_GUIDE.md.
+
+### Check WO presentation
+
+- Improved the selected-item heading and enlarged the Check Open Work Orders
+  grid, with bold order numbers, wrapped customer text, dedicated date/status
+  widths, alternating row shading and clear blue selected rows. Quantity values
+  are right-aligned without adding a rounding/number format. Close remains at
+  the bottom right; the existing resizable window now has a usable minimum size.
+- Moved column headers, widths and existing hidden-item-column settings into
+  frmCheckWO.Designer.vb, alongside the layout/styles. Preserved all ten property
+  mappings/ordinals, read-only permissions, multiple selection, column reordering,
+  tab indices and the existing SQL call using the selected item code. No search,
+  order-edit action, queue stage or new filtering rule was added.
+- Both Release/x86 solutions build; all 101 unit tests, 180 isolated Check WO
+  checks and 28 Recall checkbox formatting checks pass. Checked synthetic-data
+  rendering, generated LINQ result binding, nulls, fractional quantities, sorting,
+  reordering, resize/simulated scaling and the existing Close handler. Debug
+  store configuration was restored byte-for-byte; no store query or write was
+  executed. Actual store lookup and workstation DPI testing remain manual.
+
+### Import dialog presentation
+
+- Enlarged and aligned the custom F6 website-order chooser, quotation CSV
+  uploader and missing-item guidance window. Added consistent grid typography,
+  alternating row shading, wrapped long text and blue selection/import actions.
+  Website order numbers are bold; customer names and dates have dedicated space.
+- Serialized layout and styles in the three Designer files. Website columns
+  keep the same OrderID/CustomerName/DateOrder property order; their underlying
+  values and date format are preserved. CSV detail columns still initialize
+  when verification starts, with compact row/column numbers and wider messages.
+- Kept the Windows file picker, file filters, search/Show All logic, import
+  selection, keyboard mnemonics/tab indices, duplicate checks, validation,
+  pricing, logging and Import/Finish behavior unchanged. Website/missing-item
+  handler source is unchanged byte-for-byte; CSV source changes are confined
+  to GridDesign presentation settings.
+- Both Release/x86 solutions build; all 101 unit tests, 83 isolated Import
+  checks, 28 Recall formatting checks and clean-folder packaging checks pass.
+  The prior executable also passes the 74 shared semantic checks. Inspected
+  synthetic-data previews and preserved the local Debug EXE configuration.
+  No live import, SQL duplicate lookup, MySQL refresh or import-button execution
+  was performed. See UNIT_TEST_GUIDE.md for workstation validation.
+
+### Settings layout and keyboard focus
+
+- Reorganized the existing Settings groups into aligned two-column sections,
+  with consistent field spacing and readable fonts. Layout, labels and button
+  styles are serialized in frmSettings.Designer.vb for Visual Studio preview.
+- Distinguished the blue "Save branch / order options" button from individual
+  password Update buttons and separate Apply buttons for defaults, website
+  import and connection settings. Existing Alt+O mnemonics and tab indices remain.
+- Added presentation-only field/checkbox focus shading and button focus borders
+  in frmSettings.Presentation.vb. Existing settings loading, validation, password
+  requirements, persistence, restart behavior and business rules are unchanged;
+  frmSettings.vb was verified unchanged byte-for-byte for this revision.
+- Both Release/x86 solutions build; all 101 unit tests, 776 isolated Settings
+  presentation checks and 28 Recall checkbox formatting checks pass. Inspected
+  an empty-field rendered preview. Store configuration was preserved; no store
+  settings were loaded/saved, and actual Designer/high-DPI hardware testing
+  remains manual. See UNIT_TEST_GUIDE.md for the Settings checklist.
+
+### Restore blank UP-STORE checkbox formatting during recall
+
+- Fixed a regression introduced by copying runtime styles into the Designer:
+  the selected-item UP-STORE checkbox style inherited a text NullValue instead
+  of its original Boolean False. Blank/DBNull cells could therefore raise
+  "Formatted value of the cell has a wrong type" during recall while the list
+  dialog remained visible. Restored the original Boolean display default;
+  actual null/true/false values, recall logic and business rules are unchanged.
+- Added RecallFormatting_UI_Test.ps1, which fails on the old compiled build
+  and passes 28 checks after the fix, including null/DBNull/false/true formatting
+  before/after runtime styling and the temporary new-row placeholder. It observes
+  DataErrors only inside the test; no production error suppression was added.
+- Both Release/x86 solutions build and all 101 unit tests pass. The exact
+  formatter reproduction now reports zero DataErrors; all 32 synthetic Recall
+  presentation checks and previous-build filter/selection comparisons still pass.
+  No store writes or live recall execution were performed; configuration was
+  preserved byte-for-byte. Retest both quotation and Work Order recall in the app.
+
+### Recall window readability
+
+- Made the Recall dialog wider and resizable, retaining the action buttons at
+  the same distances from the bottom/right edges. Larger fonts, bold order
+  numbers, a dedicated date/time width, larger wrapped Customer/Comment columns,
+  subtle alternate rows and a blue/white selection highlight improve readability.
+  Wrapped rows grow only for displayed entries, with a 44-pixel minimum; native
+  cell tooltips remain available. Defaults are visible in the Designer.
+- Kept all five bound fields, headers and their order. Dates/order IDs remain
+  the original strings; customer account text and comments are unchanged.
+  frmRecall.vb, clsRecall queries, filters, debounce, selection handlers, key
+  handling and actual recall logic were not edited.
+- Both Release/x86 solutions build and all 101 unit tests pass. A 32-check
+  synthetic Recall probe and comparison with the previous build preserve all
+  header-based filters (including apostrophes), row IDs, counts, sorting,
+  selection, rebinding, control shortcuts/tab indexes and button edge offsets.
+  Resizing and long-text renders were checked. This did not execute live recall
+  or quotation/order-taker SQL paths. The Debug EXE configuration was preserved.
+
+### Show the current UI defaults in the form Designer
+
+- Serialized the existing grid fonts, colors, spacing, row heights, column
+  widths/alignment and left-panel defaults in frmItemLookUp.Designer.vb. The
+  lookup grid now declares the same 19 bound columns in their existing order,
+  including the hidden Boolean Inactive column and the expanding SOH column.
+  The Designer can show headers/layout without loading a database or logging in.
+- Retained automatic binding and runtime styling/focus behavior. Compared the
+  previous build against both the new runtime and Designer-only native control
+  style/layout snapshots at the default scale. Binding, nulls, decimal/negative
+  stock, column types, sorting, empty results, rebinding, button bounds/captions,
+  tab indexes and KeyPreview also matched in a synthetic fixture. Authentication,
+  SQL, keyboard handlers and business rules were not edited.
+- Both Release/x86 solutions build and all 101 unit tests pass. Existing isolated
+  probes pass 405 grid checks, 136 focus/layout checks, 408 Show Image layout
+  checks and 21 LocalDB search checks. Configuration was preserved exactly.
+  Visual Studio itself and live-store workflows were not automated in these checks.
+
+### Show full SOH quantities
+
+- Replaced the fixed 64-pixel lookup SOH width with a 110-pixel minimum and
+  sizing to displayed cells. Large and fractional values can expand the column;
+  the item description uses the remaining space. No all-row measurement is used.
+  Existing SOH number formatting, stored quantities, button positions, shortcuts
+  and business rules remain unchanged.
+- Both Release/x86 solutions build and all 101 unit tests pass. A synthetic grid
+  probe passed 405 value/style/layout checks, including large, negative and long
+  fractional SOH values, text fitting after scrolling, unchanged cell values and
+  button geometry/captions. Rendered grids were inspected; no live-store writes
+  were performed. The local Debug EXE configuration was preserved exactly.
+
+### Keep Show Image below the barcode row
+
+- Disabled automatic scrolling on the fixed entry panel and anchored Show Image
+  to the top/left. A scrollbar can no longer shift the checkbox upward into the
+  barcode field. Its designed position and the existing button geometry, tab
+  order, shortcuts, image behavior and business rules remain unchanged.
+- Both Release/x86 solutions build and all 101 unit tests pass. An isolated
+  native-control probe passed 408 layout checks across three simulated scales,
+  including full control bounds, no scrollbars and unchanged button positions
+  and tab indexes. This is layout validation, not a live-store workflow test.
+  The local Debug EXE configuration was preserved byte-for-byte.
+
+### SQL item-search investigation and repeatable timing
+
+- Reproduced the BOOK + PAPER SQL delay on local GSC (382 matches). Compared
+  query rewrites and an indexed search-text prototype on disposable copies.
+  Rejected faster variants that slowed broad searches or changed the original
+  unordered TOP 500 cutoff. Removed the experimental application query builder;
+  the original search SQL and all business rules remain in use.
+- Added a read-only timing script recording SQL durations, row counts, result
+  hashes and IO/time statistics without exporting item rows or credentials.
+  See Database Components/Tests/ITEM_SEARCH_PERFORMANCE_FINDINGS.md for measured
+  limits and the proposed restored-copy maintenance investigation. No search
+  index, store view, timeout or database setting was changed; this is not a
+  deployed SQL speed fix.
+
+### Bold lookup rows and responsive item search
+
+- Restored bold text for every lookup row using cached fonts, removing the
+  per-cell committed-quantity check and repeated row-style mutation on paint.
+- Kept the exact existing contains-search SQL, TOP 500 limit, keyword history,
+  fallback behavior and synchronous caller contract. The filtered SQL read now
+  runs on an owned background connection while a modal Searching items indicator
+  keeps UI messages pumping and prevents actions against unfinished results.
+- Read-only local GSC diagnostics found the query scans Item and reads its
+  legacy ntext descriptions (216,723 LOB logical reads for the sampled search).
+  This UI change does not remove that database scan or promise faster SQL.
+  No schema, search matching, stock freshness or business rule changed.
+- Both Release/x86 solutions build and all 101 unit tests pass. The actual
+  compiled search helper passes 21 disposable LocalDB checks for UI message
+  progress, modal locking/restoration, early-close prevention and identical
+  returned values. Synthetic grid checks confirm bold rows without changing
+  values, warning colors or button geometry. Store configuration was preserved.
+
+### Left entry panel spacing and focus indication
+
+- Standardized left-panel input fonts and label alignment, with consistent gaps
+  and fields centered beside the existing lookup buttons. Button positions,
+  tab order, shortcut handlers, field values and read-only/enabled rules are retained.
+- Replaced the salmon search/barcode outline with blue only while the enabled
+  field actually has focus; inactive/disabled fields use the panel background.
+  Outline bounds follow field sizing. Apply presentation before login without
+  changing authentication, database loading or business rules.
+- Both Release/x86 solutions build and all 101 unit tests pass. An isolated
+  probe passes 136 layout/state/focus checks using simulated focus without
+  taking keyboard focus or accessing SQL; native input layout was rendered.
+  Existing store configuration was preserved byte-for-byte.
+
+### Apply grid presentation before login
+
+- Moved the existing FormatGrid call immediately before the login dialog so
+  the empty grids already show the updated headers, spacing and column layout.
+  Store configuration still runs first; authentication, registry/register reads,
+  store queries, refresh and draft recovery retain their existing sequence.
+  No data loads, login checks or business rules moved into grid formatting.
+- Both Release/x86 solutions build and all 101 unit tests pass. The isolated
+  grid probe passes 373 checks, including empty/unbound grid presentation without
+  login or SQL access; the local store configuration was preserved byte-for-byte.
+
+### Grid readability and spacing
+
+- Standardized the lookup and Selected Items grids on cached Tahoma fonts,
+  padded headers/cells, subtle alternate rows and clearer grid lines. Lookup
+  rows use a compact fixed height with wrapped descriptions; selected lines have
+  more vertical space. No automatic all-cell sizing or per-paint font allocation.
+- Right-aligned numeric headers/cells, centered UP-STORE checkboxes and gave
+  Selected Items descriptions the remaining width with bounded numeric columns.
+  Spaced the Last Purchase Price heading for readability. Button positions,
+  shortcuts, stored values, numeric formats, editability and warning colors remain.
+- Both Release/x86 solutions build and all 101 unit tests pass. Populated-grid
+  renders were inspected; 372 synthetic value/style/layout checks cover three
+  client widths, inherited numeric alignment, warning colors, editability and
+  unchanged button geometry/captions. Store configuration was preserved.
+
+### Align totals with Selected Items
+
+- Inset the totals panel border by the same horizontal padding as the Selected
+  Items grid, using a docked wrapper so both edges stay aligned during resize.
+  Kept totals right-aligned and preserved their sizes, values and calculation rules.
+- Both Release/x86 solutions build and all 101 unit tests pass. An isolated
+  layout probe passes 16 alignment/overlap/value checks across four client widths;
+  the lower panel was rendered for inspection. Existing store config was preserved.
+
+### Optional Order actions and status notification visibility
+
+- Added independent Show Order actions and Show order notifications checkboxes
+  under Settings > Work Order and Queue Options. Both default to visible when
+  configuration keys are absent and persist in the existing installation config.
+- Apply the choices when Settings closes and during notification updates, so
+  polling cannot redisplay hidden ready/shortage status links. The For Invoice
+  button/count, notification monitoring, pending reduction reminders and critical
+  recall/save/conflict/unsaved-change dialogs retain their existing behavior.
+- No database migration, order lifecycle, pricing, tax or commitment rule change.
+- Both solutions build Release/x86 and all 101 unit tests pass. An isolated
+  temporary-config WinForms probe passes 36 checks across fresh AppDomains for
+  defaults, independent toggles, persisted off/on state, repeated status updates,
+  failure-state visibility and unchanged other settings. Checkbox layout was
+  rendered and inspected; the installed Debug configuration was preserved.
+
+### Optional item-log lookup performance index
+
+- Added an optional SQL Server 2016 migration for a covering ItemID/Date index
+  on SOD_Item_Logs, preserving the trigger and its numeric comparison against
+  varchar ReferenceID. No business rows, stock rules or RMS identities change.
+- Added schema/index/reference guards and a locked preflight for conflicting
+  latest timestamp ties. Reuses suitable existing indexes and requires the
+  updater's or SSMS caller's transaction; no automatic store installation.
+- Added the optional updater catalog entry, packaged deployment/rollback guide
+  and disposable LocalDB tests for identical log output, caller rollback,
+  unsafe-state rejection and synthetic logical-read reduction.
+- Validation: 31 item-log checks, 71 updater checks, 39 existing multi-user
+  checks in each isolation mode and all 101 unit tests pass. Both solutions
+  build Release/x86; Debug/Release updater packages contain the exact SQL/guide.
+  Synthetic lookup reads fall from 5,883 to 4. Store configuration was preserved
+  byte-for-byte; no migration was applied to a store database.
 
 ### Shared contributor and AI guidance
 

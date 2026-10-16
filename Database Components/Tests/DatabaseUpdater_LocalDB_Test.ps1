@@ -65,6 +65,7 @@ try {
         Check (-not ($catalog.Id -match 'Security|Validation|Deploy_')) "$profile excludes permissions and SQLCMD driver execution"
         Check (@($catalog | Where-Object {$_.Id -eq 'Migrations/Enable_WorkOrder_History.sql'}).Count -eq 1 -and
             -not ($catalog.Id -match 'Fix_WorkOrder_History_Identity')) "$profile offers one history create/update selection"
+        Check (@($catalog | Where-Object {$_.Id -eq 'Migrations/Improve_WorkOrder_ItemLogLookup.sql' -and $_.Category -eq 'Index / performance'}).Count -eq 1) "$profile offers the optional item-log performance index"
     }
     $maskedGo = "SELECT 'first`nGO`nlast';`n/* outer /* nested */`nGO`n*/`nGO -- separator`nSELECT 2;"
     Check ([WorkOrderDatabaseUpdater.SqlBatches]::Split($maskedGo, $false).Count -eq 2) 'GO in strings and nested comments stays inside its batch'
@@ -157,6 +158,21 @@ INSERT dbo.Invariant VALUES(1,7);
     $null = Apply @($queue, $edit, $index)
     $null = Apply @($queue, $edit, $index)
     Check ((Scalar "SELECT COUNT(*) FROM sys.indexes WHERE object_id=OBJECT_ID('dbo.Item') AND name='IX_SOD_WO_ItemLookup' AND is_unique=0") -eq 1) 'Real index migration is idempotent and non-unique'
+    $logIndex = $catalog | Where-Object Id -eq 'Migrations/Improve_WorkOrder_ItemLogLookup.sql'
+    Sql @'
+CREATE TABLE dbo.SOD_Item_Logs(ItemID int NOT NULL,ReferenceID varchar(50) NOT NULL,NewCommitted int NOT NULL,[Date] datetime NOT NULL);
+INSERT dbo.SOD_Item_Logs VALUES(1,'01',7,'20200101');
+'@
+    $historyBeforeLogIndex = Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory;'
+    $indexFailure = Script 'log-index-later-failure' "THROW 53320, 'Item log fixture failure', 1;"
+    Reject { Apply @($logIndex,$indexFailure) } 'Item log fixture failure' 'Later updater failure rolls back the real item-log index selection'
+    Check ((Scalar "SELECT COUNT(*) FROM sys.indexes WHERE object_id=OBJECT_ID('dbo.SOD_Item_Logs') AND name='IX_SOD_WO_ItemLogLookup';") -eq 0 -and
+        (Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory;') -eq $historyBeforeLogIndex) 'Failed item-log deployment leaves no index or success record'
+    $null = Apply @($logIndex)
+    $null = Apply @($logIndex)
+    Check ((Scalar "SELECT COUNT(*) FROM sys.indexes WHERE object_id=OBJECT_ID('dbo.SOD_Item_Logs') AND name='IX_SOD_WO_ItemLogLookup' AND is_unique=0;") -eq 1) 'Updater installs and reuses the real non-unique item-log index'
+    Check ((Scalar "SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory WHERE ScriptId='Migrations/Improve_WorkOrder_ItemLogLookup.sql' AND ScriptHash='$($logIndex.Hash)';") -eq 2) 'Committed item-log deployments record the reviewed script hash'
+    Check ((Scalar 'SELECT COUNT(*) FROM dbo.SOD_Item_Logs WHERE ItemID=1 AND ReferenceID=''01'' AND NewCommitted=7;') -eq 1) 'Updater item-log selection preserves existing business rows'
     Check ((Scalar "SELECT COUNT(*) FROM sys.indexes WHERE object_id=OBJECT_ID('dbo.OrderEntry') AND name='IX_SOD_WO_Edit_OrderEntry'") -eq 1) 'Nested packaged migration transactions retain the outer transaction'
     Check ((Scalar 'SELECT Qty FROM dbo.Invariant WHERE ID=1') -eq 7) 'Selected index/migration scripts preserve fixture business data'
     $info = [WorkOrderDatabaseUpdater.UpdateRunner]::Check($cs, $dbName)

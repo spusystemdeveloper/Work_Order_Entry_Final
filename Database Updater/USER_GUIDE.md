@@ -8,6 +8,12 @@ more efficiently. A SQL function stores logic that an application/query can call
 For a quick start, read `START_HERE.txt`. Inside the updater, click
 **Help / instructions...** to read this guide offline.
 
+For the optional item-log lookup index, read
+`Database Components/Migrations/WORKORDER_ITEM_LOG_LOOKUP_GUIDE.md` first.
+It preserves trigger SQL and business rows but holds a log-table lock during
+preflight/index creation. Use a maintenance window and a restored-branch rehearsal;
+large tables may need SSMS because the updater command timeout is 120 seconds.
+
 ## 1. Install the tool on a workstation
 
 1. Extract the whole ZIP into one folder; do not run the EXE inside the ZIP.

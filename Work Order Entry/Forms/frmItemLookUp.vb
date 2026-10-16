@@ -8,8 +8,11 @@ Public Class frmItemLookUp
     Private Const ManualTaxExemptionReasonType As Integer = 6
     Private Const MaxItemsPerWorkOrder As Integer = 6
 
-    Private Shared ReadOnly GridBaseFont As New Font("Arial", 12.0F, FontStyle.Bold)
-    Private Shared ReadOnly GridLoadedFont As New Font("Arial", 12.0F, FontStyle.Bold)
+    Private Shared ReadOnly GridBaseFont As New Font("Tahoma", 10.0F, FontStyle.Regular)
+    Private Shared ReadOnly GridLoadedFont As New Font("Tahoma", 10.0F, FontStyle.Bold)
+    Private Shared ReadOnly GridHeaderFont As New Font("Tahoma", 9.0F, FontStyle.Bold)
+    Private Shared ReadOnly EntryLabelFont As New Font("Tahoma", 8.25F, FontStyle.Bold)
+    Private Shared ReadOnly EntryInputFont As New Font("Tahoma", 9.0F, FontStyle.Regular)
 
     Dim record As Object
     Dim sOldDes As String
@@ -188,7 +191,7 @@ Public Class frmItemLookUp
             'Dim FilterStr = "SELECT ITEMLOOKUPCODE AS ITEMCODE,DESCRIPTION AS 'ITEM NAME',PRICE AS 'ITEM PRICE',COST,AVAILABLE,ParentQuantity,SKULEVEL FROM SOD_VIEWITEMS  WHERE Inactive = 0 AND FULLDESC Like '%" & FilterString & "%'"
 
             'itemData.Filter = FilterStr
-            BindGridItemSource(load_data(FilterStr))
+            BindGridItemSource(LoadItemSearchData(FilterStr))
 
             If gridItem.RowCount = 0 Then
                 If suppressNoItemsMessage = False Then
@@ -224,6 +227,65 @@ Public Class frmItemLookUp
         End Try
 
     End Sub
+
+    Private Function LoadItemSearchData(sql As String) As DataTable
+        ' Keep the synchronous search contract for every existing caller. A modal
+        ' progress window pumps UI messages while only SQL work runs off-thread.
+        ' Capture the connection on the UI thread; do not share DataContexts.
+        Dim connectionString = DB_Conn("constr")
+        Dim result As DataTable = Nothing
+        Dim failure As Exception = Nothing
+        Dim finished As Boolean = False
+        Using progress As New Form With {
+            .Text = "Item search", .ClientSize = New Size(320, 88),
+            .StartPosition = FormStartPosition.CenterParent,
+            .FormBorderStyle = FormBorderStyle.FixedDialog,
+            .ControlBox = False, .ShowInTaskbar = False,
+            .Font = GridBaseFont
+        }
+            progress.Controls.Add(New Label With {
+                .Text = "Searching items...", .AutoSize = True, .Location = New Point(16, 14)
+            })
+            progress.Controls.Add(New ProgressBar With {
+                .Style = ProgressBarStyle.Marquee, .MarqueeAnimationSpeed = 30,
+                .Bounds = New Rectangle(16, 44, 288, 18)
+            })
+            AddHandler progress.FormClosing,
+                Sub(sender, args)
+                    If Not finished AndAlso args.CloseReason = CloseReason.UserClosing Then args.Cancel = True
+                End Sub
+            AddHandler progress.Shown,
+                Async Sub(sender, args)
+                    Try
+                        result = Await System.Threading.Tasks.Task.Run(
+                            Function()
+                                Dim rows As New DataTable()
+                                Using connection As New SqlConnection(connectionString),
+                                    command As New SqlCommand(sql, connection),
+                                    adapter As New SqlDataAdapter(command)
+                                    connection.Open()
+                                    adapter.Fill(rows)
+                                End Using
+                                Return rows
+                            End Function)
+                    Catch ex As Exception
+                        failure = ex
+                    Finally
+                        finished = True
+                        If Not progress.IsDisposed Then progress.Close()
+                    End Try
+                End Sub
+            progress.ShowDialog(Me)
+        End Using
+        If failure IsNot Nothing Then
+            ' Retain load_data's existing database-failure behavior on the UI thread.
+            MessageBox.Show(failure.Message & " Please Check Database !")
+            Application.Exit()
+            Return Nothing
+        End If
+        sql_dt = result
+        Return result
+    End Function
 
     Private Sub checkSearch()
 
@@ -454,9 +516,9 @@ Public Class frmItemLookUp
                 .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
                 .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None
                 .AllowUserToResizeRows = False
-                .RowTemplate.Height = 70
+                .RowTemplate.Height = 44
                 .ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-                .ColumnHeadersHeight = 28
+                .ColumnHeadersHeight = 34
                 .ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False
                 .ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
 
@@ -470,8 +532,10 @@ Public Class frmItemLookUp
                 .Columns(4).Width = 96
                 .Columns(5).Width = 90
                 .Columns(7).Width = 90
-                .Columns(17).Width = 64
-                .Columns(18).Width = 78
+                ' Fit visible SOH values without rounding fractional stock or sizing all rows.
+                .Columns(17).MinimumWidth = 110
+                .Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                .Columns(18).Width = 94
 
                 ' Fill remaining width with Item Name
                 .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
@@ -483,7 +547,7 @@ Public Class frmItemLookUp
                 '=================================
                 ' COLUMN HEADERS
                 '=================================
-                .Columns(0).DefaultCellStyle.Font = New Font("Arial", 10, FontStyle.Bold)
+                .Columns(0).DefaultCellStyle.Font = GridLoadedFont
 
                 .Columns(0).HeaderText = "ITEM CODE"
                 .Columns(1).HeaderText = "ITEM NAME"
@@ -499,8 +563,8 @@ Public Class frmItemLookUp
                 ' ITEM NAME WRAP
                 '=================================
                 .Columns(1).DefaultCellStyle.WrapMode = DataGridViewTriState.True
-                .Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft
-                .Columns(1).DefaultCellStyle.Padding = New Padding(5)
+                .Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
+                .Columns(1).DefaultCellStyle.Padding = New Padding(6, 4, 6, 4)
 
                 '=================================
                 ' FORMATS
@@ -529,7 +593,7 @@ Public Class frmItemLookUp
                 .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
 
                 .DefaultCellStyle.WrapMode = DataGridViewTriState.False
-                .RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
+                .RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.NotSet
 
                 '=================================
                 ' HIDE COLUMNS
@@ -547,6 +611,17 @@ Public Class frmItemLookUp
                 .Columns(14).Visible = False
                 .Columns(15).Visible = False
                 .Columns(16).Visible = False
+
+                ApplyGridReadability(gridItem)
+                .RowTemplate.DefaultCellStyle.Font = GridLoadedFont
+                .RowsDefaultCellStyle.Font = GridLoadedFont
+                For Each row As DataGridViewRow In .Rows
+                    row.Height = .RowTemplate.Height
+                Next
+                For Each index As Integer In {2, 3, 4, 5, 7, 17, 18}
+                    .Columns(index).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+                    .Columns(index).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+                Next
 
                 .ResumeLayout()
 
@@ -658,25 +733,8 @@ Public Class frmItemLookUp
         Try
             If e.RowIndex < 0 OrElse e.RowIndex >= gridItem.Rows.Count Then Exit Sub
 
-            Dim row As DataGridViewRow = gridItem.Rows(e.RowIndex)
-
-            ' Detect loaded
-            Dim isLoaded As Boolean = False
-            Dim qtyComIndex As Integer = 18
-
-            If qtyComIndex < row.Cells.Count Then
-                Dim val = row.Cells(qtyComIndex).Value
-                If val IsNot Nothing AndAlso IsNumeric(val) AndAlso CDec(val) > 0D Then
-                    isLoaded = True
-                End If
-            End If
-
-            ' ✅ APPLY TO WHOLE ROW using cached fonts (eliminates per-cell GDI allocations)
-            If isLoaded Then
-                row.DefaultCellStyle.Font = GridLoadedFont
-            Else
-                row.DefaultCellStyle.Font = GridBaseFont
-            End If
+            ' All lookup rows stay bold; no quantity checks or row mutations on paint.
+            e.CellStyle.Font = GridLoadedFont
 
         Catch
         End Try
@@ -1151,10 +1209,7 @@ Public Class frmItemLookUp
     Private Sub ConfigureProcessingModeUi()
         cmdForInvoice.Visible = StoreProcessingSettings.ShowForInvoiceButton
         btnTax.Enabled = StoreProcessingSettings.EnableSetTaxButton
-        If readyStatus IsNot Nothing Then
-            readyStatus.Visible = StoreProcessingSettings.ShowForInvoiceButton AndAlso
-                                  StoreProcessingSettings.EnableReadyOrderNotifications
-        End If
+        ApplyOrderToolsVisibility()
         cmdImport.Visible = StoreProcessingSettings.ShowImportButton
         ResetProcessingModeForNewOrder()
     End Sub
@@ -2389,14 +2444,15 @@ Proceed:
                 Exit Sub
             End If
 
+            ' Apply presentation before the login dialog reveals the main form.
+            ' This method does not load data or authenticate a user.
+            ApplyLeftPanelReadability()
+            FormatGrid()
             frmLogin.ShowDialog()
 
             'Dim h As System.Net.IPHostEntry = System.Net.Dns.GetHostByName(System.Net.Dns.GetHostName)
             Dim h As System.Net.IPHostEntry = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName)
             sReg = Format(db.SOD_fn_GetReg(h.AddressList.GetValue(0).ToString), "#")
-
-            Me.gridSelectItem.ColumnHeadersDefaultCellStyle.Font = New Font("Tahoma", 9.75, FontStyle.Bold)
-            Me.gridSelectItem.DefaultCellStyle.Font = New Font("Tahoma", 9.75, FontStyle.Regular)
 
             Me.statServer.Text = "SERVER  " & DB_Conn("svr")
             Me.statDb.Text = "DATABASE  " & DB_Conn("dbn")
@@ -2410,8 +2466,6 @@ Proceed:
             picPanel.Visible = False
 
             'frmLogin.ShowDialog()
-
-            FormatGrid()
 
             RefreshDetails(False)
             RecoverDraftIfAvailable()
@@ -2520,11 +2574,35 @@ Proceed:
         End Try
     End Sub
 
+    Private Sub ApplyGridReadability(grid As DataGridView)
+        ' Presentation only: never inspect or update item/order values here.
+        grid.EnableHeadersVisualStyles = False
+        grid.ColumnHeadersDefaultCellStyle.Font = GridHeaderFont
+        grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(232, 237, 244)
+        grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(31, 41, 55)
+        grid.ColumnHeadersDefaultCellStyle.Padding = New Padding(6, 4, 6, 4)
+        grid.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False
+        grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+        grid.ColumnHeadersHeight = 34
+        grid.DefaultCellStyle.Font = If(grid Is gridItem, GridLoadedFont, GridBaseFont)
+        grid.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
+        grid.DefaultCellStyle.Padding = New Padding(6, 3, 6, 3)
+        grid.DefaultCellStyle.BackColor = Color.White
+        grid.DefaultCellStyle.ForeColor = Color.FromArgb(31, 41, 55)
+        grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(37, 99, 160)
+        grid.DefaultCellStyle.SelectionForeColor = Color.White
+        grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(246, 248, 251)
+        grid.GridColor = Color.FromArgb(218, 224, 232)
+        ' Preserve per-row/cell warning and approval colors, formats and editability.
+    End Sub
+
     Private Sub FormatGrid()
 
         Try
             EnableDoubleBuffering(gridItem)
             EnableDoubleBuffering(gridSelectItem)
+            ApplyGridReadability(gridItem)
+            ApplyGridReadability(gridSelectItem)
 
             With gridSelectItem
 
@@ -2532,15 +2610,9 @@ Proceed:
                     col.SortMode = DataGridViewColumnSortMode.NotSortable
                 Next
 
-                'for column width
-                .Columns(0).Width = 100
-                .Columns(1).Width = 300
-                .Columns(2).Width = 100
-                .Columns(3).Width = 100
-                .Columns(5).Width = 150
-                .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+                .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
                 .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
-                .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
+                .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
                 .Columns(3).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
                 .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
                 .Columns(5).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
@@ -2549,14 +2621,37 @@ Proceed:
                 .Columns(5).DefaultCellStyle.Format = "C"
                 .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
-                .Columns(17).Width = 100
-                .Columns(18).Width = 100
                 .Columns(19).DefaultCellStyle.Format = "C"
-                '.Columns(19).Width = 160
-                .Columns(19).FillWeight = 50
                 chkPickLoc.Visible = chkWorkOrder.Checked
                 CustPrep.Visible = chkWorkOrder.Checked
 
+                .RowTemplate.Height = 30
+                .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None
+                .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+                .Columns(0).Width = 110
+                .Columns(0).DefaultCellStyle.Font = GridLoadedFont
+                .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                .Columns(1).MinimumWidth = 220
+                .Columns(1).FillWeight = 100
+                .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+                .Columns(2).Width = 90
+                .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+                .Columns(3).Width = 100
+                .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+                .Columns(5).Width = 120
+                .Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+                .Columns(17).Width = 100
+                .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+                .Columns(18).AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+                .Columns(18).Width = 105
+                .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+                .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+                .Columns(19).AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+                .Columns(19).Width = 180
+                .Columns(19).HeaderText = "LAST PURCHASE PRICE"
+                .Columns(19).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+                .Columns(19).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
 
             End With
 
@@ -7681,30 +7776,60 @@ inputCust:
         End Try
     End Function
 
-    Private Sub txtSearch_Leave(sender As Object, e As EventArgs) Handles txtSearch.Leave
-        pnl2TextSearch.BackColor = Panel5.BackColor
+    Private Sub ApplyLeftPanelReadability()
+        Panel5.SuspendLayout()
+        Try
+            Dim leftEdge = txtSales.Left
+            Dim rightEdge = txtSales.Right
+            For Each field As TextBox In {txtCustomer, txtType, txtSales, txtRemarks, txtSearch, txtBarcode}
+                field.Font = EntryInputFont
+                Dim previousRight = field.Right
+                field.Left = leftEdge
+                field.Width = previousRight - leftEdge
+            Next
+            txtCustomer.Width = rightEdge - leftEdge
+            txtSearch.Width = rightEdge - leftEdge
+            cboPayment.Font = EntryInputFont
+            ' Center fields beside their existing lookup buttons; never move the buttons.
+            txtCustomer.Top = cmdSCustomer.Top + Math.Max(0, (cmdSCustomer.Height - txtCustomer.Height) \ 2)
+            txtSales.Top = cmdSSales.Top + Math.Max(0, (cmdSSales.Height - txtSales.Height) \ 2)
+            txtSearch.Top = cmdSearch.Top + Math.Max(0, (cmdSearch.Height - txtSearch.Height) \ 2)
+            For Each caption As Label In {Label9, Label3, Label5, Label2, lblRemarks, Label8, Label1}
+                caption.Font = EntryLabelFont
+                caption.ForeColor = Color.FromArgb(31, 41, 55)
+                caption.Left = leftEdge
+            Next
+            Label7.Font = EntryLabelFont
+            Label7.ForeColor = Color.FromArgb(31, 41, 55)
+            Label7.Left = cboPayment.Left
+            Label3.Top = txtCustomer.Top - Label3.Height - 2
+            Label5.Top = txtType.Top - Label5.Height - 3
+            Label7.Top = cboPayment.Top - Label7.Height - 3
+            Label2.Top = txtSales.Top - Label2.Height - 3
+            lblRemarks.Top = txtRemarks.Top - lblRemarks.Height - 3
+            Label1.Top = txtSearch.Top - Label1.Height - 4
+            UpdateLookupFocusIndicators()
+        Finally
+            Panel5.ResumeLayout()
+        End Try
     End Sub
 
-    Private Sub txtSearch_Enter(sender As Object, e As EventArgs) Handles txtSearch.Enter
-        pnl2TextSearch.BackColor = Color.Salmon
+    Private Sub UpdateLookupFocusIndicators()
+        If Panel5 Is Nothing OrElse txtSearch Is Nothing OrElse txtBarcode Is Nothing OrElse
+            pnl2TextSearch Is Nothing OrElse pnl1Barcode Is Nothing Then Return
+        pnl2TextSearch.Bounds = Rectangle.Inflate(txtSearch.Bounds, 2, 2)
+        pnl1Barcode.Bounds = Rectangle.Inflate(txtBarcode.Bounds, 2, 2)
+        Dim focusColor = Color.FromArgb(37, 99, 160)
+        pnl2TextSearch.BackColor = If(txtSearch.Enabled AndAlso txtSearch.Focused, focusColor, Panel5.BackColor)
+        pnl1Barcode.BackColor = If(txtBarcode.Enabled AndAlso txtBarcode.Focused, focusColor, Panel5.BackColor)
     End Sub
 
-    Private Sub txtBarcode_Leave(sender As Object, e As EventArgs) Handles txtBarcode.Leave
-        pnl1Barcode.BackColor = Panel5.BackColor
-    End Sub
-
-    Private Sub txtBarcode_Enter(sender As Object, e As EventArgs) Handles txtBarcode.Enter
-        pnl1Barcode.BackColor = Color.Salmon
-    End Sub
-
-    Private Sub txtSearch_EnabledChanged(sender As Object, e As EventArgs) Handles txtSearch.EnabledChanged
-
-        If txtSearch.Enabled Then
-            pnl2TextSearch.BackColor = Color.Salmon
-        Else
-            pnl2TextSearch.BackColor = Panel5.BackColor
-        End If
-
+    Private Sub LookupFocusChanged(sender As Object, e As EventArgs) Handles _
+        txtSearch.GotFocus, txtSearch.LostFocus, txtSearch.EnabledChanged,
+        txtSearch.LocationChanged, txtSearch.SizeChanged,
+        txtBarcode.GotFocus, txtBarcode.LostFocus, txtBarcode.EnabledChanged,
+        txtBarcode.LocationChanged, txtBarcode.SizeChanged
+        UpdateLookupFocusIndicators()
     End Sub
 
 End Class

@@ -205,16 +205,20 @@ Public Class frmUploader
             .Columns.Add(col3)
             .Columns.Add(col4)
 
-            .Columns(0).Width = 80
-            .Columns(1).Width = 80
-            .Columns(2).Width = 100
-            .Columns(3).Width = 200
+            .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+            .Columns(0).Width = 74
+            .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.None
+            .Columns(1).Width = 74
+            .Columns(2).MinimumWidth = 180
+            .Columns(2).FillWeight = 35
+            .Columns(3).MinimumWidth = 320
+            .Columns(3).FillWeight = 65
 
-            .RowTemplate.Height = 19
-            .DefaultCellStyle.SelectionBackColor = Color.LightBlue
-            .DefaultCellStyle.SelectionForeColor = Color.Black
+            .RowTemplate.Height = 40
+            .DefaultCellStyle.SelectionBackColor = Color.FromArgb(37, 99, 160)
+            .DefaultCellStyle.SelectionForeColor = Color.White
 
-            .Font = New Font("Arial", 8)
+            .Font = New Font("Tahoma", 10)
 
 
         End With

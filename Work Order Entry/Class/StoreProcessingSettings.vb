@@ -79,6 +79,26 @@ Public NotInheritable Class StoreProcessingSettings
         End Get
     End Property
 
+    Public Shared ReadOnly Property ShowOrderActions As Boolean
+        Get
+            Return ReadBoolean("ShowOrderActions", True)
+        End Get
+    End Property
+
+    Public Shared ReadOnly Property ShowOrderNotifications As Boolean
+        Get
+            Return ReadBoolean("ShowOrderNotifications", True)
+        End Get
+    End Property
+
+    Public Shared Sub SaveOrderToolsVisibility(showActions As Boolean, showNotifications As Boolean)
+        Dim configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+        SetBoolean(configuration, "ShowOrderActions", showActions)
+        SetBoolean(configuration, "ShowOrderNotifications", showNotifications)
+        configuration.Save(ConfigurationSaveMode.Modified)
+        ConfigurationManager.RefreshSection("appSettings")
+    End Sub
+
     Public Shared ReadOnly Property EnableShortageNotifications As Boolean
         Get
             Return QueueingEnabled AndAlso ReadBoolean("EnableShortageNotifications", True)

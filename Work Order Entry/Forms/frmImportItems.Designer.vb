@@ -22,6 +22,10 @@ Partial Class frmImportItems
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim ImportBodyStyle As New System.Windows.Forms.DataGridViewCellStyle()
+        Dim ImportHeaderStyle As New System.Windows.Forms.DataGridViewCellStyle()
+        Dim ImportAlternateStyle As New System.Windows.Forms.DataGridViewCellStyle()
+
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.griditems = New System.Windows.Forms.DataGridView()
         Me.Column2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -34,25 +38,40 @@ Partial Class frmImportItems
         Me.griditems.AllowUserToAddRows = False
         Me.griditems.AllowUserToDeleteRows = False
         Me.griditems.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
-        Me.griditems.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.AllCells
-        Me.griditems.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.griditems.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders
+        Me.griditems.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
         Me.griditems.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.Column2})
-        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle1.Font = New System.Drawing.Font("Century Gothic", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        DataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.griditems.DefaultCellStyle = DataGridViewCellStyle1
-        Me.griditems.Location = New System.Drawing.Point(5, 31)
+        Me.griditems.Location = New System.Drawing.Point(12, 46)
         Me.griditems.Margin = New System.Windows.Forms.Padding(4)
         Me.griditems.MultiSelect = False
+        ImportBodyStyle.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Regular)
+        ImportBodyStyle.BackColor = System.Drawing.Color.White
+        ImportBodyStyle.ForeColor = System.Drawing.SystemColors.ControlText
+        ImportBodyStyle.SelectionBackColor = System.Drawing.Color.FromArgb(37, 99, 160)
+        ImportBodyStyle.SelectionForeColor = System.Drawing.Color.White
+        ImportBodyStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        ImportHeaderStyle.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
+        ImportHeaderStyle.BackColor = System.Drawing.Color.FromArgb(232, 238, 246)
+        ImportHeaderStyle.ForeColor = System.Drawing.SystemColors.ControlText
+        ImportHeaderStyle.SelectionBackColor = System.Drawing.Color.FromArgb(37, 99, 160)
+        ImportHeaderStyle.SelectionForeColor = System.Drawing.Color.White
+        ImportHeaderStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        ImportAlternateStyle.BackColor = System.Drawing.Color.FromArgb(245, 247, 250)
+        Me.griditems.DefaultCellStyle = ImportBodyStyle
+        Me.griditems.ColumnHeadersDefaultCellStyle = ImportHeaderStyle
+        Me.griditems.AlternatingRowsDefaultCellStyle = ImportAlternateStyle
+        Me.griditems.ColumnHeadersHeight = 34
+        Me.griditems.EnableHeadersVisualStyles = False
+        Me.griditems.BackgroundColor = System.Drawing.Color.White
+        Me.griditems.GridColor = System.Drawing.Color.FromArgb(215, 223, 233)
+        Me.griditems.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.griditems.RowTemplate.Height = 40
+        Me.griditems.RowTemplate.MinimumHeight = 40
         Me.griditems.Name = "griditems"
         Me.griditems.ReadOnly = True
         Me.griditems.RowHeadersVisible = False
         Me.griditems.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.griditems.Size = New System.Drawing.Size(468, 182)
+        Me.griditems.Size = New System.Drawing.Size(756, 302)
         Me.griditems.TabIndex = 0
         '
         'Column2
@@ -65,20 +84,21 @@ Partial Class frmImportItems
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(3, 8)
+        Me.Label1.Location = New System.Drawing.Point(12, 14)
+        Me.Label1.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(193, 16)
+        Me.Label1.Size = New System.Drawing.Size(740, 22)
         Me.Label1.TabIndex = 1
         Me.Label1.Text = "Search using the Description"
         '
         'frmImportItems
         '
-        Me.AutoScaleDimensions = New System.Drawing.SizeF(8.0!, 16.0!)
+        Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(479, 218)
+        Me.ClientSize = New System.Drawing.Size(780, 360)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.griditems)
-        Me.Font = New System.Drawing.Font("Century Gothic", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle
         Me.Margin = New System.Windows.Forms.Padding(4)
         Me.MaximizeBox = False

@@ -22,6 +22,10 @@ Partial Class frmUploader
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim ImportBodyStyle As New System.Windows.Forms.DataGridViewCellStyle()
+        Dim ImportHeaderStyle As New System.Windows.Forms.DataGridViewCellStyle()
+        Dim ImportAlternateStyle As New System.Windows.Forms.DataGridViewCellStyle()
+
         Me.cmdImport = New System.Windows.Forms.Button()
         Me.cmdClose = New System.Windows.Forms.Button()
         Me.Panel1 = New System.Windows.Forms.Panel()
@@ -57,26 +61,32 @@ Partial Class frmUploader
         '
         'cmdImport
         '
-        Me.cmdImport.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdImport.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
         Me.cmdImport.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdImport.Location = New System.Drawing.Point(267, 10)
+        Me.cmdImport.Location = New System.Drawing.Point(588, 12)
+        Me.cmdImport.FlatStyle = System.Windows.Forms.FlatStyle.Standard
+        Me.cmdImport.BackColor = System.Drawing.Color.FromArgb(37, 99, 160)
+        Me.cmdImport.ForeColor = System.Drawing.Color.White
         Me.cmdImport.Name = "cmdImport"
-        Me.cmdImport.Size = New System.Drawing.Size(103, 23)
+        Me.cmdImport.Size = New System.Drawing.Size(108, 32)
         Me.cmdImport.TabIndex = 5
         Me.cmdImport.Text = "&Import"
-        Me.cmdImport.UseVisualStyleBackColor = True
+        Me.cmdImport.UseVisualStyleBackColor = False
         '
         'cmdClose
         '
         Me.cmdClose.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.cmdClose.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdClose.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdClose.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdClose.Location = New System.Drawing.Point(376, 10)
+        Me.cmdClose.Location = New System.Drawing.Point(708, 12)
+        Me.cmdClose.FlatStyle = System.Windows.Forms.FlatStyle.Standard
+        Me.cmdClose.BackColor = System.Drawing.Color.White
+        Me.cmdClose.ForeColor = System.Drawing.SystemColors.ControlText
         Me.cmdClose.Name = "cmdClose"
-        Me.cmdClose.Size = New System.Drawing.Size(102, 23)
+        Me.cmdClose.Size = New System.Drawing.Size(116, 32)
         Me.cmdClose.TabIndex = 6
         Me.cmdClose.Text = "Close"
-        Me.cmdClose.UseVisualStyleBackColor = True
+        Me.cmdClose.UseVisualStyleBackColor = False
         '
         'Panel1
         '
@@ -87,26 +97,26 @@ Partial Class frmUploader
         Me.Panel1.Dock = System.Windows.Forms.DockStyle.Top
         Me.Panel1.Location = New System.Drawing.Point(0, 0)
         Me.Panel1.Name = "Panel1"
-        Me.Panel1.Size = New System.Drawing.Size(491, 59)
+        Me.Panel1.Size = New System.Drawing.Size(840, 76)
         Me.Panel1.TabIndex = 9
         '
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(28, 25)
+        Me.Label2.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Label2.Location = New System.Drawing.Point(16, 40)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(325, 13)
+        Me.Label2.Size = New System.Drawing.Size(790, 20)
         Me.Label2.TabIndex = 11
         Me.Label2.Text = "This will import the contents of the file in Work/Sales Order Addin. "
         '
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(12, 9)
+        Me.Label1.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.Label1.Location = New System.Drawing.Point(16, 12)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(121, 16)
+        Me.Label1.Size = New System.Drawing.Size(300, 20)
         Me.Label1.TabIndex = 10
         Me.Label1.Text = "Importing the File"
         '
@@ -117,22 +127,25 @@ Partial Class frmUploader
         Me.Panel2.Controls.Add(Me.cmdImport)
         Me.Panel2.Controls.Add(Me.cmdClose)
         Me.Panel2.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Panel2.Location = New System.Drawing.Point(0, 427)
+        Me.Panel2.Location = New System.Drawing.Point(0, 484)
         Me.Panel2.Name = "Panel2"
-        Me.Panel2.Size = New System.Drawing.Size(491, 45)
+        Me.Panel2.Size = New System.Drawing.Size(840, 56)
         Me.Panel2.TabIndex = 10
         '
         'cmdReport
         '
         Me.cmdReport.Enabled = False
-        Me.cmdReport.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdReport.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdReport.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdReport.Location = New System.Drawing.Point(158, 10)
+        Me.cmdReport.Location = New System.Drawing.Point(456, 12)
+        Me.cmdReport.FlatStyle = System.Windows.Forms.FlatStyle.Standard
+        Me.cmdReport.BackColor = System.Drawing.Color.White
+        Me.cmdReport.ForeColor = System.Drawing.SystemColors.ControlText
         Me.cmdReport.Name = "cmdReport"
-        Me.cmdReport.Size = New System.Drawing.Size(103, 23)
+        Me.cmdReport.Size = New System.Drawing.Size(120, 32)
         Me.cmdReport.TabIndex = 7
         Me.cmdReport.Text = "&Report"
-        Me.cmdReport.UseVisualStyleBackColor = True
+        Me.cmdReport.UseVisualStyleBackColor = False
         Me.cmdReport.Visible = False
         '
         'Panel3
@@ -143,10 +156,10 @@ Partial Class frmUploader
         Me.Panel3.Controls.Add(Me.Panel5)
         Me.Panel3.Controls.Add(Me.Panel4)
         Me.Panel3.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.Panel3.Location = New System.Drawing.Point(0, 59)
+        Me.Panel3.Location = New System.Drawing.Point(0, 76)
         Me.Panel3.Name = "Panel3"
-        Me.Panel3.Padding = New System.Windows.Forms.Padding(20)
-        Me.Panel3.Size = New System.Drawing.Size(491, 368)
+        Me.Panel3.Padding = New System.Windows.Forms.Padding(16)
+        Me.Panel3.Size = New System.Drawing.Size(840, 408)
         Me.Panel3.TabIndex = 11
         '
         'panelInfo
@@ -154,57 +167,80 @@ Partial Class frmUploader
         Me.panelInfo.BackColor = System.Drawing.SystemColors.ButtonHighlight
         Me.panelInfo.Controls.Add(Me.Label3)
         Me.panelInfo.Controls.Add(Me.lblFile)
-        Me.panelInfo.Location = New System.Drawing.Point(26, 97)
+        Me.panelInfo.Location = New System.Drawing.Point(16, 110)
         Me.panelInfo.Name = "panelInfo"
-        Me.panelInfo.Size = New System.Drawing.Size(440, 213)
+        Me.panelInfo.Size = New System.Drawing.Size(808, 282)
         Me.panelInfo.TabIndex = 16
         '
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label3.Location = New System.Drawing.Point(3, 5)
+        Me.Label3.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.Label3.Location = New System.Drawing.Point(16, 18)
         Me.Label3.Name = "Label3"
-        Me.Label3.Size = New System.Drawing.Size(264, 13)
+        Me.Label3.Size = New System.Drawing.Size(760, 22)
         Me.Label3.TabIndex = 12
         Me.Label3.Text = "Click Import to begin the importing of the file:"
         '
         'lblFile
         '
-        Me.lblFile.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.lblFile.Location = New System.Drawing.Point(11, 26)
+        Me.lblFile.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.lblFile.Location = New System.Drawing.Point(16, 54)
         Me.lblFile.Name = "lblFile"
-        Me.lblFile.Size = New System.Drawing.Size(417, 173)
+        Me.lblFile.Size = New System.Drawing.Size(776, 210)
         Me.lblFile.TabIndex = 11
         Me.lblFile.Text = "Filename to be imported."
         '
         'gridInfo
         '
-        Me.gridInfo.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight
-        Me.gridInfo.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.gridInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.gridInfo.BackgroundColor = System.Drawing.Color.White
+        Me.gridInfo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.gridInfo.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
         Me.gridInfo.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.gridInfo.Location = New System.Drawing.Point(20, 91)
+        Me.gridInfo.Location = New System.Drawing.Point(16, 110)
+        ImportBodyStyle.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Regular)
+        ImportBodyStyle.BackColor = System.Drawing.Color.White
+        ImportBodyStyle.ForeColor = System.Drawing.SystemColors.ControlText
+        ImportBodyStyle.SelectionBackColor = System.Drawing.Color.FromArgb(37, 99, 160)
+        ImportBodyStyle.SelectionForeColor = System.Drawing.Color.White
+        ImportBodyStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        ImportHeaderStyle.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
+        ImportHeaderStyle.BackColor = System.Drawing.Color.FromArgb(232, 238, 246)
+        ImportHeaderStyle.ForeColor = System.Drawing.SystemColors.ControlText
+        ImportHeaderStyle.SelectionBackColor = System.Drawing.Color.FromArgb(37, 99, 160)
+        ImportHeaderStyle.SelectionForeColor = System.Drawing.Color.White
+        ImportHeaderStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        ImportAlternateStyle.BackColor = System.Drawing.Color.FromArgb(245, 247, 250)
+        Me.gridInfo.DefaultCellStyle = ImportBodyStyle
+        Me.gridInfo.ColumnHeadersDefaultCellStyle = ImportHeaderStyle
+        Me.gridInfo.AlternatingRowsDefaultCellStyle = ImportAlternateStyle
+        Me.gridInfo.ColumnHeadersHeight = 34
+        Me.gridInfo.EnableHeadersVisualStyles = False
+        Me.gridInfo.GridColor = System.Drawing.Color.FromArgb(215, 223, 233)
+        Me.gridInfo.RowTemplate.Height = 40
+        Me.gridInfo.RowTemplate.MinimumHeight = 40
+        Me.gridInfo.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders
         Me.gridInfo.Name = "gridInfo"
         Me.gridInfo.RowHeadersVisible = False
-        Me.gridInfo.Size = New System.Drawing.Size(451, 257)
+        Me.gridInfo.Size = New System.Drawing.Size(808, 282)
         Me.gridInfo.TabIndex = 15
         '
         'Panel5
         '
         Me.Panel5.Controls.Add(Me.Label10)
         Me.Panel5.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Panel5.Location = New System.Drawing.Point(20, 70)
+        Me.Panel5.Location = New System.Drawing.Point(16, 80)
         Me.Panel5.Name = "Panel5"
-        Me.Panel5.Size = New System.Drawing.Size(451, 21)
+        Me.Panel5.Size = New System.Drawing.Size(808, 30)
         Me.Panel5.TabIndex = 13
         '
         'Label10
         '
         Me.Label10.AutoSize = True
-        Me.Label10.Location = New System.Drawing.Point(-1, 3)
+        Me.Label10.Location = New System.Drawing.Point(0, 7)
+        Me.Label10.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.Label10.Name = "Label10"
-        Me.Label10.Size = New System.Drawing.Size(42, 13)
+        Me.Label10.Size = New System.Drawing.Size(120, 18)
         Me.Label10.TabIndex = 2
         Me.Label10.Text = "&Details:"
         '
@@ -215,9 +251,9 @@ Partial Class frmUploader
         Me.Panel4.Controls.Add(Me.Panel7)
         Me.Panel4.Controls.Add(Me.Panel6)
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Panel4.Location = New System.Drawing.Point(20, 20)
+        Me.Panel4.Location = New System.Drawing.Point(16, 16)
         Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(451, 50)
+        Me.Panel4.Size = New System.Drawing.Size(808, 64)
         Me.Panel4.TabIndex = 12
         '
         'Panel7
@@ -225,7 +261,7 @@ Partial Class frmUploader
         Me.Panel7.Dock = System.Windows.Forms.DockStyle.Left
         Me.Panel7.Location = New System.Drawing.Point(0, 0)
         Me.Panel7.Name = "Panel7"
-        Me.Panel7.Size = New System.Drawing.Size(235, 46)
+        Me.Panel7.Size = New System.Drawing.Size(0, 60)
         Me.Panel7.TabIndex = 7
         '
         'Panel6
@@ -236,74 +272,80 @@ Partial Class frmUploader
         Me.Panel6.Controls.Add(Me.lblSuccess)
         Me.Panel6.Controls.Add(Me.Label6)
         Me.Panel6.Controls.Add(Me.lblTotal)
-        Me.Panel6.Dock = System.Windows.Forms.DockStyle.Right
-        Me.Panel6.Location = New System.Drawing.Point(241, 0)
+        Me.Panel6.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.Panel6.Location = New System.Drawing.Point(0, 0)
         Me.Panel6.Name = "Panel6"
-        Me.Panel6.Size = New System.Drawing.Size(206, 46)
+        Me.Panel6.Size = New System.Drawing.Size(804, 60)
         Me.Panel6.TabIndex = 6
         '
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(34, 8)
+        Me.Label4.Location = New System.Drawing.Point(16, 22)
+        Me.Label4.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Regular)
         Me.Label4.Name = "Label4"
-        Me.Label4.Size = New System.Drawing.Size(31, 13)
+        Me.Label4.Size = New System.Drawing.Size(110, 24)
         Me.Label4.TabIndex = 0
         Me.Label4.Text = "Total"
         '
         'lblError
         '
-        Me.lblError.AutoSize = True
-        Me.lblError.Location = New System.Drawing.Point(142, 8)
+        Me.lblError.AutoSize = False
+        Me.lblError.Location = New System.Drawing.Point(600, 20)
+        Me.lblError.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
         Me.lblError.Name = "lblError"
-        Me.lblError.Size = New System.Drawing.Size(13, 13)
+        Me.lblError.Size = New System.Drawing.Size(110, 24)
         Me.lblError.TabIndex = 5
         Me.lblError.Text = "0"
-        Me.lblError.TextAlign = System.Drawing.ContentAlignment.TopRight
+        Me.lblError.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'Label5
         '
         Me.Label5.AutoSize = True
-        Me.Label5.Location = New System.Drawing.Point(34, 27)
+        Me.Label5.Location = New System.Drawing.Point(270, 22)
+        Me.Label5.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Regular)
         Me.Label5.Name = "Label5"
-        Me.Label5.Size = New System.Drawing.Size(48, 13)
+        Me.Label5.Size = New System.Drawing.Size(110, 24)
         Me.Label5.TabIndex = 1
         Me.Label5.Text = "Success"
         '
         'lblSuccess
         '
-        Me.lblSuccess.AutoSize = True
-        Me.lblSuccess.Location = New System.Drawing.Point(19, 27)
+        Me.lblSuccess.AutoSize = False
+        Me.lblSuccess.Location = New System.Drawing.Point(346, 20)
+        Me.lblSuccess.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
         Me.lblSuccess.Name = "lblSuccess"
-        Me.lblSuccess.Size = New System.Drawing.Size(13, 13)
+        Me.lblSuccess.Size = New System.Drawing.Size(110, 24)
         Me.lblSuccess.TabIndex = 4
         Me.lblSuccess.Text = "0"
-        Me.lblSuccess.TextAlign = System.Drawing.ContentAlignment.TopRight
+        Me.lblSuccess.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'Label6
         '
         Me.Label6.AutoSize = True
-        Me.Label6.Location = New System.Drawing.Point(157, 8)
+        Me.Label6.Location = New System.Drawing.Point(542, 22)
+        Me.Label6.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Regular)
         Me.Label6.Name = "Label6"
-        Me.Label6.Size = New System.Drawing.Size(29, 13)
+        Me.Label6.Size = New System.Drawing.Size(110, 24)
         Me.Label6.TabIndex = 2
         Me.Label6.Text = "Error"
         '
         'lblTotal
         '
-        Me.lblTotal.AutoSize = True
-        Me.lblTotal.Location = New System.Drawing.Point(19, 8)
+        Me.lblTotal.AutoSize = False
+        Me.lblTotal.Location = New System.Drawing.Point(82, 20)
+        Me.lblTotal.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
         Me.lblTotal.Name = "lblTotal"
-        Me.lblTotal.Size = New System.Drawing.Size(13, 13)
+        Me.lblTotal.Size = New System.Drawing.Size(110, 24)
         Me.lblTotal.TabIndex = 3
         Me.lblTotal.Text = "0"
-        Me.lblTotal.TextAlign = System.Drawing.ContentAlignment.TopRight
+        Me.lblTotal.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'frmUploader
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(491, 472)
+        Me.ClientSize = New System.Drawing.Size(840, 540)
         Me.Controls.Add(Me.Panel3)
         Me.Controls.Add(Me.Panel2)
         Me.Controls.Add(Me.Panel1)
