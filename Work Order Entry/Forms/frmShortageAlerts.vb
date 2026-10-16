@@ -35,7 +35,7 @@ Public Class frmShortageAlerts
         list = New ShortageAlertList(lines, pendingOrders)
         Text = "Warehouse shortage alerts"
         StartPosition = FormStartPosition.CenterParent
-        Size = New Size(1100, 550)
+        Size = New Size(1000, 550)
         MinimumSize = New Size(850, 430)
         Font = New Font("Segoe UI", 9)
         ConfigureGrid()

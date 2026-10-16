@@ -263,6 +263,7 @@
     <Compile Include="Forms\frmPriceLevel.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\SmallScreenLayout.vb" />
     <Compile Include="Forms\frmSettings.Presentation.vb">
       <DependentUpon>frmSettings.vb</DependentUpon>
     </Compile>

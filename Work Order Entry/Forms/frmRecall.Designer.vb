@@ -76,7 +76,7 @@ Partial Class frmRecall
         Me.GroupBox1.Location = New System.Drawing.Point(14, 1)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.GroupBox1.Size = New System.Drawing.Size(1076, 31)
+        Me.GroupBox1.Size = New System.Drawing.Size(960, 31)
         Me.GroupBox1.TabIndex = 2
         Me.GroupBox1.TabStop = False
         '
@@ -85,7 +85,7 @@ Partial Class frmRecall
         Me.CheckBox1.AutoSize = True
         Me.CheckBox1.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.CheckBox1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.CheckBox1.Location = New System.Drawing.Point(830, 9)
+        Me.CheckBox1.Location = New System.Drawing.Point(714, 9)
         Me.CheckBox1.Name = "CheckBox1"
         Me.CheckBox1.Size = New System.Drawing.Size(190, 17)
         Me.CheckBox1.TabIndex = 2
@@ -130,7 +130,7 @@ Partial Class frmRecall
         Me.gridOrder.ReadOnly = True
         Me.gridOrder.RowHeadersVisible = False
         Me.gridOrder.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.gridOrder.Size = New System.Drawing.Size(1076, 426)
+        Me.gridOrder.Size = New System.Drawing.Size(960, 426)
         Me.gridOrder.TabIndex = 3
         '
         'recallOrderNumber
@@ -184,7 +184,7 @@ Partial Class frmRecall
         '
         Me.cmdOK.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdOK.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.cmdOK.Location = New System.Drawing.Point(934, 510)
+        Me.cmdOK.Location = New System.Drawing.Point(818, 510)
         Me.cmdOK.Name = "cmdOK"
         Me.cmdOK.Size = New System.Drawing.Size(75, 23)
         Me.cmdOK.TabIndex = 4
@@ -195,7 +195,7 @@ Partial Class frmRecall
         '
         Me.cmdCancel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdCancel.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.cmdCancel.Location = New System.Drawing.Point(1015, 510)
+        Me.cmdCancel.Location = New System.Drawing.Point(899, 510)
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.Size = New System.Drawing.Size(75, 23)
         Me.cmdCancel.TabIndex = 5
@@ -208,7 +208,7 @@ Partial Class frmRecall
         Me.txtSearch.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtSearch.Location = New System.Drawing.Point(14, 51)
         Me.txtSearch.Name = "txtSearch"
-        Me.txtSearch.Size = New System.Drawing.Size(1076, 22)
+        Me.txtSearch.Size = New System.Drawing.Size(960, 22)
         Me.txtSearch.TabIndex = 2
         '
         'Label1
@@ -225,7 +225,7 @@ Partial Class frmRecall
         '
         Me.lblRec.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblRec.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.lblRec.Location = New System.Drawing.Point(934, 35)
+        Me.lblRec.Location = New System.Drawing.Point(818, 35)
         Me.lblRec.Name = "lblRec"
         Me.lblRec.Size = New System.Drawing.Size(153, 14)
         Me.lblRec.TabIndex = 7
@@ -236,7 +236,7 @@ Partial Class frmRecall
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1100, 540)
+        Me.ClientSize = New System.Drawing.Size(984, 540)
         Me.Controls.Add(Me.lblRec)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.txtSearch)

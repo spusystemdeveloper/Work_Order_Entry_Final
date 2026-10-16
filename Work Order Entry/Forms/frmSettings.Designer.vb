@@ -114,7 +114,7 @@ Partial Class frmSettings
         Me.GroupBox1.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
         Me.GroupBox1.Location = New System.Drawing.Point(12, 12)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(468, 142)
+        Me.GroupBox1.Size = New System.Drawing.Size(440, 124)
         Me.GroupBox1.TabIndex = 0
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Default Settings"
@@ -132,13 +132,13 @@ Partial Class frmSettings
         'cmdOK
         '
         Me.cmdOK.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.cmdOK.Location = New System.Drawing.Point(150, 96)
+        Me.cmdOK.Location = New System.Drawing.Point(150, 86)
         Me.cmdOK.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdOK.FlatAppearance.BorderColor = System.Drawing.Color.SlateGray
         Me.cmdOK.FlatAppearance.BorderSize = 1
         Me.cmdOK.BackColor = System.Drawing.Color.White
         Me.cmdOK.Name = "cmdOK"
-        Me.cmdOK.Size = New System.Drawing.Size(132, 30)
+        Me.cmdOK.Size = New System.Drawing.Size(132, 28)
         Me.cmdOK.TabIndex = 1
         Me.cmdOK.Text = "Apply defaults (&O)"
         Me.cmdOK.UseVisualStyleBackColor = False
@@ -189,7 +189,7 @@ Partial Class frmSettings
         '
         Me.Label3.AutoSize = True
         Me.Label3.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular)
-        Me.Label3.Location = New System.Drawing.Point(226, 30)
+        Me.Label3.Location = New System.Drawing.Point(206, 30)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(48, 16)
         Me.Label3.TabIndex = 5
@@ -198,7 +198,7 @@ Partial Class frmSettings
         'txtConfirmP
         '
         Me.txtConfirmP.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.txtConfirmP.Location = New System.Drawing.Point(280, 26)
+        Me.txtConfirmP.Location = New System.Drawing.Point(264, 26)
         Me.txtConfirmP.Name = "txtConfirmP"
         Me.txtConfirmP.Size = New System.Drawing.Size(112, 22)
         Me.txtConfirmP.TabIndex = 4
@@ -207,9 +207,9 @@ Partial Class frmSettings
         'txtPassword
         '
         Me.txtPassword.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.txtPassword.Location = New System.Drawing.Point(100, 26)
+        Me.txtPassword.Location = New System.Drawing.Point(96, 26)
         Me.txtPassword.Name = "txtPassword"
-        Me.txtPassword.Size = New System.Drawing.Size(112, 22)
+        Me.txtPassword.Size = New System.Drawing.Size(100, 22)
         Me.txtPassword.TabIndex = 3
         Me.txtPassword.UseSystemPasswordChar = True
         '
@@ -241,9 +241,9 @@ Partial Class frmSettings
         Me.GroupBox2.Controls.Add(Me.txtConfirmP)
         Me.GroupBox2.Controls.Add(Me.Label3)
         Me.GroupBox2.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.GroupBox2.Location = New System.Drawing.Point(492, 12)
+        Me.GroupBox2.Location = New System.Drawing.Point(464, 12)
         Me.GroupBox2.Name = "GroupBox2"
-        Me.GroupBox2.Size = New System.Drawing.Size(536, 142)
+        Me.GroupBox2.Size = New System.Drawing.Size(508, 142)
         Me.GroupBox2.TabIndex = 13
         Me.GroupBox2.TabStop = False
         Me.GroupBox2.Text = "Password to Prompt"
@@ -251,13 +251,13 @@ Partial Class frmSettings
         'cmdPass3
         '
         Me.cmdPass3.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.cmdPass3.Location = New System.Drawing.Point(406, 96)
+        Me.cmdPass3.Location = New System.Drawing.Point(388, 96)
         Me.cmdPass3.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdPass3.FlatAppearance.BorderColor = System.Drawing.Color.SlateGray
         Me.cmdPass3.FlatAppearance.BorderSize = 1
         Me.cmdPass3.BackColor = System.Drawing.Color.White
         Me.cmdPass3.Name = "cmdPass3"
-        Me.cmdPass3.Size = New System.Drawing.Size(118, 28)
+        Me.cmdPass3.Size = New System.Drawing.Size(108, 28)
         Me.cmdPass3.TabIndex = 16
         Me.cmdPass3.Text = "Update 3 (&O)"
         Me.cmdPass3.UseVisualStyleBackColor = False
@@ -265,9 +265,9 @@ Partial Class frmSettings
         'txtPassword3
         '
         Me.txtPassword3.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.txtPassword3.Location = New System.Drawing.Point(100, 98)
+        Me.txtPassword3.Location = New System.Drawing.Point(96, 98)
         Me.txtPassword3.Name = "txtPassword3"
-        Me.txtPassword3.Size = New System.Drawing.Size(112, 22)
+        Me.txtPassword3.Size = New System.Drawing.Size(100, 22)
         Me.txtPassword3.TabIndex = 13
         Me.txtPassword3.UseSystemPasswordChar = True
         '
@@ -284,7 +284,7 @@ Partial Class frmSettings
         'txtConfirmP3
         '
         Me.txtConfirmP3.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.txtConfirmP3.Location = New System.Drawing.Point(280, 98)
+        Me.txtConfirmP3.Location = New System.Drawing.Point(264, 98)
         Me.txtConfirmP3.Name = "txtConfirmP3"
         Me.txtConfirmP3.Size = New System.Drawing.Size(112, 22)
         Me.txtConfirmP3.TabIndex = 14
@@ -294,7 +294,7 @@ Partial Class frmSettings
         '
         Me.Label11.AutoSize = True
         Me.Label11.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular)
-        Me.Label11.Location = New System.Drawing.Point(226, 102)
+        Me.Label11.Location = New System.Drawing.Point(206, 102)
         Me.Label11.Name = "Label11"
         Me.Label11.Size = New System.Drawing.Size(48, 16)
         Me.Label11.TabIndex = 15
@@ -303,13 +303,13 @@ Partial Class frmSettings
         'cmdPass2
         '
         Me.cmdPass2.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.cmdPass2.Location = New System.Drawing.Point(406, 60)
+        Me.cmdPass2.Location = New System.Drawing.Point(388, 60)
         Me.cmdPass2.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdPass2.FlatAppearance.BorderColor = System.Drawing.Color.SlateGray
         Me.cmdPass2.FlatAppearance.BorderSize = 1
         Me.cmdPass2.BackColor = System.Drawing.Color.White
         Me.cmdPass2.Name = "cmdPass2"
-        Me.cmdPass2.Size = New System.Drawing.Size(118, 28)
+        Me.cmdPass2.Size = New System.Drawing.Size(108, 28)
         Me.cmdPass2.TabIndex = 11
         Me.cmdPass2.Text = "Update 2 (&O)"
         Me.cmdPass2.UseVisualStyleBackColor = False
@@ -317,13 +317,13 @@ Partial Class frmSettings
         'cmdPass
         '
         Me.cmdPass.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.cmdPass.Location = New System.Drawing.Point(406, 24)
+        Me.cmdPass.Location = New System.Drawing.Point(388, 24)
         Me.cmdPass.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdPass.FlatAppearance.BorderColor = System.Drawing.Color.SlateGray
         Me.cmdPass.FlatAppearance.BorderSize = 1
         Me.cmdPass.BackColor = System.Drawing.Color.White
         Me.cmdPass.Name = "cmdPass"
-        Me.cmdPass.Size = New System.Drawing.Size(118, 28)
+        Me.cmdPass.Size = New System.Drawing.Size(108, 28)
         Me.cmdPass.TabIndex = 11
         Me.cmdPass.Text = "Update 1 (&O)"
         Me.cmdPass.UseVisualStyleBackColor = False
@@ -331,9 +331,9 @@ Partial Class frmSettings
         'txtPassword2
         '
         Me.txtPassword2.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.txtPassword2.Location = New System.Drawing.Point(100, 62)
+        Me.txtPassword2.Location = New System.Drawing.Point(96, 62)
         Me.txtPassword2.Name = "txtPassword2"
-        Me.txtPassword2.Size = New System.Drawing.Size(112, 22)
+        Me.txtPassword2.Size = New System.Drawing.Size(100, 22)
         Me.txtPassword2.TabIndex = 7
         Me.txtPassword2.UseSystemPasswordChar = True
         '
@@ -350,7 +350,7 @@ Partial Class frmSettings
         'txtConfirmP2
         '
         Me.txtConfirmP2.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.txtConfirmP2.Location = New System.Drawing.Point(280, 62)
+        Me.txtConfirmP2.Location = New System.Drawing.Point(264, 62)
         Me.txtConfirmP2.Name = "txtConfirmP2"
         Me.txtConfirmP2.Size = New System.Drawing.Size(112, 22)
         Me.txtConfirmP2.TabIndex = 8
@@ -360,7 +360,7 @@ Partial Class frmSettings
         '
         Me.Label7.AutoSize = True
         Me.Label7.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular)
-        Me.Label7.Location = New System.Drawing.Point(226, 66)
+        Me.Label7.Location = New System.Drawing.Point(206, 66)
         Me.Label7.Name = "Label7"
         Me.Label7.Size = New System.Drawing.Size(48, 16)
         Me.Label7.TabIndex = 9
@@ -379,9 +379,9 @@ Partial Class frmSettings
         Me.GroupBox3.Controls.Add(Me.txtCustType)
         Me.GroupBox3.Controls.Add(Me.gridCustType)
         Me.GroupBox3.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.GroupBox3.Location = New System.Drawing.Point(12, 166)
+        Me.GroupBox3.Location = New System.Drawing.Point(12, 148)
         Me.GroupBox3.Name = "GroupBox3"
-        Me.GroupBox3.Size = New System.Drawing.Size(468, 270)
+        Me.GroupBox3.Size = New System.Drawing.Size(440, 252)
         Me.GroupBox3.TabIndex = 14
         Me.GroupBox3.TabStop = False
         Me.GroupBox3.Text = "Customer Type Price Level "
@@ -390,9 +390,9 @@ Partial Class frmSettings
         '
         Me.Label9.AutoSize = True
         Me.Label9.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular)
-        Me.Label9.Location = New System.Drawing.Point(284, 28)
+        Me.Label9.Location = New System.Drawing.Point(268, 28)
         Me.Label9.Name = "Label9"
-        Me.Label9.Size = New System.Drawing.Size(165, 16)
+        Me.Label9.Size = New System.Drawing.Size(156, 16)
         Me.Label9.TabIndex = 12
         Me.Label9.Text = "Password on Price Below:"
         '
@@ -400,7 +400,7 @@ Partial Class frmSettings
         '
         Me.Label8.AutoSize = True
         Me.Label8.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular)
-        Me.Label8.Location = New System.Drawing.Point(150, 28)
+        Me.Label8.Location = New System.Drawing.Point(140, 28)
         Me.Label8.Name = "Label8"
         Me.Label8.Size = New System.Drawing.Size(100, 16)
         Me.Label8.TabIndex = 11
@@ -421,9 +421,9 @@ Partial Class frmSettings
         Me.cmbPricePass.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmbPricePass.FormattingEnabled = True
         Me.cmbPricePass.Items.AddRange(New Object() {"PRICE (RETAIL)", "PRICE A (WHOLESALE)", "PRICE B (D1)", "PRICE C (D2)", "COST"})
-        Me.cmbPricePass.Location = New System.Drawing.Point(284, 50)
+        Me.cmbPricePass.Location = New System.Drawing.Point(268, 50)
         Me.cmbPricePass.Name = "cmbPricePass"
-        Me.cmbPricePass.Size = New System.Drawing.Size(168, 23)
+        Me.cmbPricePass.Size = New System.Drawing.Size(156, 23)
         Me.cmbPricePass.TabIndex = 9
         '
         'cmbPriceBound
@@ -431,21 +431,21 @@ Partial Class frmSettings
         Me.cmbPriceBound.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmbPriceBound.FormattingEnabled = True
         Me.cmbPriceBound.Items.AddRange(New Object() {"PRICE (RETAIL)", "PRICE A (WHOLESALE)", "PRICE B (D1)", "PRICE C (D2)", "COST"})
-        Me.cmbPriceBound.Location = New System.Drawing.Point(150, 50)
+        Me.cmbPriceBound.Location = New System.Drawing.Point(140, 50)
         Me.cmbPriceBound.Name = "cmbPriceBound"
-        Me.cmbPriceBound.Size = New System.Drawing.Size(126, 23)
+        Me.cmbPriceBound.Size = New System.Drawing.Size(120, 23)
         Me.cmbPriceBound.TabIndex = 8
         '
         'cmdNew
         '
         Me.cmdNew.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.cmdNew.Location = New System.Drawing.Point(16, 226)
+        Me.cmdNew.Location = New System.Drawing.Point(16, 210)
         Me.cmdNew.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdNew.FlatAppearance.BorderColor = System.Drawing.Color.SlateGray
         Me.cmdNew.FlatAppearance.BorderSize = 1
         Me.cmdNew.BackColor = System.Drawing.Color.White
         Me.cmdNew.Name = "cmdNew"
-        Me.cmdNew.Size = New System.Drawing.Size(84, 30)
+        Me.cmdNew.Size = New System.Drawing.Size(84, 28)
         Me.cmdNew.TabIndex = 4
         Me.cmdNew.Text = "New"
         Me.cmdNew.UseVisualStyleBackColor = False
@@ -453,13 +453,13 @@ Partial Class frmSettings
         'cmdDel
         '
         Me.cmdDel.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.cmdDel.Location = New System.Drawing.Point(200, 226)
+        Me.cmdDel.Location = New System.Drawing.Point(200, 210)
         Me.cmdDel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdDel.FlatAppearance.BorderColor = System.Drawing.Color.SlateGray
         Me.cmdDel.FlatAppearance.BorderSize = 1
         Me.cmdDel.BackColor = System.Drawing.Color.White
         Me.cmdDel.Name = "cmdDel"
-        Me.cmdDel.Size = New System.Drawing.Size(84, 30)
+        Me.cmdDel.Size = New System.Drawing.Size(84, 28)
         Me.cmdDel.TabIndex = 3
         Me.cmdDel.Text = "Del"
         Me.cmdDel.UseVisualStyleBackColor = False
@@ -467,13 +467,13 @@ Partial Class frmSettings
         'cmdAdd
         '
         Me.cmdAdd.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.cmdAdd.Location = New System.Drawing.Point(108, 226)
+        Me.cmdAdd.Location = New System.Drawing.Point(108, 210)
         Me.cmdAdd.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdAdd.FlatAppearance.BorderColor = System.Drawing.Color.SlateGray
         Me.cmdAdd.FlatAppearance.BorderSize = 1
         Me.cmdAdd.BackColor = System.Drawing.Color.White
         Me.cmdAdd.Name = "cmdAdd"
-        Me.cmdAdd.Size = New System.Drawing.Size(84, 30)
+        Me.cmdAdd.Size = New System.Drawing.Size(84, 28)
         Me.cmdAdd.TabIndex = 2
         Me.cmdAdd.Text = "Add"
         Me.cmdAdd.UseVisualStyleBackColor = False
@@ -483,7 +483,7 @@ Partial Class frmSettings
         Me.txtCustType.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtCustType.Location = New System.Drawing.Point(16, 50)
         Me.txtCustType.Name = "txtCustType"
-        Me.txtCustType.Size = New System.Drawing.Size(126, 23)
+        Me.txtCustType.Size = New System.Drawing.Size(116, 23)
         Me.txtCustType.TabIndex = 1
         '
         'gridCustType
@@ -491,7 +491,7 @@ Partial Class frmSettings
         Me.gridCustType.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.gridCustType.Location = New System.Drawing.Point(16, 86)
         Me.gridCustType.Name = "gridCustType"
-        Me.gridCustType.Size = New System.Drawing.Size(436, 126)
+        Me.gridCustType.Size = New System.Drawing.Size(408, 112)
         Me.gridCustType.TabIndex = 0
         '
         'GroupBox4
@@ -503,9 +503,9 @@ Partial Class frmSettings
         Me.GroupBox4.Controls.Add(Me.txtExpectedDatabase)
         Me.GroupBox4.Controls.Add(Me.Button1)
         Me.GroupBox4.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.GroupBox4.Location = New System.Drawing.Point(12, 448)
+        Me.GroupBox4.Location = New System.Drawing.Point(12, 412)
         Me.GroupBox4.Name = "GroupBox4"
-        Me.GroupBox4.Size = New System.Drawing.Size(468, 240)
+        Me.GroupBox4.Size = New System.Drawing.Size(440, 236)
         Me.GroupBox4.TabIndex = 15
         Me.GroupBox4.TabStop = False
         Me.GroupBox4.Text = "Branch Configuration"
@@ -513,14 +513,14 @@ Partial Class frmSettings
         'cmdSaveBranchSettings
         '
         Me.cmdSaveBranchSettings.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.cmdSaveBranchSettings.Location = New System.Drawing.Point(264, 234)
+        Me.cmdSaveBranchSettings.Location = New System.Drawing.Point(248, 210)
         Me.cmdSaveBranchSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdSaveBranchSettings.FlatAppearance.BorderColor = System.Drawing.Color.SlateGray
         Me.cmdSaveBranchSettings.FlatAppearance.BorderSize = 1
         Me.cmdSaveBranchSettings.BackColor = System.Drawing.Color.FromArgb(37, 99, 160)
         Me.cmdSaveBranchSettings.ForeColor = System.Drawing.Color.White
         Me.cmdSaveBranchSettings.Name = "cmdSaveBranchSettings"
-        Me.cmdSaveBranchSettings.Size = New System.Drawing.Size(256, 34)
+        Me.cmdSaveBranchSettings.Size = New System.Drawing.Size(244, 32)
         Me.cmdSaveBranchSettings.TabIndex = 14
         Me.cmdSaveBranchSettings.Text = "Save branch / order options"
         Me.cmdSaveBranchSettings.UseVisualStyleBackColor = False
@@ -574,14 +574,14 @@ Partial Class frmSettings
         Me.txtExpectedDatabase.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtExpectedDatabase.Location = New System.Drawing.Point(16, 124)
         Me.txtExpectedDatabase.Name = "txtExpectedDatabase"
-        Me.txtExpectedDatabase.Size = New System.Drawing.Size(436, 22)
+        Me.txtExpectedDatabase.Size = New System.Drawing.Size(408, 22)
         Me.txtExpectedDatabase.TabIndex = 20
         '
         'chkShowForInvoice
         '
         Me.chkShowForInvoice.AutoSize = True
         Me.chkShowForInvoice.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.chkShowForInvoice.Location = New System.Drawing.Point(34, 126)
+        Me.chkShowForInvoice.Location = New System.Drawing.Point(34, 114)
         Me.chkShowForInvoice.Name = "chkShowForInvoice"
         Me.chkShowForInvoice.Size = New System.Drawing.Size(250, 22)
         Me.chkShowForInvoice.TabIndex = 13
@@ -592,7 +592,7 @@ Partial Class frmSettings
         '
         Me.chkShowImportButton.AutoSize = True
         Me.chkShowImportButton.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.chkShowImportButton.Location = New System.Drawing.Point(264, 94)
+        Me.chkShowImportButton.Location = New System.Drawing.Point(248, 86)
         Me.chkShowImportButton.Name = "chkShowImportButton"
         Me.chkShowImportButton.Size = New System.Drawing.Size(250, 22)
         Me.chkShowImportButton.TabIndex = 17
@@ -603,7 +603,7 @@ Partial Class frmSettings
         '
         Me.chkEnableSetTaxButton.AutoSize = True
         Me.chkEnableSetTaxButton.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.chkEnableSetTaxButton.Location = New System.Drawing.Point(264, 126)
+        Me.chkEnableSetTaxButton.Location = New System.Drawing.Point(248, 114)
         Me.chkEnableSetTaxButton.Name = "chkEnableSetTaxButton"
         Me.chkEnableSetTaxButton.Size = New System.Drawing.Size(250, 22)
         Me.chkEnableSetTaxButton.TabIndex = 18
@@ -614,7 +614,7 @@ Partial Class frmSettings
         '
         Me.chkShowOrderActions.AutoSize = True
         Me.chkShowOrderActions.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.chkShowOrderActions.Location = New System.Drawing.Point(264, 158)
+        Me.chkShowOrderActions.Location = New System.Drawing.Point(248, 142)
         Me.chkShowOrderActions.Name = "chkShowOrderActions"
         Me.chkShowOrderActions.Size = New System.Drawing.Size(250, 22)
         Me.chkShowOrderActions.TabIndex = 19
@@ -625,7 +625,7 @@ Partial Class frmSettings
         '
         Me.chkShowOrderNotifications.AutoSize = True
         Me.chkShowOrderNotifications.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.chkShowOrderNotifications.Location = New System.Drawing.Point(264, 190)
+        Me.chkShowOrderNotifications.Location = New System.Drawing.Point(248, 170)
         Me.chkShowOrderNotifications.Name = "chkShowOrderNotifications"
         Me.chkShowOrderNotifications.Size = New System.Drawing.Size(250, 22)
         Me.chkShowOrderNotifications.TabIndex = 20
@@ -636,7 +636,7 @@ Partial Class frmSettings
         '
         Me.chkAllowDuplicateItemEntry.AutoSize = True
         Me.chkAllowDuplicateItemEntry.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.chkAllowDuplicateItemEntry.Location = New System.Drawing.Point(264, 62)
+        Me.chkAllowDuplicateItemEntry.Location = New System.Drawing.Point(248, 58)
         Me.chkAllowDuplicateItemEntry.Name = "chkAllowDuplicateItemEntry"
         Me.chkAllowDuplicateItemEntry.Size = New System.Drawing.Size(250, 22)
         Me.chkAllowDuplicateItemEntry.TabIndex = 23
@@ -647,7 +647,7 @@ Partial Class frmSettings
         '
         Me.chkAllowOrderGrouping.AutoSize = True
         Me.chkAllowOrderGrouping.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.chkAllowOrderGrouping.Location = New System.Drawing.Point(34, 94)
+        Me.chkAllowOrderGrouping.Location = New System.Drawing.Point(34, 86)
         Me.chkAllowOrderGrouping.Name = "chkAllowOrderGrouping"
         Me.chkAllowOrderGrouping.Size = New System.Drawing.Size(250, 22)
         Me.chkAllowOrderGrouping.TabIndex = 15
@@ -658,7 +658,7 @@ Partial Class frmSettings
         '
         Me.chkEnableBranchQueue.AutoSize = True
         Me.chkEnableBranchQueue.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.chkEnableBranchQueue.Location = New System.Drawing.Point(16, 62)
+        Me.chkEnableBranchQueue.Location = New System.Drawing.Point(16, 58)
         Me.chkEnableBranchQueue.Name = "chkEnableBranchQueue"
         Me.chkEnableBranchQueue.Size = New System.Drawing.Size(250, 22)
         Me.chkEnableBranchQueue.TabIndex = 16
@@ -670,9 +670,9 @@ Partial Class frmSettings
         Me.GroupBox5.Controls.Add(Me.GroupBox7)
         Me.GroupBox5.Controls.Add(Me.GroupBox6)
         Me.GroupBox5.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.GroupBox5.Location = New System.Drawing.Point(492, 166)
+        Me.GroupBox5.Location = New System.Drawing.Point(464, 166)
         Me.GroupBox5.Name = "GroupBox5"
-        Me.GroupBox5.Size = New System.Drawing.Size(536, 226)
+        Me.GroupBox5.Size = New System.Drawing.Size(508, 214)
         Me.GroupBox5.TabIndex = 16
         Me.GroupBox5.TabStop = False
         Me.GroupBox5.Text = "Website - Deprecate"
@@ -688,7 +688,7 @@ Partial Class frmSettings
         Me.GroupBox7.Controls.Add(Me.Label18)
         Me.GroupBox7.Location = New System.Drawing.Point(12, 24)
         Me.GroupBox7.Name = "GroupBox7"
-        Me.GroupBox7.Size = New System.Drawing.Size(238, 190)
+        Me.GroupBox7.Size = New System.Drawing.Size(226, 178)
         Me.GroupBox7.TabIndex = 22
         Me.GroupBox7.TabStop = False
         Me.GroupBox7.Text = "Import defaults"
@@ -696,13 +696,13 @@ Partial Class frmSettings
         'Button3
         '
         Me.Button3.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.Button3.Location = New System.Drawing.Point(88, 146)
+        Me.Button3.Location = New System.Drawing.Point(88, 140)
         Me.Button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Button3.FlatAppearance.BorderColor = System.Drawing.Color.SlateGray
         Me.Button3.FlatAppearance.BorderSize = 1
         Me.Button3.BackColor = System.Drawing.Color.White
         Me.Button3.Name = "Button3"
-        Me.Button3.Size = New System.Drawing.Size(138, 30)
+        Me.Button3.Size = New System.Drawing.Size(126, 28)
         Me.Button3.TabIndex = 21
         Me.Button3.Text = "Apply import (&O)"
         Me.Button3.UseVisualStyleBackColor = False
@@ -722,7 +722,7 @@ Partial Class frmSettings
         Me.txtWebCust.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtWebCust.Location = New System.Drawing.Point(88, 30)
         Me.txtWebCust.Name = "txtWebCust"
-        Me.txtWebCust.Size = New System.Drawing.Size(138, 22)
+        Me.txtWebCust.Size = New System.Drawing.Size(126, 22)
         Me.txtWebCust.TabIndex = 22
         '
         'txtWebShip
@@ -730,7 +730,7 @@ Partial Class frmSettings
         Me.txtWebShip.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtWebShip.Location = New System.Drawing.Point(88, 98)
         Me.txtWebShip.Name = "txtWebShip"
-        Me.txtWebShip.Size = New System.Drawing.Size(138, 22)
+        Me.txtWebShip.Size = New System.Drawing.Size(126, 22)
         Me.txtWebShip.TabIndex = 26
         '
         'txtWebRep
@@ -738,7 +738,7 @@ Partial Class frmSettings
         Me.txtWebRep.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtWebRep.Location = New System.Drawing.Point(88, 64)
         Me.txtWebRep.Name = "txtWebRep"
-        Me.txtWebRep.Size = New System.Drawing.Size(138, 22)
+        Me.txtWebRep.Size = New System.Drawing.Size(126, 22)
         Me.txtWebRep.TabIndex = 23
         '
         'Label17
@@ -772,9 +772,9 @@ Partial Class frmSettings
         Me.GroupBox6.Controls.Add(Me.txtMySQLpass)
         Me.GroupBox6.Controls.Add(Me.txtMySQLsvr)
         Me.GroupBox6.Controls.Add(Me.Label15)
-        Me.GroupBox6.Location = New System.Drawing.Point(262, 24)
+        Me.GroupBox6.Location = New System.Drawing.Point(250, 24)
         Me.GroupBox6.Name = "GroupBox6"
-        Me.GroupBox6.Size = New System.Drawing.Size(262, 190)
+        Me.GroupBox6.Size = New System.Drawing.Size(246, 178)
         Me.GroupBox6.TabIndex = 21
         Me.GroupBox6.TabStop = False
         Me.GroupBox6.Text = "MySQL Connection"
@@ -792,13 +792,13 @@ Partial Class frmSettings
         'Button2
         '
         Me.Button2.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.Button2.Location = New System.Drawing.Point(88, 146)
+        Me.Button2.Location = New System.Drawing.Point(88, 140)
         Me.Button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.Button2.FlatAppearance.BorderColor = System.Drawing.Color.SlateGray
         Me.Button2.FlatAppearance.BorderSize = 1
         Me.Button2.BackColor = System.Drawing.Color.White
         Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(162, 30)
+        Me.Button2.Size = New System.Drawing.Size(146, 28)
         Me.Button2.TabIndex = 16
         Me.Button2.Text = "Apply connection (&O)"
         Me.Button2.UseVisualStyleBackColor = False
@@ -808,7 +808,7 @@ Partial Class frmSettings
         Me.txtMySQLuser.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtMySQLuser.Location = New System.Drawing.Point(88, 84)
         Me.txtMySQLuser.Name = "txtMySQLuser"
-        Me.txtMySQLuser.Size = New System.Drawing.Size(162, 22)
+        Me.txtMySQLuser.Size = New System.Drawing.Size(146, 22)
         Me.txtMySQLuser.TabIndex = 18
         '
         'Label13
@@ -836,7 +836,7 @@ Partial Class frmSettings
         Me.txtMySQLdb.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtMySQLdb.Location = New System.Drawing.Point(88, 54)
         Me.txtMySQLdb.Name = "txtMySQLdb"
-        Me.txtMySQLdb.Size = New System.Drawing.Size(162, 22)
+        Me.txtMySQLdb.Size = New System.Drawing.Size(146, 22)
         Me.txtMySQLdb.TabIndex = 14
         '
         'txtMySQLpass
@@ -844,7 +844,7 @@ Partial Class frmSettings
         Me.txtMySQLpass.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtMySQLpass.Location = New System.Drawing.Point(88, 114)
         Me.txtMySQLpass.Name = "txtMySQLpass"
-        Me.txtMySQLpass.Size = New System.Drawing.Size(162, 22)
+        Me.txtMySQLpass.Size = New System.Drawing.Size(146, 22)
         Me.txtMySQLpass.TabIndex = 19
         '
         'txtMySQLsvr
@@ -852,7 +852,7 @@ Partial Class frmSettings
         Me.txtMySQLsvr.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtMySQLsvr.Location = New System.Drawing.Point(88, 24)
         Me.txtMySQLsvr.Name = "txtMySQLsvr"
-        Me.txtMySQLsvr.Size = New System.Drawing.Size(162, 22)
+        Me.txtMySQLsvr.Size = New System.Drawing.Size(146, 22)
         Me.txtMySQLsvr.TabIndex = 13
         '
         'Label15
@@ -879,9 +879,9 @@ Partial Class frmSettings
         Me.GroupBox8.Controls.Add(Me.chkShowOrderActions)
         Me.GroupBox8.Controls.Add(Me.chkShowOrderNotifications)
         Me.GroupBox8.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.GroupBox8.Location = New System.Drawing.Point(492, 404)
+        Me.GroupBox8.Location = New System.Drawing.Point(464, 392)
         Me.GroupBox8.Name = "GroupBox8"
-        Me.GroupBox8.Size = New System.Drawing.Size(536, 284)
+        Me.GroupBox8.Size = New System.Drawing.Size(508, 256)
         Me.GroupBox8.TabIndex = 17
         Me.GroupBox8.TabStop = False
         Me.GroupBox8.Text = "Work Order and Queue Options"
@@ -889,7 +889,7 @@ Partial Class frmSettings
         'Label19
         '
         Me.Label19.AutoSize = True
-        Me.Label19.Location = New System.Drawing.Point(16, 30)
+        Me.Label19.Location = New System.Drawing.Point(16, 26)
         Me.Label19.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
         Me.Label19.Name = "Label19"
         Me.Label19.Size = New System.Drawing.Size(160, 18)
@@ -899,7 +899,7 @@ Partial Class frmSettings
         'Label20
         '
         Me.Label20.AutoSize = True
-        Me.Label20.Location = New System.Drawing.Point(264, 30)
+        Me.Label20.Location = New System.Drawing.Point(248, 26)
         Me.Label20.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
         Me.Label20.Name = "Label20"
         Me.Label20.Size = New System.Drawing.Size(180, 18)
@@ -910,7 +910,7 @@ Partial Class frmSettings
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1040, 700)
+        Me.ClientSize = New System.Drawing.Size(984, 660)
         Me.Controls.Add(Me.GroupBox8)
         Me.Controls.Add(Me.GroupBox5)
         Me.Controls.Add(Me.GroupBox4)
@@ -920,6 +920,7 @@ Partial Class frmSettings
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog
         Me.MaximizeBox = False
         Me.MinimizeBox = False
+        Me.AutoScroll = True
         Me.Name = "frmSettings"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen
         Me.Text = "Settings"

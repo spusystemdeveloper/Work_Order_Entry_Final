@@ -20,7 +20,7 @@ Public Class frmOrderHistory
         databaseConnectionString = connectionString
         Text = "Order history"
         StartPosition = FormStartPosition.CenterParent
-        Size = New Size(1100, 580)
+        Size = New Size(1000, 580)
         MinimumSize = New Size(850, 400)
         Font = New Font("Segoe UI", 9)
         Dim header As New Panel With {.Dock = DockStyle.Top, .Height = 92}

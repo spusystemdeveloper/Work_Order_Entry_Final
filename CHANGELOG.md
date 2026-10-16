@@ -4,6 +4,29 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-16
 
+### Layout for smaller store screens
+
+- Compacted Settings to a 984x660 client area without removing settings or
+  reducing fonts. Enabled scrolling when larger display scaling requires it.
+  Reduced default Recall, Check WO, history/shortage and restored preview widths;
+  kept existing column minimums and horizontal grid scrolling.
+- Added one presentation-only SmallScreenLayout file to constrain affected
+  dialogs to their monitor's working area on opening and subsequent resizing.
+  Preview maximization, toolbar/report configuration and all action handlers
+  remain unchanged. Import controls now anchor to their existing window edges.
+- Main-window panel heights adapt to leave room for the left inputs; totals
+  widths fit the available panel without changing values or fonts. Enabled
+  horizontal item-lookup scrolling and aligned the image overlay with its grid.
+  No authentication, SQL, calculation, save, recall, stock or lifecycle rules
+  were changed. Static layout adjustments remain visible in the Designer.
+- Both Release/x86 solutions build; all 101 unit tests pass. Isolated checks
+  pass: 875 small-screen, 776 Settings, 180 Check WO, 83 Import, 91 Print and
+  28 Recall checkbox checks. Clean-folder PDF/ReportViewer packaging checks pass.
+  Inspected 1024-width Settings/main-window renders. The screen fixture uses
+  1024x768 and 1366x768 with simulated 125% scaling; real workstation DPI/taskbar
+  verification remains manual. No live order actions or store writes ran and
+  the Debug EXE configuration was preserved byte-for-byte.
+
 ### Larger print-choice dialog for readability
 
 - Enlarged the print-input dialog with stacked, full-width 14-point template

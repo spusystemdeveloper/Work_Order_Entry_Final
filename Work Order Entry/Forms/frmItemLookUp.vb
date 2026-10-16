@@ -5509,7 +5509,7 @@ err_flag:
             Return
         End If
 
-        Me.picPanel.Location = New Point(358, Me.gridItem.Size.Height - Me.picPanel.Size.Height - 5)
+        Me.picPanel.Location = New Point(Me.gridItem.Left + 6, Math.Max(0, Me.gridItem.Size.Height - Me.picPanel.Size.Height - 5))
     End Sub
 
     Protected Overrides Sub OnLoad(ByVal e As System.EventArgs)
@@ -5521,7 +5521,7 @@ err_flag:
         End If
 
         Try
-            Me.picPanel.Location = New Point(358, Me.gridItem.Size.Height - Me.picPanel.Size.Height - 5)
+            Me.picPanel.Location = New Point(Me.gridItem.Left + 6, Math.Max(0, Me.gridItem.Size.Height - Me.picPanel.Size.Height - 5))
         Catch ex As Exception
             ' Ignore layout exceptions during load to avoid startup crash
         End Try

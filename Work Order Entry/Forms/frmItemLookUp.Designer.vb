@@ -950,7 +950,7 @@ Partial Class frmItemLookUp
         Me.gridItem.Name = "gridItem"
         Me.gridItem.ReadOnly = True
         Me.gridItem.RowHeadersWidth = 51
-        Me.gridItem.ScrollBars = System.Windows.Forms.ScrollBars.Vertical
+        Me.gridItem.ScrollBars = System.Windows.Forms.ScrollBars.Both
         Me.gridItem.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
         Me.gridItem.Size = New System.Drawing.Size(844, 464)
         Me.gridItem.TabIndex = 0

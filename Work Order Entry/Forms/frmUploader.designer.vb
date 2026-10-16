@@ -67,6 +67,7 @@ Partial Class frmUploader
         Me.cmdImport.FlatStyle = System.Windows.Forms.FlatStyle.Standard
         Me.cmdImport.BackColor = System.Drawing.Color.FromArgb(37, 99, 160)
         Me.cmdImport.ForeColor = System.Drawing.Color.White
+        Me.cmdImport.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdImport.Name = "cmdImport"
         Me.cmdImport.Size = New System.Drawing.Size(108, 32)
         Me.cmdImport.TabIndex = 5
@@ -82,6 +83,7 @@ Partial Class frmUploader
         Me.cmdClose.FlatStyle = System.Windows.Forms.FlatStyle.Standard
         Me.cmdClose.BackColor = System.Drawing.Color.White
         Me.cmdClose.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.cmdClose.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdClose.Name = "cmdClose"
         Me.cmdClose.Size = New System.Drawing.Size(116, 32)
         Me.cmdClose.TabIndex = 6
@@ -141,6 +143,7 @@ Partial Class frmUploader
         Me.cmdReport.FlatStyle = System.Windows.Forms.FlatStyle.Standard
         Me.cmdReport.BackColor = System.Drawing.Color.White
         Me.cmdReport.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.cmdReport.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdReport.Name = "cmdReport"
         Me.cmdReport.Size = New System.Drawing.Size(120, 32)
         Me.cmdReport.TabIndex = 7
@@ -168,6 +171,7 @@ Partial Class frmUploader
         Me.panelInfo.Controls.Add(Me.Label3)
         Me.panelInfo.Controls.Add(Me.lblFile)
         Me.panelInfo.Location = New System.Drawing.Point(16, 110)
+        Me.panelInfo.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.panelInfo.Name = "panelInfo"
         Me.panelInfo.Size = New System.Drawing.Size(808, 282)
         Me.panelInfo.TabIndex = 16
@@ -186,6 +190,7 @@ Partial Class frmUploader
         '
         Me.lblFile.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.lblFile.Location = New System.Drawing.Point(16, 54)
+        Me.lblFile.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblFile.Name = "lblFile"
         Me.lblFile.Size = New System.Drawing.Size(776, 210)
         Me.lblFile.TabIndex = 11

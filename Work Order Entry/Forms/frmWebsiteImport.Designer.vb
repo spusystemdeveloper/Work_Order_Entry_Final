@@ -74,6 +74,7 @@ Partial Class frmWebsiteImport
         Me.gridOrders.RowTemplate.MinimumHeight = 40
         Me.gridOrders.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders
         Me.gridOrders.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.ImportOrderNumber, Me.ImportCustomerName, Me.ImportOrderDate})
+        Me.gridOrders.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.gridOrders.Name = "gridOrders"
         Me.gridOrders.ReadOnly = True
         Me.gridOrders.RowHeadersVisible = False
@@ -90,6 +91,7 @@ Partial Class frmWebsiteImport
         Me.btnImport.FlatStyle = System.Windows.Forms.FlatStyle.Standard
         Me.btnImport.BackColor = System.Drawing.Color.FromArgb(37, 99, 160)
         Me.btnImport.ForeColor = System.Drawing.Color.White
+        Me.btnImport.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnImport.Name = "btnImport"
         Me.btnImport.Size = New System.Drawing.Size(152, 36)
         Me.btnImport.TabIndex = 2
@@ -101,6 +103,7 @@ Partial Class frmWebsiteImport
         Me.chkShowAll.AutoSize = True
         Me.chkShowAll.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.chkShowAll.Location = New System.Drawing.Point(12, 466)
+        Me.chkShowAll.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.chkShowAll.Name = "chkShowAll"
         Me.chkShowAll.Size = New System.Drawing.Size(130, 22)
         Me.chkShowAll.TabIndex = 3
@@ -111,6 +114,7 @@ Partial Class frmWebsiteImport
         '
         Me.txtSearch.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtSearch.Location = New System.Drawing.Point(92, 16)
+        Me.txtSearch.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.txtSearch.Name = "txtSearch"
         Me.txtSearch.Size = New System.Drawing.Size(628, 25)
         Me.txtSearch.TabIndex = 4
@@ -133,6 +137,7 @@ Partial Class frmWebsiteImport
         Me.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Standard
         Me.btnRefresh.BackColor = System.Drawing.Color.White
         Me.btnRefresh.ForeColor = System.Drawing.SystemColors.ControlText
+        Me.btnRefresh.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.btnRefresh.Name = "btnRefresh"
         Me.btnRefresh.Size = New System.Drawing.Size(116, 34)
         Me.btnRefresh.TabIndex = 6

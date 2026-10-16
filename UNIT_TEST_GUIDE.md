@@ -5,6 +5,54 @@ connecting to DVO/GSC, or changing database records.
 
 ## What is tested
 
+### Smaller store screens
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\SmallScreenLayout_UI_Test.ps1'
+& '.\Database Components\Tests\SettingsLayout_UI_Test.ps1'
+& '.\Database Components\Tests\CheckWOLayout_UI_Test.ps1'
+& '.\Database Components\Tests\ImportLayout_UI_Test.ps1'
+& '.\Database Components\Tests\PrintLayout_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+```
+
+The 875 small-screen checks instantiate compiled forms without showing them,
+logging in or executing SQL/order actions. They cover simulated 1024x768 and
+1366x768 layouts at 100% and 125%, dialog fitting/restoring, Settings scrollable
+content, import anchors, totals boundaries, main input availability, selected
+item viewports and action-button overlap with Import and For Invoice displayed.
+One check invokes only the new Settings presentation handler to verify its
+Resize hookup. Main layout events execute naturally when the fixture resizes.
+The existing Debug store configuration is hash-checked and preserved.
+
+The fixture assumes a 40-pixel taskbar and a 704-pixel maximized client height.
+Simulated scaling does not reproduce every DPI/font/driver/taskbar combination.
+The application itself uses the actual monitor WorkingArea to fit dialogs.
+Settings scrollbars keep all existing fields reachable when scaling makes the
+contents larger than the available viewport; no fonts are automatically shrunk.
+
+Manual check on each intended unit:
+
+1. Use its actual 1024x768 or 1366x768 resolution and Windows scaling. Log in
+   normally; verify customer/sales fields, search, Barcode and Show Image remain
+   reachable. Confirm Save, Recall, Cancel, Close and the other existing actions.
+2. Check subtotal, VAT and total visibility. Add several owned test-order lines
+   and use both grids' scrolling to reach quantities, price, SOH, commitments,
+   prepared counts and the other existing columns. Values/formats must match.
+3. Open Settings, Recall, Check WO, history and shortage alerts. Confirm windows
+   fit the usable screen, long grids scroll, and existing filters/actions work.
+   At higher scaling, scroll Settings to its right/bottom sections and back.
+4. Check CSV/website import dialogs with owned test files, and restore/maximize
+   both print previews. Confirm buttons remain reachable and report contents,
+   printer choices and copy counts remain unchanged.
+5. Repeat with that unit's taskbar position/size and actual DPI settings. Report
+   any clipping with the resolution, scaling percentage and affected window.
+
+The unchanged business and integration tests remain applicable; the layout
+fixture does not replace live workstation or authorized test-order validation.
+
 ### Print options and preview presentation
 
 After building Debug and Release, run:

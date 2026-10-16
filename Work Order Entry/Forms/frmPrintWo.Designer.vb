@@ -41,7 +41,7 @@ Partial Class frmPrintWo
         Me.rptviewer.Location = New System.Drawing.Point(12, 76)
         Me.rptviewer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.rptviewer.Name = "rptviewer"
-        Me.rptviewer.Size = New System.Drawing.Size(1076, 562)
+        Me.rptviewer.Size = New System.Drawing.Size(960, 512)
         Me.rptviewer.TabIndex = 0
         '
         'Print_DialogTimer
@@ -55,7 +55,7 @@ Partial Class frmPrintWo
         Me.previewHeader.Dock = System.Windows.Forms.DockStyle.Top
         Me.previewHeader.Location = New System.Drawing.Point(12, 12)
         Me.previewHeader.Name = "previewHeader"
-        Me.previewHeader.Size = New System.Drawing.Size(1076, 64)
+        Me.previewHeader.Size = New System.Drawing.Size(960, 64)
         Me.previewHeader.TabIndex = 10
         Me.previewHeader.TabStop = False
         Me.lblPreviewTitle.AutoSize = True
@@ -74,7 +74,7 @@ Partial Class frmPrintWo
         Me.lblPreviewHelp.Text = "Use the toolbar below for printing, page setup and export."
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(1100, 650)
+        Me.ClientSize = New System.Drawing.Size(984, 600)
         Me.Controls.Add(Me.rptviewer)
         Me.Controls.Add(Me.previewHeader)
         Me.MinimumSize = New System.Drawing.Size(800, 450)

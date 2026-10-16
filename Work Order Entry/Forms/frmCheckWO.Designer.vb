@@ -53,7 +53,7 @@ Partial Class frmCheckWO
         'cmdClose
         '
         Me.cmdClose.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.cmdClose.Location = New System.Drawing.Point(1223, 494)
+        Me.cmdClose.Location = New System.Drawing.Point(875, 494)
         Me.cmdClose.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdClose.Name = "cmdClose"
         Me.cmdClose.Size = New System.Drawing.Size(91, 32)
@@ -68,7 +68,7 @@ Partial Class frmCheckWO
         Me.lblItemNameWO.Location = New System.Drawing.Point(110, 48)
         Me.lblItemNameWO.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblItemNameWO.Name = "lblItemNameWO"
-        Me.lblItemNameWO.Size = New System.Drawing.Size(1206, 48)
+        Me.lblItemNameWO.Size = New System.Drawing.Size(858, 48)
         Me.lblItemNameWO.TabIndex = 15
         Me.lblItemNameWO.Text = "PAER ONE BOOK PAPER 8.5 X 11"
         '
@@ -79,7 +79,7 @@ Partial Class frmCheckWO
         Me.lblItemCodeWO.Location = New System.Drawing.Point(110, 16)
         Me.lblItemCodeWO.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblItemCodeWO.Name = "lblItemCodeWO"
-        Me.lblItemCodeWO.Size = New System.Drawing.Size(1206, 24)
+        Me.lblItemCodeWO.Size = New System.Drawing.Size(858, 24)
         Me.lblItemCodeWO.TabIndex = 14
         Me.lblItemCodeWO.Text = "I00001-PC"
         '
@@ -92,7 +92,7 @@ Partial Class frmCheckWO
         Me.GroupBox1.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox1.Location = New System.Drawing.Point(12, 108)
         Me.GroupBox1.Name = "GroupBox1"
-        Me.GroupBox1.Size = New System.Drawing.Size(1308, 374)
+        Me.GroupBox1.Size = New System.Drawing.Size(960, 374)
         Me.GroupBox1.TabIndex = 13
         Me.GroupBox1.TabStop = False
         Me.GroupBox1.Text = "Open Work Order Item Availability"
@@ -138,7 +138,7 @@ Partial Class frmCheckWO
         Me.gridQtyWO.Name = "gridQtyWO"
         Me.gridQtyWO.ReadOnly = True
         Me.gridQtyWO.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.gridQtyWO.Size = New System.Drawing.Size(1288, 338)
+        Me.gridQtyWO.Size = New System.Drawing.Size(940, 338)
         Me.gridQtyWO.TabIndex = 0
         '
         'Label2
@@ -240,7 +240,7 @@ Partial Class frmCheckWO
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.SystemColors.ControlLightLight
-        Me.ClientSize = New System.Drawing.Size(1332, 540)
+        Me.ClientSize = New System.Drawing.Size(984, 540)
         Me.Controls.Add(Me.cmdClose)
         Me.Controls.Add(Me.lblItemNameWO)
         Me.Controls.Add(Me.lblItemCodeWO)
