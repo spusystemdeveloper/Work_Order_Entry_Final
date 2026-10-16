@@ -41,20 +41,20 @@ Partial Class frmPriceLevel
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label2.Location = New System.Drawing.Point(3, 30)
+        Me.Label2.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.Label2.Location = New System.Drawing.Point(12, 58)
         Me.Label2.Name = "Label2"
-        Me.Label2.Size = New System.Drawing.Size(75, 16)
+        Me.Label2.Size = New System.Drawing.Size(100, 20)
         Me.Label2.TabIndex = 11
         Me.Label2.Text = "Item Name:"
         '
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(3, 9)
+        Me.Label1.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.Label1.Location = New System.Drawing.Point(12, 20)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(71, 16)
+        Me.Label1.Size = New System.Drawing.Size(100, 20)
         Me.Label1.TabIndex = 10
         Me.Label1.Text = "Item Code:"
         '
@@ -63,37 +63,46 @@ Partial Class frmPriceLevel
         Me.gridLevel.AllowUserToAddRows = False
         Me.gridLevel.AllowUserToDeleteRows = False
         Me.gridLevel.AllowUserToOrderColumns = True
-        DataGridViewCellStyle1.BackColor = System.Drawing.Color.Lavender
+        DataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(245, 247, 250)
         Me.gridLevel.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
         DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle2.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(232, 238, 246)
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
         DataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText
         DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
         DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
         DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.gridLevel.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle2
-        Me.gridLevel.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.gridLevel.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
         Me.gridLevel.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.ItemCode, Me.Price})
         DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle4.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle4.Font = New System.Drawing.Font("Tahoma", 11.0!, System.Drawing.FontStyle.Regular)
         DataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        DataGridViewCellStyle4.SelectionBackColor = System.Drawing.Color.FromArgb(37, 99, 160)
+        DataGridViewCellStyle4.SelectionForeColor = System.Drawing.Color.White
+        DataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.gridLevel.DefaultCellStyle = DataGridViewCellStyle4
-        Me.gridLevel.Location = New System.Drawing.Point(6, 98)
+        Me.gridLevel.Location = New System.Drawing.Point(12, 144)
+        Me.gridLevel.ColumnHeadersHeight = 36
+        Me.gridLevel.EnableHeadersVisualStyles = False
+        Me.gridLevel.BackgroundColor = System.Drawing.Color.White
+        Me.gridLevel.GridColor = System.Drawing.Color.FromArgb(215, 223, 233)
+        Me.gridLevel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.gridLevel.RowTemplate.MinimumHeight = 42
+        Me.gridLevel.RowTemplate.Height = 42
+        Me.gridLevel.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders
         Me.gridLevel.Name = "gridLevel"
         Me.gridLevel.ReadOnly = True
         Me.gridLevel.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.gridLevel.Size = New System.Drawing.Size(386, 144)
+        Me.gridLevel.Size = New System.Drawing.Size(596, 210)
         Me.gridLevel.TabIndex = 14
         '
         'ItemCode
         '
-        Me.ItemCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.ItemCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
         Me.ItemCode.HeaderText = "PRICE LEVEL "
+        Me.ItemCode.MinimumWidth = 280
         Me.ItemCode.Name = "ItemCode"
         Me.ItemCode.ReadOnly = True
         Me.ItemCode.Width = 205
@@ -101,60 +110,69 @@ Partial Class frmPriceLevel
         'Price
         '
         Me.Price.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.TopRight
+        DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        DataGridViewCellStyle3.Font = New System.Drawing.Font("Tahoma", 11.0!, System.Drawing.FontStyle.Bold)
         DataGridViewCellStyle3.Format = "##0.00"
         DataGridViewCellStyle3.NullValue = Nothing
         Me.Price.DefaultCellStyle = DataGridViewCellStyle3
         Me.Price.HeaderText = "PRICE"
+        Me.Price.MinimumWidth = 160
         Me.Price.Name = "Price"
         Me.Price.ReadOnly = True
-        Me.Price.Width = 135
+        Me.Price.Width = 180
         '
         'cmdOK
         '
         Me.cmdOK.DialogResult = System.Windows.Forms.DialogResult.OK
-        Me.cmdOK.Location = New System.Drawing.Point(252, 248)
+        Me.cmdOK.Location = New System.Drawing.Point(408, 370)
+        Me.cmdOK.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.cmdOK.BackColor = System.Drawing.Color.FromArgb(37, 99, 160)
+        Me.cmdOK.ForeColor = System.Drawing.Color.White
         Me.cmdOK.Name = "cmdOK"
-        Me.cmdOK.Size = New System.Drawing.Size(67, 31)
+        Me.cmdOK.Size = New System.Drawing.Size(94, 32)
         Me.cmdOK.TabIndex = 15
         Me.cmdOK.Text = "Ok"
-        Me.cmdOK.UseVisualStyleBackColor = True
+        Me.cmdOK.UseVisualStyleBackColor = False
         '
         'cmdCancel
         '
         Me.cmdCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
-        Me.cmdCancel.Location = New System.Drawing.Point(325, 248)
+        Me.cmdCancel.Location = New System.Drawing.Point(514, 370)
+        Me.cmdCancel.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdCancel.BackColor = System.Drawing.Color.White
+        Me.cmdCancel.ForeColor = System.Drawing.SystemColors.ControlText
         Me.cmdCancel.Name = "cmdCancel"
-        Me.cmdCancel.Size = New System.Drawing.Size(67, 31)
+        Me.cmdCancel.Size = New System.Drawing.Size(94, 32)
         Me.cmdCancel.TabIndex = 16
         Me.cmdCancel.Text = "Cancel"
-        Me.cmdCancel.UseVisualStyleBackColor = True
+        Me.cmdCancel.UseVisualStyleBackColor = False
         '
         'txtItemName
         '
-        Me.txtItemName.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtItemName.Location = New System.Drawing.Point(79, 30)
+        Me.txtItemName.Font = New System.Drawing.Font("Tahoma", 11.0!, System.Drawing.FontStyle.Regular)
+        Me.txtItemName.Location = New System.Drawing.Point(116, 54)
         Me.txtItemName.Multiline = True
+        Me.txtItemName.BackColor = System.Drawing.Color.White
         Me.txtItemName.Name = "txtItemName"
         Me.txtItemName.ReadOnly = True
         Me.txtItemName.ScrollBars = System.Windows.Forms.ScrollBars.Both
-        Me.txtItemName.Size = New System.Drawing.Size(313, 62)
+        Me.txtItemName.Size = New System.Drawing.Size(492, 76)
         Me.txtItemName.TabIndex = 17
         '
         'txtItemCode
         '
-        Me.txtItemCode.Font = New System.Drawing.Font("Tahoma", 9.75!)
-        Me.txtItemCode.Location = New System.Drawing.Point(79, 6)
+        Me.txtItemCode.Font = New System.Drawing.Font("Tahoma", 11.0!, System.Drawing.FontStyle.Bold)
+        Me.txtItemCode.Location = New System.Drawing.Point(116, 16)
         Me.txtItemCode.Name = "txtItemCode"
         Me.txtItemCode.ReadOnly = True
-        Me.txtItemCode.Size = New System.Drawing.Size(132, 23)
+        Me.txtItemCode.Size = New System.Drawing.Size(492, 26)
         Me.txtItemCode.TabIndex = 18
         '
         'frmPriceLevel
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(399, 284)
+        Me.ClientSize = New System.Drawing.Size(620, 414)
         Me.Controls.Add(Me.txtItemCode)
         Me.Controls.Add(Me.txtItemName)
         Me.Controls.Add(Me.cmdCancel)

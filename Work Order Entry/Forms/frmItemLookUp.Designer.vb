@@ -432,8 +432,8 @@ Partial Class frmItemLookUp
         '
         'panelButtons
         '
-        Me.panelButtons.Controls.Add(Me.btnTax)
         Me.panelButtons.Controls.Add(Me.Button2)
+        Me.panelButtons.Controls.Add(Me.btnTax)
         Me.panelButtons.Controls.Add(Me.cmdOpenWO)
         Me.panelButtons.Controls.Add(Me.txtAvailable)
         Me.panelButtons.Controls.Add(Me.cmdImportWeb)
@@ -466,41 +466,56 @@ Partial Class frmItemLookUp
         'btnTax
         '
         Me.btnTax.Dock = System.Windows.Forms.DockStyle.Top
-        Me.btnTax.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.btnTax.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.btnTax.Image = CType(resources.GetObject("btnTax.Image"), System.Drawing.Image)
         Me.btnTax.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnTax.Location = New System.Drawing.Point(3, 234)
+        Me.btnTax.Location = New System.Drawing.Point(3, 201)
+        Me.btnTax.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnTax.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.btnTax.BackColor = System.Drawing.Color.White
+        Me.btnTax.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.btnTax.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.btnTax.Name = "btnTax"
         Me.btnTax.Size = New System.Drawing.Size(111, 33)
         Me.btnTax.TabIndex = 35
         Me.btnTax.Text = "Set Tax"
-        Me.btnTax.UseVisualStyleBackColor = True
+        Me.btnTax.UseVisualStyleBackColor = False
         '
         'Button2
         '
         Me.Button2.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Button2.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Button2.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.Button2.Image = CType(resources.GetObject("Button2.Image"), System.Drawing.Image)
         Me.Button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.Button2.Location = New System.Drawing.Point(3, 201)
+        Me.Button2.Location = New System.Drawing.Point(3, 234)
+        Me.Button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Button2.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.Button2.BackColor = System.Drawing.Color.White
+        Me.Button2.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.Button2.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.Button2.Name = "Button2"
         Me.Button2.Size = New System.Drawing.Size(111, 33)
         Me.Button2.TabIndex = 16
         Me.Button2.Text = "Logout"
-        Me.Button2.UseVisualStyleBackColor = True
+        Me.Button2.UseVisualStyleBackColor = False
         '
         'cmdOpenWO
         '
         Me.cmdOpenWO.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdOpenWO.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdOpenWO.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdOpenWO.Image = CType(resources.GetObject("cmdOpenWO.Image"), System.Drawing.Image)
         Me.cmdOpenWO.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdOpenWO.Location = New System.Drawing.Point(3, 168)
+        Me.cmdOpenWO.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdOpenWO.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdOpenWO.BackColor = System.Drawing.Color.White
+        Me.cmdOpenWO.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.cmdOpenWO.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdOpenWO.Name = "cmdOpenWO"
         Me.cmdOpenWO.Size = New System.Drawing.Size(111, 33)
         Me.cmdOpenWO.TabIndex = 15
         Me.cmdOpenWO.Text = "Check WO"
-        Me.cmdOpenWO.UseVisualStyleBackColor = True
+        Me.cmdOpenWO.UseVisualStyleBackColor = False
         '
         'txtAvailable
         '
@@ -514,15 +529,20 @@ Partial Class frmItemLookUp
         '
         Me.cmdImportWeb.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.cmdImportWeb.Enabled = False
-        Me.cmdImportWeb.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdImportWeb.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdImportWeb.Image = CType(resources.GetObject("cmdImportWeb.Image"), System.Drawing.Image)
         Me.cmdImportWeb.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdImportWeb.Location = New System.Drawing.Point(3, 462)
+        Me.cmdImportWeb.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdImportWeb.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdImportWeb.BackColor = System.Drawing.Color.White
+        Me.cmdImportWeb.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.cmdImportWeb.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdImportWeb.Name = "cmdImportWeb"
         Me.cmdImportWeb.Size = New System.Drawing.Size(111, 33)
         Me.cmdImportWeb.TabIndex = 25
-        Me.cmdImportWeb.Text = "    Import Web"
-        Me.cmdImportWeb.UseVisualStyleBackColor = True
+        Me.cmdImportWeb.Text = "Import Web"
+        Me.cmdImportWeb.UseVisualStyleBackColor = False
         Me.cmdImportWeb.Visible = False
         '
         'txtCreditLimit
@@ -536,29 +556,39 @@ Partial Class frmItemLookUp
         'cmdForInvoice
         '
         Me.cmdForInvoice.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdForInvoice.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdForInvoice.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular)
         Me.cmdForInvoice.Image = Global.WorkOrderEntry.My.Resources.Resources.icons8_invoice_15
         Me.cmdForInvoice.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdForInvoice.Location = New System.Drawing.Point(3, 495)
+        Me.cmdForInvoice.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdForInvoice.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdForInvoice.BackColor = System.Drawing.Color.FromArgb(240, 246, 253)
+        Me.cmdForInvoice.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.cmdForInvoice.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdForInvoice.Name = "cmdForInvoice"
         Me.cmdForInvoice.Size = New System.Drawing.Size(111, 33)
         Me.cmdForInvoice.TabIndex = 18
         Me.cmdForInvoice.Text = "For Invoice"
-        Me.cmdForInvoice.UseVisualStyleBackColor = True
+        Me.cmdForInvoice.UseVisualStyleBackColor = False
         Me.cmdForInvoice.Visible = False
         '
         'cmdImport
         '
         Me.cmdImport.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdImport.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdImport.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdImport.Image = CType(resources.GetObject("cmdImport.Image"), System.Drawing.Image)
         Me.cmdImport.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdImport.Location = New System.Drawing.Point(3, 528)
+        Me.cmdImport.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdImport.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdImport.BackColor = System.Drawing.Color.FromArgb(240, 246, 253)
+        Me.cmdImport.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.cmdImport.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdImport.Name = "cmdImport"
         Me.cmdImport.Size = New System.Drawing.Size(111, 34)
         Me.cmdImport.TabIndex = 15
-        Me.cmdImport.Text = "    Import [F6]"
-        Me.cmdImport.UseVisualStyleBackColor = True
+        Me.cmdImport.Text = "Import [F6]"
+        Me.cmdImport.UseVisualStyleBackColor = False
         Me.cmdImport.Visible = False
         '
         'txtOpenWO
@@ -605,145 +635,200 @@ Partial Class frmItemLookUp
         'Button1
         '
         Me.Button1.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Button1.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Button1.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.Button1.Image = Global.WorkOrderEntry.My.Resources.Resources.icons8_print_15
         Me.Button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.Button1.Location = New System.Drawing.Point(3, 562)
+        Me.Button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Button1.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.Button1.BackColor = System.Drawing.Color.FromArgb(240, 246, 253)
+        Me.Button1.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.Button1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.Button1.Name = "Button1"
         Me.Button1.Size = New System.Drawing.Size(111, 33)
         Me.Button1.TabIndex = 17
         Me.Button1.Text = "Print"
-        Me.Button1.UseVisualStyleBackColor = True
+        Me.Button1.UseVisualStyleBackColor = False
         '
         'cmdOk
         '
         Me.cmdOk.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdOk.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdOk.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
         Me.cmdOk.Image = CType(resources.GetObject("cmdOk.Image"), System.Drawing.Image)
         Me.cmdOk.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdOk.Location = New System.Drawing.Point(3, 595)
+        Me.cmdOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdOk.BackColor = System.Drawing.Color.FromArgb(37, 99, 160)
+        Me.cmdOk.ForeColor = System.Drawing.Color.White
+        Me.cmdOk.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdOk.Name = "cmdOk"
         Me.cmdOk.Size = New System.Drawing.Size(111, 33)
         Me.cmdOk.TabIndex = 20
         Me.cmdOk.Text = "Save [F12]"
-        Me.cmdOk.UseVisualStyleBackColor = True
+        Me.cmdOk.UseVisualStyleBackColor = False
         '
         'cmdSettings
         '
         Me.cmdSettings.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdSettings.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdSettings.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdSettings.Image = CType(resources.GetObject("cmdSettings.Image"), System.Drawing.Image)
         Me.cmdSettings.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdSettings.Location = New System.Drawing.Point(3, 135)
+        Me.cmdSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdSettings.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdSettings.BackColor = System.Drawing.Color.White
+        Me.cmdSettings.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.cmdSettings.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdSettings.Name = "cmdSettings"
         Me.cmdSettings.Size = New System.Drawing.Size(111, 33)
         Me.cmdSettings.TabIndex = 14
         Me.cmdSettings.Text = "Settings"
-        Me.cmdSettings.UseVisualStyleBackColor = True
+        Me.cmdSettings.UseVisualStyleBackColor = False
         '
         'cmdRecall
         '
         Me.cmdRecall.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdRecall.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdRecall.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
         Me.cmdRecall.Image = CType(resources.GetObject("cmdRecall.Image"), System.Drawing.Image)
         Me.cmdRecall.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdRecall.Location = New System.Drawing.Point(3, 628)
+        Me.cmdRecall.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdRecall.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdRecall.BackColor = System.Drawing.Color.FromArgb(240, 246, 253)
+        Me.cmdRecall.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.cmdRecall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdRecall.Name = "cmdRecall"
         Me.cmdRecall.Size = New System.Drawing.Size(111, 33)
         Me.cmdRecall.TabIndex = 19
         Me.cmdRecall.Text = "Recall [F11]"
-        Me.cmdRecall.UseVisualStyleBackColor = True
+        Me.cmdRecall.UseVisualStyleBackColor = False
         '
         'cmdPriceLevel
         '
         Me.cmdPriceLevel.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdPriceLevel.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdPriceLevel.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdPriceLevel.Image = CType(resources.GetObject("cmdPriceLevel.Image"), System.Drawing.Image)
         Me.cmdPriceLevel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdPriceLevel.Location = New System.Drawing.Point(3, 102)
+        Me.cmdPriceLevel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdPriceLevel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdPriceLevel.BackColor = System.Drawing.Color.White
+        Me.cmdPriceLevel.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.cmdPriceLevel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdPriceLevel.Name = "cmdPriceLevel"
         Me.cmdPriceLevel.Size = New System.Drawing.Size(111, 33)
         Me.cmdPriceLevel.TabIndex = 13
         Me.cmdPriceLevel.Text = "Price Level"
-        Me.cmdPriceLevel.UseVisualStyleBackColor = True
+        Me.cmdPriceLevel.UseVisualStyleBackColor = False
         '
         'cmdInterStore
         '
         Me.cmdInterStore.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdInterStore.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdInterStore.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdInterStore.Image = CType(resources.GetObject("cmdInterStore.Image"), System.Drawing.Image)
         Me.cmdInterStore.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdInterStore.Location = New System.Drawing.Point(3, 69)
+        Me.cmdInterStore.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdInterStore.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdInterStore.BackColor = System.Drawing.Color.White
+        Me.cmdInterStore.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.cmdInterStore.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdInterStore.Name = "cmdInterStore"
         Me.cmdInterStore.Size = New System.Drawing.Size(111, 33)
         Me.cmdInterStore.TabIndex = 12
         Me.cmdInterStore.Text = "InterStore"
-        Me.cmdInterStore.UseVisualStyleBackColor = True
+        Me.cmdInterStore.UseVisualStyleBackColor = False
         '
         'cmdRefresh
         '
         Me.cmdRefresh.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdRefresh.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdRefresh.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdRefresh.Image = CType(resources.GetObject("cmdRefresh.Image"), System.Drawing.Image)
         Me.cmdRefresh.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdRefresh.Location = New System.Drawing.Point(3, 36)
+        Me.cmdRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdRefresh.BackColor = System.Drawing.Color.White
+        Me.cmdRefresh.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.cmdRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdRefresh.Name = "cmdRefresh"
         Me.cmdRefresh.Size = New System.Drawing.Size(111, 33)
         Me.cmdRefresh.TabIndex = 11
         Me.cmdRefresh.Text = "Refresh"
-        Me.cmdRefresh.UseVisualStyleBackColor = True
+        Me.cmdRefresh.UseVisualStyleBackColor = False
         '
         'cmdRemove
         '
         Me.cmdRemove.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdRemove.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdRemove.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdRemove.Image = CType(resources.GetObject("cmdRemove.Image"), System.Drawing.Image)
         Me.cmdRemove.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdRemove.Location = New System.Drawing.Point(3, 661)
+        Me.cmdRemove.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdRemove.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdRemove.BackColor = System.Drawing.Color.FromArgb(255, 244, 242)
+        Me.cmdRemove.ForeColor = System.Drawing.Color.FromArgb(150, 35, 35)
+        Me.cmdRemove.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdRemove.Name = "cmdRemove"
         Me.cmdRemove.Size = New System.Drawing.Size(111, 33)
         Me.cmdRemove.TabIndex = 21
-        Me.cmdRemove.Text = "      Remove [Del]"
-        Me.cmdRemove.UseVisualStyleBackColor = True
+        Me.cmdRemove.Text = "Remove [Del]"
+        Me.cmdRemove.UseVisualStyleBackColor = False
         '
         'cmdCancel
         '
         Me.cmdCancel.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdCancel.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdCancel.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdCancel.Image = CType(resources.GetObject("cmdCancel.Image"), System.Drawing.Image)
         Me.cmdCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdCancel.Location = New System.Drawing.Point(3, 694)
+        Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdCancel.BackColor = System.Drawing.Color.FromArgb(255, 244, 242)
+        Me.cmdCancel.ForeColor = System.Drawing.Color.FromArgb(150, 35, 35)
+        Me.cmdCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdCancel.Name = "cmdCancel"
         Me.cmdCancel.Size = New System.Drawing.Size(111, 33)
         Me.cmdCancel.TabIndex = 22
-        Me.cmdCancel.Text = " Cancel [F9]"
-        Me.cmdCancel.UseVisualStyleBackColor = True
+        Me.cmdCancel.Text = "Cancel [F9]"
+        Me.cmdCancel.UseVisualStyleBackColor = False
         '
         'cmdClose
         '
         Me.cmdClose.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdClose.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdClose.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdClose.Image = CType(resources.GetObject("cmdClose.Image"), System.Drawing.Image)
         Me.cmdClose.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdClose.Location = New System.Drawing.Point(3, 727)
+        Me.cmdClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdClose.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdClose.BackColor = System.Drawing.Color.White
+        Me.cmdClose.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.cmdClose.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdClose.Name = "cmdClose"
         Me.cmdClose.Size = New System.Drawing.Size(111, 33)
         Me.cmdClose.TabIndex = 23
-        Me.cmdClose.Text = "   Close [Esc]"
-        Me.cmdClose.UseVisualStyleBackColor = True
+        Me.cmdClose.Text = "Close [Esc]"
+        Me.cmdClose.UseVisualStyleBackColor = False
         '
         'cmdSelect
         '
         Me.cmdSelect.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdSelect.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.cmdSelect.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdSelect.Image = CType(resources.GetObject("cmdSelect.Image"), System.Drawing.Image)
         Me.cmdSelect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdSelect.Location = New System.Drawing.Point(3, 3)
+        Me.cmdSelect.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdSelect.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
+        Me.cmdSelect.BackColor = System.Drawing.Color.White
+        Me.cmdSelect.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
+        Me.cmdSelect.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdSelect.Name = "cmdSelect"
         Me.cmdSelect.Size = New System.Drawing.Size(111, 33)
         Me.cmdSelect.TabIndex = 10
         Me.cmdSelect.Text = "Select"
-        Me.cmdSelect.UseVisualStyleBackColor = True
+        Me.cmdSelect.UseVisualStyleBackColor = False
         '
         'txtBarcode
         '

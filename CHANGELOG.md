@@ -4,6 +4,119 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-16
 
+### Requested one-order HO renumber and reseed script
+
+- User reported the live commit; subsequent SELECT-only verification confirmed
+  WO 18879 and mapped lines/queue/approvals/history/order logs, no remaining old
+  references in the reviewed tables, 13 unchanged/enabled triggers, and current
+  identity/max 18879 with increment 1 (next allocation 18880 absent new activity).
+  Recorded evidence and historical-text/external-reference limits in the recovery
+  guide. The assistant did not execute the live renumber/reseed or create a test order.
+- Prepared Recovery/Renumber_HO_WO_18882_to_18879_And_Reseed.sql for personal SSMS
+  execution. Default rehearsal rolls back without reseeding; explicit commit
+  maps reviewed references from 18882 to 18879 and reseeds to 18879 in the same
+  transaction, making the next allocation 18880 if no intervening allocation occurs.
+- Removed the backup-path setting, backup-history/checksum requirement and
+  RESTORE VERIFYONLY from this one-order recovery file at the user's request.
+  Older recovery files are unchanged; no live SQL was executed for this revision.
+- Kept exact target verification, audited header/
+  line/identity checks, orphan/unknown-reference guards, trigger fingerprints,
+  full mapped-value verification and error rollback. Stops on later activity or
+  new posted links; preserves stock, amounts and unrelated reference domains.
+- Added usage instructions and 42 passing synthetic LocalDB checks at compatibility
+  100, including rollback after reseed and actual next ID/legacy @@IDENTITY.
+  No live recovery/reseed or restored-store write was performed by the assistant.
+  Offline SQL Server 2016 syntax validation, both Release/x86 builds and all 101
+  unit tests pass. The Debug store EXE configuration was preserved byte-for-byte.
+
+### Item-log migration compatibility and restored HO testing
+
+- Prepared Recovery/Deploy_HO_PO_DB_ItemLogLookup_LIVE.sql for personal SSMS
+  execution. It embeds the reviewed migration unchanged, selects HO_PO_DB,
+  commits only after migration safeguards pass,
+  and rolls back/rethrows SQL errors. Includes backup, maintenance, query-timeout
+  and cancellation instructions. File preparation does not deploy to live.
+  Offline SQL Server 2016 parsing reports zero errors in one batch; the embedded
+  migration matches the tested source and transaction/batch structure checks pass.
+- Removed the standalone file's explicit server-name, database-name and ambient
+  transaction checks at the user's request. Kept USE HO_PO_DB, migration guards,
+  transaction/rollback behavior and updater files unchanged. The operator must
+  verify the connection and begin without an existing transaction. No SQL ran.
+- The localhost HO_PO_DB restore retains compatibility level 100 on SQL Server
+  2016. Replaced only the optional index migration's three TRY_CONVERT integer
+  checks with TRY_CAST so its existing reference/timestamp safeguards run there.
+  No compatibility setting, trigger, numeric comparison or business rule changed.
+- Added an optional CompatibilityLevel=100/130 fixture parameter (default 130).
+  All 31 item-log checks pass at each level, including malformed/overflow
+  references, latest-value ties, rollback and unchanged legacy logging values.
+  Both Release/x86 solutions build; 101 unit tests and 71 updater checks pass.
+  The Debug store configuration was preserved byte-for-byte. Live SQL was not
+  accessed during this local test; restored-store results are recorded separately.
+- Committed IX_SOD_WO_ItemLogLookup on the explicitly authorized localhost MSI /
+  restored HO_PO_DB only, retaining compatibility 100. The 71.74-million-row
+  preflight/build took 654.371 seconds. Two unchanged lookup results improved
+  from 6,706.538/7,294.833 ms to 3.472/5.192 ms, with logical reads 806,300 to 5
+  each. All table trigger hashes matched. These are component timings, not app
+  save or live-store tests. See Database Components/Tests/HO_RESTORED_ITEMLOG_INDEX_RESULTS.md
+  for evidence, limits and remaining manual save/import verification.
+
+### Top action-button order
+
+- Placed Set Tax directly above Logout, making Logout the last button in the
+  top group. Updated Designer docking order/positions only; handlers, shortcuts,
+  tab indices and Set Tax visibility settings are unchanged. Extended the
+  existing lookup/button check to cover both shown and hidden Set Tax layouts.
+- Both Release/x86 builds, 101 unit tests, 204 lookup/button checks, 875 screen
+  checks and 28 Recall formatting checks pass. No live actions or SQL ran;
+  the Debug store configuration was preserved.
+
+### Price Level Selection readability
+
+- Enlarged the item heading/description, price-level grid and OK/Cancel buttons
+  in frmPriceLevel.Designer.vb. Added 11-point row text, bold right-aligned prices,
+  taller rows, clearer headers, alternate shading and blue selected rows.
+- Preserved the two column indices, price values/formats, read-only permissions,
+  tab order, DialogResults and keyboard routing. frmPriceLevel.vb is unchanged,
+  including top-row default selection, price loading, approval/password paths
+  and applying prices. No business-rule or other Price Level form changes.
+- Both Release/x86 solutions build; all 101 unit tests, 50 isolated Price Level
+  checks and 28 Recall formatting checks pass. Checked raw fractional prices,
+  existing numeric/currency formats, default selection, empty rows and geometry
+  at normal/simulated 125% scaling. Inspected a synthetic preview. No SQL, live
+  price application or password approval ran; Debug configuration was preserved.
+
+### Hide internal customer-search columns
+
+- Hid ID and Customer Type in both the Designer and the post-search visibility
+  settings. Customer search now shows only Account Number and Company; the
+  hidden columns, ordinal mappings and values remain available to selection,
+  pricing and tax logic. Updated the existing lookup visibility regression check.
+- Both Release/x86 solutions build; all 101 unit tests, 202 lookup checks and
+  28 Recall formatting checks pass. No live customer selection or SQL ran;
+  the Debug store configuration was preserved byte-for-byte.
+
+### Customer, Sales Rep and action-button design
+
+- Matched Customer and Sales Rep lookup layouts with larger search fields,
+  11-point grid text, 42-pixel minimum rows, clearer headers, wrapped names,
+  alternating shading and blue selected rows. Widened the name columns and
+  reduced the Sales Rep ID width. Both dialogs fit 1024x768 at simulated 125%.
+- Serialized column presentation in the Designer. Preserved all nine customer
+  properties/ordinals, existing visible/hidden fields, leading-zero accounts,
+  pricing/employee/tax data and selection handlers. Hidden Boolean fields remain
+  checkbox columns with Boolean False display defaults for blank cells. The
+  CustomText4 heading now reads Customer Type; its mapping/value is unchanged.
+- Standardized right-side button text/icon layout and border/font styling.
+  Emphasized Save in blue, related workflow actions in pale blue, and Remove/
+  Cancel in pale red. Preserved icon resources, dock order, bounds, enabled/
+  visibility rules, tab indices and shortcut hints; removed caption space padding.
+- Both Release/x86 solutions build; all 101 unit tests, 202 lookup-design checks,
+  875 small-screen checks and 28 Recall formatting checks pass. Inspected
+  synthetic-data renders. Search queries, pricing/tax selection logic and main
+  action handlers were not changed. No live search, customer selection or order
+  action ran; store configuration was preserved. Manual checks are documented
+  in UNIT_TEST_GUIDE.md.
+
 ### Layout for smaller store screens
 
 - Compacted Settings to a 984x660 client area without removing settings or

@@ -1,4 +1,5 @@
 # Owned disposable SQL only. Never connects to an existing store or reads its credentials.
+param([ValidateSet(100,130)][int]$CompatibilityLevel=130)
 $ErrorActionPreference='Stop'
 Add-Type -AssemblyName System.Data
 $repo=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
@@ -54,7 +55,7 @@ try{
     if($LASTEXITCODE -ne 0){throw 'LocalDB instance creation failed'};$created=$true
     $master=[Data.SqlClient.SqlConnection]::new("Server=(localdb)\$instance;Database=master;Integrated Security=True;Pooling=False");$master.Open()
     $cmd=$master.CreateCommand()
-    try{$cmd.CommandText="CREATE DATABASE [$dbName]; ALTER DATABASE [$dbName] SET COMPATIBILITY_LEVEL=130;";$null=$cmd.ExecuteNonQuery()}finally{$cmd.Dispose()}
+    try{$cmd.CommandText="CREATE DATABASE [$dbName]; ALTER DATABASE [$dbName] SET COMPATIBILITY_LEVEL=$CompatibilityLevel;";$null=$cmd.ExecuteNonQuery()}finally{$cmd.Dispose()}
     $connection=[Data.SqlClient.SqlConnection]::new("Server=(localdb)\$instance;Database=$dbName;Integrated Security=True;Pooling=False");$connection.Open()
     Sql 'SET LANGUAGE us_english; SET ANSI_NULLS ON; SET QUOTED_IDENTIFIER ON;'
     Reject {Sql $migration} 'explicit transaction is required' 'Standalone execution without an explicit transaction is rejected'
@@ -148,7 +149,7 @@ SELECT * INTO dbo.ExpectedLogs FROM dbo.SOD_Item_Logs;
         Sql 'DELETE dbo.SOD_Item_Logs;' $tx;Sql $migration $tx;Check ((Index-Count $tx) -eq 1) 'Empty compatible branch table is supported'
     }
     Check ((Index-Count) -eq 0 -and (Scalar 'SELECT COUNT_BIG(*) FROM dbo.SOD_Item_Logs;') -eq 100003) 'Guard and rollback tests leave original fixture data intact'
-    Write-Output "PASS: $checks item-log lookup checks; artifacts: $directory"
+    Write-Output "PASS: $checks item-log lookup checks at compatibility $CompatibilityLevel; artifacts: $directory"
 }finally{
     if($connection){$connection.Dispose()}
     if($master){try{

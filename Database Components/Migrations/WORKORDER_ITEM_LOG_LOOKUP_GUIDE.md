@@ -5,6 +5,13 @@
 rows, stock, prices, approvals, tax, queue rules or RMS identity values.
 It targets the slow previous-commitment read inside `trg_OrderEntry_ItemLogs`.
 
+The integer-reference safety checks use `TRY_CAST(ReferenceID AS int)` so SQL
+Server 2016 databases retaining compatibility level 100 can run them. The first
+restored HO test rejected the former `TRY_CONVERT` syntax at level 100 before
+creating an index. No compatibility-level change is needed. Invalid/overflow
+references and conflicting latest commitment values still stop deployment;
+the trigger's original numeric comparison remains unchanged.
+
 The reviewed columns are non-null `ItemID int`, `ReferenceID varchar(50)`,
 `NewCommitted int` and `[Date] datetime`. Other branch schemas stop for review.
 The index keys are `(ItemID, [Date] DESC)` with `ReferenceID, NewCommitted`
@@ -36,11 +43,28 @@ same item can still require additional reads; this is not a constant-time promis
    verify new/imported orders, editing, cancellation and queue processing in the
    restored branch. Confirm logging, commitments and RMS links before live rollout.
 
-No updated Work Order Entry EXE is required for the database index. No local or
-live store index has been installed by adding these repository files.
+No updated Work Order Entry EXE is required for the database index. Adding the
+repository files alone does not install an index. The October 16 authorized
+localhost HO restore test committed the index locally; no live installation
+was performed. See [the restored HO results](../Tests/HO_RESTORED_ITEMLOG_INDEX_RESULTS.md).
 
 ## Manual SSMS execution
 
+For the reviewed live HO target, use the complete standalone file
+[Deploy_HO_PO_DB_ItemLogLookup_LIVE.sql](../Recovery/Deploy_HO_PO_DB_ItemLogLookup_LIVE.sql).
+It embeds this migration with BEGIN TRANSACTION, COMMIT and TRY/CATCH rollback
+already included. At the user's request, the explicit server-name, database-name
+and existing-transaction checks were removed from this standalone file. Manually
+verify the connected server and use a connection without an open transaction;
+USE [HO_PO_DB] still selects the database. Migration data/schema guards remain.
+It commits when all safeguards pass; require the final COMMITTED result, not
+just CREATED/REUSED. Execute the entire file personally in SSMS during a backed-up
+maintenance window, with sufficient data/log/tempdb space and a query timeout
+of 1800 seconds. The local rehearsal took almost 11 minutes; live can differ.
+Do not import this standalone wrapper into the updater. Preparing the file is
+not evidence of live deployment; it has not been run on live by the assistant.
+
+For other reviewed targets or a rollback rehearsal, use the manual pattern below.
 Select the intended database explicitly. Keep all statements on the same SSMS
 connection. Unlike the older item-code migration, this migration requires an
 existing transaction and never commits or rolls back its caller's work.
@@ -110,6 +134,17 @@ item-log rows with no index in GSC_STORE_DB. One existing-order lookup took
 1,650 ms and then 918 ms. Those were SELECT-only component measurements, not
 whole-save timings. Synthetic before/after evidence is stored under ignored
 `TestResults/ItemLogLookup-*`; it does not establish live-store performance.
+
+For the October 16 compatibility adjustment, run the same disposable checks at
+both levels (the switch affects only the owned fixture):
+
+```powershell
+& '.\Database Components\Tests\ItemLogLookup_LocalDB_Test.ps1' -CompatibilityLevel 100
+& '.\Database Components\Tests\ItemLogLookup_LocalDB_Test.ps1' -CompatibilityLevel 130
+```
+
+All 31 checks passed at each level. The default remains 130. These fixtures do
+not execute RMS POS or prove complete restored-store or live-store save timing.
 
 On October 15, all 31 item-log checks passed. The unchanged lookup on a 100,003-row
 synthetic heap read 5,883 pages before indexing and 4 afterward. The final run took

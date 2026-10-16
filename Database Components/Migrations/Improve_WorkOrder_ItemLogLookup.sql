@@ -49,12 +49,14 @@ BEGIN
 
 -- An index can change which rows are visited. Do not conceal legacy conversion
 -- errors or choose a new result for TOP(1) where newest timestamps are tied.
-IF EXISTS(SELECT 1 FROM dbo.SOD_Item_Logs WHERE TRY_CONVERT(int,ReferenceID) IS NULL)
+-- TRY_CAST keeps these guards usable on SQL Server 2016 databases retaining
+-- compatibility level 100, without changing the database compatibility setting.
+IF EXISTS(SELECT 1 FROM dbo.SOD_Item_Logs WHERE TRY_CAST(ReferenceID AS int) IS NULL)
     THROW 53304, 'Non-integer/overflow item-log references need branch review. Existing rows were not changed.', 1;
 DECLARE @Ambiguous bit=0;
 ;WITH Ranked AS (
-    SELECT ItemID,TRY_CONVERT(int,ReferenceID) AS NumericReferenceID,NewCommitted,
-        DENSE_RANK() OVER(PARTITION BY ItemID,TRY_CONVERT(int,ReferenceID)
+    SELECT ItemID,TRY_CAST(ReferenceID AS int) AS NumericReferenceID,NewCommitted,
+        DENSE_RANK() OVER(PARTITION BY ItemID,TRY_CAST(ReferenceID AS int)
                           ORDER BY [Date] DESC) AS LatestRank
     FROM dbo.SOD_Item_Logs
 )

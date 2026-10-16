@@ -1,5 +1,11 @@
 # HO_PO_DB transaction 23266 recovery
 
+For the separate October 16 request to move **WO 18882 to 18879** and make the
+next Order allocation **18880**, use
+[the new one-order recovery guide](RENUMBER_HO_18882_TO_18879.md). Its standalone
+script combines renumber and reseed with a default rollback rehearsal. Do not
+use the older pair-renumber or separate 18870 reseed file for that request.
+
 For the separately requested **18870 -> 18869 / 18879 -> 18870** Order ID change,
 see [the manual renumber instructions](RENUMBER_HO_WORKORDERS.md) and its linked
 standalone script. It defaults to rollback, requires a current verified backup,

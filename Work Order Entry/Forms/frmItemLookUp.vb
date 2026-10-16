@@ -1,4 +1,4 @@
-Imports System.Data.SqlClient
+﻿Imports System.Data.SqlClient
 Imports System.Text.RegularExpressions
 Imports System.Threading
 
@@ -1774,19 +1774,9 @@ Public Class frmItemLookUp
 
             ' 6. Post-Save UI Notification & Forms
             If getEntryType() = 2 Then
-                Dim orderIdList As String = String.Join(", ", createdOrderIDs)
-
-                If createdOrderIDs.Count > 1 Then
-                    MessageBox.Show(
-                        "Successfully Saved into " & createdOrderIDs.Count & " Work Orders!" & vbCrLf & vbCrLf &
-                        "Generated Order IDs: " & orderIdList & vbCrLf &
-                        "(Max " & MaxItemsPerWorkOrder & " items per Work Order)",
-                        "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                Else
-                    MessageBox.Show(
-                        "Successfully Saved into Work Order #" & orderIdList & " !",
-                        "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
-                End If
+                Using confirmation As New frmOrderSaved(createdOrderIDs, False, MaxItemsPerWorkOrder)
+                    confirmation.ShowDialog(Me)
+                End Using
 
                 If useQueueing AndAlso StoreProcessingSettings.AllowOrderGrouping Then
                     For Each createdOrderID In createdOrderIDs
@@ -1794,8 +1784,6 @@ Public Class frmItemLookUp
                     Next
                 End If
 
-                ' Passes the exact string of all created order IDs (e.g., "1001, 1002, 1003") to prompWO
-                prompWO(orderIdList)
 
             ElseIf getEntryType() = 3 Then
                 Dim singleID As Integer = createdOrderIDs.FirstOrDefault()
@@ -1925,12 +1913,13 @@ Proceed:
                 CompleteShortageReductions()
 
                 If getEntryType() = 2 Then
-                    MessageBox.Show("Work Order Successfully Updated !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Using confirmation As New frmOrderSaved(New Integer() {orderid}, True, MaxItemsPerWorkOrder)
+                        confirmation.ShowDialog(Me)
+                    End Using
                     If UseQueueingForCurrentOrder() AndAlso
                        StoreProcessingSettings.AllowOrderGrouping Then
                         checkCustomerGroupWo(iCusID, orderid, "Update")
                     End If
-                    prompWO(orderid)
 
                 ElseIf getEntryType() = 3 Then
                     MessageBox.Show("Sales Quotation Successfully Updated !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
@@ -5354,65 +5343,6 @@ err_flag:
     '    frmInput.ShowDialog()
 
     'End Sub
-    Private Sub MyInputBox(ByVal Prompt As String, ByVal text As String, ByVal btntext As String)
-        Dim frmInput As New Form
-        frmInput.Owner = Me
-        frmInput.StartPosition = FormStartPosition.CenterScreen
-        frmInput.ShowIcon = False
-        frmInput.MaximizeBox = False
-        frmInput.MinimizeBox = False
-        frmInput.FormBorderStyle = FormBorderStyle.FixedSingle
-        frmInput.KeyPreview = True
-
-        ' 1. Expanded Form Sizes
-        Dim isMultiOrder As Boolean = text.Length > 8
-
-        If isMultiOrder Then
-            frmInput.Size = New Size(520, 240)
-            frmInput.MinimumSize = New Size(520, 240)
-        Else
-            frmInput.Size = New Size(420, 200)
-            frmInput.MinimumSize = New Size(420, 200)
-        End If
-
-        ' 2. Larger Label with Auto-Wrapping
-        Dim lbl As New Label()
-        lbl.Location = New Point(15, 15)
-        lbl.Width = frmInput.ClientSize.Width - 30
-        lbl.Height = If(isMultiOrder, 120, 90)
-        lbl.TextAlign = ContentAlignment.MiddleCenter
-        lbl.AutoSize = False
-
-        ' 3. Increased Font Sizes
-        If text.Length <= 6 Then
-            lbl.Font = New Font("Century Gothic", 42, FontStyle.Bold)
-        ElseIf text.Length <= 15 Then
-            lbl.Font = New Font("Century Gothic", 28, FontStyle.Bold)
-        Else
-            lbl.Font = New Font("Century Gothic", 20, FontStyle.Bold)
-        End If
-
-        lbl.Text = text
-        frmInput.Controls.Add(lbl)
-
-        ' 4. Properly Aligned Close Button
-        Dim btn As New Button()
-        btn.Text = btntext
-        btn.Width = 100
-        btn.Height = 35
-        btn.Font = New Font("Segoe UI", 10, FontStyle.Regular)
-        btn.Location = New Point(frmInput.ClientSize.Width - btn.Width - 15, frmInput.ClientSize.Height - btn.Height - 15)
-
-        AddHandler btn.Click, AddressOf inputclose
-        frmInput.Controls.Add(btn)
-
-        frmInput.ActiveControl = btn
-        frmInput.AcceptButton = btn
-        frmInput.Text = Prompt
-
-        frmInput.ShowDialog()
-    End Sub
-
     Sub inputclose(ByVal s As Object, ByVal e As EventArgs)
 
         DirectCast(DirectCast(s, Control).Parent, Form).Close()
@@ -5420,9 +5350,7 @@ err_flag:
     End Sub
 
 
-    Private Sub prompWO(ByVal orderid As String)
-        MyInputBox("Work Order Number", orderid, "Close")
-    End Sub
+
 
 
     Private Sub chkShowImage_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkShowImage.CheckedChanged

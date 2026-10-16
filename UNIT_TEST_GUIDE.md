@@ -1,9 +1,102 @@
 # Work Order Entry unit tests
 
+For the separately requested WO 18882 -> 18879 and next ID 18880 recovery, run
+`Database Components/Tests/HO_Renumber18882_LocalDB_Test.ps1`. Its 42 checks use
+only a GUID-owned synthetic LocalDB instance at compatibility 100, including
+default rollback, recovery failure after reseed, reference/trigger/source drift
+guards, preserved values and actual automatic allocation/legacy @@IDENTITY.
+Never run the production recovery script against a store as an automated test.
+Manual restore/live instructions are in
+`Database Components/Recovery/RENUMBER_HO_18882_TO_18879.md`.
+
+The prepared `Database Components/Recovery/Deploy_HO_PO_DB_ItemLogLookup_LIVE.sql`
+was checked offline with the SQL Server 2016 ScriptDom parser (zero syntax
+errors, one batch). Its embedded migration matches the separately tested source;
+one transaction wrapper and absence of GO separators were verified. This is
+static validation, not execution of the live deployment wrapper. Never run that
+target-specific file as an automated test against a store.
+
 These tests check small business rules without opening the application,
 connecting to DVO/GSC, or changing database records.
 
 ## What is tested
+
+### Price Level Selection presentation
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\PriceLevelLayout_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+```
+
+The 50 isolated Price Level checks instantiate frmPriceLevel without showing or
+loading it. They exercise the existing DisplayPrice and SelectTopPriceLevel
+methods with synthetic values, preserving labels/order, raw fractional prices,
+numeric/currency formats and first-row selection. They also verify fixed column
+indices, read-only behavior, existing tab/DialogResult/keyboard configuration,
+empty selection and fit within 1024x768 at normal/simulated 125% geometry.
+No SQL, OK/Enter price application, F9/password dialog or insertion runs.
+
+Manual check on the test installation:
+
+1. Open frmPriceLevel in the Designer. Verify larger item text, price-level
+   names, bold amounts, row spacing, selected row and OK/Cancel buttons.
+2. Use an existing test item/customer. Confirm the same levels and prices load,
+   with the same first-row selection, order and currency display as before.
+3. Check arrow navigation, Enter, OK, Cancel, Escape and the existing F9 password
+   route. Validate required approvals with the existing authorized test process;
+   the presentation test does not exercise password/approval behavior.
+4. Verify both inserting an item and changing an existing line's price retain
+   their original behavior, quantities, totals and approval requirements.
+5. Check long item names and the actual workstation resolution/scaling. The
+   item description retains its existing read-only multiline/scroll behavior.
+
+All pricing/approval code-behind remains unchanged; only the Designer differs.
+
+### Customer, Sales Rep and right-side button design
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\LookupDesign_UI_Test.ps1'
+& '.\Database Components\Tests\SmallScreenLayout_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+```
+
+The 204 lookup-design checks use synthetic typed DataTables without showing or
+loading the forms. They check repeated/empty binding, all customer property
+ordinals and hidden fields, Boolean/DBNull formatting, leading-zero accounts,
+unchanged price/employee/tax values, long names, selected IDs, sorting, visual
+column reordering, 125% geometry and main button dock/bounds/icons/shortcut hints.
+The existing column-presentation methods are safe to invoke after binding; the
+fixture never invokes SQL searches or customer/sales selection handlers.
+No business actions, login or store writes run; Debug configuration is checked.
+
+Manual checklist:
+
+1. Open frmCustomer, frmSalesRep and frmItemLookUp in the Designer. Confirm the
+   lookup styling/columns and right-side button colors match the runtime layout.
+2. On the test installation, press F8 and search by company/account as before.
+   Check long company names, leading-zero accounts and the selected row. Only
+   Account Number and Company should be visible, including after searching again.
+   ID and Customer Type remain hidden bound fields used by selection/pricing.
+3. Verify Down, grid arrows, Enter, double-click, OK, Cancel and Escape. Confirm
+   the intended customer is selected and existing pricing, tax exemptions,
+   approval requirements and Sales Rep assignment remain unchanged.
+4. Press F7 and repeat selection/search checks for Sales Reps, including WALK-IN.
+   The ID column is narrower and the Name column fills the remaining space.
+5. Confirm all right-side buttons retain their existing order, icons, visibility
+   and keyboard shortcuts. Save is blue, related workflow buttons pale blue,
+   Remove/Cancel pale red and lookup/Close buttons neutral. Check the dynamic
+   For Invoice count, including longer counts, on both supported screen sizes.
+   Set Tax should sit directly above Logout, which is last in the top group;
+   when Set Tax is disabled in Settings, Logout follows Check WO directly.
+
+Actual query matching, application focus and customer-selection side effects
+remain manual integration checks. The presentation revision changes neither
+query nor selection method bodies; only old fixed-width assignments moved from
+the code-behind to the Designer.
 
 ### Smaller store screens
 
@@ -368,6 +461,7 @@ The optional item-log performance migration has a separate disposable test:
 
 ```powershell
 & '.\Database Components\Tests\ItemLogLookup_LocalDB_Test.ps1'
+& '.\Database Components\Tests\ItemLogLookup_LocalDB_Test.ps1' -CompatibilityLevel 100
 ```
 
 It requires Windows PowerShell and LocalDB. It verifies the unchanged legacy

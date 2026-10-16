@@ -8,9 +8,8 @@
     End Sub
 
     Private Sub gridCustomerWidth()
+        ' Column widths are serialized in the Designer.
 
-        gridSalesRep.Columns(0).Width = 100
-        gridSalesRep.Columns(1).Width = 369
 
     End Sub
 

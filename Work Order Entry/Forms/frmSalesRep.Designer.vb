@@ -30,43 +30,53 @@ Partial Class frmSalesRep
         Me.cmdCancel = New System.Windows.Forms.Button()
         Me.txtSales = New System.Windows.Forms.TextBox()
         Me.gridSalesRep = New System.Windows.Forms.DataGridView()
+        Me.lookupID = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.lookupName = New System.Windows.Forms.DataGridViewTextBoxColumn()
+
         CType(Me.gridSalesRep, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(8, 9)
+        Me.Label1.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.Label1.Location = New System.Drawing.Point(12, 14)
         Me.Label1.Name = "Label1"
-        Me.Label1.Size = New System.Drawing.Size(107, 14)
+        Me.Label1.Size = New System.Drawing.Size(400, 20)
         Me.Label1.TabIndex = 9
         Me.Label1.Text = "Lookup Sales Rep:"
         '
         'cmdOk
         '
-        Me.cmdOk.Location = New System.Drawing.Point(377, 322)
+        Me.cmdOk.Location = New System.Drawing.Point(572, 426)
+        Me.cmdOk.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.cmdOk.BackColor = System.Drawing.Color.FromArgb(37, 99, 160)
+        Me.cmdOk.ForeColor = System.Drawing.Color.White
         Me.cmdOk.Name = "cmdOk"
-        Me.cmdOk.Size = New System.Drawing.Size(69, 30)
+        Me.cmdOk.Size = New System.Drawing.Size(92, 32)
         Me.cmdOk.TabIndex = 8
         Me.cmdOk.Text = "OK"
-        Me.cmdOk.UseVisualStyleBackColor = True
+        Me.cmdOk.UseVisualStyleBackColor = False
         '
         'cmdCancel
         '
-        Me.cmdCancel.Location = New System.Drawing.Point(452, 322)
+        Me.cmdCancel.Location = New System.Drawing.Point(676, 426)
+        Me.cmdCancel.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdCancel.BackColor = System.Drawing.Color.White
+        Me.cmdCancel.ForeColor = System.Drawing.SystemColors.ControlText
         Me.cmdCancel.Name = "cmdCancel"
-        Me.cmdCancel.Size = New System.Drawing.Size(69, 30)
+        Me.cmdCancel.Size = New System.Drawing.Size(92, 32)
         Me.cmdCancel.TabIndex = 7
         Me.cmdCancel.Text = "Cancel"
-        Me.cmdCancel.UseVisualStyleBackColor = True
+        Me.cmdCancel.UseVisualStyleBackColor = False
         '
         'txtSales
         '
-        Me.txtSales.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.txtSales.Location = New System.Drawing.Point(8, 25)
+        Me.txtSales.Font = New System.Drawing.Font("Tahoma", 11.0!, System.Drawing.FontStyle.Regular)
+        Me.txtSales.Location = New System.Drawing.Point(12, 40)
+        Me.txtSales.BackColor = System.Drawing.Color.FromArgb(245, 249, 255)
         Me.txtSales.Name = "txtSales"
-        Me.txtSales.Size = New System.Drawing.Size(510, 22)
+        Me.txtSales.Size = New System.Drawing.Size(756, 26)
         Me.txtSales.TabIndex = 5
         '
         'gridSalesRep
@@ -74,37 +84,60 @@ Partial Class frmSalesRep
         Me.gridSalesRep.AllowUserToAddRows = False
         Me.gridSalesRep.AllowUserToDeleteRows = False
         Me.gridSalesRep.AllowUserToOrderColumns = True
-        DataGridViewCellStyle1.BackColor = System.Drawing.Color.Lavender
+        DataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(245, 247, 250)
         Me.gridSalesRep.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
         DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control
-        DataGridViewCellStyle2.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(232, 238, 246)
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
         DataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText
         DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
         DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
         DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.gridSalesRep.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle2
-        Me.gridSalesRep.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
+        Me.gridSalesRep.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
         DataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Window
-        DataGridViewCellStyle3.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        DataGridViewCellStyle3.Font = New System.Drawing.Font("Tahoma", 11.0!, System.Drawing.FontStyle.Regular)
         DataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText
-        DataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText
-        DataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        DataGridViewCellStyle3.SelectionBackColor = System.Drawing.Color.FromArgb(37, 99, 160)
+        DataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.White
+        DataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.gridSalesRep.DefaultCellStyle = DataGridViewCellStyle3
-        Me.gridSalesRep.Location = New System.Drawing.Point(9, 52)
+        Me.gridSalesRep.Location = New System.Drawing.Point(12, 80)
+        Me.gridSalesRep.ColumnHeadersHeight = 36
+        Me.gridSalesRep.EnableHeadersVisualStyles = False
+        Me.gridSalesRep.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders
+        Me.gridSalesRep.RowTemplate.Height = 42
+        Me.gridSalesRep.RowTemplate.MinimumHeight = 42
+        Me.gridSalesRep.BackgroundColor = System.Drawing.Color.White
+        Me.gridSalesRep.GridColor = System.Drawing.Color.FromArgb(215, 223, 233)
+        Me.gridSalesRep.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.gridSalesRep.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.lookupID, Me.lookupName})
         Me.gridSalesRep.Name = "gridSalesRep"
         Me.gridSalesRep.ReadOnly = True
         Me.gridSalesRep.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.gridSalesRep.Size = New System.Drawing.Size(512, 264)
+        Me.gridSalesRep.Size = New System.Drawing.Size(756, 332)
         Me.gridSalesRep.TabIndex = 6
         '
         'frmSalesRep
         '
+        Me.lookupID.Name = "lookupID"
+        Me.lookupID.DataPropertyName = "ID"
+        Me.lookupID.HeaderText = "ID"
+        Me.lookupID.ReadOnly = True
+        Me.lookupID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.lookupID.MinimumWidth = 75
+        Me.lookupID.Width = 75
+        Me.lookupName.Name = "lookupName"
+        Me.lookupName.DataPropertyName = "Name"
+        Me.lookupName.HeaderText = "Name"
+        Me.lookupName.ReadOnly = True
+        Me.lookupName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
+        Me.lookupName.MinimumWidth = 400
+        Me.lookupName.Width = 400
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(530, 358)
+        Me.ClientSize = New System.Drawing.Size(780, 470)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.cmdOk)
         Me.Controls.Add(Me.cmdCancel)
@@ -121,6 +154,8 @@ Partial Class frmSalesRep
         Me.PerformLayout()
 
     End Sub
+    Friend WithEvents lookupID As System.Windows.Forms.DataGridViewTextBoxColumn
+    Friend WithEvents lookupName As System.Windows.Forms.DataGridViewTextBoxColumn
     Friend WithEvents Label1 As System.Windows.Forms.Label
     Friend WithEvents cmdOk As System.Windows.Forms.Button
     Friend WithEvents cmdCancel As System.Windows.Forms.Button
