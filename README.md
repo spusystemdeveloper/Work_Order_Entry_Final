@@ -1,4 +1,4 @@
-# Work Order Entry V8
+# Work Order Entry V8 (Auto Split order)
 
 VB.NET RMS add-ins for Work Order Entry and Order Processing Queueing.
 
