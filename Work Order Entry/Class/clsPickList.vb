@@ -46,7 +46,7 @@
             End Using
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message, "MESSAGE : ERROR 0016", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show(ex.Message, "MESSAGE : ERROR 0016", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -63,7 +63,7 @@
             End Using
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message, "MESSAGE : ERROR 0016", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show(ex.Message, "MESSAGE : ERROR 0016", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try

@@ -32,7 +32,7 @@ Module MySQL_DAL
         Try
             mysql_con = New MySqlConnection(mysql_database_connection)
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
     End Sub
 
@@ -61,7 +61,7 @@ Module MySQL_DAL
             mysql_con.Close()
             Return mysql_dt
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
             Return Nothing
         End Try
     End Function
@@ -84,7 +84,7 @@ Module MySQL_DAL
             Return result
         Catch ex As Exception
             Return Nothing
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
     End Function
 

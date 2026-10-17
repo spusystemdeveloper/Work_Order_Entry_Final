@@ -15,7 +15,7 @@ Namespace My
                                              "(Click 'Yes' to continue, or 'No' to close safely)"
 
                 Dim result As Windows.Forms.DialogResult =
-                    Windows.Forms.MessageBox.Show(errorMessage,
+                    AppPrompt.Show(errorMessage,
                                                  "Work Order Entry - Unexpected Error Intercepted",
                                                  Windows.Forms.MessageBoxButtons.YesNo,
                                                  Windows.Forms.MessageBoxIcon.Warning)

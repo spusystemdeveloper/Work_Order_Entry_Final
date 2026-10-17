@@ -7,7 +7,7 @@
             txtCompany.Focus()
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -27,7 +27,7 @@
             gridCustomer.Columns(8).Visible = False
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -98,7 +98,7 @@
             Me.Close()
             frmItemLookUp.txtSearch.Focus()
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -119,7 +119,7 @@
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -137,7 +137,7 @@
                 Me.Dispose()
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -150,7 +150,7 @@
 
             GetCustomerInfo(iRowCust)
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -162,7 +162,7 @@
         Try
             GetCustomerInfo(iRowCust)
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -179,7 +179,7 @@
 
             iRowCust = clsItemLookUp.RowIndex(gridCustomer)
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0008", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0008", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -192,7 +192,7 @@
         Try
             CallIndex()
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -204,7 +204,7 @@
         Try
             CallIndex()
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -225,7 +225,7 @@
 
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 

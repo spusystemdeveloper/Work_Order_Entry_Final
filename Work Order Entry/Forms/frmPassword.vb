@@ -33,7 +33,7 @@
 
         Else
             Me.DialogResult = Windows.Forms.DialogResult.Cancel
-            MsgBox("Invalid Password!", vbCritical, "Error")
+            AppPrompt.MsgBox("Invalid Password!", vbCritical, "Error")
             ispriceApproved = 2
         End If
     End Sub

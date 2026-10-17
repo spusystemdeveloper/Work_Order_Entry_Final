@@ -73,7 +73,7 @@ Public Class frmSettings
 
         If Not IsNumeric(txtLimit.Text) Then
             iErr = iErr + 1
-            MsgBox("Please input a valid number!", vbCritical, "Error")
+            AppPrompt.MsgBox("Please input a valid number!", vbCritical, "Error")
         End If
 
         'If chkDisableWhse.Checked = True Then
@@ -85,7 +85,7 @@ Public Class frmSettings
         If iErr = 0 Then
             'clsItemLookUp.uptSettings(txtLimit.Text, txtPassword.Text, cmbLevel.Text, iStoreID, chkPriceChange.Checked)
             clsItemLookUp.uptSettings(txtLimit.Text, cmbLevel.Text, iStoreID, 0)
-            MsgBox("Settings successfully updated!", vbInformation, "Message")
+            AppPrompt.MsgBox("Settings successfully updated!", vbInformation, "Message")
             Me.Close()
         End If
 
@@ -103,18 +103,18 @@ Public Class frmSettings
 
         If txtPassword.Text <> txtConfirmP.Text Then
             iErr = iErr + 1
-            MsgBox("Password did not match!", vbCritical, "Error")
+            AppPrompt.MsgBox("Password did not match!", vbCritical, "Error")
         End If
 
         If txtPassword.Text = String.Empty Then
             iErr = iErr + 1
-            MsgBox("Please input a password!", vbCritical, "Error")
+            AppPrompt.MsgBox("Please input a password!", vbCritical, "Error")
         End If
 
         If iErr = 0 Then
             'clsItemLookUp.uptSettings(txtLimit.Text, txtPassword.Text, cmbLevel.Text, iStoreID, chkPriceChange.Checked)
             clsItemLookUp.uptPass(txtPassword.Text)
-            MsgBox("Settings successfully updated!", vbInformation, "Message")
+            AppPrompt.MsgBox("Settings successfully updated!", vbInformation, "Message")
             Me.Close()
         End If
 
@@ -131,18 +131,18 @@ Public Class frmSettings
 
         If txtPassword2.Text <> txtConfirmP2.Text Then
             iErr = iErr + 1
-            MsgBox("Password did not match!", vbCritical, "Error")
+            AppPrompt.MsgBox("Password did not match!", vbCritical, "Error")
         End If
 
         If txtPassword2.Text = String.Empty Then
             iErr = iErr + 1
-            MsgBox("Please input a password!", vbCritical, "Error")
+            AppPrompt.MsgBox("Please input a password!", vbCritical, "Error")
         End If
 
         If iErr = 0 Then
             'clsItemLookUp.uptSettings(txtLimit.Text, txtPassword.Text, cmbLevel.Text, iStoreID, chkPriceChange.Checked)
             clsItemLookUp.uptPass2(txtPassword2.Text)
-            MsgBox("Settings successfully updated!", vbInformation, "Message")
+            AppPrompt.MsgBox("Settings successfully updated!", vbInformation, "Message")
             Me.Close()
         End If
 
@@ -160,18 +160,18 @@ Public Class frmSettings
 
         If txtPassword3.Text <> txtConfirmP3.Text Then
             iErr = iErr + 1
-            MsgBox("Password did not match!", vbCritical, "Error")
+            AppPrompt.MsgBox("Password did not match!", vbCritical, "Error")
         End If
 
         If txtPassword3.Text = String.Empty Then
             iErr = iErr + 1
-            MsgBox("Please input a password!", vbCritical, "Error")
+            AppPrompt.MsgBox("Please input a password!", vbCritical, "Error")
         End If
 
         If iErr = 0 Then
             'clsItemLookUp.uptSettings(txtLimit.Text, txtPassword.Text, cmbLevel.Text, iStoreID, chkPriceChange.Checked)
             clsItemLookUp.uptPass3(txtPassword3.Text)
-            MsgBox("Settings successfully updated!", vbInformation, "Message")
+            AppPrompt.MsgBox("Settings successfully updated!", vbInformation, "Message")
             Me.Close()
         End If
 
@@ -202,7 +202,7 @@ Public Class frmSettings
 
         If Not chkAllowBranchSelection.Checked AndAlso
            String.IsNullOrWhiteSpace(expectedDatabaseName) Then
-            MessageBox.Show(
+            AppPrompt.Show(
                 "Enter the assigned database when branch selection is disabled.",
                 "Assigned Database Required",
                 MessageBoxButtons.OK,
@@ -229,21 +229,21 @@ Public Class frmSettings
                 chkEnableSetTaxButton.Checked)
             StoreProcessingSettings.SaveOrderToolsVisibility(
                 chkShowOrderActions.Checked, chkShowOrderNotifications.Checked)
-            MessageBox.Show(
+            AppPrompt.Show(
                 "Branch settings were saved." & vbCrLf &
                 "Restart the application to apply branch selection changes.",
                 "Branch Settings",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information)
         Catch ex As UnauthorizedAccessException
-            MessageBox.Show(
+            AppPrompt.Show(
                 "Windows did not allow this application to update its configuration file." &
                 vbCrLf & "Run the application with permission to modify its installation folder.",
                 "Unable to Save Branch Settings",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error)
         Catch ex As Exception
-            MessageBox.Show(
+            AppPrompt.Show(
                 "Unable to save branch function visibility." & vbCrLf & ex.Message,
                 "Unable to Save Branch Settings",
                 MessageBoxButtons.OK,
@@ -275,7 +275,7 @@ Public Class frmSettings
 
     Private Sub cmdAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdAdd.Click
         If txtCustType.Text = "" Then
-            MsgBox("Please input Customer type", vbExclamation, "Message")
+            AppPrompt.MsgBox("Please input Customer type", vbExclamation, "Message")
             Exit Sub
         End If
 
@@ -296,7 +296,7 @@ Public Class frmSettings
         If check = 0 Then
             clsCustomer.AddCustType(txtCustType.Text, cmbPriceBound.Text, cmbPricePass.Text)
         Else
-            MsgBox("Customer Type already exists!", MsgBoxStyle.Exclamation, "Message")
+            AppPrompt.MsgBox("Customer Type already exists!", MsgBoxStyle.Exclamation, "Message")
         End If
 
         LoadCustType()
@@ -318,7 +318,7 @@ Public Class frmSettings
                 If check = 0 Then
                     GoTo addcustype
                 Else
-                    MsgBox("Customer Type already exists!", MsgBoxStyle.Exclamation, "Message")
+                    AppPrompt.MsgBox("Customer Type already exists!", MsgBoxStyle.Exclamation, "Message")
                     Exit Sub
                 End If
             Else

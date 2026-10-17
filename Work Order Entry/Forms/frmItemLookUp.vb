@@ -69,7 +69,7 @@ Public Class frmItemLookUp
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -84,10 +84,10 @@ Public Class frmItemLookUp
 
 
                 If txtSearch.Text = String.Empty Then
-                    MessageBox.Show("Search cannot be empty !", "Message !", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    AppPrompt.Show("Search cannot be empty !", "Message !", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 ElseIf txtSearch.Text.Contains("'") Then
 
-                    MessageBox.Show("Searching ' or Apostrophe is not Allowed !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    AppPrompt.Show("Searching ' or Apostrophe is not Allowed !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
 
                 Else
 
@@ -110,7 +110,7 @@ Public Class frmItemLookUp
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -167,7 +167,7 @@ Public Class frmItemLookUp
             RebuildFilterTextFromTree()
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -195,7 +195,7 @@ Public Class frmItemLookUp
 
             If gridItem.RowCount = 0 Then
                 If suppressNoItemsMessage = False Then
-                    MessageBox.Show("No Items Found!", "Message Error !", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    AppPrompt.Show("No Items Found!", "Message Error !", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End If
 
                 If RemoveLastSearchNode() Then
@@ -221,7 +221,7 @@ Public Class frmItemLookUp
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
 
         End Try
@@ -279,7 +279,7 @@ Public Class frmItemLookUp
         End Using
         If failure IsNot Nothing Then
             ' Retain load_data's existing database-failure behavior on the UI thread.
-            MessageBox.Show(failure.Message & " Please Check Database !")
+            AppPrompt.Show(failure.Message & " Please Check Database !")
             Application.Exit()
             Return Nothing
         End If
@@ -293,7 +293,7 @@ Public Class frmItemLookUp
 
             If gridItem.RowCount = 0 Then
 
-                MessageBox.Show("No Items Found!", "Message Error !", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                AppPrompt.Show("No Items Found!", "Message Error !", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 RemoveLastSearchNode()
                 If TreeView1.Nodes.Count = 0 Then
                     gridItem.DataSource = getItem()
@@ -304,7 +304,7 @@ Public Class frmItemLookUp
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -628,7 +628,7 @@ Public Class frmItemLookUp
             End With
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf &
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf &
                         "REASON : " & ex.Message,
                         "MESSAGE : ERROR 0006",
                         MessageBoxButtons.OK,
@@ -770,13 +770,13 @@ Public Class frmItemLookUp
 
                     End Try
                 Else
-                    MessageBox.Show("Please Clear the search box before removing the last searched keyword", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    AppPrompt.Show("Please Clear the search box before removing the last searched keyword", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 End If
 
 
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -920,7 +920,7 @@ Public Class frmItemLookUp
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount += 1
         End Try
     End Sub
@@ -933,14 +933,14 @@ Public Class frmItemLookUp
             End If
 
             If iCusID = 0 Then
-                MsgBox("Please select customer first!", vbExclamation, "Message")
+                AppPrompt.MsgBox("Please select customer first!", vbExclamation, "Message")
                 frmCustomer.Show()
             Else
                 SelectPrice()
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -970,14 +970,14 @@ Public Class frmItemLookUp
                 availVal = clsItemLookUp.getItemQty(sItemCode)
 
                 If availVal < 1 And chkWorkOrder.Checked = True Then
-                    iReturnValue = MsgBox("This item is out of stock.", vbExclamation, "Message!")
+                    iReturnValue = AppPrompt.MsgBox("This item is out of stock.", vbExclamation, "Message!")
                 Else
                     Try
                         bInsert = True
                         Dim result = frmPriceLevel.ShowDialog(Me)
                         If result = Windows.Forms.DialogResult.OK Then
                             If gridSelectItem.RowCount > 6 Then
-                                If MsgBox("The number of items selected exceeds the maximum allowable entries for each transaction, Continue?" & vbNewLine & vbNewLine & "Note: Some Items will not be printed in the invoice.", vbYesNo + vbExclamation, "Warning") = vbNo Then
+                                If AppPrompt.MsgBox("The number of items selected exceeds the maximum allowable entries for each transaction, Continue?" & vbNewLine & vbNewLine & "Note: Some Items will not be printed in the invoice.", vbYesNo + vbExclamation, "Warning") = vbNo Then
                                     gridSelectItem.Rows.Remove(gridSelectItem.CurrentRow)
                                     lblStatItemSelected.Text = gridSelectItem.RowCount & " items selected" & IIf(gridSelectItem.RowCount > 1, "s", "")
                                 End If
@@ -986,7 +986,7 @@ Public Class frmItemLookUp
                             gridSelectItem.BeginEdit(True)
                         End If
                     Catch ex As Exception
-                        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
                         ErrorCount = ErrorCount + 1
                     End Try
                 End If
@@ -996,7 +996,7 @@ Public Class frmItemLookUp
                 frmPriceLevel.ShowDialog()
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
     End Sub
@@ -1012,18 +1012,24 @@ Public Class frmItemLookUp
             iRow = clsItemLookUp.RowIndex(gridItem)
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
     End Sub
+
+    Private Function ConfirmAction(question As String, caption As String) As MsgBoxResult
+        Using confirmation As New frmActionConfirmation(question, caption)
+            Return CType(confirmation.ShowDialog(Me), MsgBoxResult)
+        End Using
+    End Function
 
     Private Sub removeItems()
 
         Try
             Dim iReturnValue As Integer
 
-            iReturnValue = MsgBox("Do you want to remove this item?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
+            iReturnValue = ConfirmAction("Do you want to remove this item?", "Remove item")
             If iReturnValue = MsgBoxResult.Yes Then
                 If Not gridSelectItem.CurrentRow.IsNewRow Then
                     delitems.Add(gridSelectItem.Item(16, gridSelectItem.CurrentCell.RowIndex).Value)
@@ -1051,7 +1057,7 @@ Public Class frmItemLookUp
                 UpdateAmt()
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0012", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0012", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -1082,9 +1088,9 @@ Public Class frmItemLookUp
                             End If
                         Case "Convert to a work order"
                             convertToWorkOrder()
-                            MessageBox.Show("Converted To Work Order! ", "Recall", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                            AppPrompt.Show("Converted To Work Order! ", "Recall", MessageBoxButtons.OK, MessageBoxIcon.Information)
                         Case Else
-                            MessageBox.Show("Option not implemented: " & selectionForm.SelectedOption, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                            AppPrompt.Show("Option not implemented: " & selectionForm.SelectedOption, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
                     End Select
                 End If
             Else
@@ -1096,7 +1102,7 @@ Public Class frmItemLookUp
         Catch ex As OrderEditConflictException
             ShowOrderConflict(ex)
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0013", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0013", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -1136,7 +1142,7 @@ Public Class frmItemLookUp
                         Dim qtyValue As Object = row.Cells(2).Value
                         If qtyValue IsNot Nothing AndAlso IsNumeric(qtyValue) Then
                             If Convert.ToDecimal(qtyValue) <= 0 Then
-                                MessageBox.Show("Quantity must be greater than zero. Please correct the item before proceeding.", "Validation Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                                AppPrompt.Show("Quantity must be greater than zero. Please correct the item before proceeding.", "Validation Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                                 gridSelectItem.CurrentCell = row.Cells(2)
                                 gridSelectItem.BeginEdit(True)
                                 Return OrderSaveOutcome.ValidationFailed
@@ -1163,7 +1169,7 @@ Public Class frmItemLookUp
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0014", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0014", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount += 1
             Return OrderSaveOutcome.Failed
         End Try
@@ -1233,7 +1239,7 @@ Public Class frmItemLookUp
     Private Sub RecoverDraftIfAvailable()
         If clsWorkOrderDraft.HasDraft(usrRegister, usrUsername) Then
             Dim msg As String = "Recover unsaved draft?" & vbCrLf & clsWorkOrderDraft.GetDraftSummary(usrRegister, usrUsername)
-            If MessageBox.Show(msg, "Draft Found", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
+            If AppPrompt.Show(msg, "Draft Found", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
                 BeginDraftRestore()
                 Try
                     clsWorkOrderDraft.LoadDraft(Me)
@@ -1557,19 +1563,19 @@ Public Class frmItemLookUp
         Try
             ' 1. Input Validation
             If String.IsNullOrWhiteSpace(Me.txtSales.Text) Then
-                MessageBox.Show("Please select a Sales Representative", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Please select a Sales Representative", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 frmSalesRep.Show()
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf String.IsNullOrWhiteSpace(Me.cboPayment.Text) AndAlso getEntryType() = 2 Then
-                MessageBox.Show("Please select a Payment Method", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Please select a Payment Method", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 cboPayment.Focus()
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf String.IsNullOrWhiteSpace(Me.txtCustomer.Text) Then
-                MessageBox.Show("Please select a Customer", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Please select a Customer", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 frmCustomer.Show()
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf gridSelectItem.Rows.Count = 0 Then
-                MessageBox.Show("Please select Item to order", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Please select Item to order", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Return OrderSaveOutcome.ValidationFailed
             End If
 
@@ -1582,7 +1588,7 @@ Public Class frmItemLookUp
             .ToList()
 
             If duplicateItems.Any() AndAlso Not StoreProcessingSettings.AllowDuplicateItemEntry Then
-                Dim res As DialogResult = MessageBox.Show(
+                Dim res As DialogResult = AppPrompt.Show(
                 "There are Same Items in one Entry! Please Sum up the Qty Order!" & vbCrLf & vbCrLf &
                 "Duplicate Code(s): " & String.Join(", ", duplicateItems) & vbCrLf & vbCrLf &
                 "This might cause an issue in the future." & vbCrLf & vbCrLf &
@@ -1640,9 +1646,9 @@ Public Class frmItemLookUp
                     confirmMsg = preview.ToString()
                 End If
 
-                iReturnValue = MessageBox.Show(confirmMsg, "Message!", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                iReturnValue = AppPrompt.Show(confirmMsg, "Message!", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
             ElseIf getEntryType() = 3 Then
-                iReturnValue = MessageBox.Show("Do you want to save this entry as Sales Quotation ?", "Message!", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+                iReturnValue = AppPrompt.Show("Do you want to save this entry as Sales Quotation ?", "Message!", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
             End If
 
             If iReturnValue <> DialogResult.Yes Then Return OrderSaveOutcome.Cancelled
@@ -1788,9 +1794,9 @@ Public Class frmItemLookUp
             ElseIf getEntryType() = 3 Then
                 Dim singleID As Integer = createdOrderIDs.FirstOrDefault()
 
-                MessageBox.Show(
-                  "Successfully Saved into Sales Quotation #" & singleID & " !",
-                  "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Using confirmation As New frmOrderSaved(New Integer() {singleID}, False, MaxItemsPerWorkOrder, True)
+                    confirmation.ShowDialog(Me)
+                End Using
 
                 frmPrintWo.Type = "Sales Quotation"
                 frmPrintWo.wo = singleID
@@ -1839,7 +1845,7 @@ Public Class frmItemLookUp
 
                 Dim iReturnValue As Integer
 
-                iReturnValue = MsgBox("This Customer has a Current Open Work Order. Group the Orders?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
+                iReturnValue = AppPrompt.MsgBox("This Customer has a Current Open Work Order. Group the Orders?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
 
                 If iReturnValue = MsgBoxResult.Yes Then
                     frmCustomerOrders.custIDWo = custid
@@ -1851,7 +1857,7 @@ Public Class frmItemLookUp
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0016", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0016", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -1864,16 +1870,16 @@ Public Class frmItemLookUp
             Dim iReturnValue As Integer
 
             If Me.txtSales.Text = "" And getEntryType() = 2 Then
-                MsgBox("Please select sales representative", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select sales representative", vbExclamation, "Message!")
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf Me.txtCustomer.Text = "" And getEntryType() = 2 Then
-                MsgBox("Please select customer", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select customer", vbExclamation, "Message!")
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf Me.cboPayment.Text = "" And getEntryType() = 2 Then
-                MsgBox("Please select Payment Type", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select Payment Type", vbExclamation, "Message!")
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf gridSelectItem.Rows.Count = 0 Then
-                MsgBox("Please select item to order", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select item to order", vbExclamation, "Message!")
                 Return OrderSaveOutcome.ValidationFailed
             End If
 
@@ -1883,7 +1889,7 @@ Public Class frmItemLookUp
                         If y <> x AndAlso gridSelectItem.Rows(x).Cells(0).Value.ToString = gridSelectItem.Rows(y).Cells(0).Value.ToString Then
 
                             Dim res As Integer
-                            res = MsgBox("There is a same Item in one Entry! Please Sum up the Qty Order!" & vbCrLf & vbCrLf & "This might cause an issue in the feature." & vbCrLf & vbCrLf & "Do you wish to continue ?", MsgBoxStyle.YesNo + MsgBoxStyle.Exclamation, "Message!")
+                            res = AppPrompt.MsgBox("There is a same Item in one Entry! Please Sum up the Qty Order!" & vbCrLf & vbCrLf & "This might cause an issue in the feature." & vbCrLf & vbCrLf & "Do you wish to continue ?", MsgBoxStyle.YesNo + MsgBoxStyle.Exclamation, "Message!")
                             If res = MsgBoxResult.Yes Then
                                 GoTo Proceed
                             ElseIf res = MsgBoxResult.No Then
@@ -1896,7 +1902,7 @@ Public Class frmItemLookUp
 
 Proceed:
 
-            iReturnValue = MsgBox("Save changes?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
+            iReturnValue = ConfirmAction("Save changes?", "Confirm changes")
 
             If iReturnValue = MsgBoxResult.Yes Then
                 Dim orderComment As String = ""
@@ -1922,7 +1928,9 @@ Proceed:
                     End If
 
                 ElseIf getEntryType() = 3 Then
-                    MessageBox.Show("Sales Quotation Successfully Updated !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Using confirmation As New frmOrderSaved(New Integer() {orderid}, True, MaxItemsPerWorkOrder, True)
+                        confirmation.ShowDialog(Me)
+                    End Using
                     'frmPrintWo.wo = iOrderID
                     'frmPrintWo.ShowDialog()
                 End If
@@ -1947,11 +1955,11 @@ Proceed:
 
     Private Sub ShowSaveFailure(ex As Exception, committed As Boolean, errorTitle As String)
         If committed Then
-            MessageBox.Show("Order data was saved. A follow-up step could not finish." & vbCrLf &
+            AppPrompt.Show("Order data was saved. A follow-up step could not finish." & vbCrLf &
                             "Check the saved order before trying again." & vbCrLf & vbCrLf & ex.Message,
                             "Order Saved - Follow-up Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         Else
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message,
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message,
                             errorTitle, MessageBoxButtons.OK, MessageBoxIcon.Error)
         End If
     End Sub
@@ -2223,7 +2231,7 @@ Proceed:
 
         Catch ex As Exception
             ErrorCount += 1
-            MessageBox.Show("Unable to recalculate order totals." & vbCrLf & vbCrLf & ex.Message,
+            AppPrompt.Show("Unable to recalculate order totals." & vbCrLf & vbCrLf & ex.Message,
                             "Calculation Error",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Error)
@@ -2237,7 +2245,7 @@ Proceed:
         Try
             removeItems()
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0018", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0018", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -2254,7 +2262,7 @@ Proceed:
                 frmPassword.sType = "CancelOrder"
                 Dim pDialog As DialogResult = frmPassword.ShowDialog
                 If pDialog = Windows.Forms.DialogResult.Cancel Then
-                    MsgBox("Order was not cancelled!", vbExclamation, "Message")
+                    AppPrompt.MsgBox("Order was not cancelled!", vbExclamation, "Message")
                 Else
                     CancelOrder()
                 End If
@@ -2262,7 +2270,7 @@ Proceed:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0019", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0019", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -2271,23 +2279,23 @@ Proceed:
 
         Try
             Dim iMsg As Integer
-            iMsg = MsgBox("Do you want to cancel this order?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
+            iMsg = AppPrompt.MsgBox("Do you want to cancel this order?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
             If iMsg = MsgBoxResult.Yes Then
 
                 clsRecall.CancelOrder(Split(lblOrderNo.Text, ": ")(1), recalledSnapshot)
                 RefreshDetails(True)
                 clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
 
-                MsgBox("Order was cancelled successfully!", vbInformation, "Message")
+                AppPrompt.MsgBox("Order was cancelled successfully!", vbInformation, "Message")
 
             Else
-                MsgBox("Order was not cancelled!", vbExclamation, "Message")
+                AppPrompt.MsgBox("Order was not cancelled!", vbExclamation, "Message")
             End If
 
         Catch ex As OrderEditConflictException
             ShowOrderConflict(ex)
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0020", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0020", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -2325,14 +2333,14 @@ Proceed:
             Dim iReturnValue As Integer
 
             If gridSelectItem.RowCount > 0 Then
-                iReturnValue = MsgBox("Do you want to clear all selected items?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
+                iReturnValue = AppPrompt.MsgBox("Do you want to clear all selected items?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
                 If iReturnValue = MsgBoxResult.Yes Then
                     ResetSelectedItems()
                 End If
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0021", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0021", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -2347,7 +2355,7 @@ Proceed:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0022", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0022", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -2404,7 +2412,7 @@ Proceed:
                 txtSearch.Text = String.Empty
                 SearchItem()
             ElseIf e.KeyCode = Keys.Escape Then
-                If MsgBox("Do you really want To close Work/Sales Order Entry?", vbQuestion + vbYesNo, "Quit") = vbYes Then
+                If AppPrompt.MsgBox("Do you really want To close Work/Sales Order Entry?", vbQuestion + vbYesNo, "Quit") = vbYes Then
                     Me.Close()
                 End If
             ElseIf (e.KeyCode And Not Keys.Modifiers) = Keys.D1 AndAlso e.Modifiers = Keys.Control Then
@@ -2413,7 +2421,7 @@ Proceed:
                 gridSelectItem.Focus()
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 23", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 23", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -2460,7 +2468,7 @@ Proceed:
             RecoverDraftIfAvailable()
 
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : ERROR 0024", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : ERROR 0024", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -2487,7 +2495,7 @@ Proceed:
                        "(local RMS database)",
                        expectedDatabaseName)
 
-                Dim promptResult As DialogResult = MessageBox.Show(
+                Dim promptResult As DialogResult = AppPrompt.Show(
                     "This Work Order installation is configured for database " &
                     expectedText & "." & vbCrLf &
                     "The local RMS configuration points to " &
@@ -2512,7 +2520,7 @@ Proceed:
             Return True
 
         Catch ex As Exception
-            MessageBox.Show(
+            AppPrompt.Show(
                 "The locked branch database could not be loaded from the local RMS configuration." &
                 vbCrLf & vbCrLf & ex.Message,
                 "Branch Database Error",
@@ -2545,7 +2553,7 @@ Proceed:
             ' Update_Timer.Start()
             Cursor.Current = Cursors.Default
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 25", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 25", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
     End Sub
@@ -2645,14 +2653,14 @@ Proceed:
             End With
 
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 26", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 26", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
     End Sub
     Private Sub cmdClose_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdClose.Click
 
-        If MsgBox("Do you really want To close Work/Sales Order Entry?", vbQuestion + vbYesNo, "Quit") = vbYes Then
+        If AppPrompt.MsgBox("Do you really want To close Work/Sales Order Entry?", vbQuestion + vbYesNo, "Quit") = vbYes Then
             Me.Close()
         End If
 
@@ -2670,7 +2678,7 @@ Proceed:
             sItemName = gridItem.Item(1, gridItem.CurrentRow.Index).Value
 
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 27", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 27", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -2689,7 +2697,7 @@ Proceed:
             frmCheckStore.ShowDialog()
 
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 28", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 28", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -2700,7 +2708,7 @@ Proceed:
         Try
             ShowSalesRep()
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 29", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 29", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -2865,7 +2873,7 @@ Proceed:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("Error retrieving customer price level: " & ex.Message,
+            AppPrompt.Show("Error retrieving customer price level: " & ex.Message,
                         "Customer Lookup Error",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error)
@@ -2881,7 +2889,7 @@ Proceed:
 
     Private Sub ShowSalesRep()
         If isRecalledOrderLocked Then
-            MessageBox.Show(
+            AppPrompt.Show(
                 "The sales rep is locked for this recalled order.",
                 "Change Sales Rep",
                 MessageBoxButtons.OK,
@@ -2890,7 +2898,7 @@ Proceed:
         End If
 
         If isSalesRepLockedToCustomer Then
-            MessageBox.Show(
+            AppPrompt.Show(
                 "The sales rep is locked to this customer's assigned rep.",
                 "Change Sales Rep",
                 MessageBoxButtons.OK,
@@ -2904,7 +2912,7 @@ Proceed:
     Private Sub ShowCustomer()
         Try
             If isRecalledOrderLocked Then
-                MessageBox.Show(
+                AppPrompt.Show(
                     "The customer is locked for this recalled order.",
                     "Change Customer",
                     MessageBoxButtons.OK,
@@ -2919,7 +2927,7 @@ Proceed:
                     "Do you want to change the customer of this order?" & vbCrLf & vbCrLf &
                     "Each selected item's price must be confirmed again by double-clicking its row."
 
-                If MsgBox(prompt, vbQuestion + vbYesNo, "Change Customer") <> vbYes Then Exit Sub
+                If AppPrompt.MsgBox(prompt, vbQuestion + vbYesNo, "Change Customer") <> vbYes Then Exit Sub
             End If
 
             If frmCustomer.ShowDialog() <> DialogResult.OK Then Exit Sub
@@ -2934,7 +2942,7 @@ Proceed:
             bAllow = False
 
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 31", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 31", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -2966,7 +2974,7 @@ Proceed:
         Dim itemWord As String = If(unconfirmedCount = 1, "item", "items")
         Dim verb As String = If(unconfirmedCount = 1, "requires", "require")
 
-        MessageBox.Show(
+        AppPrompt.Show(
             "Customer changed. " & unconfirmedCount.ToString() & " " & itemWord &
             " " & verb & " price confirmation." & vbCrLf &
             "Double-click each highlighted item row and choose its new price." & vbCrLf &
@@ -3033,7 +3041,7 @@ Proceed:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 32", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 32", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -3048,7 +3056,7 @@ Proceed:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 33", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 33", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -3063,7 +3071,7 @@ Proceed:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 34", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 34", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -3074,10 +3082,10 @@ Proceed:
         Try
 
             If txtSearch.Text = String.Empty Then
-                MessageBox.Show("Search cannot be empty !", "Message !", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Search cannot be empty !", "Message !", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             ElseIf txtSearch.Text.Contains("'") Then
 
-                MessageBox.Show("Searching ' or Apostrophe is not Allowed !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Searching ' or Apostrophe is not Allowed !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             Else
                 FilterText()
                 txtSearch.Text = String.Empty
@@ -3085,7 +3093,7 @@ Proceed:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0035", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0035", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -3098,7 +3106,7 @@ Proceed:
             RefreshDetails(True)
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0036", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0036", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -3184,7 +3192,7 @@ Proceed:
 
             Cursor.Current = Cursors.Default
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0037", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0037", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -3370,7 +3378,7 @@ Proceed:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0041", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0041", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -3470,7 +3478,7 @@ Proceed:
             If gridSelectItem.RowCount <> 0 Then
 
                 If IsNumeric(gridSelectItem(2, gridSelectItem.CurrentRow.Index).Value) = False Then
-                    MsgBox("The string '" & gridSelectItem(2, gridSelectItem.CurrentRow.Index).Value & "' is not a valid quantity.", vbExclamation, "Work/Sales Oder Entry")
+                    AppPrompt.MsgBox("The string '" & gridSelectItem(2, gridSelectItem.CurrentRow.Index).Value & "' is not a valid quantity.", vbExclamation, "Work/Sales Oder Entry")
                     gridSelectItem.Item(2, gridSelectItem.CurrentRow.Index).Value = 1
                     iErrCnt = iErrCnt + 1
                 Else
@@ -3478,7 +3486,7 @@ Proceed:
                 End If
 
                 If Val(gridSelectItem(2, gridSelectItem.CurrentRow.Index).Value) < 0 Then
-                    MsgBox("An invalid quantity was detected.", vbCritical, "Work/Sales Order Entry")
+                    AppPrompt.MsgBox("An invalid quantity was detected.", vbCritical, "Work/Sales Order Entry")
                     gridSelectItem.Item(2, gridSelectItem.CurrentRow.Index).Value = 1
                     iErrCnt = iErrCnt + 1
                 Else
@@ -3486,7 +3494,7 @@ Proceed:
                 End If
 
                 If IsNumeric(gridSelectItem(3, gridSelectItem.CurrentRow.Index).Value) = False Then
-                    MsgBox("The string '" & gridSelectItem(2, gridSelectItem.CurrentRow.Index).Value & "' is not a valid currency.", vbExclamation, "Work/Sales Oder Entry")
+                    AppPrompt.MsgBox("The string '" & gridSelectItem(2, gridSelectItem.CurrentRow.Index).Value & "' is not a valid currency.", vbExclamation, "Work/Sales Oder Entry")
                     gridSelectItem(3, gridSelectItem.CurrentRow.Index).Value = dPrice
                     iErrCnt = iErrCnt + 1
                 Else
@@ -3509,9 +3517,9 @@ Proceed:
 
                         dNetAvailable = clsItemLookUp.getItemQty(sLineItemCode)
 
-                        MsgBox(dNetAvailable)
+                        AppPrompt.MsgBox(dNetAvailable)
                         If Val(gridSelectItem(2, n).Value) > dNetAvailable Then
-                            MsgBox("Insufficient Quantity!", vbExclamation, "Message")
+                            AppPrompt.MsgBox("Insufficient Quantity!", vbExclamation, "Message")
                             gridSelectItem(2, n).Value = 0
 
                         End If
@@ -3521,7 +3529,7 @@ Proceed:
 err_flag:
 
                     If iCurRow <> -1 Then
-                        iReturnValue = MsgBox("Insufficient quantity to fulfill the request.", vbExclamation, "Work/Sales Order Entry")
+                        iReturnValue = AppPrompt.MsgBox("Insufficient quantity to fulfill the request.", vbExclamation, "Work/Sales Order Entry")
                         gridSelectItem.Rows.Remove(gridSelectItem.CurrentRow)
                     End If
 
@@ -3539,7 +3547,7 @@ err_flag:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0039", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0039", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -3738,7 +3746,7 @@ err_flag:
                 If IsNumeric(gridSelectItem(3, i).Value) = False Then
                     gridSelectItem.Rows(i).Cells(3).Style.ForeColor = Color.Red
                     If gridSelectItem(3, i).Value = "-" Then
-                        Return MessageBox.Show("Please Check the Price for the Item : " & vbCrLf & vbCrLf & gridSelectItem(1, i).Value, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        Return AppPrompt.Show("Please Check the Price for the Item : " & vbCrLf & vbCrLf & gridSelectItem(1, i).Value, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     End If
                     sMsg = "The number '" & gridSelectItem(3, i).Value & "' is not a valid amount."
                     iErrCnt = iErrCnt + 1
@@ -3799,11 +3807,11 @@ err_flag:
             If sMsg = String.Empty Or sMsg = "" Then
                 Return Nothing
             Else
-                Return MessageBox.Show(sMsg, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                Return AppPrompt.Show(sMsg, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0042", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0042", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -3961,7 +3969,7 @@ err_flag:
                 If IsNumeric(gridSelectItem(3, i).Value) = False Then
                     gridSelectItem.Rows(i).Cells(3).Style.ForeColor = Color.Red
                     If gridSelectItem(3, i).Value = "-" Then
-                        Return MessageBox.Show("Please Check the Price for the Item : " & vbCrLf & vbCrLf & gridSelectItem(1, i).Value, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        Return AppPrompt.Show("Please Check the Price for the Item : " & vbCrLf & vbCrLf & gridSelectItem(1, i).Value, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     End If
                     sMsg = "The number '" & gridSelectItem(3, i).Value & "' is not a valid amount."
                     iErrCnt = iErrCnt + 1
@@ -4017,11 +4025,11 @@ err_flag:
             If String.IsNullOrEmpty(sMsg) Then
                 Return Nothing
             Else
-                Return MessageBox.Show(sMsg, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                Return AppPrompt.Show(sMsg, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0040", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0040", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -4042,7 +4050,7 @@ err_flag:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0041", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0041", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -4056,7 +4064,7 @@ err_flag:
             frmPriceLevel.ShowDialog()
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0042", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0042", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -4074,7 +4082,7 @@ err_flag:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0043", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0043", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -4096,7 +4104,7 @@ err_flag:
             EditPrice()
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0044", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0044", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -4113,7 +4121,7 @@ err_flag:
             frmLinqLevel.Show()
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0045", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0045", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -4121,7 +4129,7 @@ err_flag:
     Private Sub cmdImport_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdImport.Click
 
         If Not StoreProcessingSettings.ShowImportButton Then
-            MessageBox.Show("The Import function is disabled for this branch.",
+            AppPrompt.Show("The Import function is disabled for this branch.",
                             "Import",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information)
@@ -4190,7 +4198,7 @@ err_flag:
             iRow = 0
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0046", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0046", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -4265,14 +4273,14 @@ err_flag:
 
                     End Try
                 Else
-                    MessageBox.Show("Please Clear the search box before removing the last searched keyword", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    AppPrompt.Show("Please Clear the search box before removing the last searched keyword", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 End If
 
 
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0047", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0047", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -4316,7 +4324,7 @@ err_flag:
 
                         If qtyValue IsNot Nothing AndAlso IsNumeric(qtyValue) Then
                             If Convert.ToDecimal(qtyValue) = 0 Then
-                                MessageBox.Show("Quantity cannot be zero. Please correct the item before proceeding.", "Validation Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                                AppPrompt.Show("Quantity cannot be zero. Please correct the item before proceeding.", "Validation Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                                 gridSelectItem.CurrentCell = row.Cells(2)
                                 gridSelectItem.BeginEdit(True)
                                 row.Cells(2).Value = 1
@@ -4337,7 +4345,7 @@ err_flag:
 
                     If iErrCnt > 0 Then
 
-                        MsgBox("Insufficient quantity to fulfill the request!", MsgBoxStyle.Exclamation, "Message")
+                        AppPrompt.MsgBox("Insufficient quantity to fulfill the request!", MsgBoxStyle.Exclamation, "Message")
                         gridSelectItem.CurrentCell.Value = curQty
                         gridSelectItem.CurrentCell.Style.ForeColor = Color.Black
                         gridSelectItem.CurrentCell.Style.SelectionForeColor = Color.Black
@@ -4350,7 +4358,7 @@ err_flag:
                     iErrCnt = 0
                     ValidateAllQtyForQoute()
                     If iErrCnt > 0 Then
-                        MsgBox("Insufficient quantity to fulfill the request!", MsgBoxStyle.Exclamation, "Message")
+                        AppPrompt.MsgBox("Insufficient quantity to fulfill the request!", MsgBoxStyle.Exclamation, "Message")
                         'gridSelectItem.CurrentCell.Value = curQty
                         gridSelectItem.CurrentCell.Style.ForeColor = Color.Black
                         gridSelectItem.CurrentCell.Style.SelectionForeColor = Color.Black
@@ -4392,7 +4400,7 @@ err_flag:
                             Globalization.NumberStyles.AllowLeadingSign,
                             Globalization.CultureInfo.InvariantCulture,
                             parsedPrice) Then
-                        MessageBox.Show("Please enter a valid price (numeric, up to 2 decimal places).",
+                        AppPrompt.Show("Please enter a valid price (numeric, up to 2 decimal places).",
                         "Invalid Price", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                         gridSelectItem.Item(e.ColumnIndex, e.RowIndex).Value = curPrice
                         Return
@@ -4427,7 +4435,7 @@ err_flag:
                         End If
                     End If
                 Catch ex As Exception
-                    MessageBox.Show("Error processing price input: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    AppPrompt.Show("Error processing price input: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End Try
 
             End If
@@ -4440,7 +4448,7 @@ err_flag:
                 Dim preparedQty As Integer = Convert.ToInt32(gridSelectItem.Item(18, e.RowIndex).Value)
 
                 If preparedQty > orderedQty Then
-                    MessageBox.Show("Qty Prepared cannot be greater than the Ordered Qty", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    AppPrompt.Show("Qty Prepared cannot be greater than the Ordered Qty", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     gridSelectItem.Item(18, e.RowIndex).Value = 0
                 End If
             End If
@@ -4450,7 +4458,7 @@ err_flag:
 
 
         Catch ex As Exception
-            MessageBox.Show("You've entered an invalid input. Only numeric values are allowed.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            AppPrompt.Show("You've entered an invalid input. Only numeric values are allowed.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             gridSelectItem.CurrentCell.Value = curPrice
         End Try
     End Sub
@@ -4478,7 +4486,7 @@ err_flag:
             SearchItem()
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0049", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0049", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -4508,12 +4516,12 @@ err_flag:
                         frmRecall.LoadOrder(2)
                         frmRecall.ShowDialog()
                     Case Else
-                        MessageBox.Show("Option not implemented: " & selectionForm.SelectedOption, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        AppPrompt.Show("Option not implemented: " & selectionForm.SelectedOption, "Info", MessageBoxButtons.OK, MessageBoxIcon.Information)
                 End Select
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0050", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0050", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
     End Sub
@@ -4732,13 +4740,13 @@ err_flag:
                                          String.Join(vbCrLf & vbCrLf, shortageAlertList.ToArray()) & vbCrLf & vbCrLf &
                                          "Highlighted rows in the table indicate shortages." & vbCrLf &
                                          "Please coordinate with the picker or contact the customer."
-                MessageBox.Show(alertMsg, "Warehouse Shortage Notice", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                AppPrompt.Show(alertMsg, "Warehouse Shortage Notice", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End If
 
             AcknowledgeShortageAlert(orderid)
 
             If iOrderType = 3 Then
-                MessageBox.Show(
+                AppPrompt.Show(
                     "Sales Quotation # " & orderid & " has been recalled." & vbCrLf & vbCrLf &
                     "You may save changes or convert it to a Work Order.",
                     "Sales Quotation Recalled",
@@ -4749,13 +4757,19 @@ err_flag:
             ShowOrderConflict(ex)
         Catch ex As Exception
             recalledSnapshot = Nothing
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0051", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0051", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         Finally
             gridSelectItem.ResumeLayout()
             isLoadingRecalledOrder = False
         End Try
     End Sub
+    Private Sub ShowImportComplete()
+        Using confirmation As New frmImportComplete()
+            confirmation.ShowDialog(Me)
+        End Using
+    End Sub
+
     Private Sub ImportQuote()
 
         Try
@@ -4843,11 +4857,11 @@ err_flag:
 
             Cursor.Current = Cursors.Default
 
-            MessageBox.Show("Successfully Imported!" & vbCrLf & vbCrLf & "Please Check The Latest Quantity Available of Each Items Before Saving as Work Order.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            ShowImportComplete()
 
         Catch ex As Exception
 
-            MessageBox.Show("Import Error!" & vbCrLf & vbCrLf & ex.Message, "MESSAGE : ERROR 0052", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("Import Error!" & vbCrLf & vbCrLf & ex.Message, "MESSAGE : ERROR 0052", MessageBoxButtons.OK, MessageBoxIcon.Error)
 
         Finally
             gridSelectItem.ResumeLayout()
@@ -4868,10 +4882,10 @@ err_flag:
             gridSelectItem.AllowUserToAddRows = True
 
             If Me.txtSales.Text = "" Then
-                MsgBox("Please select sales representative", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select sales representative", vbExclamation, "Message!")
                 Exit Sub
             ElseIf Me.txtCustomer.Text = "" Then
-                MsgBox("Please select customer", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select customer", vbExclamation, "Message!")
                 Exit Sub
             End If
 
@@ -4930,13 +4944,13 @@ err_flag:
             Dim res As Integer = clsImport.checkIfItemCodeExist()
             If res = 0 Then
 
-                MessageBox.Show("Successfully Imported!" & vbCrLf & vbCrLf & "Please Check The Latest Quantity Available of Each Items Before Saving as Work Order.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                ShowImportComplete()
 
             End If
 
         Catch ex As Exception
 
-            MessageBox.Show("Import Error!" & vbCrLf & vbCrLf & ex.Message, "MESSAGE : ERROR 0053", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("Import Error!" & vbCrLf & vbCrLf & ex.Message, "MESSAGE : ERROR 0053", MessageBoxButtons.OK, MessageBoxIcon.Error)
 
         Finally
             gridSelectItem.ResumeLayout()
@@ -4973,10 +4987,10 @@ err_flag:
 
 
             If Me.txtSales.Text = "" Then
-                MsgBox("Please select sales representative", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select sales representative", vbExclamation, "Message!")
                 Exit Sub
             ElseIf Me.txtCustomer.Text = "" Then
-                MsgBox("Please select customer", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select customer", vbExclamation, "Message!")
                 Exit Sub
             End If
 
@@ -5051,13 +5065,13 @@ err_flag:
             Dim res As Integer = clsImport.checkIfItemCodeExist()
             If res = 0 Then
 
-                MessageBox.Show("Successfully Imported!" & vbCrLf & vbCrLf & "Please Check The Latest Quantity Available of Each Items Before Saving as Work Order.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                ShowImportComplete()
 
             End If
 
         Catch ex As Exception
 
-            MessageBox.Show("Import Error!" & vbCrLf & vbCrLf & ex.Message, "MESSAGE : ERROR 0054", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("Import Error!" & vbCrLf & vbCrLf & ex.Message, "MESSAGE : ERROR 0054", MessageBoxButtons.OK, MessageBoxIcon.Error)
 
         Finally
             gridSelectItem.ResumeLayout()
@@ -5123,7 +5137,7 @@ err_flag:
             Return ResultDataTable
         Catch ex As Exception
 
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0055", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0055", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -5233,7 +5247,7 @@ err_flag:
 
     Private Sub cmdForInvoice_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdForInvoice.Click
         If Not StoreProcessingSettings.ShowForInvoiceButton Then
-            MessageBox.Show("The For Invoicing function is disabled for this branch.",
+            AppPrompt.Show("The For Invoicing function is disabled for this branch.",
                             "For Invoicing",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information)
@@ -5262,7 +5276,7 @@ err_flag:
                 Exit Sub
             End If
 
-            Dim x = MsgBox("Do you really want to make a Sales Quotation?" & vbCrLf & vbCrLf & "Please be reminded that creating a Sales Quotaion will not be Committed to the System", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
+            Dim x = AppPrompt.MsgBox("Do you really want to make a Sales Quotation?" & vbCrLf & vbCrLf & "Please be reminded that creating a Sales Quotaion will not be Committed to the System", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
             If x = MsgBoxResult.Yes Then
                 ApplyQuotationUiState()
                 chkBoxQtoWo.Checked = False
@@ -5303,7 +5317,7 @@ err_flag:
         Try
             clsWorkOrderDraft.SaveDraft(Me)
         Catch ex As Exception
-            MessageBox.Show("Draft was not saved." & vbCrLf & vbCrLf & "REASON : " & ex.Message, "Draft Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            AppPrompt.Show("Draft was not saved." & vbCrLf & vbCrLf & "REASON : " & ex.Message, "Draft Error", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End Try
     End Sub
 
@@ -5487,7 +5501,7 @@ err_flag:
 
             If rbtnDelivery.Checked = True Then
 
-                Dim x = MsgBox("Changing Release Type to Delivery will Automatically be Picked in UP-STORE" &
+                Dim x = AppPrompt.MsgBox("Changing Release Type to Delivery will Automatically be Picked in UP-STORE" &
                                vbCrLf & vbCrLf & "Do You want to Change ?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
                 If x = MsgBoxResult.Yes Then
 
@@ -5501,9 +5515,9 @@ err_flag:
 
             Else
 
-                Dim x = MsgBox("Do You want to Change Release Type to Pick-up?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
+                Dim x = AppPrompt.MsgBox("Do You want to Change Release Type to Pick-up?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
                 If x = MsgBoxResult.Yes Then
-                    MessageBox.Show("Please Re-Check the Pick Location and Prepared Qty.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    AppPrompt.Show("Please Re-Check the Pick Location and Prepared Qty.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
                     forDelivery()
                 Else
                     Exit Sub
@@ -5575,7 +5589,7 @@ err_flag:
             Dim w_order = WebsiteInputBox("Enter Order Number")
 inputOrdernum:
             If w_order = "" Then
-                MessageBox.Show("Please Input Order Number!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                AppPrompt.Show("Please Input Order Number!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 w_order = WebsiteInputBox("Enter Order Number")
                 GoTo inputOrdernum
             End If
@@ -5584,7 +5598,7 @@ inputOrdernum:
 inputCust:
 
             If w_cust = "" Then
-                MessageBox.Show("Please Input Customer Name!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                AppPrompt.Show("Please Input Customer Name!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 w_cust = WebsiteInputBox("Enter Customer Name")
                 GoTo inputCust
             End If
@@ -5675,7 +5689,7 @@ inputCust:
                 End If
 
             Catch ex As Exception
-                MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0057", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0057", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 ErrorCount = ErrorCount + 1
             End Try
 
@@ -5719,7 +5733,7 @@ inputCust:
             End Try
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0058", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0058", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
     End Sub
@@ -5861,12 +5875,12 @@ inputCust:
             If isItemCode(searchStr) = True Then
 
                 If iCusID = 0 Then
-                    MsgBox("Please select customer first!", vbExclamation, "Message")
+                    AppPrompt.MsgBox("Please select customer first!", vbExclamation, "Message")
                 Else
                     Dim availVal = clsItemLookUp.getItemQty(gridItem.Item(0, gridItem.CurrentCell.RowIndex).Value)
 
                     If availVal < 1 Then
-                        MsgBox("This item is out of stock.", vbExclamation, "Message!")
+                        AppPrompt.MsgBox("This item is out of stock.", vbExclamation, "Message!")
                         Exit Sub
                     Else
                         InsertSelectedItem(gridItem.CurrentCell.RowIndex)
@@ -5886,7 +5900,7 @@ inputCust:
 
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message,
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message,
                         "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
@@ -5898,7 +5912,7 @@ inputCust:
 
             If gridItem.RowCount = 0 Then
 
-                MessageBox.Show("No Items Found!", "Message !", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                AppPrompt.Show("No Items Found!", "Message !", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 txtBarcode.Text = ""
                 txtBarcode.Focus()
 
@@ -5923,7 +5937,7 @@ inputCust:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0060", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0060", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -5961,7 +5975,7 @@ inputCust:
             If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
                 ' If the barcode field is empty
                 If String.IsNullOrEmpty(txtBarcode.Text) Then
-                    MessageBox.Show("Search cannot be empty!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    AppPrompt.Show("Search cannot be empty!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     txtBarcode.Text = String.Empty ' Clear the barcode
                     Exit Sub
                     ' Check if the barcode contains letters
@@ -5997,7 +6011,7 @@ inputCust:
 
         Catch ex As Exception
             ' Handle any exceptions and log them
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0061", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0061", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount += 1
         End Try
     End Sub
@@ -6033,12 +6047,12 @@ inputCust:
 
                     End Try
                 Else
-                    MessageBox.Show("Please Clear the search box before removing the last searched keyword", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    AppPrompt.Show("Please Clear the search box before removing the last searched keyword", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 End If
 
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0062", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0062", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
     End Sub
@@ -6056,7 +6070,7 @@ inputCust:
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0063", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0063", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
     End Sub
@@ -6150,10 +6164,10 @@ inputCust:
                     Me.txtPrice.Text = "No matching price found"
                 End If
             Else
-                MessageBox.Show("Please select a valid row.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                AppPrompt.Show("Please select a valid row.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End If
         Catch ex As Exception
-            MessageBox.Show("An error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("An error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
     'Public Sub ValidatePriceInput()
@@ -6228,7 +6242,7 @@ inputCust:
 
         Catch ex As Exception
             ' Handle the error if needed
-            MessageBox.Show("An error occurred: " & ex.Message)
+            AppPrompt.Show("An error occurred: " & ex.Message)
         End Try
     End Sub
 
@@ -6253,7 +6267,7 @@ inputCust:
             ' Try parsing both textboxes safely
             If Decimal.TryParse(txtTotal.Text, total) AndAlso Decimal.TryParse(txtAvailable.Text, available) Then
                 If total > available Then
-                    MessageBox.Show("Exceeded available credit limit.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    AppPrompt.Show("Exceeded available credit limit.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 End If
             End If
         End If
@@ -6270,7 +6284,7 @@ inputCust:
             Update_Timer.Enabled = False
             frmLogin.ShowDialog()
         Catch ex As Exception
-            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0056", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0056", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -6288,7 +6302,7 @@ inputCust:
             frmCheckWO.ShowDialog()
 
         Catch ex As Exception
-            MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 28", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 28", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
     End Sub
@@ -6869,7 +6883,7 @@ inputCust:
                 gridSelectItem.CurrentCell = row.Cells(Price.Index)
                 Dim remainingCount As Integer = CountUnconfirmedPriceRows()
                 Dim itemWord As String = If(remainingCount = 1, "item", "items")
-                MessageBox.Show(
+                AppPrompt.Show(
                     "The price for item " & itemCode & " has not been confirmed." & vbCrLf &
                     "Double-click this highlighted row and choose the new price." & vbCrLf &
                     remainingCount.ToString() & " " & itemWord & " still require confirmation.",
@@ -6913,7 +6927,7 @@ inputCust:
         ' Step 2: Ask for password if needed
         If needsPassword AndAlso Not bAllow Then
             frmPassword.sType = "EditPrice"
-            MessageBox.Show("This work order requires a password to proceed.", "Password Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            AppPrompt.Show("This work order requires a password to proceed.", "Password Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             If frmPassword.ShowDialog() <> DialogResult.OK Then
                 Return False
             End If
@@ -7306,7 +7320,7 @@ inputCust:
             row.DefaultCellStyle.ForeColor = Color.Black
 
         Catch ex As Exception
-            MessageBox.Show("Error validating price: " & ex.Message,
+            AppPrompt.Show("Error validating price: " & ex.Message,
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
@@ -7318,7 +7332,7 @@ inputCust:
 
             Return conf
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -7655,7 +7669,7 @@ inputCust:
         If Not StoreProcessingSettings.EnableSetTaxButton Then Exit Sub
 
         If iCusID <= 0 OrElse txtCustomer.Text.Trim() = String.Empty Then
-            MsgBox("Please select customer first!", vbExclamation, "Message")
+            AppPrompt.MsgBox("Please select customer first!", vbExclamation, "Message")
             Exit Sub
         End If
 
@@ -7667,7 +7681,7 @@ inputCust:
         End Using
 
         If customerTaxExempt Then
-            MessageBox.Show("This customer is configured as tax exempt in RMS. Change the customer tax setting in RMS before making this order taxable.",
+            AppPrompt.Show("This customer is configured as tax exempt in RMS. Change the customer tax setting in RMS before making this order taxable.",
                             "Customer Tax Setting",
                             MessageBoxButtons.OK,
                             MessageBoxIcon.Information)
@@ -7681,7 +7695,7 @@ inputCust:
             prompt = "Mark this order as tax exempt and remove VAT?"
         End If
 
-        Dim answer = MsgBox(prompt, vbQuestion + vbYesNo, "Confirm Tax Change")
+        Dim answer = AppPrompt.MsgBox(prompt, vbQuestion + vbYesNo, "Confirm Tax Change")
         If answer <> vbYes Then Exit Sub
 
         bTaxExcempt = Not bTaxExcempt
@@ -7699,7 +7713,7 @@ inputCust:
             Return exists
 
         Catch ex As Exception
-            MessageBox.Show("Error in ifItemExistInOrder: " & ex.Message)
+            AppPrompt.Show("Error in ifItemExistInOrder: " & ex.Message)
             Return False
         End Try
     End Function

@@ -5,7 +5,7 @@
         Dim orderNumber As Integer
 
         If Not Integer.TryParse(txtWO.Text.Trim(), orderNumber) Then
-            MessageBox.Show("Input a valid Order Number.", "Message!",
+            AppPrompt.Show("Input a valid Order Number.", "Message!",
                             MessageBoxButtons.OK, MessageBoxIcon.Error)
             txtWO.Focus()
             Exit Sub
@@ -14,7 +14,7 @@
         Dim orderType As Integer? = clsPickList.GetOrderType(orderNumber)
 
         If Not orderType.HasValue Then
-            MessageBox.Show("Order Number not found!", "Message!",
+            AppPrompt.Show("Order Number not found!", "Message!",
                             MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             txtWO.SelectAll()
             txtWO.Focus()
@@ -29,7 +29,7 @@
                 OrderPrintRules.GetTemplateName(orderType.Value)
 
             If String.IsNullOrEmpty(templateName) Then
-                MessageBox.Show(
+                AppPrompt.Show(
                     "Order Number " & orderNumber &
                     " has an unsupported order type (" & orderType.Value & ").",
                     "Unable to Print Order",

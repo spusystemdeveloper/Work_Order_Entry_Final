@@ -183,7 +183,7 @@ Public Class frmUploader
             frmItemLookUp.UpdateAmt()
 
         Catch ex As Exception
-            MsgBox(ex.ToString, vbCritical, "Program Error")
+            AppPrompt.MsgBox(ex.ToString, vbCritical, "Program Error")
         Finally
             frmItemLookUp.gridSelectItem.ResumeLayout()
             frmItemLookUp.isBulkLoading = False
@@ -243,7 +243,7 @@ Public Class frmUploader
             Return True
         Catch ex As Exception
 
-            Dim result As Integer = MessageBox.Show(ex.ToString, "Work/Sales Order Entry", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error)
+            Dim result As Integer = AppPrompt.Show(ex.ToString, "Work/Sales Order Entry", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error)
             If result = DialogResult.Abort Then
                 Me.Close()
                 frmItemLookUp.Close()

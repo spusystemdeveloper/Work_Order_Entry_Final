@@ -89,7 +89,7 @@ Public Class frmLogin
             dbnew = New ItemLookUpDataContext(DB_Conn("constr"))
             database_location = DB_Conn("constr")
         Catch ex As Exception
-            MessageBox.Show("Cannot connect to database!" & vbCrLf & ex.Message,
+            AppPrompt.Show("Cannot connect to database!" & vbCrLf & ex.Message,
                             "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
@@ -111,12 +111,12 @@ Public Class frmLogin
             database_location = connectionString
 
             If Not clsUser.verifyUsername(txtUsername.Text) Then
-                MessageBox.Show("Username not Registered!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Username not Registered!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
             End If
 
             If txtPassword.Text <> clsUser.getUsernamePassword(txtUsername.Text) Then
-                MessageBox.Show("Please Check your Credentials!!!!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Please Check your Credentials!!!!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
             End If
 
@@ -139,7 +139,7 @@ Public Class frmLogin
             frmItemLookUp.Show()
             Timer1.Start()
         Catch ex As Exception
-            MessageBox.Show("Database connection failed!" & vbCrLf & ex.Message,
+            AppPrompt.Show("Database connection failed!" & vbCrLf & ex.Message,
                             "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Label3.Text = "Login"
         End Try
@@ -172,7 +172,7 @@ Public Class frmLogin
         Try
             rmsRegisterNumberNullable = ReadRmsRegisterNumber()
         Catch ex As Exception
-            MessageBox.Show(
+            AppPrompt.Show(
                 "Cannot read RMS Register Number from registry." & vbCrLf & ex.Message,
                 "Register Validation",
                 MessageBoxButtons.OK,
@@ -182,7 +182,7 @@ Public Class frmLogin
         End Try
 
         If Not rmsRegisterNumberNullable.HasValue Then
-            MessageBox.Show(
+            AppPrompt.Show(
                 "Cannot read RMS Register Number from registry." & vbCrLf &
                 "Missing key/value: HKLM\SOFTWARE\WOW6432Node\Microsoft\Retail Management System\Store Operations\POSUser\Register\Number",
                 "Register Validation",
@@ -217,7 +217,7 @@ Public Class frmLogin
                     "Please close or use the correct register PC for this account."
             End If
 
-            MessageBox.Show(
+            AppPrompt.Show(
                 messageText,
                 "Register Validation",
                 MessageBoxButtons.OK,
@@ -229,7 +229,7 @@ Public Class frmLogin
         ' RULE: RMS apps are NOT running -> allow switching if mismatch, with confirmation
         If rmsRegisterNumber <> userRegister Then
 
-            Dim result As DialogResult = MessageBox.Show(
+            Dim result As DialogResult = AppPrompt.Show(
                 "This computer is Register " & rmsRegisterNumber &
                 ", but your user is assigned to Register " & userRegister & "." & vbCrLf & vbCrLf &
                 "Click OK to update the RMS registry Register Number to " & userRegister & " and continue login.",
@@ -243,7 +243,7 @@ Public Class frmLogin
             Try
                 WriteRmsRegisterNumber(userRegister)
             Catch ex As Exception
-                MessageBox.Show(
+                AppPrompt.Show(
                     "Failed to update RMS Register Number in registry." & vbCrLf &
                     "Please run this application as Administrator (UAC prompt) and try again." & vbCrLf & vbCrLf &
                     ex.Message,

@@ -21,6 +21,180 @@ connecting to DVO/GSC, or changing database records.
 
 ## What is tested
 
+### Compact lookup and prompt layouts
+
+The October 17 compact layouts are serialized in the Designers for Customer,
+Sales Rep, Recall, shared prompts, action confirmations, import completion,
+saved-number confirmations and Recall Selection. Customer/Sales Rep client size
+is 660x390 and Recall 860x460. Other new message dialogs use roughly 440-500 pixels
+of client width, with short prompts shrinking vertically. Lookup fonts remain
+unchanged, headings/body/buttons remain readable, saved numbers stay large, and
+long details retain scrolling or wrapping.
+
+Validation includes both Release/x86 builds, 101 unit tests, the shared-prompt,
+ownership, action-confirmation, Recall Selection, RecallFormatting and
+SmallScreenLayout UI scripts below, plus Packaging_CleanFolder_Test.ps1. The
+action-confirmation font assertion now expects the requested 14-point compact
+heading; all behavior assertions remain intact. An additional 185 geometry checks
+and synthetic renders covered the eight layouts at 1024/1366x768 and normal/
+simulated 125% scaling. Customer/Sales Rep Load delegates were removed only on
+those isolated render instances before showing sample rows offscreen; production
+data-loading handlers are unchanged. Renders are under TestResults/CompactDialogs-*.
+
+For manual localhost acceptance on the actual 1366x768 unit, check F8 Customer,
+F7 Sales Rep, F11 Recall/quotation selection, save/remove confirmations, import
+completion and saved Work Order/Quotation numbers. Confirm dates/references,
+customer names/comments, focus and OK/Cancel/Enter/Escape remain usable. Repeat
+the CHARGE credit-warning/Price Level case and window switching. For long messages
+or long names/comments confirm scrolling/wrapping keeps details accessible. No
+live-store workflow is implied by the isolated checks.
+
+### Quotation saved-number presentation
+
+Saved and updated quotations now reuse frmOrderSaved with its quotation label.
+The large number, read-only field and Close button use the same Designer layout
+as Work Orders. Existing Work Order callers retain the default Work Order mode.
+The change replaces only two post-commit notifications; it performs no save or
+print operation itself.
+
+For localhost acceptance, save a new quotation and confirm the large number
+matches the saved quotation. Close with the button or Enter/Escape on separate
+saves and confirm the existing quotation print window opens afterward. Update
+an existing quotation and confirm its number and updated heading, with no new
+print window. Check existing single/split Work Order confirmations remain the
+same. Isolated synthetic UI checks cover both quotation states, both single Work
+Order states and split Work Orders at 100% and simulated 125%, including number,
+labels, font, focus, bounds and Enter/Escape results (105 checks). These are not
+actual quotation saves or printer tests.
+
+### Shared application prompt presentation
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\AppPrompt_UI_Test.ps1'
+& '.\Database Components\Tests\PromptOwnership_UI_Test.ps1'
+```
+
+The 1,159 isolated x86 checks instantiate only frmAppPrompt and synthetic owner
+forms. They verify all six standard button sets, five icon categories, valid
+default choices, exact message/caption text, return values, Enter, Escape and
+window-close handling. Explicit ownership and background-thread marshalling are
+checked through AppPrompt itself. Long text stays complete and scrollable, with
+bounds and fonts checked at 100% and simulated 125%; renders are written under
+TestResults/AppPrompt-*. The base layout is editable in frmAppPrompt.Designer.vb.
+These checks do not open the real application forms or use a database.
+
+PromptOwnership_UI_Test.ps1 adds 577 native window checks across 76 scenarios.
+It exercises all six shared button sets with all five icon categories under
+ordinary/TopMost synthetic modal owners, then the dedicated Save changes/Remove
+item, Import complete, Work Order/Quotation saved and all three Recall Selection
+modes with ordinary/TopMost owners. GetWindow verifies that each prompt is above
+its owner in actual Windows z-order; IsWindowEnabled verifies the prompt accepts
+input while its owner is blocked, and that the owner recovers after dismissal.
+Explicit results are checked. This fixture does not run saves, imports, password
+checks, SQL or full application workflows. No application changes were required
+by the audit; manual acceptance on the actual workstation remains necessary.
+
+The nested-owner regression uses a synthetic Price Level-style modal with TopMost
+both enabled and disabled. Show, MsgBox and explicit-owner calls must keep the
+warning owned by that modal and at the same stacking level. Native Windows
+IsWindowEnabled checks verify the price/main windows stay disabled while the
+warning is open and recover after acknowledgement and closing price selection.
+Cases also set the parent's DialogResult to OK before raising the warning, matching
+the existing insertItem -> UpdateAmt -> credit-warning timing. No real price-form
+Load/insert, pricing checks or credit-limit logic is invoked in this fixture.
+
+For localhost acceptance of this fix, select CHARGE with a customer/entry that
+exceeds available credit, choose a price level, acknowledge the warning with OK,
+then confirm price selection and the main form can close normally. Repeat using
+keyboard acknowledgement and normal window switching. The same credit warning
+must still occur; this fix only changes its window ownership/stacking.
+
+AppPrompt now presents 321 standard prompt calls in 31 Work Order Entry files
+(two quotation success calls now use the large saved-number dialog).
+Keep caller arguments and result handling unchanged when adding a prompt. Existing
+save-number/import-success/action-confirmation/selection forms remain in use.
+Uncommon native MsgBox flags retain their native fallback; failure to initialize
+the custom UI also falls back to native reporting. The separate Database Updater
+and Queue application prompts are outside this change.
+
+For manual acceptance on localhost, try information, invalid-input/password and
+stock warnings, split-order details and Yes/No/Cancel confirmations as available.
+Check message completeness, keyboard choices and parent-window focus at the
+workstation's actual display scaling. Do not intentionally trigger production
+database failures. Automated validation also passed both Release/x86 builds,
+101 unit tests, the existing recall/action dialog checks, clean-folder import/PDF
+packaging and 39 multi-user checks per isolation mode in disposable fixtures.
+RMS settlement in those fixtures is simulated; these are not live-store tests.
+
+### Recall Selection presentation
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\RecallSelection_UI_Test.ps1'
+```
+
+The 106 isolated x86 checks instantiate only frmRecallSelection. They verify the
+exact choices/order/default across Recall, SaveToQuote and SaveToWorkOrder, the
+default constructor, existing keyboard/tab routing, OK, double-click, Cancel,
+Escape and the existing Enter-focus handler. All event code remains unchanged.
+They also check text/control bounds at 100% and simulated 125%, smaller-screen
+fit and return values, with offscreen renders under TestResults/RecallSelection-*.
+These checks never open the actual Recall form, convert/save orders or use SQL.
+
+For manual localhost acceptance, open F11 and try quote/work-order choices via
+OK and double-click, then Cancel/Escape. For a recalled quotation, also verify
+the Save Changes / Convert to a work order selection appears with the same
+choices/default and existing behavior. Confirm readability at actual display
+scaling. The layout is editable in frmRecallSelection.Designer.vb.
+
+### Save changes / remove item confirmation
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\ActionConfirmation_UI_Test.ps1'
+```
+
+The 53 isolated x86 checks instantiate only frmActionConfirmation and never call
+the main form's Save/Remove code or connect to a database. They verify exact
+question text, default Yes, Yes/No return values, focused/default Enter, arrow
+navigation, Y/N mnemonics, ignored Escape/user close and readable text/control
+bounds at 100% and simulated 125%. Offscreen renders are written under ignored
+TestResults/ActionConfirmation-*. The form layout is visible in the Designer.
+
+Only the two pictured prompts use this dialog. New-order/split previews, quotation
+save questions and other warnings now use the shared AppPrompt presentation;
+their text, choices and result handling are unchanged. For manual localhost acceptance,
+edit a recalled order and try both Yes and No on Save changes; separately try
+both answers on removing an item. Confirm No preserves the entry and Yes follows
+the existing save/removal flow, including existing totals and validation behavior.
+Check actual workstation display scaling. Default-locking and VersionedReads
+MultiUser_Save_LocalDB_Test.ps1 checks also passed (39 each) in disposable fixtures;
+their RMS settlement participant is simulated, not real POS execution.
+
+### Import completion message
+
+The three existing success prompts in ImportQuote, ImportPO and ImportFromWebsite
+now open frmImportComplete at the same locations, with their existing conditions
+unchanged. The form is editable in the WinForms Designer. Its larger heading,
+availability reminder and OK button are presentation only; it performs no import,
+stock refresh or save itself.
+
+Validation for this change: both Release/x86 builds and all 101 unit tests passed,
+as did Packaging_CleanFolder_Test.ps1. Twenty-four isolated x86 dialog checks
+verified readable text/bounds at 100% and simulated 125%, fit within 1024x768,
+initial OK focus and actual Enter/Escape dismissal. The two offscreen renders
+were visually reviewed. These checks did not connect to a store or run imports.
+
+For manual acceptance on localhost, import a supported file and confirm the
+larger success heading and complete availability reminder appear. Acknowledge
+with OK, Enter and Escape on separate imports. Confirm the same imported lines,
+quantities, prices and totals remain afterward, and existing invalid-item/error
+prompts still occur normally. Check the actual workstation's display scaling.
+
 ### Price Level Selection presentation
 
 After building Debug, run:

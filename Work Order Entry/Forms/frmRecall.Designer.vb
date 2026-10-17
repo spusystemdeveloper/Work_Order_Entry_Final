@@ -76,7 +76,7 @@ Partial Class frmRecall
         Me.GroupBox1.Location = New System.Drawing.Point(14, 1)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.GroupBox1.Size = New System.Drawing.Size(960, 31)
+        Me.GroupBox1.Size = New System.Drawing.Size(836, 31)
         Me.GroupBox1.TabIndex = 2
         Me.GroupBox1.TabStop = False
         '
@@ -85,7 +85,7 @@ Partial Class frmRecall
         Me.CheckBox1.AutoSize = True
         Me.CheckBox1.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.CheckBox1.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.CheckBox1.Location = New System.Drawing.Point(714, 9)
+        Me.CheckBox1.Location = New System.Drawing.Point(590, 9)
         Me.CheckBox1.Name = "CheckBox1"
         Me.CheckBox1.Size = New System.Drawing.Size(190, 17)
         Me.CheckBox1.TabIndex = 2
@@ -119,18 +119,18 @@ Partial Class frmRecall
         Me.gridOrder.EnableHeadersVisualStyles = False
         Me.gridOrder.GridColor = System.Drawing.Color.FromArgb(218, 224, 232)
         Me.gridOrder.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders
-        Me.gridOrder.RowTemplate.MinimumHeight = 44
-        Me.gridOrder.RowTemplate.Height = 44
+        Me.gridOrder.RowTemplate.MinimumHeight = 36
+        Me.gridOrder.RowTemplate.Height = 36
         Me.gridOrder.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight
         Me.gridOrder.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
         Me.gridOrder.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-        Me.gridOrder.ColumnHeadersHeight = 34
+        Me.gridOrder.ColumnHeadersHeight = 32
         Me.gridOrder.Location = New System.Drawing.Point(14, 77)
         Me.gridOrder.Name = "gridOrder"
         Me.gridOrder.ReadOnly = True
         Me.gridOrder.RowHeadersVisible = False
         Me.gridOrder.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.gridOrder.Size = New System.Drawing.Size(960, 426)
+        Me.gridOrder.Size = New System.Drawing.Size(836, 330)
         Me.gridOrder.TabIndex = 3
         '
         'recallOrderNumber
@@ -139,7 +139,7 @@ Partial Class frmRecall
         Me.recallOrderNumber.DataPropertyName = "Order#"
         Me.recallOrderNumber.HeaderText = "Order#"
         Me.recallOrderNumber.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.recallOrderNumber.Width = 100
+        Me.recallOrderNumber.Width = 90
         orderStyle.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
         Me.recallOrderNumber.DefaultCellStyle = orderStyle
         '
@@ -148,16 +148,18 @@ Partial Class frmRecall
         Me.recallDate.Name = "Date"
         Me.recallDate.DataPropertyName = "Date"
         Me.recallDate.HeaderText = "Date"
-        Me.recallDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.recallDate.Width = 190
+        Me.recallDate.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.recallDate.MinimumWidth = 180
+        Me.recallDate.Width = 180
         '
         'recallReference
         '
         Me.recallReference.Name = "Reference"
         Me.recallReference.DataPropertyName = "Reference"
         Me.recallReference.HeaderText = "Reference"
-        Me.recallReference.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.recallReference.Width = 110
+        Me.recallReference.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.recallReference.MinimumWidth = 100
+        Me.recallReference.Width = 100
         '
         'recallCustomer
         '
@@ -165,7 +167,7 @@ Partial Class frmRecall
         Me.recallCustomer.DataPropertyName = "Customer"
         Me.recallCustomer.HeaderText = "Customer"
         Me.recallCustomer.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        Me.recallCustomer.MinimumWidth = 240
+        Me.recallCustomer.MinimumWidth = 200
         Me.recallCustomer.FillWeight = 40.0!
         wrappedStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.recallCustomer.DefaultCellStyle = wrappedStyle
@@ -176,7 +178,7 @@ Partial Class frmRecall
         Me.recallComment.DataPropertyName = "Comment"
         Me.recallComment.HeaderText = "Comment"
         Me.recallComment.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        Me.recallComment.MinimumWidth = 300
+        Me.recallComment.MinimumWidth = 200
         Me.recallComment.FillWeight = 60.0!
         Me.recallComment.DefaultCellStyle = wrappedStyle
         '
@@ -184,9 +186,9 @@ Partial Class frmRecall
         '
         Me.cmdOK.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdOK.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.cmdOK.Location = New System.Drawing.Point(818, 510)
+        Me.cmdOK.Location = New System.Drawing.Point(660, 418)
         Me.cmdOK.Name = "cmdOK"
-        Me.cmdOK.Size = New System.Drawing.Size(75, 23)
+        Me.cmdOK.Size = New System.Drawing.Size(88, 30)
         Me.cmdOK.TabIndex = 4
         Me.cmdOK.Text = "&OK"
         Me.cmdOK.UseVisualStyleBackColor = True
@@ -195,9 +197,9 @@ Partial Class frmRecall
         '
         Me.cmdCancel.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.cmdCancel.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.cmdCancel.Location = New System.Drawing.Point(899, 510)
+        Me.cmdCancel.Location = New System.Drawing.Point(760, 418)
         Me.cmdCancel.Name = "cmdCancel"
-        Me.cmdCancel.Size = New System.Drawing.Size(75, 23)
+        Me.cmdCancel.Size = New System.Drawing.Size(88, 30)
         Me.cmdCancel.TabIndex = 5
         Me.cmdCancel.Text = "&Cancel"
         Me.cmdCancel.UseVisualStyleBackColor = True
@@ -208,7 +210,7 @@ Partial Class frmRecall
         Me.txtSearch.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.txtSearch.Location = New System.Drawing.Point(14, 51)
         Me.txtSearch.Name = "txtSearch"
-        Me.txtSearch.Size = New System.Drawing.Size(960, 22)
+        Me.txtSearch.Size = New System.Drawing.Size(836, 22)
         Me.txtSearch.TabIndex = 2
         '
         'Label1
@@ -225,7 +227,7 @@ Partial Class frmRecall
         '
         Me.lblRec.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
         Me.lblRec.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.lblRec.Location = New System.Drawing.Point(818, 35)
+        Me.lblRec.Location = New System.Drawing.Point(694, 35)
         Me.lblRec.Name = "lblRec"
         Me.lblRec.Size = New System.Drawing.Size(153, 14)
         Me.lblRec.TabIndex = 7
@@ -236,7 +238,7 @@ Partial Class frmRecall
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(984, 540)
+        Me.ClientSize = New System.Drawing.Size(860, 460)
         Me.Controls.Add(Me.lblRec)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.txtSearch)
@@ -245,7 +247,7 @@ Partial Class frmRecall
         Me.Controls.Add(Me.gridOrder)
         Me.Controls.Add(Me.GroupBox1)
         Me.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable
-        Me.MinimumSize = New System.Drawing.Size(800, 450)
+        Me.MinimumSize = New System.Drawing.Size(800, 430)
         Me.KeyPreview = True
         Me.Name = "frmRecall"
         Me.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen

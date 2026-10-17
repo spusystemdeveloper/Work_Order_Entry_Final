@@ -12,7 +12,7 @@
             End Using
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
             Return Nothing
         End Try
 
@@ -37,7 +37,7 @@
 
             Return True
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
             Return False
         End Try
 
@@ -60,7 +60,7 @@
             End If
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
             Return False
         End Try
 
@@ -77,7 +77,7 @@
             End Using
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
             Return Nothing
         End Try
 
@@ -100,10 +100,10 @@
                 dbx.SubmitChanges()
             End Using
 
-            MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            AppPrompt.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
 
 
@@ -124,10 +124,10 @@
                 dbx.SubmitChanges()
             End Using
 
-            MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            AppPrompt.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
 
     End Sub
@@ -144,10 +144,10 @@
                 dbx.SubmitChanges()
             End Using
 
-            MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            AppPrompt.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
 
     End Sub
@@ -197,7 +197,7 @@
 
         Catch ex As Exception
 
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
 
     End Sub
@@ -224,7 +224,7 @@
             End Using
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
 
 
@@ -243,10 +243,10 @@
                 dbx.SubmitChanges()
             End Using
 
-            MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            AppPrompt.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
 
     End Sub

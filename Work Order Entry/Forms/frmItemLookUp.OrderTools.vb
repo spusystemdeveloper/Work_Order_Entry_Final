@@ -63,18 +63,18 @@ Partial Public Class frmItemLookUp
 
     Private Sub ReloadCurrentOrder(sender As Object, e As EventArgs)
         If activeRecallOrderID <= 0 Then
-            MessageBox.Show(Me, "Recall an order before reloading it.", "Reload order",
+            AppPrompt.Show(Me, "Recall an order before reloading it.", "Reload order",
                             MessageBoxButtons.OK, MessageBoxIcon.Information)
             Return
         End If
-        If MessageBox.Show(Me, "Reload the latest saved order? Unsaved changes on this screen will be discarded.",
+        If AppPrompt.Show(Me, "Reload the latest saved order? Unsaved changes on this screen will be discarded.",
                            "Reload order", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
             RecallQuote(activeRecallOrderID)
         End If
     End Sub
 
     Private Sub ShowOrderConflict(ex As OrderEditConflictException)
-        MessageBox.Show(Me, ex.Message, "Order changed", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        AppPrompt.Show(Me, ex.Message, "Order changed", MessageBoxButtons.OK, MessageBoxIcon.Warning)
     End Sub
 
     Private Async Sub ReadyTimerTick(sender As Object, e As EventArgs)
@@ -155,7 +155,7 @@ Partial Public Class frmItemLookUp
             Await PollReadyOrdersAsync()
         Catch ex As Exception
             If Not orderToolsClosing AndAlso Not IsDisposed Then
-                MessageBox.Show(Me, ex.Message, "For invoicing", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                AppPrompt.Show(Me, ex.Message, "For invoicing", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End If
         End Try
     End Sub

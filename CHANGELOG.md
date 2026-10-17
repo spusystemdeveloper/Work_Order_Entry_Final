@@ -2,7 +2,147 @@
 
 All notable changes to the **Work Order Entry** application are documented in this file.
 
-## [Unreleased] - 2026-10-16
+## [Unreleased] - 2026-10-17
+
+### More compact lookup and message windows for 768-high screens
+
+- Reduced Designer client sizes: Customer/Sales Rep 780x470 -> 660x390;
+  Recall 984x540 -> 860x460; shared message base 640x300 -> 500x240;
+  action confirmation 560x210 -> 440x172; import complete 580x254 -> 460x208;
+  saved-number confirmation 520x296 -> 440x238; Recall Selection 580x266 -> 460x220.
+- Kept lookup text at its existing size while reducing row minimums and excess
+  spacing. Recall customer/comments still wrap; Date/Reference size to displayed
+  content with minimum widths. Message headings use 14-point bold text, body
+  text 11-point and buttons 10-point. Short prompts shrink vertically and long
+  details remain complete/scrollable. Saved numbers retain 42-point bold type.
+- Changed only Designer geometry/styles and shared-prompt sizing. Main-form
+  button positions, filters, selection, shortcuts, hidden customer columns,
+  Boolean NullValue defaults, owner/TopMost fix, dialog results, authentication,
+  pricing, credit limits, tax, stock, save/import/printing behavior are preserved.
+- Both Release/x86 builds and 101 unit tests passed. Passed 1,159 shared-prompt,
+  577 ownership, 53 action-confirmation, 106 Recall Selection, 28 recall-formatting,
+  875 small-screen and 185 compact-geometry checks, plus clean-folder import/PDF
+  packaging. Reviewed synthetic dialog renders at normal/simulated 125% scaling
+  for 1366x768 and 1024x768. Store-loading handlers were detached only on render
+  test instances; no live SQL or real store workflows/printers were used.
+  Debug store configuration was preserved byte-for-byte. Actual workstation DPI
+  and window-switching acceptance remains manual.
+
+### Audit the remaining redesigned prompts for window blocking
+
+- Traced the shared prompts in the other TopMost forms and the separate save/
+  remove, import-success, saved-number and Recall Selection callers. No additional
+  ownership/stacking blocker was reproduced after the shared-owner fix. Import
+  completion runs after file/customer dialogs close, or after website selection
+  hides; the other dedicated confirmations use the main form as their owner.
+- Added PromptOwnership_UI_Test.ps1: 577 native window checks in 76 scenarios
+  cover all six shared button sets and five icon categories under ordinary and
+  TopMost modal owners, plus each dedicated confirmation/selection form. Checks
+  verify actual window order, input availability, result values and parent recovery.
+- Both Release/x86 builds, 101 unit tests, 1,159 existing shared-prompt checks,
+  53 action-confirmation, 106 Recall Selection and 28 recall-formatting checks
+  passed. No additional application-code or business-rule changes were needed.
+  Tests use synthetic owners and presentation dialogs, not store workflows or SQL;
+  actual workstation window switching still needs manual acceptance. Debug store
+  configuration was preserved byte-for-byte.
+
+### Keep warnings above the active price-selection dialog
+
+- Fixed the shared prompt ownership regression: Price Level Selection uses
+  TopMost, and its credit-limit warning could appear behind it. Ownerless prompts
+  now use the current modal window on the UI thread (falling back to the active
+  visible form), and prompts match their owner's TopMost setting. Explicit caller
+  ownership is preserved. No global always-on-top setting was added.
+- Credit-limit conditions, warning timing/text, pricing, approvals, item selection
+  and dialog results are unchanged. The warning still requires acknowledgement;
+  its modal parent remains disabled until then and is restored afterward.
+- Both Release/x86 builds, 101 unit tests, 1,159 isolated shared-prompt checks and
+  50 existing Price Level checks passed. The regression covers ordinary/TopMost
+  nested windows, Show/MsgBox/explicit owners, and an item acceptance already
+  marked OK before its warning opens. Native Windows enable/disable checks verify
+  both modal levels recover. Tests use synthetic forms; no store/SQL/price action
+  was run. Debug store configuration was preserved byte-for-byte.
+
+### Large sales quotation confirmation number
+
+- Reused the Designer-backed frmOrderSaved for saved and updated sales quotations,
+  showing the quotation number in the same large bold type as a Work Order.
+  The heading identifies Sales Quotation; existing Work Order/split labels remain
+  unchanged. Close, Enter and Escape acknowledge the single confirmation.
+- Replaced only the two quotation success notifications after commit. New quotation
+  printing still opens after acknowledgement with the same type and ID; updating
+  a quotation still does not open printing. Refresh/draft cleanup and all save,
+  pricing, stock, tax, approval and transaction logic are unchanged.
+- Both Release/x86 builds, 101 unit tests, 105 isolated saved-number UI checks
+  and 39 multi-user checks per isolation mode passed. Reviewed 100% and simulated
+  125% renders. The first sandboxed unit runner could not connect to its test host;
+  rerunning outside the sandbox passed. No live saves/database access or actual
+  printing was performed; Debug store configuration was preserved byte-for-byte.
+
+### Consistent readable application prompts
+
+- Routed 323 standard MessageBox/MsgBox calls across 31 Work Order Entry files
+  through AppPrompt and the shared frmAppPrompt. The Designer shows a large
+  heading, 12-point message text, matching information/warning/error/question
+  icons and larger buttons. Long details remain complete in a scrollable area.
+- Kept the original message/caption arguments, button sets, default choices,
+  explicit parent windows and return-value checks. OK, OK/Cancel, Yes/No,
+  Yes/No/Cancel, Retry/Cancel and Abort/Retry/Ignore retain their results and
+  Enter/Escape/close behavior. Worker calls marshal to the owning UI thread;
+  native reporting remains available if the custom dialog cannot initialize.
+- Existing save-number, import-success, action-confirmation and selection forms
+  remain in use. Separate Database Updater/Queue prompts are outside this change.
+  No pricing, stock, tax, approval, save, printing, SQL or authentication logic changed.
+- Both Release/x86 builds and all 101 unit tests passed. Passed 1,075 isolated
+  shared-prompt checks, 28 recall-formatting, 106 recall-selection, 53 action-
+  confirmation and 39 multi-user checks in each isolation mode, plus clean-folder
+  import/PDF packaging checks. Reviewed 100% and simulated 125% prompt renders.
+  These use synthetic UI/disposable fixtures; RMS settlement is simulated. No
+  live database was accessed, and Debug store configuration was preserved.
+
+### Recall Selection readability
+
+- Updated only frmRecallSelection.Designer.vb: added a Choose an option heading,
+  14-point bold list text, larger 12-point OK/Cancel buttons, consistent spacing,
+  resize anchors and a minimum window size. Layout is visible in the Designer.
+- Preserved the Recall, SaveToQuote and SaveToWorkOrder strings/order, first
+  selection, tab/keyboard routing, double-click and OK/Cancel handlers. The later
+  shared-prompt update changes only presentation of its two validation warnings.
+- Both Release/x86 builds, all 101 unit tests and 106 isolated choice-dialog
+  checks passed. Reviewed 100% and simulated 125% renders. No actual recall,
+  conversion, save or SQL was run by the UI checks; Debug configuration preserved.
+
+### Save changes and remove-item confirmation readability
+
+- Replaced only the existing Save changes and Remove item Yes/No prompts with
+  frmActionConfirmation. The Designer shows 16-point bold question text and
+  large 12-point Yes/No buttons, with consistent spacing and bottom/right anchors.
+- Preserved question wording, default Yes, explicit result values, Enter on
+  focused buttons, arrow navigation and Y/N mnemonics. Escape/user close leave
+  the question unanswered, retaining the native Yes/No prompt's lack of Cancel.
+  Save/remove action branches, validation, transactions and stock logic are unchanged.
+- Both Release/x86 builds, 101 unit tests, 53 isolated dialog checks and 39
+  multi-user checks per isolation mode passed. Reviewed 100% and simulated 125%
+  renders. The multi-user fixtures are disposable simulations, including simulated
+  RMS settlement; no store saves/removals or isolation changes were performed.
+  The existing Debug store configuration and earlier import-dialog edits were preserved.
+
+### Import completion message readability
+
+- Replaced the three existing success MessageBoxes in quotation/order, purchase-
+  order and website import with a shared frmImportComplete modal dialog. Its
+  Designer contains a 16-point bold success heading, 12-point availability
+  reminder and large blue OK button. Enter/Escape acknowledge it; the reminder
+  still tells users to check available quantities before saving a Work Order.
+- Only the three success prompts and a presentation helper changed in the main
+  form. Import conditions, item validation, quantities, prices/taxes, totals,
+  layout cleanup, error paths and saving behavior are unchanged. No dependencies,
+  database migrations or business-rule changes were introduced.
+- Both Release/x86 builds, 101 unit tests, clean-folder import/reporting packaging
+  checks and 24 isolated dialog checks passed. Reviewed offscreen renders at
+  100% and simulated 125% with bounds and fonts scaled; Enter/Escape both close
+  the modal dialog. Debug store configuration was preserved byte-for-byte.
+  No real import or store database operation was performed during validation.
 
 ### Requested one-order HO renumber and reseed script
 

@@ -19,7 +19,7 @@
             End With
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomerOrders Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomerOrders Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
 
@@ -45,7 +45,7 @@
             '   Dim groupid = gridCustOrder.Rows(0).Cells(1).Value
 
             If checked <= 0 Then
-                MessageBox.Show("Nothing is selected !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Nothing is selected !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
             Else
                 If count > 1 Then
@@ -81,15 +81,15 @@
                 End If
 
                 If clsCustomer.updateQueuingError = False Then
-                    MessageBox.Show("Successfully Grouped The Orders!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    AppPrompt.Show("Successfully Grouped The Orders!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
                     Me.Close()
                 Else
-                    MessageBox.Show("Error !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                    AppPrompt.Show("Error !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 End If
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomerOrders Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomerOrders Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
     End Sub
@@ -114,7 +114,7 @@
 
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomerOrders Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomerOrders Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
 
@@ -188,7 +188,7 @@
             clsCustomer.updateQueuing(orderid, orderid)
             gridCustOrder.DataSource = clsCustomer.loadCustomerOpenWo(custIDWo, custWoID)
         Else
-            MessageBox.Show("Nothing to Un1group!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            AppPrompt.Show("Nothing to Un1group!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         End If
 
     End Sub

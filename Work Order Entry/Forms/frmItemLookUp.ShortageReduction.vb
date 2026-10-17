@@ -65,7 +65,7 @@ Partial Public Class frmItemLookUp
                 UpdateShortageStatus()
             End Using
         Catch ex As Exception
-            MessageBox.Show(Me, ex.Message, "Accept shortage", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            AppPrompt.Show(Me, ex.Message, "Accept shortage", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End Try
     End Sub
 
@@ -89,7 +89,7 @@ Partial Public Class frmItemLookUp
 
     Protected Overrides Sub OnFormClosing(e As FormClosingEventArgs)
         If pendingShortages.Count > 0 Then
-            If MessageBox.Show(Me,
+            If AppPrompt.Show(Me,
                 "Shortage reductions have not been saved. Close and discard these reductions?" & vbCrLf &
                 "Choose No to return and save the order. Customer agreement notes are not stored in drafts.",
                 "Unsaved shortage reductions", MessageBoxButtons.YesNo, MessageBoxIcon.Question) <> DialogResult.Yes Then

@@ -50,7 +50,7 @@ Public Class clsImport
                 importType_ = ImportFileRules.GetImportType(importFileName_)
 
                 If importType_ = ImportFileRules.UnknownImport Then
-                    MessageBox.Show(
+                    AppPrompt.Show(
                         "Filename not valid. Include Quotation, Sale, Transfer, " &
                         "Purchase, or WEBSITE in the filename.",
                         "Import",
@@ -61,7 +61,7 @@ Public Class clsImport
 
                 If importType_ = ImportFileRules.TransferOrPurchaseImport AndAlso
                    ImportFileRules.IsCsv(importFileName_) Then
-                    MessageBox.Show(
+                    AppPrompt.Show(
                         "Transfer and Purchase imports require an Excel workbook " &
                         "with a Contents sheet.",
                         "Import",
@@ -113,7 +113,7 @@ Public Class clsImport
 
         Catch ex As Exception
             importProceed_ = False
-            MessageBox.Show(
+            AppPrompt.Show(
                 "Unable to open the import file. Close it in Excel and try again." &
                 vbCrLf & vbCrLf & ex.Message,
                 "Import",
@@ -346,7 +346,7 @@ Public Class clsImport
 
             If importedItemsNotFound.Count > 0 Then
 
-                Dim res = MessageBox.Show("There are Items that cannot be Imported due to the Item Code not existed or changed in the Current Database. " & vbCrLf & vbCrLf &
+                Dim res = AppPrompt.Show("There are Items that cannot be Imported due to the Item Code not existed or changed in the Current Database. " & vbCrLf & vbCrLf &
                                         "Some Item Code from other Branches are not the same at the momment. Item Code will be the same once all the branches uses the Consolidated Master Database." & vbCrLf & vbCrLf &
                                             "Do you want to show it ?",
                                             "Message!", MessageBoxButtons.YesNo, MessageBoxIcon.Exclamation)
@@ -374,7 +374,7 @@ Public Class clsImport
             End If
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
             Return 0
         End Try
 

@@ -151,7 +151,7 @@ Module ModConnectDB
         Try
             sql_con = New SQLConnection(database_location)
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
     End Sub
 
@@ -166,7 +166,7 @@ Module ModConnectDB
                 End Using
             End Using
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
     End Sub
 
@@ -186,7 +186,7 @@ Module ModConnectDB
             sql_dt = dt
             Return dt
         Catch ex As Exception
-            MessageBox.Show(ex.Message + " Please Check Database !")
+            AppPrompt.Show(ex.Message + " Please Check Database !")
             Application.Exit()
             Return Nothing
         End Try

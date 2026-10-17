@@ -21,7 +21,7 @@
             'for format & alignment
             gridQty.Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCheckStore Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCheckStore Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 

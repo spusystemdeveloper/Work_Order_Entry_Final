@@ -69,12 +69,12 @@ Partial Class frmCustomer
         DataGridViewCellStyle3.SelectionForeColor = System.Drawing.Color.White
         DataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.gridCustomer.DefaultCellStyle = DataGridViewCellStyle3
-        Me.gridCustomer.Location = New System.Drawing.Point(12, 80)
-        Me.gridCustomer.ColumnHeadersHeight = 36
+        Me.gridCustomer.Location = New System.Drawing.Point(12, 72)
+        Me.gridCustomer.ColumnHeadersHeight = 32
         Me.gridCustomer.EnableHeadersVisualStyles = False
         Me.gridCustomer.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders
-        Me.gridCustomer.RowTemplate.Height = 42
-        Me.gridCustomer.RowTemplate.MinimumHeight = 42
+        Me.gridCustomer.RowTemplate.Height = 34
+        Me.gridCustomer.RowTemplate.MinimumHeight = 34
         Me.gridCustomer.BackgroundColor = System.Drawing.Color.White
         Me.gridCustomer.GridColor = System.Drawing.Color.FromArgb(215, 223, 233)
         Me.gridCustomer.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
@@ -82,21 +82,21 @@ Partial Class frmCustomer
         Me.gridCustomer.Name = "gridCustomer"
         Me.gridCustomer.ReadOnly = True
         Me.gridCustomer.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.gridCustomer.Size = New System.Drawing.Size(756, 332)
+        Me.gridCustomer.Size = New System.Drawing.Size(636, 260)
         Me.gridCustomer.TabIndex = 0
         '
         'txtCompany
         '
         Me.txtCompany.Font = New System.Drawing.Font("Tahoma", 11.0!, System.Drawing.FontStyle.Regular)
-        Me.txtCompany.Location = New System.Drawing.Point(12, 40)
+        Me.txtCompany.Location = New System.Drawing.Point(12, 36)
         Me.txtCompany.BackColor = System.Drawing.Color.FromArgb(245, 249, 255)
         Me.txtCompany.Name = "txtCompany"
-        Me.txtCompany.Size = New System.Drawing.Size(756, 26)
+        Me.txtCompany.Size = New System.Drawing.Size(636, 26)
         Me.txtCompany.TabIndex = 0
         '
         'cmdCancel
         '
-        Me.cmdCancel.Location = New System.Drawing.Point(676, 426)
+        Me.cmdCancel.Location = New System.Drawing.Point(556, 346)
         Me.cmdCancel.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Regular)
         Me.cmdCancel.BackColor = System.Drawing.Color.White
         Me.cmdCancel.ForeColor = System.Drawing.SystemColors.ControlText
@@ -108,7 +108,7 @@ Partial Class frmCustomer
         '
         'cmdOk
         '
-        Me.cmdOk.Location = New System.Drawing.Point(572, 426)
+        Me.cmdOk.Location = New System.Drawing.Point(452, 346)
         Me.cmdOk.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
         Me.cmdOk.BackColor = System.Drawing.Color.FromArgb(37, 99, 160)
         Me.cmdOk.ForeColor = System.Drawing.Color.White
@@ -122,7 +122,7 @@ Partial Class frmCustomer
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
-        Me.Label1.Location = New System.Drawing.Point(12, 14)
+        Me.Label1.Location = New System.Drawing.Point(12, 10)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(400, 20)
         Me.Label1.TabIndex = 4
@@ -206,7 +206,7 @@ Partial Class frmCustomer
         Me.lookupCustomText4.Visible = False
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(780, 470)
+        Me.ClientSize = New System.Drawing.Size(660, 390)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.cmdOk)
         Me.Controls.Add(Me.cmdCancel)

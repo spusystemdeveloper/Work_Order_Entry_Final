@@ -11,14 +11,14 @@
         If exist = False Then
 
             If txtFn.Text = String.Empty Or txtUsr.Text = String.Empty Or txtPass.Text = String.Empty Or txtRegister.Text = String.Empty Then
-                MessageBox.Show("Please Fillup all the Field!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Please Fillup all the Field!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             Else
                 clsUser.addUsers(txtFn.Text, txtUsr.Text, txtPass.Text, txtRegister.Text)
                 gridUser.DataSource = clsUser.viewUser()
                 clearFields()
             End If
         Else
-            MessageBox.Show("Username Already Taken!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            AppPrompt.Show("Username Already Taken!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         End If
 
       
@@ -28,7 +28,7 @@
     Private Sub btnEdit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnEdit.Click
       
             If txtFn.Text = String.Empty Or txtUsr.Text = String.Empty Or txtPass.Text = String.Empty Or txtRegister.Text = String.Empty Then
-                MessageBox.Show("Please Fillup all the Field!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Please Fillup all the Field!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             Else
                 clsUser.updateUser(Convert.ToInt64(txtID.Text), txtFn.Text, txtUsr.Text, txtPass.Text, txtRegister.Text)
                 gridUser.DataSource = clsUser.viewUser()
@@ -40,7 +40,7 @@
 
     Private Sub btnDelete_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnDelete.Click
         If txtID.Text = "----" Then
-            MessageBox.Show("Please Select a User !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            AppPrompt.Show("Please Select a User !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         Else
             clsUser.delUser(txtID.Text)
             gridUser.DataSource = clsUser.viewUser()

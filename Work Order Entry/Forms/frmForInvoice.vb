@@ -96,7 +96,7 @@ Public Class frmForInvoice
             orders = ""
 
         Else
-            MessageBox.Show("Please select an Order", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            AppPrompt.Show("Please select an Order", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         End If
 
     End Sub

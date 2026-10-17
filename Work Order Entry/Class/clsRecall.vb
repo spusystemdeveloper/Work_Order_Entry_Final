@@ -119,7 +119,7 @@ Public Class clsRecall
             Return dt1
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
 
@@ -142,7 +142,7 @@ Public Class clsRecall
                 Return wo
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -170,7 +170,7 @@ Public Class clsRecall
                 Return quote
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -323,7 +323,7 @@ Public Class clsRecall
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message,
+            AppPrompt.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message,
                     "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount += 1
             Return Nothing
@@ -349,11 +349,11 @@ Public Class clsRecall
                 Try
                     dbx.SubmitChanges()
                 Catch ex As Exception
-                    MessageBox.Show(ex.ToString, "Error updating sales order.", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error)
+                    AppPrompt.Show(ex.ToString, "Error updating sales order.", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error)
                 End Try
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -448,7 +448,7 @@ Public Class clsRecall
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -510,12 +510,12 @@ Public Class clsRecall
                 Try
                     dbx.SubmitChanges()
                 Catch ex As Exception
-                    MessageBox.Show(ex.ToString, "Error deleting Order entry", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error)
+                    AppPrompt.Show(ex.ToString, "Error deleting Order entry", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error)
                 End Try
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -636,7 +636,7 @@ Public Class clsRecall
                 Return qty
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -653,7 +653,7 @@ Public Class clsRecall
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -671,12 +671,12 @@ Public Class clsRecall
                 Try
                     dbx.SubmitChanges()
                 Catch ex As Exception
-                    MessageBox.Show(ex.ToString, "Error Updating Quantity Committed", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error)
+                    AppPrompt.Show(ex.ToString, "Error Updating Quantity Committed", MessageBoxButtons.RetryCancel, MessageBoxIcon.Error)
                 End Try
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0012", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsRecall Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0012", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 

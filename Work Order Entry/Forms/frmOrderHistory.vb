@@ -73,7 +73,7 @@ Public Class frmOrderHistory
             If IsDisposed OrElse Disposing Then Return
             eventsGrid.DataSource = Nothing
             message.Text = "History could not be loaded."
-            MessageBox.Show(Me, ex.Message, "Order history", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            AppPrompt.Show(Me, ex.Message, "Order history", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Finally
             loading = False
             If Not IsDisposed AndAlso Not Disposing Then loadButton.Enabled = True

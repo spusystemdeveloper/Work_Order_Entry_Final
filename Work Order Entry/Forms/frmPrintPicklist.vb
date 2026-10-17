@@ -59,7 +59,7 @@ Public Class frmPrintPicklist
 
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
 
 
