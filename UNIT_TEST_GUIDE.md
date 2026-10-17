@@ -1,5 +1,12 @@
 # Work Order Entry unit tests
 
+The authorized October 17 localhost DVO_STORE_DB index test is recorded in
+`Database Components/Tests/DVO_RESTORED_ITEMLOG_INDEX_RESULTS.md`. The guarded
+index was committed only on that local restore; seven lookup pairs retained
+their values while median component times and logical reads improved. No live
+deployment or full application save was tested. The local restore is from an
+older June backup; rehearse current Davao data before live deployment.
+
 For the separately requested WO 18882 -> 18879 and next ID 18880 recovery, run
 `Database Components/Tests/HO_Renumber18882_LocalDB_Test.ps1`. Its 42 checks use
 only a GUID-owned synthetic LocalDB instance at compatibility 100, including
@@ -20,6 +27,159 @@ These tests check small business rules without opening the application,
 connecting to DVO/GSC, or changing database records.
 
 ## What is tested
+
+### Login cancellation with custom shutdown warnings
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\LoginCancel_UI_Test.ps1'
+```
+
+The runner compiles a separate x86 STA probe using the actual frmLogin Cancel and
+completion callbacks and AppPrompt. A derived login suppresses its database Load
+handler, and a synthetic main form supplies a custom closing warning. No real
+authentication, draft write, registry/configuration change or application main-form
+load occurs. Cancel/window-close must return Cancel; completion must return OK;
+each host then closes normally with one custom warning and no collection error.
+The pre-fix callback reproduced the exact OpenForms enumeration exception in
+TestResults/LoginCancel-4ecaf03c; the fixed three cases passed in
+TestResults/LoginCancel-38271667. Those are simulated UI tests, not store tests.
+
+For manual acceptance, restart the rebuilt application and cancel initial login;
+it must close without the collection exception or proceeding to item loading.
+Repeat after Logout, cancelling the login dialog. Then verify successful initial
+login and logout/re-login still authenticate/load normally. Close with unsaved
+items and verify existing draft saving/warning behavior; no draft rule was changed.
+The existing VB AfterMainFormCloses setting remains responsible for final shutdown.
+
+### GSC timestamp ambiguity review
+
+See `Database Components/Tests/GSC_ITEMLOG_AMBIGUITY_REVIEW_2026-10-17.md` for the
+completed authorized read-only census on the existing localhost GSC restore.
+`Review_ItemLog_Ambiguity.sql` performs full source SELECT scans and uses a
+connection-scoped tempdb table; its ranking/type aggregates use MAXDOP 1 and a
+one-percent query memory grant cap. It does not create a source index, update
+history, call a correction procedure or change server settings. Run only on an
+explicitly authorized target and account for scan/sort cost. Its counts are an
+observed read-committed state, not a frozen backup under concurrent activity.
+
+The observed 84 conflicting pairs require the existing 53305 guard to remain.
+No active Order number matched, but transfer/order reference collisions and lost
+times prevent inferring a correct historical value. This audit is not an index
+before/after test or authorization to repair history or modify selection rules.
+
+### Packaged branch-neutral RMS voucher lookup migration
+
+`Improve_RMS_VoucherLookup.sql` is an optional, initially unchecked Database
+Updater selection for DVO/GSC/Portable. It adds/reuses the tested non-unique Item
+index without branch IDs, trigger/query changes or business-row DML. The original
+local-only candidate fixture retains its guards; the separately reviewed migration
+uses the updater's existing target review and caller transaction. Deployment
+instructions are in `Database Components/Migrations/RMS_VOUCHER_LOOKUP_GUIDE.md`.
+
+```powershell
+& '.\Database Components\Tests\VoucherLookup_LocalDB_Test.ps1' -CompatibilityLevel 100
+& '.\Database Components\Tests\VoucherLookup_LocalDB_Test.ps1' -CompatibilityLevel 130
+# Build the Debug updater first:
+& '.\Database Components\Tests\DatabaseUpdater_LocalDB_Test.ps1'
+```
+
+The voucher fixtures use GUID-owned synthetic LocalDB instances only. They check
+matching/nonmatching/null/inactive voucher results, unchanged Item rows including
+rowversions/ntext/fractional quantities, trigger preservation and normal atomic
+updates, caller rollback/commit, repeat/reused indexes, schema/name-conflict guards
+and reduction of logical reads. The production updater integration tests also
+check all three catalogs, packaged SQL hashes/guide, initial unchecked visibility,
+deployment history and rollback of index/history when a later script fails.
+These tests do not connect to GSC/DVO stores or certify actual RMS tendering or
+multiuser capacity. Rehearse each current branch restore before deployment.
+
+October 17 packaging validation: all **83 updater integration checks** and
+**25 voucher checks at each compatibility level 100/130** passed. Synthetic
+unchanged lookup Item reads were 756 before and 2 after. Both Release/x86
+solutions, 101 unit tests and clean-folder packaging checks also passed. Ignored
+logs are in TestResults/Voucher-Updater-Integration.log, VoucherMigration-100.log,
+VoucherMigration-130.log and Voucher-CleanFolder.log. The built updater package
+contains the same migration hash and the deployment guide. No live SQL ran.
+
+### Local Davao RMS lookup / actual save-transaction comparison
+
+See `Database Components/Tests/DVO_LOCAL_DEADLOCK_INDEX_RESULTS.md` for the
+October 17 authorized localhost reproduction, query plans, before/after timings,
+correctness checks and cleanup. The workload used a GUID-owned COPY_ONLY restore
+of DVO_STORE_DB, not automated writes against the existing restore. Six actual
+compiled recalled-order save transactions were paired with four RMS SQL lookup
+replay workers; RMS POS/QSRules and final tendering were not executed. One short
+comparison is not the planned actual-client 10/12/15-user capacity certification.
+
+`Database Components/Tests/Fixtures/RMSVoucherLookup_Index_Candidate.sql` preserves
+the exact tested index definition and intentionally permits only local GUID-owned
+test clones with a caller-supplied transaction. Do not remove its test guards or
+add it to an updater deployment without a separately reviewed deployment change.
+The candidate was removed with its disposable database; the original restore's
+previously installed item-log index was left intact. No live target was contacted.
+
+### Live read-only performance collection and 10+ client test plan
+
+`Database Components/Tests/Collect_ReadOnly_Performance.ps1` is an explicitly
+invoked diagnostic collector, not a workload test or deployment script. Usage:
+
+```powershell
+& '.\Database Components\Tests\Collect_ReadOnly_Performance.ps1' `
+    -Server '<authorized server>' -Database '<authorized database>' -SqlUser '<login>'
+```
+
+SQL authentication prompts for a SecureString; omit SqlUser for Windows login.
+Never supply a password in source, command arguments, reports or app configuration.
+The collector performs bounded SELECTs of metadata, waits, cached statements,
+sessions, requests, I/O and existing system_health deadlock data. Default sampling
+is six snapshots five seconds apart. Timeouts and deadlock priority apply only to
+its own connection; ApplicationIntent does not replace proper account permissions.
+Server-level VIEW SERVER STATE/definition visibility are needed for full coverage.
+Unavailable sections are recorded, not reported as zero activity. Server-wide
+wait/session/deadlock evidence must be distinguished from database-specific data.
+
+SQL text literals/comments are redacted before saving under ignored TestResults/
+ReadOnly-Performance-*. Keep raw host/session operational evidence private. The
+collector creates no schema, traces or server settings and does not issue saves,
+tenders, scans of full business history, DBCC cache commands or KILL.
+
+The authorized October 17 live Davao findings are documented in
+`Database Components/Tests/DVO_LIVE_READONLY_PERFORMANCE_2026-10-17.md`.
+`Database Components/Tests/DVO_MULTIUSER_RMS_TEST_PLAN.md` is a prepared plan for
+isolated 10/12/15-client runs, including actual RMS voucher lookup and settlement.
+Those load tests have NOT run. Existing MultiUser fixtures simulate settlement
+and do not prove actual RMS or 10+ user capacity. Do not run that workload on live
+or deploy a candidate index based on this read-only authorization alone.
+
+### Payment Type before Work Order price approval
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\PaymentBeforeApproval_UI_Test.ps1'
+```
+
+The 121 isolated x86 checks invoke the actual ValidateAndSave method with synthetic
+rows, without showing/loading the main form. The fixture temporarily sets all
+legacy SQL contexts to Nothing inside its own process and restores them afterward;
+it changes no registry/app configuration or store connection. Twelve cases cover
+new/recalled Work Orders with empty/whitespace payment and numeric or unconfirmed
+prices, CASH/CHARGE continuation to price confirmation, and new/recalled quotations
+with blank payment retaining their existing price-confirmation path. Checks verify
+the first prompt, early False result, unchanged line values/approval flags, no
+password window and no new legacy context. This is validation-order coverage, not
+real approval authentication or a save. Existing price-approval unit tests and both
+MultiUser_Save_LocalDB_Test.ps1 modes must also pass for save-path changes.
+
+For manual localhost acceptance, use a Work Order with a price that needs approval
+and leave Payment Type blank. Save: the payment warning must appear first, leaving
+the payment field focused and lines unchanged. Select CASH/CHARGE and save again:
+the existing price/password requirement must still apply. Cancel password entry
+and verify nothing is saved; then use valid approval to complete the existing
+flow. Repeat for a recalled Work Order. A quotation with blank payment must keep
+its existing price/approval behavior without a new payment requirement.
 
 ### Compact lookup and prompt layouts
 

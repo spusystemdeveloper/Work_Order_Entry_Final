@@ -50,6 +50,12 @@ was performed. See [the restored HO results](../Tests/HO_RESTORED_ITEMLOG_INDEX_
 
 ## Manual SSMS execution
 
+The October 17 authorized localhost DVO_STORE_DB test also committed this unchanged
+index on the local Davao restore. Seven three-trial lookup comparisons retained
+their values; see [the restored Davao results](../Tests/DVO_RESTORED_ITEMLOG_INDEX_RESULTS.md).
+That restore uses an older June backup. It is not a live Davao installation or
+verification of current live data, and the test did not execute application saves.
+
 For the reviewed live HO target, use the complete standalone file
 [Deploy_HO_PO_DB_ItemLogLookup_LIVE.sql](../Recovery/Deploy_HO_PO_DB_ItemLogLookup_LIVE.sql).
 It embeds this migration with BEGIN TRANSACTION, COMMIT and TRY/CATCH rollback
@@ -85,6 +91,15 @@ run the full sequence again and commit instead of rolling back. Index creation
 is offline and may hold a table lock for much longer than the lock-wait limit.
 
 ## Guards and limitations
+
+The October 17 read-only review of localhost GSC_STORE_DB found 84 conflicting
+latest item/reference groups (73 Items, 246 tied transfer-log rows). All latest
+times were midnight; no affected reference currently matched an open Order.
+That does not establish a correct historical ordering. Keep the item-log index
+unchecked for that dataset pending evidence-backed reconciliation or a separately
+approved selection-rule change; do not bypass 53305. See
+[the GSC review](../Tests/GSC_ITEMLOG_AMBIGUITY_REVIEW_2026-10-17.md).
+The separate RMS voucher Item index does not depend on resolving these logs.
 
 - Enabled, unfiltered covering indexes beginning with ItemID/Date are reused;
   either ascending or descending Date can support ordered access for one item.

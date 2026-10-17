@@ -66,7 +66,12 @@ try {
         Check (@($catalog | Where-Object {$_.Id -eq 'Migrations/Enable_WorkOrder_History.sql'}).Count -eq 1 -and
             -not ($catalog.Id -match 'Fix_WorkOrder_History_Identity')) "$profile offers one history create/update selection"
         Check (@($catalog | Where-Object {$_.Id -eq 'Migrations/Improve_WorkOrder_ItemLogLookup.sql' -and $_.Category -eq 'Index / performance'}).Count -eq 1) "$profile offers the optional item-log performance index"
+        Check (@($catalog | Where-Object {$_.Id -eq 'Migrations/Improve_RMS_VoucherLookup.sql' -and $_.Category -eq 'Index / performance'}).Count -eq 1) "$profile offers the optional RMS voucher lookup index"
+        $packaged = [WorkOrderDatabaseUpdater.UpdateCatalog]::Load((Join-Path (Split-Path $exe) 'Database Components'), $profile)
+        Check (($packaged | Where-Object Id -eq 'Migrations/Improve_RMS_VoucherLookup.sql').Hash -eq
+            ($catalog | Where-Object Id -eq 'Migrations/Improve_RMS_VoucherLookup.sql').Hash) "$profile built package includes the exact reviewed voucher migration"
     }
+    Check (Test-Path (Join-Path (Split-Path $exe) 'Database Components\Migrations\RMS_VOUCHER_LOOKUP_GUIDE.md')) 'Built updater includes the voucher deployment guide'
     $maskedGo = "SELECT 'first`nGO`nlast';`n/* outer /* nested */`nGO`n*/`nGO -- separator`nSELECT 2;"
     Check ([WorkOrderDatabaseUpdater.SqlBatches]::Split($maskedGo, $false).Count -eq 2) 'GO in strings and nested comments stays inside its batch'
     Check ([WorkOrderDatabaseUpdater.SqlBatches]::Split("SELECT [GO], `"GO`";`nGO /* multi`nline */`nSELECT 2", $false).Count -eq 2) 'Quoted identifiers and multiline separator comments are supported'
@@ -84,6 +89,9 @@ try {
         $flags = [Reflection.BindingFlags]'NonPublic,Instance'
         $form.GetType().GetField('packageDirectory', $flags).SetValue($form, $components)
         $form.GetType().GetMethod('LoadPackage', $flags).Invoke($form, @()) | Out-Null
+        $grid = $form.GetType().GetField('grid', $flags).GetValue($form)
+        $voucherRows = @($grid.Rows | Where-Object {$_.Tag.Id -eq 'Migrations/Improve_RMS_VoucherLookup.sql'})
+        Check ($voucherRows.Count -eq 1 -and -not [bool]$voucherRows[0].Cells[0].Value) 'Voucher migration is visible and initially unchecked'
         # Render the content as a detached control so hidden Form visibility does
         # not suppress child painting. No desktop window or user input is used.
         $content = $form.Controls[0]
@@ -173,6 +181,16 @@ INSERT dbo.SOD_Item_Logs VALUES(1,'01',7,'20200101');
     Check ((Scalar "SELECT COUNT(*) FROM sys.indexes WHERE object_id=OBJECT_ID('dbo.SOD_Item_Logs') AND name='IX_SOD_WO_ItemLogLookup' AND is_unique=0;") -eq 1) 'Updater installs and reuses the real non-unique item-log index'
     Check ((Scalar "SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory WHERE ScriptId='Migrations/Improve_WorkOrder_ItemLogLookup.sql' AND ScriptHash='$($logIndex.Hash)';") -eq 2) 'Committed item-log deployments record the reviewed script hash'
     Check ((Scalar 'SELECT COUNT(*) FROM dbo.SOD_Item_Logs WHERE ItemID=1 AND ReferenceID=''01'' AND NewCommitted=7;') -eq 1) 'Updater item-log selection preserves existing business rows'
+    $voucherIndex = $catalog | Where-Object Id -eq 'Migrations/Improve_RMS_VoucherLookup.sql'
+    Sql 'ALTER TABLE dbo.Item ADD TenderID int NOT NULL DEFAULT 0, IsGlobalVoucher bit NOT NULL DEFAULT 0, Inactive bit NOT NULL DEFAULT 0;'
+    $historyBeforeVoucher = Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory;'
+    Reject { Apply @($voucherIndex,$indexFailure) } 'Item log fixture failure' 'Later updater failure rolls back the real voucher index selection'
+    Check ((Scalar "SELECT COUNT(*) FROM sys.indexes WHERE object_id=OBJECT_ID('dbo.Item') AND name='IX_SOD_RMS_VoucherLookup';") -eq 0 -and
+        (Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory;') -eq $historyBeforeVoucher) 'Failed voucher deployment leaves no index or success record'
+    $null = Apply @($voucherIndex)
+    $null = Apply @($voucherIndex)
+    Check ((Scalar "SELECT COUNT(*) FROM sys.indexes WHERE object_id=OBJECT_ID('dbo.Item') AND name='IX_SOD_RMS_VoucherLookup' AND is_unique=0;") -eq 1) 'Updater installs and reuses the non-unique voucher index'
+    Check ((Scalar "SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory WHERE ScriptId='Migrations/Improve_RMS_VoucherLookup.sql' AND ScriptHash='$($voucherIndex.Hash)';") -eq 2) 'Committed voucher deployments record the reviewed script hash'
     Check ((Scalar "SELECT COUNT(*) FROM sys.indexes WHERE object_id=OBJECT_ID('dbo.OrderEntry') AND name='IX_SOD_WO_Edit_OrderEntry'") -eq 1) 'Nested packaged migration transactions retain the outer transaction'
     Check ((Scalar 'SELECT Qty FROM dbo.Invariant WHERE ID=1') -eq 7) 'Selected index/migration scripts preserve fixture business data'
     $info = [WorkOrderDatabaseUpdater.UpdateRunner]::Check($cs, $dbName)

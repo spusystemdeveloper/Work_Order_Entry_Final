@@ -4,6 +4,139 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### Fix login-cancel collection error during shutdown
+
+- Traced the October 17 11:44:36 log to frmLogin.Button2_Click calling
+  Application.Exit while a closing-form callback can show a custom draft warning.
+  Opening/disposing that prompt changes WinForms' OpenForms collection during
+  its global exit enumeration. A separate synthetic x86 process reproduced the
+  exact InvalidOperationException with the pre-fix compiled login callback.
+- Login Cancel now returns Cancel to its modal caller; authenticated completion
+  explicitly returns OK. Both startup and logout callers close the main form and
+  stop their continuation on cancellation. Removed the redundant FormClosed
+  Application.Exit call; the existing VB AfterMainFormCloses shutdown policy
+  handles normal termination. Draft saving/warnings and authentication checks
+  remain unchanged; no save transaction or database object was modified.
+- Both Release/x86 builds and 101 unit tests passed with Debug configuration
+  preserved. New no-database UI probes pass Cancel, window close and successful
+  completion with a custom closing warning. All 1,159 shared-prompt checks and
+  577 ownership/stacking checks also passed; manual startup/logout acceptance
+  remains to be run in the actual application.
+
+### Read-only GSC item-log ambiguity review
+
+- Reviewed the existing localhost GSC_STORE_DB directly, without another restore
+  or index/data changes: 9,512,243 log rows, zero invalid integer references,
+  84 conflicting latest pairs across 73 Items and 246 tied transfer-log rows.
+  All tied latest dates were midnight. Reference numbers matched 46 closed Orders
+  and 38 missing Orders; none matched an open Order at review time.
+- Traced the unfiltered timestamp-only TOP(1) lookup and date-only insert parameter.
+  The heap has no sequence to reconstruct the original event ordering. Added a
+  capped-memory SELECT-only diagnostic (intermediates in tempdb), findings and
+  deployment guidance. The 53305 guard remains intact and the item-log index
+  remains uncertified for this dataset; no historical value was chosen or repaired.
+- No live connection was made. The earlier interrupted disposable-copy attempt
+  was cleaned up before this completed review; no index-comparison result is
+  claimed for that abandoned experiment. The voucher index remains a separate fix.
+- Both Release/x86 solutions and 101 unit tests passed, with Debug configuration
+  preserved. Final local checks found no Item-log index and no active review query.
+
+### Package the tested RMS voucher lookup index in Database Updater
+
+- Added optional Improve_RMS_VoucherLookup.sql under Index / performance for
+  DVO, GSC and Portable, initially unchecked. It creates/reuses the tested
+  non-unique Item(TenderID,IsGlobalVoucher,Inactive) index without fixed database,
+  server or tender IDs. Business rows, triggers, application queries and branch
+  rules remain unchanged; the original local-only fixture guards are retained.
+- Added caller-transaction/schema guards, serialized index installation, reuse
+  of matching differently named coverage and rejection of conflicting named
+  indexes. The existing updater target confirmation, backup/test acknowledgement,
+  transaction, timeout and history behavior are unchanged.
+- Packaged the deployment guide and added disposable migration/updater checks
+  for results, preserved data/rowversions/triggers, exact key order, index reuse,
+  schema conflicts, initial unchecked listing and atomic deployment/history.
+  No existing local restore or live database was migrated during this change.
+- Both Release/x86 solutions and all 101 unit tests passed; the current Debug
+  EXE configuration was preserved around builds/tests. All 83 updater checks,
+  25 voucher migration checks at each compatibility level 100/130, and the
+  clean-folder packaging suite passed. Synthetic Item reads fell from 756 to 2;
+  this is not new live branch or actual RMS performance certification.
+
+### Local Davao RMS lookup / Work Order save deadlock comparison
+
+- Reproduced Item page-lock deadlocks on a GUID-owned copy of localhost
+  DVO_STORE_DB with the unchanged RMS Item/Tender lookup and atomic commitment
+  update. Tested a separate Item(TenderID,IsGlobalVoucher,Inactive) index;
+  the existing item-log index remained constant in both stages.
+- Six actual compiled recalled-order save transactions plus four SQL lookup
+  replay workers: median save 9.320 -> 1.351 seconds, slowest 10.015 -> 1.693
+  seconds; reader deadlock victim errors 4 -> 0. No actual RMS POS/QSRules client
+  or production 10+ user capacity test was performed.
+- Verified fractional commitments/physical stock for 31 Items, preserved values
+  on 32 saved lines, identical nonempty/empty voucher results across 114 columns,
+  and unchanged 84 trigger definitions/states. Added the comparison report and
+  guarded test-only candidate SQL; it is not an updater/live deployment script.
+- Both Release/x86 builds, all 101 unit tests and both 39-check disposable
+  concurrency modes passed. Debug configuration was preserved. Six source-table
+  count/checksum comparisons matched the pre-test backup; the owned clone and
+  backup were removed. The original local restore received no candidate index
+  or test business writes, and no live connection was made during this task.
+
+### Read-only live Davao performance findings and mixed-user plan
+
+- With explicit read-only authorization, collected bounded metadata/DMV snapshots
+  from live DVO_STORE_DB and existing system_health deadlock summaries. Two captured
+  events show an RMS Item/Tender voucher lookup deadlocking with the atomic Item
+  commitment update. The live item-log table still lacks the tested lookup index;
+  broad item-list reads also have high cached elapsed/read costs. No sustained
+  blocker was observed in the short activity sample; this is not peak-load proof.
+- Added a credential-free collector with masked SQL password entry, 10-second
+  query/1-second session lock timeouts and SQL-text literal/comment redaction.
+  It performs no DML/DDL, full log-table scans, cache clearing, new tracing,
+  configuration changes, session killing or live workload replay. Both completed
+  collections had zero unavailable sections; the first local builder-keyword
+  attempt failed before connecting and was corrected.
+- Added DVO_LIVE_READONLY_PERFORMANCE_2026-10-17.md and a separate 10/12/15-client
+  actual-RMS test plan. It distinguishes existing two-cashier simulated settlement
+  checks from a future capacity test and prioritizes the captured deadlock path.
+  The load plan has not been executed; no live index or business rule was changed.
+- Both Release/x86 builds and all 101 unit tests passed. Debug store configuration
+  and the existing uncommitted Payment Type precheck were preserved. Credentials
+  and raw operational evidence are not added to repository documentation.
+
+### Local restored Davao item-log index verification
+
+- At the user's request, installed the unchanged guarded item-log lookup index
+  only on localhost MSI / DVO_STORE_DB. Preflight/index creation took 1.606 seconds.
+  The local index remains installed; no live target, DVO_POS_DB, trigger logic or
+  business rows were changed by this test.
+- Seven item/reference probes, three trials per stage, retained identical results.
+  Median component times fell from 21.197-23.573 ms to 0.616-0.866 ms; logical reads
+  fell from 10,639 to 3. All 84 table-trigger hashes/states, log row count/checksum
+  and compatibility level 100 matched. A separate connection verified the commit.
+- Both Release/x86 builds, 101 unit tests and 31 disposable item-log checks at
+  each compatibility level 100/130 passed. Debug configuration was preserved.
+  See Database Components/Tests/DVO_RESTORED_ITEMLOG_INDEX_RESULTS.md for evidence
+  and limits: the local backup is from June 9, and no full application save or
+  real RMS workflow was performed. Rehearse current Davao data before live rollout.
+
+### Check Work Order payment before price approval
+
+- Added a Work Order-only blank Payment Type precheck at the start of
+  ValidateAndSave. It shows the existing Payment Method warning, focuses the
+  payment field and stops before item-price lookup or approval/password prompts.
+  New and recalled Work Orders use this path. The existing later save checks
+  remain in place; quotation requirements and conversion paths are unchanged.
+- Price confirmation, minimum prices, saved-price exemptions, password/approval
+  conditions, cancellation and save/transaction/stock behavior are unchanged.
+- Both Release/x86 builds and all 101 unit tests passed. Added 121 isolated
+  validation-order checks across 12 new/recalled Work Order/quotation cases,
+  including blank/whitespace payment and CASH/CHARGE continuation. All legacy
+  SQL contexts are disabled only inside that test process. Both disposable
+  multi-user modes passed 39 checks each (RMS settlement is simulated). No live
+  database, real password authentication or live-store save was tested; Debug
+  store configuration was preserved byte-for-byte.
+
 ### More compact lookup and message windows for 768-high screens
 
 - Reduced Designer client sizes: Customer/Sales Rep 780x470 -> 660x390;

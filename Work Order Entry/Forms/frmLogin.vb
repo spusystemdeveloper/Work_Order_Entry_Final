@@ -296,7 +296,11 @@ Public Class frmLogin
         End Using
     End Sub
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
-        Application.Exit()
+        ' Let the modal caller close the main form outside Application.Exit's
+        ' live OpenForms enumeration (draft warnings can open another form).
+        Timer1.Stop()
+        Me.DialogResult = DialogResult.Cancel
+        Me.Close()
     End Sub
 
     Private Sub txtUsername_KeyPress(ByVal sender As System.Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtUsername.KeyPress
@@ -314,6 +318,7 @@ Public Class frmLogin
     Private Sub Timer1_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer1.Tick
         Timer1.Stop()
         Label3.Text = "Login"
+        Me.DialogResult = DialogResult.OK
         Me.Close()
     End Sub
 

@@ -57,6 +57,14 @@ made using SSMS or earlier tools have no entry in this updater's history.
 
 ## Future migrations and function fixes
 
+For the RMS voucher lookup / Work Order Item-lock conflict, tick only
+`Improve_RMS_VoucherLookup.sql`. It is available for DVO, GSC and Portable and
+creates/reuses a non-unique `(TenderID, IsGlobalVoucher, Inactive)` Item index.
+It changes no branch IDs, business rows, triggers or queries. Read
+`Database Components/Migrations/RMS_VOUCHER_LOOKUP_GUIDE.md` in the package first:
+test each branch restore and use a maintenance window. It is separate from the
+item-log index and does not certify sustained RMS/10+ user capacity.
+
 Select **Enable_WorkOrder_History.sql** for both new installations and updates.
 This one script creates/updates the history triggers and converts the approved
 legacy history IDENTITY table to a sequence, retaining events, IDs and permissions

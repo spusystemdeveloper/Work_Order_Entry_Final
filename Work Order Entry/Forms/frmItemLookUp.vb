@@ -2445,7 +2445,10 @@ Proceed:
             ' This method does not load data or authenticate a user.
             ApplyLeftPanelReadability()
             FormatGrid()
-            frmLogin.ShowDialog()
+            If frmLogin.ShowDialog() <> DialogResult.OK Then
+                Me.Close()
+                Exit Sub
+            End If
 
             'Dim h As System.Net.IPHostEntry = System.Net.Dns.GetHostByName(System.Net.Dns.GetHostName)
             Dim h As System.Net.IPHostEntry = System.Net.Dns.GetHostEntry(System.Net.Dns.GetHostName)
@@ -5301,10 +5304,8 @@ err_flag:
         cboPayment.SelectedIndex = -1
     End Sub
 
-    Private Sub frmItemLookUp_FormClosed(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosedEventArgs) Handles MyBase.FormClosed
-        Application.Exit()
-    End Sub
-
+    ' The VB application framework shuts down after this main form closes.
+    ' Do not re-enter global OpenForms enumeration from FormClosed.
     Private Sub frmItemLookUp_FormClosing(ByVal sender As System.Object, ByVal e As System.Windows.Forms.FormClosingEventArgs) Handles MyBase.FormClosing
         If imageLoadTimer IsNot Nothing Then
             imageLoadTimer.Stop()
@@ -6282,7 +6283,10 @@ inputCust:
 
             itemData.DataSource = Nothing
             Update_Timer.Enabled = False
-            frmLogin.ShowDialog()
+            If frmLogin.ShowDialog() <> DialogResult.OK Then
+                Me.Close()
+                Exit Sub
+            End If
         Catch ex As Exception
             AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0056", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -6866,6 +6870,13 @@ inputCust:
     'End Function
 
     Private Function ValidateAndSave() As Boolean
+        ' Work Orders need a payment method before asking for price approval.
+        If getEntryType() = 2 AndAlso String.IsNullOrWhiteSpace(cboPayment.Text) Then
+            AppPrompt.Show("Please select a Payment Method", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            cboPayment.Focus()
+            Return False
+        End If
+
         Dim needsPassword As Boolean = False
         Dim rowsNeedingOverride As New List(Of DataGridViewRow)
 

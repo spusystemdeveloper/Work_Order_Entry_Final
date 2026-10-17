@@ -84,6 +84,14 @@ Example: for the existing recall item-code optimization, tick only
 coverage is missing. Local GSC already received it on October 14, 2026; repeating
 this particular script is supported. Other scripts may have different effects.
 
+For the tested RMS voucher lookup improvement, no import is needed: the package
+offers **Improve_RMS_VoucherLookup.sql** under **Index / performance** for DVO,
+GSC and Portable. Select only that migration to deploy just the Item lookup index.
+Read `Database Components/Migrations/RMS_VOUCHER_LOOKUP_GUIDE.md`, test a current
+branch restore first and use a maintenance window. It preserves business rows,
+triggers and branch rules, and rejects incompatible filter-column/index schemas.
+The older Davao SQL replay is not proof of actual RMS capacity at every branch.
+
 ## 4. Import a SQL script received from a developer
 
 Import means adding a file to the review list. It does not execute the SQL.

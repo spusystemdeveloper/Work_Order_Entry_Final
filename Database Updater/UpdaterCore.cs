@@ -113,7 +113,7 @@ namespace WorkOrderDatabaseUpdater
             var result = new List<UpdateScript>();
             string[] migrations = { "Ensure_Queueing_Compatibility_Tables", "Ensure_Work_Order_Draft_Tables",
                 "Enable_WorkOrder_History", "Prepare_WorkOrder_Edit_Checks", "Improve_WorkOrder_ItemLookup",
-                "Improve_WorkOrder_ItemLogLookup" };
+                "Improve_WorkOrder_ItemLogLookup", "Improve_RMS_VoucherLookup" };
             foreach (var name in migrations)
                 result.Add(UpdateScript.Load(System.IO.Path.Combine(components, "Migrations", name + ".sql"),
                     "Migrations/" + name + ".sql", name.Contains("Checks") || name.Contains("Lookup") ? "Index / performance" : "Migration",
@@ -121,7 +121,9 @@ namespace WorkOrderDatabaseUpdater
                         ? "Creates/updates history triggers and converts approved legacy IDENTITY history to a sequence, preserving events, IDs and permissions. Back up first; no separate history fix needed."
                         : name == "Improve_WorkOrder_ItemLogLookup"
                             ? "Optional item-log index only; trigger and business rows are unchanged. Requires a maintenance window and restore test. Stops on incompatible references or ambiguous latest timestamps."
-                            : "Optional; existing tables are preserved. Review prerequisites in the SQL.", true));
+                            : name == "Improve_RMS_VoucherLookup"
+                                ? "Optional RMS voucher lookup index only; reduces Item scans that conflicted with Work Order saves in the Davao restore test. No tender IDs, triggers or business rows changed. Test each branch restore and deploy in a maintenance window."
+                                : "Optional; existing tables are preserved. Review prerequisites in the SQL.", true));
             string deployment = System.IO.Path.GetFullPath(System.IO.Path.Combine(components, "Deployment"));
             string driver = profile == "Portable" ? "Deploy_PORTABLE_REQUIRED_OBJECTS.sql" : "Deploy_" + profile + "_STORE_DB.sql";
             foreach (string line in File.ReadAllLines(System.IO.Path.Combine(deployment, driver)))
