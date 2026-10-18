@@ -4,6 +4,32 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### October 18: consistent Escape cancellation in customer and sales lookup
+
+- Confirmed that Esc from either lookup's OK/Cancel button was unhandled, while
+  existing search/grid handlers already supported Esc. Assigned the existing
+  Cancel button to each form in the Designer, making cancellation consistent
+  without changing Enter, F-key shortcuts, tab order, selection or business rules.
+- Added an isolated x86 keyboard-routing regression probe and updated the lookup
+  presentation check to require the Cancel assignment. No lookup Load handler,
+  SQL query, customer selection or sales-rep selection runs in these probes.
+  The separate RMS investigation remains paused.
+- Both Release/x86 solutions and the Debug app built successfully. All 101 unit
+  tests passed on retry outside the sandbox (the first attempt could not connect
+  to its x86 test host). Four keyboard, 204 lookup and 28 recall-formatting checks
+  passed; the Debug EXE configuration was preserved byte-for-byte. Manual keyboard
+  acceptance in the running add-in remains for the user.
+
+### October 18: document paused RMS settlement investigation
+
+- Consolidated the read-only audit, disposable trigger comparison and actual
+  localhost RMS normal, timeout and deadlock results in the
+  [settlement investigation record](Database%20Components/Tests/RMS_SETTLEMENT_TRIGGER_REVIEW_2026-10-18.md).
+- Recorded partial postings after the forced original-trigger failures, cleanup,
+  retained evidence and the user's decision to pause. Candidate POS testing and
+  deployment remain unapproved/incomplete. This update changes documentation only;
+  no application code or database was changed or tested again.
+
 ### Fix login-cancel collection error during shutdown
 
 - Traced the October 17 11:44:36 log to frmLogin.Button2_Click calling

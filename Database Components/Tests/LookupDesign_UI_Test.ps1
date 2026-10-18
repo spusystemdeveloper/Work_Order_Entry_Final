@@ -26,7 +26,7 @@ try{
             })
             Check ($grid.ReadOnly -and !$grid.AllowUserToAddRows -and !$grid.AllowUserToDeleteRows -and $grid.MultiSelect -and $grid.AllowUserToOrderColumns) 'Lookup permissions changed'
             Check ($grid.SelectionMode -eq [Windows.Forms.DataGridViewSelectionMode]::FullRowSelect) 'Row selection changed'
-            Check ($null -eq $f.AcceptButton -and $null -eq $f.CancelButton) 'Do not introduce new Enter/Escape actions'
+            Check ($null -eq $f.AcceptButton -and $f.CancelButton -eq (C $f 'cmdCancel')) 'Enter behavior and dialog-wide Escape cancellation must be preserved'
             Check ((C $f 'cmdOk').TabIndex -eq $(if($customer){3}else{8}) -and (C $f 'cmdCancel').TabIndex -eq $(if($customer){2}else{7})) 'Button tab indices changed'
             $names=if($customer){@('AccountNumber','Company','PriceLevel','Employee','Title','TaxExempt','ID','CustomText2','CustomText4')}else{@('ID','Name')}
             $table=[Data.DataTable]::new()

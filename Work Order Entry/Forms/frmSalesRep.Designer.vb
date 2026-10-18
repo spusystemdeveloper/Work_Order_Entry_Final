@@ -137,6 +137,7 @@ Partial Class frmSalesRep
         Me.lookupName.Width = 400
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+        Me.CancelButton = Me.cmdCancel
         Me.ClientSize = New System.Drawing.Size(660, 390)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.cmdOk)

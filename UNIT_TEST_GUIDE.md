@@ -1,5 +1,13 @@
 # Work Order Entry unit tests
 
+The [paused RMS settlement investigation](Database%20Components/Tests/RMS_SETTLEMENT_TRIGGER_REVIEW_2026-10-18.md)
+consolidates the October 18 source audit, disposable trigger tests and actual
+localhost RMS results, including the confirmed original-trigger deadlock and
+partial posting. The candidate has not been tested through actual RMS. Those
+experiments are historical evidence, not part of the routine unit-test runner;
+do not rerun fault injection against a store or treat synthetic passes as POS
+certification. Investigation is paused at the user's request.
+
 The authorized October 17 localhost DVO_STORE_DB index test is recorded in
 `Database Components/Tests/DVO_RESTORED_ITEMLOG_INDEX_RESULTS.md`. The guarded
 index was committed only on that local restore; seven lookup pairs retained
@@ -27,6 +35,37 @@ These tests check small business rules without opening the application,
 connecting to DVO/GSC, or changing database records.
 
 ## What is tested
+
+### Customer and Sales Rep lookup Escape routing
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\LookupKeyboard_UI_Test.ps1'
+& '.\Database Components\Tests\LookupDesign_UI_Test.ps1'
+```
+
+The keyboard runner compiles a separate x86 STA process with only the application
+assembly and no store configuration. Derived forms suppress the production Load
+handlers and show transparently without a taskbar button, then send Esc through
+WinForms preprocessing from the focused OK/Cancel buttons. All four cases must
+route to the existing Cancel action and return
+Cancel, while AcceptButton remains unset. The original assembly reproduced all
+four unhandled cases with `-ExpectLegacyFailure`; use that switch only with a
+pre-fix assembly. No database, pricing, tax or selected-customer action runs.
+
+Manual acceptance: open Customers (F8) and Sales Reps (F7), search, use Down and
+arrow keys, then select with Enter. Reopen each and Tab onto OK and Cancel;
+Esc must close without applying a selection. Confirm mouse OK/Cancel still work
+and focus returns to the invoking main window. Existing tab order is unchanged.
+The RMS investigation stays paused; these tests do not exercise RMS.
+
+October 18 validation: both Release/x86 builds, Debug build, 101 unit tests,
+four keyboard cases, 204 lookup checks and 28 recall-formatting checks passed.
+The initial sandboxed VSTest attempt aborted before execution because its x86
+test host did not connect; the unrestricted local retry passed. Debug store
+configuration was preserved byte-for-byte around builds and both test attempts.
+Full manual add-in focus/selection acceptance remains pending.
 
 ### Login cancellation with custom shutdown warnings
 
