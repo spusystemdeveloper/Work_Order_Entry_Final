@@ -2,6 +2,10 @@ Public Class frmRecall
 
     Dim parm As String
 
+    Private Sub gridOrder_Paint(sender As Object, e As PaintEventArgs) Handles gridOrder.Paint
+        GridEmptyState.Draw(gridOrder, e, "No orders match the current filters.")
+    End Sub
+
     Dim recallData As New BindingSource
     Private searchDebounceTimer As Windows.Forms.Timer
 
@@ -93,6 +97,7 @@ Public Class frmRecall
             optWork.Checked = True
             ' txtSearch.Focus()
         ElseIf e.KeyCode = Keys.Enter Then
+            If gridOrder.CurrentRow Is Nothing Then Exit Sub
             frmItemLookUp.RecallQuote(gridOrder.Item(0, gridOrder.CurrentRow.Index).Value)
 
             Me.Dispose()

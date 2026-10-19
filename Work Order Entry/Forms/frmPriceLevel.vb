@@ -60,9 +60,7 @@
         bLevelFlag = False
 
         Dim maxLevel As Integer = Math.Max(iPrice, GetCustomerPriceLevelIndex())
-        For x = 0 To maxLevel
-            clsItemLookUp.LoadLevel(x, txtItemCode.Text, 0)
-        Next x
+        clsItemLookUp.LoadLevels(maxLevel, txtItemCode.Text, 0)
 
         SelectTopPriceLevel()
         gridLevel.Columns(1).DefaultCellStyle.Format = "C"

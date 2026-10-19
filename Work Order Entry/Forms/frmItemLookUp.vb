@@ -5,6 +5,10 @@ Imports System.Threading
 Public Class frmItemLookUp
 
     Private Const ManualTaxExemptionReasonCode As String = "701"
+
+    Private Sub gridItem_Paint(sender As Object, e As PaintEventArgs) Handles gridItem.Paint
+        GridEmptyState.Draw(gridItem, e, "No items found. Try another code or description.")
+    End Sub
     Private Const ManualTaxExemptionReasonType As Integer = 6
     Private Const MaxItemsPerWorkOrder As Integer = 6
 
@@ -173,7 +177,14 @@ Public Class frmItemLookUp
 
     End Sub
 
-    Private Sub SearchItem(Optional ByVal suppressNoItemsMessage As Boolean = False)
+    Private Sub HandleEmptyItemSearch()
+        ' Keep the failed keyword undo behavior, but leave the empty result bound.
+        RemoveLastSearchNode()
+        txtSearch.Focus()
+        gridItem.Invalidate()
+    End Sub
+
+    Private Sub SearchItem()
 
         Try
             If String.IsNullOrWhiteSpace(sfilterTxt) Then
@@ -194,21 +205,7 @@ Public Class frmItemLookUp
             BindGridItemSource(LoadItemSearchData(FilterStr))
 
             If gridItem.RowCount = 0 Then
-                If suppressNoItemsMessage = False Then
-                    AppPrompt.Show("No Items Found!", "Message Error !", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                End If
-
-                If RemoveLastSearchNode() Then
-                    If TreeView1.Nodes.Count = 0 Then
-                        BindGridItemSource(getItem())
-                    Else
-                        SearchItem(True)
-                    End If
-                Else
-                    BindGridItemSource(getItem())
-                End If
-
-                txtSearch.Focus()
+                HandleEmptyItemSearch()
                 iRow = 0
                 lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
                 Exit Sub
@@ -293,7 +290,6 @@ Public Class frmItemLookUp
 
             If gridItem.RowCount = 0 Then
 
-                AppPrompt.Show("No Items Found!", "Message Error !", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 RemoveLastSearchNode()
                 If TreeView1.Nodes.Count = 0 Then
                     gridItem.DataSource = getItem()
@@ -571,7 +567,7 @@ Public Class frmItemLookUp
                 '=================================
                 .Columns(2).DefaultCellStyle.Format = "C"
                 .Columns(3).DefaultCellStyle.Format = "N2"
-                .Columns(4).DefaultCellStyle.Format = "N0"
+                .Columns(4).DefaultCellStyle.Format = "#,0.###############"
 
                 '=================================
                 ' ALIGNMENTS
@@ -615,12 +611,21 @@ Public Class frmItemLookUp
                 ApplyGridReadability(gridItem)
                 .RowTemplate.DefaultCellStyle.Font = GridLoadedFont
                 .RowsDefaultCellStyle.Font = GridLoadedFont
-                For Each row As DataGridViewRow In .Rows
-                    row.Height = .RowTemplate.Height
+                For rowIndex As Integer = 0 To .Rows.Count - 1
+                    ' Inspect shared rows without materializing a row per item.
+                    If .Rows.SharedRow(rowIndex).Height <> .RowTemplate.Height Then
+                        .Rows(rowIndex).Height = .RowTemplate.Height
+                    End If
                 Next
                 For Each index As Integer In {2, 3, 4, 5, 7, 17, 18}
                     .Columns(index).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
                     .Columns(index).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+                Next
+
+                ' Size visible numeric cells only; retain space for short values.
+                For Each index As Integer In {2, 4, 18}
+                    .Columns(index).MinimumWidth = If(index = 2, 108, If(index = 4, 96, 94))
+                    .Columns(index).AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
                 Next
 
                 .ResumeLayout()
@@ -1688,6 +1693,10 @@ Public Class frmItemLookUp
                         .Where(Function(i) itemIDs.Contains(i.ID)) _
                         .ToDictionary(Function(i) i.ID)
 
+                        ' Check every line, including later split orders, before allocating
+                        ' the first header ID. Final transaction checks below still apply.
+                        ValidateNewOrderRows(itemMap)
+
                         For chunkIndex As Integer = 0 To rowChunks.Count - 1
                             Dim chunk = rowChunks(chunkIndex)
 
@@ -1816,6 +1825,43 @@ Public Class frmItemLookUp
         End Try
     End Function
 
+
+    Private Sub ValidateNewOrderRows(ByVal itemMap As Dictionary(Of Integer, Item))
+        Dim projectedCommitments As New Dictionary(Of Integer, Double)
+        For Each row As DataGridViewRow In gridSelectItem.Rows
+            ' Use the same conversions as the existing header/detail save calls.
+            Convert.ToDouble(row.Cells(5).Value)
+            Convert.ToDecimal(Convert.ToDouble(row.Cells(9).Value))
+            Dim itemID As Integer = Convert.ToInt32(row.Cells(11).Value)
+            Convert.ToDecimal(Convert.ToDouble(row.Cells(12).Value))
+            Convert.ToDecimal(Convert.ToDouble(row.Cells(3).Value))
+            Dim quantity As Double = Convert.ToDouble(row.Cells(2).Value)
+            If Not bTaxExcempt Then Convert.ToInt32(row.Cells(Taxable.Index).Value)
+            Convert.ToInt32(row.Cells(18).Value)
+            Convert.ToBoolean(row.Cells(17).Value)
+
+            Dim item As Item = Nothing
+            If Not itemMap.TryGetValue(itemID, item) Then
+                Throw New InvalidOperationException("Item " & itemID & " was not found while saving the order.")
+            End If
+
+            If getEntryType() <> 2 OrElse item.ItemType = 7 Then Continue For
+            Dim difference As Double = OrderCommitmentRules.CalculateChange(0, 2, 0R, quantity, item.ItemType)
+            If difference = 0R Then Continue For
+            Dim current As Double
+            If Not projectedCommitments.TryGetValue(itemID, current) Then current = item.QuantityCommitted
+            Dim projected As Double = current + difference
+            If projected < 0R Then
+                Throw New InvalidOperationException(
+                    "The committed-quantity adjustment for item " & itemID &
+                    " would make QuantityCommitted negative. Current value: " &
+                    current.ToString() & ", adjustment: " & difference.ToString() & ".")
+            End If
+            ' Follow line order so duplicates and split orders use the same running
+            ' differences as the atomic updates. This check never writes stock.
+            projectedCommitments(itemID) = projected
+        Next
+    End Sub
 
     'comment
     Public Sub setQtyCommittedQuotetoWo()
@@ -2616,7 +2662,7 @@ Proceed:
                 .Columns(3).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
                 .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
                 .Columns(5).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
-                .Columns(2).DefaultCellStyle.Format = "N0"
+                .Columns(2).DefaultCellStyle.Format = "#,0.###############"
                 .Columns(3).DefaultCellStyle.Format = "C"
                 .Columns(5).DefaultCellStyle.Format = "C"
                 .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
@@ -2639,6 +2685,10 @@ Proceed:
                 .Columns(3).Width = 100
                 .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnMode.None
                 .Columns(5).Width = 120
+                For Each index As Integer In {2, 3, 5}
+                    .Columns(index).MinimumWidth = If(index = 2, 90, If(index = 3, 100, 120))
+                    .Columns(index).AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                Next
                 .Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnMode.None
                 .Columns(17).Width = 100
                 .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
@@ -5913,7 +5963,6 @@ inputCust:
 
             If gridItem.RowCount = 0 Then
 
-                AppPrompt.Show("No Items Found!", "Message !", MessageBoxButtons.OK, MessageBoxIcon.Error)
                 txtBarcode.Text = ""
                 txtBarcode.Focus()
 

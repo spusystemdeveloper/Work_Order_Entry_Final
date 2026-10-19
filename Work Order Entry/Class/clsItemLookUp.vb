@@ -378,82 +378,69 @@ Public Class clsItemLookUp
 
     'End Sub
     Public Shared Sub LoadLevel(ByVal iLevel As Integer, ByVal sCode As String, ByVal iType As Integer)
+        LoadLevelRange(iLevel, iLevel, sCode, iType)
+    End Sub
 
+    Public Shared Sub LoadLevels(ByVal maxLevel As Integer, ByVal sCode As String, ByVal iType As Integer)
+        LoadLevelRange(0, maxLevel, sCode, iType)
+    End Sub
+
+    Private Shared Sub LoadLevelRange(firstLevel As Integer, lastLevel As Integer, sCode As String, iType As Integer)
+        If lastLevel < firstLevel Then Return
         Try
-            Dim sPriceType As String
-            Dim dPrice As Double
-            Dim dPriceMask As Double
-
-
-            dPrice = 0
-            sPriceType = ""
-
+            ' Per invocation only: reopening or password approval reads fresh data.
             Using dbx = GetDB()
                 Dim mask = (From c In dbx.SOD_WO_Confs Select c.PriceLevel).FirstOrDefault
+                Dim query = (From L In dbx.SOD_fntbl_PriceLevel(sCode) Select L).ToList
+                For iLevel = firstLevel To lastLevel
+                    Dim sPriceType As String = ""
+                    Dim dPrice As Double = 0
+                    Dim dPriceMask As Double = 0
+                    For Each Level In query
 
-                Dim query = (From L In dbx.SOD_fntbl_PriceLevel(sCode)
-                             Select L).ToList
+                        If iLevel = 0 Then
+                            sPriceType = "PRICE (RETAIL)"
+                            dPrice = Level.Price
+                        ElseIf iLevel = 1 Then
+                            sPriceType = "PRICE A (WHOLESALE)"
+                            dPrice = Level.PriceA
+                        ElseIf iLevel = 2 Then
+                            sPriceType = "PRICE B (D1)"
+                            dPrice = Level.PriceB
+                        ElseIf iLevel = 3 Then
+                            sPriceType = "PRICE C (D2)"
+                            dPrice = Level.PriceC
+                        End If
 
 
-                For Each Level In query
+                        If mask = "PRICE (RETAIL)" Then
+                            dPriceMask = Level.Price
+                        ElseIf mask = "PRICE A (WHOLESALE)" Then
+                            dPriceMask = Level.PriceA
+                        ElseIf mask = "PRICE B (D1)" Then
+                            dPriceMask = Level.PriceB
+                        ElseIf mask = "PRICE C (D2)" Then
+                            dPriceMask = Level.PriceC
+                        ElseIf mask = "NONE" Then
+                            'dPriceMask = Level.PriceC
+                        End If
 
-                    If iLevel = 0 Then
-                        sPriceType = "PRICE (RETAIL)"
-                        dPrice = Level.Price
-                    ElseIf iLevel = 1 Then
-                        sPriceType = "PRICE A (WHOLESALE)"
-                        dPrice = Level.PriceA
-                    ElseIf iLevel = 2 Then
-                        sPriceType = "PRICE B (D1)"
-                        dPrice = Level.PriceB
-                    ElseIf iLevel = 3 Then
-                        sPriceType = "PRICE C (D2)"
-                        dPrice = Level.PriceC
+                        dLowest = dPriceMask
+
+                    Next
+                    If bLevelFlag = False Then
+                        If iType = 0 Then
+                            frmPriceLevel.DisplayPrice(sPriceType, dPrice)
+                        Else
+                            frmLinqLevel.DisplayPrice(sPriceType, dPrice)
+                        End If
                     End If
-
-
-                    If mask = "PRICE (RETAIL)" Then
-                        dPriceMask = Level.Price
-                    ElseIf mask = "PRICE A (WHOLESALE)" Then
-                        dPriceMask = Level.PriceA
-                    ElseIf mask = "PRICE B (D1)" Then
-                        dPriceMask = Level.PriceB
-                    ElseIf mask = "PRICE C (D2)" Then
-                        dPriceMask = Level.PriceC
-                    ElseIf mask = "NONE" Then
-                        'dPriceMask = Level.PriceC
-                    End If
-
-                    dLowest = dPriceMask
-
                 Next
             End Using
-
-            Dim sLevel As String
-
-            For Each n In clsItemLookUp.LoadSettings
-                sLevel = n.PriceLevel
-            Next
-
-            'If sPriceType = sLevel Then
-            '    bLevelFlag = True
-            'End If
-
-            If bLevelFlag = False Then
-                If iType = 0 Then
-                    frmPriceLevel.DisplayPrice(sPriceType, dPrice)
-                Else
-                    frmLinqLevel.DisplayPrice(sPriceType, dPrice)
-                End If
-            End If
-
         Catch ex As Exception
             AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
-
-
-
     End Sub
 
 

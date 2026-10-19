@@ -4,6 +4,147 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### October 19: validate new-order rows before allocating header IDs
+
+- InsertEntry now checks all selected rows, including later split orders, before
+  its first header insert: existing numeric/Decimal, prepared-count and pick-flag
+  conversions, item existence, and the existing commitment condition projected
+  in line order. Duplicate rows share a running projection. No stock is written
+  by prevalidation; no additional query or dependency was introduced.
+- Existing transaction writes/checks, atomic commitment differences, rollback,
+  pricing/approval, shortage handling, tax exemptions, non-inventory exemption,
+  zero-difference handling, quotation and existing-order paths remain intact.
+  Detectable bad lines fail sooner; later SQL/concurrent failures can still
+  consume IDs. No reseed, gap filling, SQL migration or live operation.
+- All 80 allocation-boundary checks passed across 18 paired synthetic LocalDB
+  cases. Eleven predictable failure cases consumed 13 IDs without preflight
+  and zero with it; valid saves retained exact values. A concurrent change
+  remained rejected by the final atomic check. This is a compiled helper/mapped
+  SQL boundary test, not execution of the full prompted UI or RMS.
+- Both Release/x86 solutions, Debug build and all 101 unit tests passed; Debug
+  config preserved byte-for-byte. Multi-user regression passed 39 checks normally
+  and 39 with versioned reads in disposable fixtures. RMS remains paused;
+  manual localhost addin save/quotation acceptance remains outstanding.
+
+### October 19: prepare guarded HO WO 18912 to 18905 recovery
+
+- Added a standalone personal-SSMS script and instructions for the requested
+  open-order renumber, including queue/group, line, approval, audit and
+  order-domain item-log references. Exact target/source/trigger/dependency and
+  unused-destination guards reject drift, posted sales and ambiguous references.
+- Default Commit=0 rolls back. At the user's explicit request, backup-path,
+  backup-history and checksum verification were removed. Full value comparisons preserve
+  business values; one mapping audit event is appended only on commit.
+- No identity reseed: identity stays 18912; next normal allocation is 18913
+  absent intervening activity. No application/save-rule change, live recovery,
+  backup or live rollback rehearsal was performed; RMS remains paused.
+- All 43 synthetic LocalDB recovery checks passed, including actual legacy
+  @@IDENTITY allocation, rejection guards and injected rollback failures.
+  Both Release/x86 solutions and all 101 unit tests passed; Debug EXE config
+  preserved byte-for-byte. A fresh restored-store rehearsal and operator
+  live execution/verification remain outstanding.
+
+### October 19: improve InterStore availability readability
+
+- Updated the Designer layout with larger item headings, two-line item-name
+  space, readable grid text/rows, wider fill columns for store names/codes,
+  displayed-cell quantity sizing and clear selection/Close styling. The medium
+  window fits 1024x768 and 1366x768 in normal/simulated 125% checks.
+- Serialized the existing ID/Name/StoreCode/Qty/Address mappings in the Designer;
+  ID remains visible and Address hidden. Removed only runtime presentation code.
+  The existing SOD_fntbl_CheckQty query/caller, raw/nullable/fractional quantities,
+  sorting, column reordering, row resizing, selection and keyboard routing remain
+  unchanged. No database object or business rule changed; RMS remains paused.
+- Both Release/x86 solutions, Debug build and all 101 unit tests passed with
+  Debug configuration preserved. All 140 isolated InterStore checks and 28 recall
+  checkbox-formatting checks passed. Normal/125% synthetic renders inspected;
+  actual store availability and manual UI acceptance remain for the user.
+
+### October 18: avoid unnecessary item-grid row materialization
+
+- GridColumnWidth now checks each shared row's height before accessing/updating
+  its individual row object. Rows already at the required height remain shared;
+  different heights are still normalized to 44 exactly as before. No column,
+  data, selection, shortcut, query or business-rule change.
+- Original/candidate compiled comparison passed 208 assertions across 16 cases:
+  0/1/100/500 rows, 1024/1366 widths and normal/simulated 125% scaling. Rendered
+  pixels, data hashes, column settings and selection matched. Altered heights
+  were still normalized. For 500 rows, shared-row count was 0 before and 500
+  after, measured before selection/rendering materialized visible rows.
+- Synthetic binding/formatting medians were 21.92 -> 8.76 ms at 1024 width and
+  41.87 -> 12.21 ms at 1366; repeated-formatting medians were 8.34 -> 7.91 ms
+  and 19.89 -> 15.41 ms respectively. These are isolated UI timings, not live
+  SQL/search measurements. Both Release/x86 builds, Debug build, 101 unit tests,
+  50 readability, 28 recall-formatting and 875 small-screen checks passed.
+  Debug store configuration was preserved. RMS investigation remains paused.
+
+### October 18: reduce repeated price-level reads
+
+- Price Level Selection now loads its mask and item-price rows once per load,
+  then renders all permitted levels using the existing mapping. The shared
+  single-level API delegates to the same implementation. Removed a redundant
+  settings read whose result was unused. No data is cached across openings or
+  password-triggered reloads; mappings, minimum-price assignment, row order,
+  top-row selection and approval/password handlers remain unchanged.
+- Compared original and updated compiled loaders on a GUID-owned LocalDB fixture:
+  all 125 paired cases matched (75 dialog loads and 50 single-level cases).
+  Traced SQL commands fell from 825 to 250 overall; a four-level dialog falls
+  from 12 reads to 2. Dialog median was 92.89 ms before and 16.19 ms after in
+  this synthetic fixture, not a live-store speed measurement.
+- Both Release/x86 builds, Debug build, 101 unit tests and 50 Price Level UI
+  checks passed with Debug config preserved. Fixture database was dropped and
+  instance deleted. No existing restored/live database, SQL object or business
+  row was changed; RMS investigation remains paused. Manual approval/password
+  acceptance in the actual add-in remains pending.
+
+### October 18: explain empty search results inside lookup grids
+
+- Added centered, wrapping guidance inside empty Customer, Sales Rep, Recall
+  and item-search grids. Initial unbound grids remain blank; messages disappear
+  when rows return. No placeholder rows or blocking overlays are added.
+- Removed the redundant item-search "No Items Found!" popups. After explicit user
+  approval, unsuccessful keyword search now leaves its empty result bound instead
+  of automatically restoring previous/all items. Failed-keyword cleanup remains;
+  F4/F5, barcode reset/focus, actual errors and normal search predicates are unchanged.
+- Removed the intermediate above-grid notice. The final design displays the
+  no-items guidance only inside the empty grid. Import-specific fallback is
+  unchanged. Prices, quantities, calculations, validation and order rules are unchanged.
+- Both Release/x86 builds, Debug build and 101 unit tests passed with Debug config
+  preserved. All 37 empty-state/keyword-cleanup checks, 28 recall-formatting and
+  875 small-screen checks passed. Synthetic renders were inspected; manual
+  application search acceptance remains pending. No SQL executed; RMS remains paused.
+
+### October 18: guard empty Customer, Sales Rep and Recall selection
+
+- Reproduced Customer's missing-current-row exception, Sales Rep's out-of-range
+  row read and Recall's missing-row Enter exception in a separate x86 process.
+  Added early returns for missing/out-of-range lookup selection and before the
+  Customer/Sales Rep Enter row-index helper and Recall Enter handler.
+- Empty selection leaves the dialog open without applying a customer, sales rep
+  or order. Filters, valid-row selection, keyboard shortcuts and business rules
+  are unchanged. Existing Recall OK/double-click guards remain intact.
+- Both Release/x86 solutions, Debug build and all 101 unit tests passed with
+  Debug configuration preserved byte-for-byte. All 22 isolated empty-result,
+  204 lookup and four Escape-routing checks passed. The UI probe verifies legacy
+  contexts are closed and removes them before callbacks; no SQL or real-row
+  selection runs. Manual search acceptance remains pending. RMS stays paused.
+
+### October 18: show fractional item quantities and fit numeric grid values
+
+- Confirmed selected quantity 1.25 displayed as 1 with N0 formatting, and a
+  seven-digit price exceeded its fixed column width. Selected/available quantities
+  now use grouped numbers with optional fractional digits. No stored quantity,
+  price, total, calculation, edit validation or shortcut was changed.
+- Search price/available/committed and selected quantity/price/total columns size
+  to displayed cells, retaining their previous widths as minimums. This avoids
+  scanning all search results; unusually wide values remain horizontally reachable.
+  Designer and runtime styles match. Existing clipped-description tooltips,
+  editing selection and price-warning formatting remain intact.
+- Both Release/x86 solutions, Debug build and all 101 unit tests passed with
+  Debug store configuration preserved byte-for-byte. All 50 isolated display,
+  28 recall-formatting and 875 small-screen checks passed. Manual add-in visual
+  acceptance remains pending. No SQL or database changes; RMS review stays paused.
+
 ### October 18: consistent Escape cancellation in customer and sales lookup
 
 - Confirmed that Esc from either lookup's OK/Cancel button was unhandled, while

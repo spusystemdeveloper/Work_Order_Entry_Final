@@ -1,5 +1,52 @@
 # Work Order Entry unit tests
 
+## New-order preallocation validation
+
+After a Debug build, run
+`Database Components/Tests/PreallocationValidation_LocalDB_Test.ps1`.
+It creates/deletes only a uniquely named owned LocalDB fixture at compatibility
+130 and does not modify application configuration, registry or store databases.
+No form Load event is invoked. Legacy global contexts are checked closed,
+disposed and cleared before application methods are tested.
+
+The 80 checks compare 18 paired allocation-boundary cases with and without the
+compiled ValidateNewOrderRows helper. Mapped fixture header/detail procedures
+and the compiled atomic commitment method execute under a real SQL transaction.
+Cases cover malformed later/split rows, Decimal overflow, missing items,
+prepared/tax/pick conversions, fractional values, duplicate running differences,
+zero differences, Type 7 exemptions, tax exemptions, quotations and a committed
+change after prevalidation. Eleven predictable failures consume 13 IDs without
+preflight and none with it; the concurrent failure still consumes one and is
+rolled back. Successful stored values match. Evidence:
+`TestResults/Preallocation-a42d5227/Results.json` and
+`TestResults/PreallocationValidation/` (ignored).
+
+This boundary comparison bypasses the surrounding prompts and queue/history
+orchestration; it is not a full UI/store/RMS save test. Actual caller placement
+and retention of the final atomic update are also checked against source.
+Both required Release/x86 builds, Debug build and all 101 unit tests passed
+with byte-for-byte Debug configuration preservation. Required multi-user tests
+passed 39 checks normally and 39 with `-VersionedReads`; their settlement is a
+simulation. No live operations occurred. Manual localhost acceptance remains:
+normal/imported work order, quotation, price approval/Cancel and a split order
+over six rows. Existing prices, quantities, totals and resulting orders should
+match; invalid later rows must not leave partially saved orders. Do not insert
+test orders on live just to inspect numbering. SQL errors and concurrent changes
+after prevalidation may still consume IDs. RMS investigation remains paused.
+
+For the separately requested HO WO 18912 -> 18905 recovery, run
+`Database Components/Tests/HO_Renumber18912_LocalDB_Test.ps1`. Its 43 checks run
+only in a uniquely owned synthetic LocalDB instance at compatibility 100, using
+the existing synthetic HO schema/triggers. They cover absence of the backup
+check as explicitly requested, rollback/injected errors, source/reference/trigger/schema
+guards, preservation of values and stock, mapped references, commit and actual
+legacy @@IDENTITY allocation of 18913. The script does not reseed identity.
+The test substitutes only the fixture server in an in-memory
+copy; it does not weaken the distributed file's guards. No live/store execution
+is part of this test. See
+`Database Components/Recovery/RENUMBER_HO_18912_TO_18905.md` for personal SSMS
+instructions and the remaining fresh-restore/operator validation.
+
 The [paused RMS settlement investigation](Database%20Components/Tests/RMS_SETTLEMENT_TRIGGER_REVIEW_2026-10-18.md)
 consolidates the October 18 source audit, disposable trigger tests and actual
 localhost RMS results, including the confirmed original-trigger deadlock and
@@ -35,6 +82,211 @@ These tests check small business rules without opening the application,
 connecting to DVO/GSC, or changing database records.
 
 ## What is tested
+
+### InterStore availability layout
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\InterStoreLayout_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+```
+
+The InterStore probe binds synthetic tables without calling the availability
+query. It explicitly detaches the production Load handler before transparent
+rendering, so no database access occurs. It checks the five original column
+ordinals/property names, ID visibility/hidden Address, read-only/null/fractional
+quantity behavior, sorting, reordering, selection, row-resize permissions,
+keyboard/tab/DialogResult settings, normal and simulated 125% bounds at 1024/1366
+widths, and repeat/empty binding. PNGs are saved to the reported ignored
+`TestResults/InterStoreLayout-*` folder.
+
+October 19 validation: 140 InterStore checks, 28 recall-formatting checks, both
+Release/x86 builds, Debug build and 101 unit tests passed. Debug store config
+was preserved byte-for-byte; synthetic renders were inspected. No actual
+availability query or live-store test was executed.
+
+Manual acceptance: select a known item and click InterStore. Compare returned
+stores and quantities with the previous version, including zero/negative/decimal
+or blank values where applicable. Check long names/codes, row selection, header
+sorting, column reordering and Close. Existing shortcuts must behave as before.
+All layout/mapping properties are serialized in frmCheckStore.Designer.vb.
+RMS investigation remains paused.
+
+### Item-grid formatting comparison
+
+Preserve a pre-change Debug EXE before building the candidate, then run:
+
+```powershell
+& '.\Database Components\Tests\GridFormatting_UI_Compare.ps1' -BaselineAssembly '.\TestResults\GridFormattingBaseline\Work Order Entry_V8.exe'
+& '.\Database Components\Tests\ItemGridReadability_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+& '.\Database Components\Tests\SmallScreenLayout_UI_Test.ps1'
+```
+
+The comparison compiles an isolated x86 STA probe and runs original/candidate
+assemblies in separate processes, without form Load, searches, editing or SQL.
+Its 16 synthetic cases combine 0/1/100/500 bound rows, 1024/1366 widths and
+normal/simulated 125% scaling. The actual GridColumnWidth method runs for seven
+trials; the first trial is excluded. Measure binding plus formatting separately
+from ten repeated formatting calls per trial. This is not an end-to-end search
+or real monitor/DPI benchmark.
+
+All 208 paired assertions must match raw DataTable hashes, row counts, column
+settings, selection, font/header/row sizes, read-only/tooltips/selection mode and
+rendered bitmap pixels. Programmatically altered row heights must still become
+44 without moving selection. Shared-row counts are recorded before indexing
+selection cells or rendering, which can materialize rows. No assertion is weakened
+to accommodate a visual difference. Timings are evidence, not a fixed speed threshold.
+
+October 18 results in `TestResults/GridFormatting-05f62b36` (ignored): all assertions
+passed. At 500 rows, shared counts were 0 -> 500. Binding/formatting medians were
+21.92 -> 8.76 ms (1024) and 41.87 -> 12.21 ms (1366); repeated formatting was
+8.34 -> 7.91 ms and 19.89 -> 15.41 ms. Both Release/x86 builds, Debug build,
+101 unit tests, 50 readability, 28 recall-formatting and 875 small-screen checks
+passed, with Debug store configuration preserved byte-for-byte.
+
+Manual acceptance: repeat item searches, scroll results, select rows, resize
+and use existing shortcuts. Appearance, result ordering, selection and row height
+must remain unchanged. Actual database search speed was not measured. RMS stays paused.
+
+### Price-level query reduction
+
+Preserve an original Debug EXE in an ignored test-results directory before
+building the candidate. The comparison requires two separate processes so the
+original and updated assemblies do not share type identities. After a Debug build:
+
+```powershell
+& '.\Database Components\Tests\PriceLevel_Queries_LocalDB_Test.ps1' -BaselineAssembly '.\TestResults\PriceLevelBaseline\Work Order Entry_V8.exe'
+& '.\Database Components\Tests\PriceLevelLayout_UI_Test.ps1'
+```
+
+The SQL runner creates only a GUID-owned `WO_Price_*` LocalDB instance/database,
+small synthetic Item/config tables and the exported price function's SELECT.
+It does not restore or connect to a store. Workers verify legacy contexts are
+closed, dispose them and redirect only their process-local endpoint fields to
+the owned fixture before any application query. No registry or app config is
+switched. Original settings and price data are read through the compiled loader.
+Fixture setup uses a separate connection, excluded from the command trace.
+
+The 125 paired cases cover five price masks, levels 0 through 4, fractional/zero/
+negative prices, missing item data, changed prices on successive loads, and the
+single-level API with display enabled/suppressed. Compare raw rows, minimum
+price, selected row/column and approval flags. Empty/unsupported-level behavior
+is preserved rather than inventing a new level. Intact Extended Events traces
+count actual application SQL batches/RPCs. This is not a password-entry test;
+the approval/password handlers are unchanged and no selected price is applied.
+
+October 18 results: 125 paired cases matched; commands 825 -> 250 overall;
+four-level dialog reads 12 -> 2; dialog median 92.89 -> 16.19 ms. The engine was
+LocalDB 17.0.4025.3 at compatibility 130, not a SQL Server 2016 engine or a live
+store. Timing includes local calls with pooling disabled and is not a network or
+multi-user benchmark. Artifacts: `TestResults/PriceLevelQueries-9f76b564` (ignored).
+The owned database was dropped and instance deleted. Both Release/x86 builds,
+Debug build, 101 unit tests and 50 existing Price Level UI checks passed; Debug
+store configuration was preserved byte-for-byte.
+
+Manual acceptance: open Price Level Selection for several customer levels and
+confirm identical rows/prices and retail top-row selection. Exercise the existing
+F9 password approval, wrong password and Cancel paths, then reopen/reload after
+an authorized test price/settings change to confirm fresh data. Test normal
+price editing and the alternate price-level dialog too. No store write is
+authorized by running this fixture; RMS investigation remains paused.
+
+### Messages inside empty lookup grids
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\GridEmptyState_UI_Test.ps1'
+```
+
+This isolated paint/binding probe constructs Customer, Sales Rep, Recall and the
+main form without showing/loading them. It checks that the actual Paint handler
+draws nothing before binding, draws guidance for empty/filtered-empty results,
+and stops drawing when rows return. Synthetic PNGs are saved under the reported
+`TestResults/GridEmptyState-*` directory; those artifacts are not tracked.
+
+The user explicitly approved leaving unsuccessful keyword searches empty instead
+of automatically restoring previous/all items. The above-grid notice is removed.
+The probe invokes the production empty-search handler on synthetic empty data
+with/without preceding keywords: the empty binding/message must remain, only the
+failed keyword is removed, and the grid must have no above-grid notice. Barcode
+empty feedback and successful rebinding are also checked. No SQL, live searches
+or real item selection executes; import-specific fallback is unchanged.
+
+Final validation passed both Release/x86 builds, Debug build, 101 unit tests,
+37 feedback checks, 28 recall-formatting and 875 small-screen checks, with Debug
+config preserved byte-for-byte. Synthetic grid renders were inspected.
+
+Manual acceptance: search for an unmatched value. Customer, Sales Rep, Recall
+and item grids should display their guidance below the headers without a popup.
+Keyword item search must stay empty, with no restored 500-item list and no notice
+above the grid. Search again to restore matching rows. Verify F4/F5, Esc, barcode
+reset/focus, successful selection and genuine errors still behave as expected.
+No live-store test is claimed; RMS investigation remains paused.
+
+### Empty Customer, Sales Rep and Recall results
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\EmptyLookup_UI_Test.ps1'
+& '.\Database Components\Tests\LookupDesign_UI_Test.ps1'
+& '.\Database Components\Tests\LookupKeyboard_UI_Test.ps1'
+```
+
+The empty-results runner compiles a separate x86 STA probe and copies only the
+application assembly, without its store config. Forms are never shown or loaded.
+Legacy globals construct data contexts on first access; the probe verifies their
+connections remain closed, then removes/disposes the contexts before callbacks.
+It invokes OK, Enter and double-click with initially empty and synthetically
+filtered-empty grids, requires no error prompt/selection/dialog close, restores
+the synthetic results and checks Esc. No SQL or actual row selection is executed.
+Windows may require execution outside the sandbox because legacy SqlClient
+initialization uses writable performance counters; do not change database or
+registry settings to bypass that restriction.
+
+The pre-fix assembly reproduced three exceptions using `-ExpectLegacyFailure`:
+Customer/Recall NullReferenceException and Sales Rep ArgumentOutOfRangeException.
+Only use that switch with the original assembly. Fixed validation passed 22
+empty-result checks, 204 lookup checks, four Escape checks, both Release/x86
+builds, Debug build and all 101 unit tests; Debug config was preserved byte-for-byte.
+
+Manual acceptance: search for an unmatched value in Customer, Sales Rep and
+Recall; try Enter, OK and a double-click in the blank grid. No error or selection
+should occur. Clear/change the search to restore results, verify normal selection
+still works, then reopen and test Esc. Recall filters and left/right shortcuts
+must retain their existing behavior. RMS investigation remains paused.
+
+### Item-grid numeric readability
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\ItemGridReadability_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+& '.\Database Components\Tests\SmallScreenLayout_UI_Test.ps1'
+```
+
+The display probe constructs the compiled main form without showing/loading it
+and sets the existing recall-loading guard before adding synthetic rows. It
+checks Designer and runtime styles: zero, fractional, negative and large
+quantities; unchanged raw price/total values and currency format; displayed-cell
+numeric sizing; edit permissions; native long-name tooltips; and retained price
+warning styles/tooltips. It does not edit through a control, run validation,
+execute SQL or save an order. The before-change probe confirmed 1.25 displaying
+as 1 and price 1,234,567.89 requiring 109 pixels versus the fixed 100-pixel column
+in the local test culture. Currency symbols/separators remain culture-dependent.
+
+October 18: both Release/x86 builds, Debug build, 101 unit tests, 50 display,
+28 recall-formatting and 875 small-screen checks passed. Debug store configuration
+was preserved byte-for-byte. For manual acceptance at 1024x768 and 1366x768,
+inspect existing fractional/negative quantities and large prices/totals, hover
+over a clipped description, and verify the active quantity/price cell remains
+clear. Wide numeric values may require horizontal scrolling; column sizing reads
+displayed rows only. Existing validation and F-key shortcuts must behave as before.
+The RMS investigation remains paused.
 
 ### Customer and Sales Rep lookup Escape routing
 

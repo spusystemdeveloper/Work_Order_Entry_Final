@@ -1,5 +1,9 @@
 ﻿Public Class frmSalesRep
 
+    Private Sub gridSalesRep_Paint(sender As Object, e As PaintEventArgs) Handles gridSalesRep.Paint
+        GridEmptyState.Draw(gridSalesRep, e, "No matches found. Try another search.")
+    End Sub
+
     Private Sub frmSalesRep_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
         gridSalesRep.DataSource = clsSalesRep.SearchSalesRep(txtSales.Text)
@@ -33,6 +37,8 @@
 
     End Sub
     Private Sub GetSalesRepInfo(ByVal iRow As Integer)
+
+        If gridSalesRep.CurrentRow Is Nothing OrElse iRow < 0 OrElse iRow >= gridSalesRep.RowCount Then Exit Sub
 
         iSalesID = gridSalesRep.Item(0, iRow).Value
         frmItemLookUp.txtSales.Text = gridSalesRep.Item(1, iRow).Value
@@ -79,6 +85,7 @@
 
         If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
 
+            If gridSalesRep.CurrentRow Is Nothing Then Exit Sub
             iRowSales = clsItemLookUp.RowIndexEnter(gridSalesRep, iRowSales)
             GetSalesRepInfo(iRowSales)
 

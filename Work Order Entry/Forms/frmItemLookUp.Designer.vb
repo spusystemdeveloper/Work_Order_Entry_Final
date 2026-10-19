@@ -1104,8 +1104,8 @@ Partial Class frmItemLookUp
         '
         'lookupPRICE
         '
-        Me.lookupPRICE.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupPRICE.MinimumWidth = 5
+        Me.lookupPRICE.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.lookupPRICE.MinimumWidth = 108
         Me.lookupPRICE.Width = 108
         Me.lookupPRICE.HeaderText = "ITEM PRICE"
         Me.lookupPRICE.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
@@ -1134,13 +1134,13 @@ Partial Class frmItemLookUp
         '
         'lookupAVAILABLE
         '
-        Me.lookupAVAILABLE.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupAVAILABLE.MinimumWidth = 5
+        Me.lookupAVAILABLE.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.lookupAVAILABLE.MinimumWidth = 96
         Me.lookupAVAILABLE.Width = 96
         Me.lookupAVAILABLE.HeaderText = "AVAIL QTY"
         Me.lookupAVAILABLE.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
         DataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        DataGridViewCellStyle9.Format = "N0"
+        DataGridViewCellStyle9.Format = "#,0.###############"
         Me.lookupAVAILABLE.DefaultCellStyle = DataGridViewCellStyle9
         Me.lookupAVAILABLE.DataPropertyName = "AVAILABLE"
         Me.lookupAVAILABLE.Name = "AVAILABLE"
@@ -1323,8 +1323,8 @@ Partial Class frmItemLookUp
         '
         'lookupQuantityCommitted
         '
-        Me.lookupQuantityCommitted.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupQuantityCommitted.MinimumWidth = 5
+        Me.lookupQuantityCommitted.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.lookupQuantityCommitted.MinimumWidth = 94
         Me.lookupQuantityCommitted.Width = 94
         Me.lookupQuantityCommitted.HeaderText = "QTY COM"
         Me.lookupQuantityCommitted.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
@@ -1694,20 +1694,20 @@ Partial Class frmItemLookUp
         '
         Me.QTY.Name = "QTY"
         Me.QTY.Resizable = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.QTY.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.QTY.MinimumWidth = 6
+        Me.QTY.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.QTY.MinimumWidth = 90
         Me.QTY.Width = 90
         Me.QTY.HeaderText = "QUANTITY"
         Me.QTY.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
         DataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        DataGridViewCellStyle30.Format = "N0"
+        DataGridViewCellStyle30.Format = "#,0.###############"
         Me.QTY.DefaultCellStyle = DataGridViewCellStyle30
         '
         'Price
         '
         Me.Price.Name = "Price"
-        Me.Price.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.Price.MinimumWidth = 6
+        Me.Price.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.Price.MinimumWidth = 100
         Me.Price.Width = 100
         Me.Price.HeaderText = "PRICE"
         Me.Price.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
@@ -1732,8 +1732,8 @@ Partial Class frmItemLookUp
         '
         Me.TOTAL.Name = "TOTAL"
         Me.TOTAL.ReadOnly = True
-        Me.TOTAL.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.TOTAL.MinimumWidth = 6
+        Me.TOTAL.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.TOTAL.MinimumWidth = 120
         Me.TOTAL.Width = 120
         Me.TOTAL.HeaderText = "TOTAL PRICE"
         Me.TOTAL.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable

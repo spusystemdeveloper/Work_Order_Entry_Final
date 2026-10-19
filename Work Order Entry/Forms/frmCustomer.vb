@@ -1,5 +1,9 @@
 ﻿Public Class frmCustomer
 
+    Private Sub gridCustomer_Paint(sender As Object, e As PaintEventArgs) Handles gridCustomer.Paint
+        GridEmptyState.Draw(gridCustomer, e, "No matches found. Try another search.")
+    End Sub
+
     Private Sub frmCustomer_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Try
             Me.gridCustomer.DataSource = clsCustomer.SearchCustomer(txtCompany.Text)
@@ -35,6 +39,8 @@
     End Sub
 
     Private Sub GetCustomerInfo(ByVal iRow As Integer)
+
+        If gridCustomer.CurrentRow Is Nothing OrElse iRow < 0 OrElse iRow >= gridCustomer.RowCount Then Exit Sub
 
         Dim pricebound
         Dim i = gridCustomer.CurrentRow.Index
@@ -217,6 +223,7 @@
         Try
             If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
 
+                If gridCustomer.CurrentRow Is Nothing Then Exit Sub
                 iRowCust = clsItemLookUp.RowIndexEnter(gridCustomer, iRowCust)
                 GetCustomerInfo(iRowCust)
 
