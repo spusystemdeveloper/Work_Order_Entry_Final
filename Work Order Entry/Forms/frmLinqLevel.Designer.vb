@@ -77,8 +77,8 @@ Partial Class frmLinqLevel
         DataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Control
         DataGridViewCellStyle2.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         DataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.WindowText
         DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.gridLevel.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle2
         Me.gridLevel.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
@@ -93,6 +93,7 @@ Partial Class frmLinqLevel
         Me.gridLevel.DefaultCellStyle = DataGridViewCellStyle4
         Me.gridLevel.Location = New System.Drawing.Point(10, 98)
         Me.gridLevel.Name = "gridLevel"
+        Me.gridLevel.EnableHeadersVisualStyles = False
         Me.gridLevel.ReadOnly = True
         Me.gridLevel.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
         Me.gridLevel.Size = New System.Drawing.Size(386, 148)

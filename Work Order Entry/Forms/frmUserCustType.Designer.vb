@@ -43,6 +43,9 @@ Partial Class frmUserCustType
         Me.gridUser.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.gridUser.Location = New System.Drawing.Point(12, 19)
         Me.gridUser.Name = "gridUser"
+        Me.gridUser.EnableHeadersVisualStyles = False
+        Me.gridUser.ColumnHeadersDefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Control
+        Me.gridUser.ColumnHeadersDefaultCellStyle.SelectionForeColor = System.Drawing.SystemColors.WindowText
         Me.gridUser.RowHeadersVisible = False
         Me.gridUser.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
         Me.gridUser.Size = New System.Drawing.Size(389, 165)

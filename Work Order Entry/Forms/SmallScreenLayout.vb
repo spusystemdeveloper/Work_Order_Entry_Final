@@ -94,7 +94,10 @@ Partial Class frmItemLookUp
 
             'Keep the original right-aligned totals widths when space allows.
             Dim gap = CInt(6 * scale)
-            Dim available = Math.Max(3, panelTotal.ClientSize.Width - 10 - 2 * gap)
+            Dim suggestionWidth = If(grpWithholding IsNot Nothing AndAlso grpWithholding.Visible,
+                                     Math.Min(CInt(300 * scale), panelTotal.ClientSize.Width \ 3), 0)
+            Dim suggestionSpace = If(suggestionWidth > 0, suggestionWidth + gap, 0)
+            Dim available = Math.Max(3, panelTotal.ClientSize.Width - 10 - 2 * gap - suggestionSpace)
             Dim ratio = Math.Min(1.0F, available / (870.0F * scale))
             Dim subWidth = CInt(279 * scale * ratio)
             Dim vatWidth = CInt(279 * scale * ratio)
@@ -103,6 +106,9 @@ Partial Class frmItemLookUp
             GroupBox2.SetBounds(left, GroupBox2.Top, subWidth, GroupBox2.Height)
             GroupBox3.SetBounds(left + subWidth + gap, GroupBox3.Top, vatWidth, GroupBox3.Height)
             GroupBox4.SetBounds(left + subWidth + vatWidth + 2 * gap, GroupBox4.Top, totalWidth, GroupBox4.Height)
+            If grpWithholding IsNot Nothing AndAlso suggestionWidth > 0 Then
+                grpWithholding.SetBounds(5, 3, suggestionWidth, panelTotal.ClientSize.Height - 6)
+            End If
         Finally
             arrangingSmallScreen = False
         End Try

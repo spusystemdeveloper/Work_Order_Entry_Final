@@ -112,10 +112,13 @@ rules instead of maintaining competing copies.
   for updater changes, run `DatabaseUpdater_LocalDB_Test.ps1`. These scripts are
   in `Database Components/Tests`. Run other relevant checks from the test guide.
 - For packaging, dependency, import or reporting changes, run
-  `Database Components/Tests/Packaging_CleanFolder_Test.ps1`. ReportViewer 15
-  requires its matching five DLLs beside the EXE; keep `Microsoft.ReportViewer.*`
-  excluded from Costura embedding. Deploy the complete output folder while
-  retaining the target unit's store-specific EXE config. The updater is a separate
+  `Database Components/Tests/Packaging_CleanFolder_Test.ps1`. The main application
+  now uses installed Microsoft ReportViewer 2010 (assembly 10.0.0.0), with Copy
+  Local=False; keep `Microsoft.ReportViewer.*` excluded from Costura embedding.
+  Install the runtime once per PC, then deploy the application EXE while retaining
+  the target unit's store-specific EXE config. The older ReportViewer 15 build
+  required five matching private DLLs; do not mix its package into this build.
+  The updater is a separate
   executable; copying application files does not migrate the database.
 - If a check cannot run, report the exact missing prerequisite and remaining
   validation. Do not remove safeguards, weaken assertions or invent pass results.

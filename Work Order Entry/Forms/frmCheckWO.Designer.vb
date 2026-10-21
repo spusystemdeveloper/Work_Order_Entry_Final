@@ -119,8 +119,8 @@ Partial Class frmCheckWO
         WOHeaderStyle.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
         WOHeaderStyle.BackColor = System.Drawing.Color.FromArgb(232, 238, 246)
         WOHeaderStyle.ForeColor = System.Drawing.SystemColors.ControlText
-        WOHeaderStyle.SelectionBackColor = System.Drawing.Color.FromArgb(37, 99, 160)
-        WOHeaderStyle.SelectionForeColor = System.Drawing.Color.White
+        WOHeaderStyle.SelectionBackColor = System.Drawing.Color.FromArgb(232, 238, 246)
+        WOHeaderStyle.SelectionForeColor = System.Drawing.SystemColors.ControlText
         WOHeaderStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         WOOrderStyle.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
         WOQuantityStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight

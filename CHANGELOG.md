@@ -4,6 +4,119 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### October 21: adopt installed ReportViewer 2010 for EXE-only updates
+
+- After the user confirmed the isolated candidate printed with the 2010
+  redistributable, switched the main project to exact installed version-10
+  Common/WinForms references with Copy Local=False. Retained Costura exclusions,
+  .NET 4.7.2/x86 and all existing application/report code and resources; all 139
+  source/resource hashes matched the pre-switch baseline, including withholding.
+- Updated packaging checks for zero private DLLs/config, exact GAC runtime
+  loading, actual preview forms and six report scenarios. Both Release/x86
+  solutions, Debug, 106 unit tests, 30 localhost withholding checks and 28
+  formatting checks passed. All 32 rendered pages matched the accepted version-10
+  candidate exactly. Debug and Release configs preserved byte-for-byte.
+- Built the latest EXE in bin/Release/EXE-Only. Runtime installation is a one-time
+  prerequisite per PC; application updates retain each unit's config. No live
+  SQL, store share update or physical print job was performed. See
+  Tests/REPORTVIEWER_2010_MAIN_DEPLOYMENT_2026-10-21.md for evidence and limits.
+
+### October 21: suggested customer withholding amounts
+
+- Added a Designer-visible, read-only Suggested W/Tax panel beside Work Order
+  totals. Uses the existing VAT-exclusive subtotal and shows each enabled
+  customer rate separately (1%, 2%, 5%, 15%), rounded to two decimals. No totals,
+  VAT rules, pricing, approvals, saves or RMS tender records are changed.
+- Reads confirmed customer custom fields once per selected customer; verifies
+  their RMS custom captions so unrelated branch fields do not enable estimates.
+  Amount edits reuse the cached flags. Customer reset/switch clears old flags;
+  quotations, invalid totals and customers without enabled flags hide the panel.
+  Existing import, recall and draft totals callers refresh the display.
+- Both Release/x86 solutions, Debug, 106 unit tests, 30 disposable localhost
+  customer/query/UI checks and 28 checkbox-formatting checks passed. Debug config
+  was preserved byte-for-byte. Totals-panel renders checked at widths matching
+  1366x768 and 1920x1080. No live SQL or RMS testing was performed for this feature;
+  the separate RMS investigation remains paused. Manual store acceptance remains.
+  The compiled customer SELECT also passed read-only against restored localhost
+  DVO_STORE_DB with its actual custom-caption schema.
+
+### October 21: guarded Cebu missing-commitment recovery
+
+- Executed a narrowly scoped, explicitly authorized repair for 23 zero-commitment
+  inventory items on nine open Cebu work orders. Retains target, backup, preview
+  and commit guards, verifies exact source rows and triggers, serializes changes,
+  adds differences atomically and records before/after item-log entries.
+- The repair preserves physical stock and does not change order lifecycle,
+  prices, application code, triggers or the commitment comparison view. The
+  root cause remains unconfirmed. See Recovery/CEBU_ZERO_COMMITMENTS_2026-10-21.md.
+- Twelve disposable repair-core checks, both 39-check multi-user fixture modes,
+  both Release/x86 builds and 101 unit tests passed; Debug config preserved.
+  Committed October 21 at 11:26:10 server time. Independent post-check confirmed
+  exact commitments, unchanged physical stock, nine still-open orders and 23
+  audit rows. Execution evidence and backup limits are in the recovery document.
+
+### October 20: test ReportViewer 2010 for EXE-only delivery
+
+- Built an isolated Release/x86 candidate using installed ReportViewer 10.0.0.0
+  (the version referenced by V4), with Copy Local=False. The real project and
+  default ReportViewer 15 package remain unchanged. All 137 code/resource files
+  matched; no business, report, printer or copy-count code was changed.
+- Candidate unit suite passed 101 tests. EXE-only clean-folder and localhost UNC
+  synthetic report/import checks passed without report DLLs beside the EXE.
+  Both actual preview forms rendered six cases under versions 10 and 15;
+  all 32 TIFF pages matched count/dimensions and preview settings. Exact-image
+  comparison did not fully pass: 27 pages matched, five had two differing
+  Work Order title-edge pixels each; all other pixels matched. Recorded rather
+  than relaxing the assertion; manual acceptance remains required.
+- Prepared a separate manual-test EXE under ignored TestResults. Requires the
+  installed version-10 runtime; ReportViewer 2005 alone is insufficient. Actual
+  affected-client/network preview and operator printer/copy acceptance remain
+  outstanding. No shared deployment/live database changes or physical prints.
+  See REPORTVIEWER_2010_COMPATIBILITY_RESULTS_2026-10-20.md in Database Components/Tests.
+
+### October 20: expose underlying shared-folder report errors (investigation pending)
+
+- Work Order/Quotation and Pick List preview catches now log the full exception
+  chain through ErrorLogger and include the root-cause message in their existing
+  error popup. ReportViewer asynchronous ReportError events are logged without
+  setting Handled or changing default handling. Report data, RDLC, page setup,
+  printers, copies and print timing are unchanged; no trust/config switches added.
+- Read-only inspection of the supplied shared Release folder confirmed all five
+  ReportViewer DLL hashes match the local package. Both synthetic reports also
+  render successfully here with that shared application base and the actual
+  deployed preview forms/page settings. This did NOT reproduce the user's
+  client/data-specific error; the actual inner exception is still required.
+- Both Release/x86 solutions, Debug build, 101 unit tests, clean-folder report
+  packaging checks and four synthetic diagnostic checks passed. Nested errors
+  were logged and ReportViewer handling stayed unchanged. Debug config preserved.
+  Shared files were not changed; no live SQL or printer jobs. The underlying
+  deployed failure is NOT yet fixed or certified; affected-client retry pending.
+
+### October 20: remove blue column-header selection highlighting
+
+- Matched selected header colors to each grid's normal header colors across
+  all 17 addin grids, serialized in their Designers; disabled themed headers
+  where necessary so Windows does not override these colors. Main-grid runtime
+  formatting now keeps the same matching colors. No row-header/selected-row
+  styling, column data, sorting, keyboard, approval or business-rule changes.
+- All 40 comparison checks passed across 19 Designer/runtime grid states;
+  row selection colors, column settings and interaction flags matched the
+  baseline. Price Level render inspected: neutral headers and blue selected row.
+  Both Release/x86 solutions, Debug build, 101 unit tests and 28 recall checkbox
+  formatting checks passed, with Debug config preserved byte-for-byte. No SQL
+  or form Load in the UI comparison. Manual UI acceptance remains for the user.
+
+### October 20: hide queue-only item columns when Queueing Mode is off
+
+- UP-STORE and PREPARED now follow the saved branch Queueing Mode for work
+  orders at startup, after Settings, formatting/refresh and quote-to-WO
+  conversion. Quotations continue to hide both columns. Only visibility changes;
+  values, editability, Boolean checkbox styles, saving and queue rules are intact.
+- Both Release/x86 solutions, Debug build and all 101 unit tests passed with
+  Debug config preserved byte-for-byte. All 85 in-memory visibility/value checks
+  and 28 recall checkbox-formatting checks passed. No SQL/settings saves in the
+  UI probes, no live database operations; manual Settings acceptance remains.
+
 ### October 19: validate new-order rows before allocating header IDs
 
 - InsertEntry now checks all selected rows, including later split orders, before

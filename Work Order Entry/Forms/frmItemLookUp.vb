@@ -1115,11 +1115,10 @@ Public Class frmItemLookUp
 
     Public Sub convertToWorkOrder()
 
-        chkPickLoc.Visible = True
-        CustPrep.Visible = True
         cboPayment.Enabled = True
         chkQuote.Checked = False
         chkWorkOrder.Checked = True
+        UpdateQueueingColumnVisibility()
         WoRecallType = 1
 
     End Sub
@@ -1223,6 +1222,13 @@ Public Class frmItemLookUp
         ApplyOrderToolsVisibility()
         cmdImport.Visible = StoreProcessingSettings.ShowImportButton
         ResetProcessingModeForNewOrder()
+        UpdateQueueingColumnVisibility()
+    End Sub
+
+    Private Sub UpdateQueueingColumnVisibility()
+        Dim showQueueColumns As Boolean = UseQueueingForCurrentOrder()
+        chkPickLoc.Visible = showQueueColumns
+        CustPrep.Visible = showQueueColumns
     End Sub
 
     Private Sub ResetProcessingModeForNewOrder()
@@ -2272,6 +2278,7 @@ Proceed:
             Me.txtSub.Text = Format(dSub, "#,##0.00")
             Me.txtVat.Text = Format(dVat, "#,##0.00")
             Me.txtTotal.Text = Format(dTot, "#,##0.00")
+            UpdateWithholdingSuggestions()
             txtBarcode.Text = ""
             txtBarcode.Focus()
 
@@ -2626,6 +2633,8 @@ Proceed:
         grid.ColumnHeadersDefaultCellStyle.Font = GridHeaderFont
         grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(232, 237, 244)
         grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(31, 41, 55)
+        grid.ColumnHeadersDefaultCellStyle.SelectionBackColor = grid.ColumnHeadersDefaultCellStyle.BackColor
+        grid.ColumnHeadersDefaultCellStyle.SelectionForeColor = grid.ColumnHeadersDefaultCellStyle.ForeColor
         grid.ColumnHeadersDefaultCellStyle.Padding = New Padding(6, 4, 6, 4)
         grid.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False
         grid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
@@ -2668,8 +2677,7 @@ Proceed:
                 .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
 
                 .Columns(19).DefaultCellStyle.Format = "C"
-                chkPickLoc.Visible = chkWorkOrder.Checked
-                CustPrep.Visible = chkWorkOrder.Checked
+                UpdateQueueingColumnVisibility()
 
                 .RowTemplate.Height = 30
                 .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None
@@ -2875,6 +2883,7 @@ Proceed:
     'new function
 
     Public Sub GetCustomerPriceLevel()
+        UpdateWithholdingSuggestions()
         Try
 
             ' Retrieve customer info
@@ -3220,8 +3229,7 @@ Proceed:
             'txtSearch.Focus()
 
             chkWorkOrder.Checked = True
-            chkPickLoc.Visible = True
-            CustPrep.Visible = True
+            UpdateQueueingColumnVisibility()
 
             chkWorkOrder.Enabled = True
             chkQuote.Enabled = True
@@ -5312,8 +5320,7 @@ err_flag:
     Private Sub chkWorkOrder_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkWorkOrder.CheckedChanged
         If chkWorkOrder.Checked = True Then
             'MsgBox("Set to WORK ORDER", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
-            chkPickLoc.Visible = True
-            CustPrep.Visible = True
+            UpdateQueueingColumnVisibility()
             rbtnPickup.Enabled = True
             rbtnDelivery.Enabled = True
             chkQuote.Checked = False

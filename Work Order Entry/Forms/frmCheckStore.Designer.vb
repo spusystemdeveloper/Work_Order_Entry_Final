@@ -93,6 +93,8 @@ Partial Class frmCheckStore
         headerStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
         headerStyle.Padding = New System.Windows.Forms.Padding(4, 3, 4, 3)
         headerStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.False
+        headerStyle.SelectionBackColor = System.Drawing.Color.FromArgb(232, 237, 244)
+        headerStyle.SelectionForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
         Me.gridQty.ColumnHeadersDefaultCellStyle = headerStyle
         Me.gridQty.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
         Me.gridQty.ColumnHeadersHeight = 32

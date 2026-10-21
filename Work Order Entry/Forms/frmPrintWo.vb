@@ -90,7 +90,12 @@ Public Class frmPrintWo
 
 
         Catch ex As Exception
-            AppPrompt.Show(ex.Message)
+            ErrorLogger.LogError(ex, "Work Order / Quotation preview; OrderID=" & wo.ToString())
+            Dim message As String = ex.Message
+            If ex.InnerException IsNot Nothing Then
+                message &= vbCrLf & vbCrLf & "Details: " & ex.GetBaseException().Message
+            End If
+            AppPrompt.Show(message)
         End Try
 
     End Sub
@@ -144,6 +149,11 @@ Public Class frmPrintWo
 
     Private Sub rptviewer_RenderingComplete(ByVal sender As System.Object, ByVal e As Microsoft.Reporting.WinForms.RenderingCompleteEventArgs) Handles rptviewer.RenderingComplete
         Print_DialogTimer.Start()
+    End Sub
+
+    Private Sub rptviewer_ReportError(sender As Object, e As ReportErrorEventArgs) Handles rptviewer.ReportError
+        ' Capture asynchronous processing errors without changing ReportViewer handling.
+        ErrorLogger.LogError(e.Exception, "Work Order / Quotation rendering; OrderID=" & wo.ToString())
     End Sub
 
 End Class

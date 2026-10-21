@@ -12,6 +12,7 @@ using Microsoft.Reporting.WinForms;
 
 class PackagingProbe
 {
+    static string Case = "Normal";
     [STAThread]
     static int Main()
     {
@@ -28,12 +29,30 @@ class PackagingProbe
             CheckCsv();
             CheckWorkbook();
             CheckExcelAssemblyIdentity();
-            CheckReport("rprtOrder.rdlc", "Work Order");
-            CheckReport("rptPickList.rdlc", "Pick list");
-            string location = typeof(LocalReport).Assembly.Location;
-            if (String.IsNullOrEmpty(location) || !File.Exists(location))
-                throw new Exception("ReportViewer must load from a physical file.");
-            Console.WriteLine("PASS: ReportViewer has a physical packaged DLL location.");
+            foreach (string sample in new[] { "Normal", "Quotation", "Empty", "LongText", "LargeValues", "MultiPage" })
+            {
+                Case = sample;
+                CheckReport("rprtOrder.rdlc", "Work Order");
+                CheckReport("rptPickList.rdlc", "Pick list");
+            }
+            var expectedVersion = new Version(10, 0, 0, 0);
+            var references = typeof(WorkOrderEntry.clsImport).Assembly.GetReferencedAssemblies()
+                .Where(a => a.Name.StartsWith("Microsoft.ReportViewer.")).ToArray();
+            if (!references.Any(a => a.Name == "Microsoft.ReportViewer.WinForms") ||
+                references.Any(a => a.Version != expectedVersion))
+                throw new Exception("Application must reference ReportViewer 2010 exclusively.");
+            foreach (string name in new[] { "Microsoft.ReportViewer.WinForms", "Microsoft.ReportViewer.Common" })
+            {
+                var assembly = System.Reflection.Assembly.Load(name +
+                    ", Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a");
+                if (assembly.GetName().Version != expectedVersion || !assembly.GlobalAssemblyCache ||
+                    String.IsNullOrEmpty(assembly.Location) || !File.Exists(assembly.Location))
+                    throw new Exception("ReportViewer 2010 must load from the installed GAC runtime: " + name);
+            }
+            if (typeof(WorkOrderEntry.clsImport).Assembly.GetManifestResourceNames()
+                .Any(n => n.IndexOf("reportviewer", StringComparison.OrdinalIgnoreCase) >= 0))
+                throw new Exception("ReportViewer must not be embedded in the application EXE.");
+            Console.WriteLine("PASS: Application references ReportViewer 2010; Common/WinForms load from installed GAC, not embedded or private DLLs.");
             return 0;
         }
         catch (Exception error)
@@ -107,9 +126,19 @@ class PackagingProbe
         using (var definition = assembly.GetManifestResourceStream(resource)) xml = XDocument.Load(definition);
         var ns = xml.Root.Name.Namespace;
         var rd = XNamespace.Get("http://schemas.microsoft.com/SQLServer/reporting/reportdesigner");
-        using (var report = new LocalReport())
+        using (var form = (System.Windows.Forms.Form)Activator.CreateInstance(assembly.GetType(
+            suffix == "rprtOrder.rdlc" ? "WorkOrderEntry.frmPrintWo" : "WorkOrderEntry.frmPrintPicklist", true)))
         {
-            using (var definition = assembly.GetManifestResourceStream(resource)) report.LoadReportDefinition(definition);
+            // Exercise the actual compiled preview and page setup, but never its
+            // production Load handler, SQL, print dialog or physical printer.
+            var viewer = (ReportViewer)form.GetType().GetProperty("rptviewer",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.NonPublic).GetValue(form, null);
+            form.GetType().GetMethod("PrintSetting", System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.NonPublic).Invoke(form, null);
+            var report = viewer.LocalReport;
+            if (report.ReportEmbeddedResource != resource)
+                throw new Exception("Preview does not reference the expected embedded report.");
             foreach (var set in xml.Root.Element(ns + "DataSets").Elements(ns + "DataSet"))
             {
                 var table = new DataTable();
@@ -119,10 +148,14 @@ class PackagingProbe
                     table.Columns.Add((string)field.Element(ns + "DataField"),
                         type.Contains("Int32") ? typeof(int) : typeof(string));
                 }
-                table.Rows.Add(table.Columns.Cast<DataColumn>().Select(column =>
-                    column.DataType == typeof(int) ? (object)3 :
-                    column.ColumnName == "Extended" ? "300.00" :
-                    column.ColumnName == "Price" ? "100.00" : "Fixture").ToArray());
+                int count = Case == "Empty" ? 0 : Case == "MultiPage" ? 60 : 1;
+                for (int row = 0; row < count; row++)
+                    table.Rows.Add(table.Columns.Cast<DataColumn>().Select(column =>
+                        column.DataType == typeof(int) ? (object)(Case == "LargeValues" ? 123456 : 3) :
+                        column.ColumnName.Equals("ItemDesc", StringComparison.OrdinalIgnoreCase) && Case == "LongText" ?
+                            String.Concat(Enumerable.Repeat("LONG ITEM DESCRIPTION ", 15)) :
+                        column.ColumnName == "Extended" ? (Case == "LargeValues" ? "1,234,567.89" : "300.00") :
+                        column.ColumnName == "Price" ? (Case == "LargeValues" ? "999,999.99" : "100.00") : "Fixture").ToArray());
                 report.DataSources.Add(new ReportDataSource((string)set.Attribute("Name"), table));
             }
             var parameters = xml.Root.Element(ns + "ReportParameters");
@@ -131,12 +164,21 @@ class PackagingProbe
                 {
                     string name = (string)parameter.Attribute("Name");
                     report.SetParameters(new ReportParameter(name,
+                        name == "paramType" ? (Case == "Quotation" ? "Sales Quotation" : "Work Order") :
                         name == "paramDate" ? "10/14/2026" : name == "paramTime" ? "18:00" :
                         name == "paramTotal" || name == "paramSubtotal" ? "300.00" : name == "paramSalesTax" ? "0.00" : "Fixture"));
                 }
             byte[] pdf = report.Render("PDF");
             if (pdf.Length < 1000) throw new Exception("Empty report output.");
-            File.WriteAllBytes(suffix + ".pdf", pdf);
+            File.WriteAllBytes(Case + "-" + suffix + ".pdf", pdf);
+            File.WriteAllBytes(Case + "-" + suffix + ".tiff", report.Render("IMAGE",
+                "<DeviceInfo><OutputFormat>TIFF</OutputFormat></DeviceInfo>"));
+            var page = viewer.GetPageSettings();
+            if (page.PaperSize.Width != 850 || page.PaperSize.Height != 650 ||
+                page.Margins.Left != 0 || page.Margins.Right != 0 ||
+                page.Margins.Top != 0 || page.Margins.Bottom != 0)
+                throw new Exception("Existing preview paper size/margins changed.");
+            Console.WriteLine("PASS: " + Case + " " + suffix + " existing paper size/margins; PDF/TIFF rendered.");
         }
         Console.WriteLine("PASS: " + caption + " PDF rendering.");
     }

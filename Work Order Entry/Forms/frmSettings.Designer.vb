@@ -491,6 +491,9 @@ Partial Class frmSettings
         Me.gridCustType.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
         Me.gridCustType.Location = New System.Drawing.Point(16, 86)
         Me.gridCustType.Name = "gridCustType"
+        Me.gridCustType.EnableHeadersVisualStyles = False
+        Me.gridCustType.ColumnHeadersDefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Control
+        Me.gridCustType.ColumnHeadersDefaultCellStyle.SelectionForeColor = System.Drawing.SystemColors.WindowText
         Me.gridCustType.Size = New System.Drawing.Size(408, 112)
         Me.gridCustType.TabIndex = 0
         '

@@ -64,6 +64,7 @@
     <Compile Include="ImportFileRulesTests.vb" />
     <Compile Include="SeniorCitizenTagTests.vb" />
     <Compile Include="TaxCalculationTests.vb" />
+    <Compile Include="CustomerWithholdingSuggestionsTests.vb" />
     <Compile Include="QueueOrderAgeRulesTests.vb" />
     <Compile Include="ErrorLoggerTests.vb" />
     <Compile Include="OrderEditGuardTests.vb" />

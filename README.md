@@ -13,30 +13,32 @@ These documents support human review; they do not enforce GitHub permissions or 
 
 ## Application deployment and printing
 
-Build `Work Order Entry.sln` in Release / x86. Deploy the **whole**
-`Work Order Entry/bin/Release` folder, including these matching ReportViewer DLLs:
-`Microsoft.ReportViewer.Common.dll`, `Microsoft.ReportViewer.WinForms.dll`,
-`Microsoft.ReportViewer.ProcessingObjectModel.dll`,
-`Microsoft.ReportViewer.DataVisualization.dll`, and `Microsoft.ReportViewer.Design.dll`.
-They come from the project's ReportViewer package `150.1652.0` and must remain
-beside `Work Order Entry_V8.exe`. Other managed dependencies remain embedded.
-Copying only the EXE is insufficient for this build; ReportViewer 2005 is not a
-replacement for the bundled version. No separate ReportViewer install is needed.
+Install **Microsoft ReportViewer 2010 Redistributable** once on each user PC and
+the development PC (assembly version **10.0.0.0**). The inspected store installer
+identifies itself as product version 10.0.30319.01. ReportViewer 2005 alone is
+insufficient. Keep .NET Framework 4.7.2 and x86 compatibility.
+
+Build `Work Order Entry.sln` in Release / x86. The current application uses the
+installed ReportViewer runtime with Copy Local=False; other managed dependencies
+remain embedded. Subsequent application updates can copy only
+`Work Order Entry/bin/Release/Work Order Entry_V8.exe`.
 
 On an existing unit, retain its store-specific `Work Order Entry_V8.exe.config`
-when replacing the EXE and DLLs. On a new unit, review the configuration for the
+when replacing the EXE. Keep the EXE/config filename pairing. On a new unit, review the configuration for the
 intended store. Application packaging does not deploy database migrations.
 
 Start the EXE from the updated folder and update any Desktop shortcut to that
 location. A separate old Desktop EXE will continue running the old code. An import
 error naming `ExcelDataSetConfiguration.set_ConfigureDataTable` can occur with
 the legacy embedded-DLL loader when it loads ExcelDataReader more than once.
-Deploy the current complete package; do not mix old EXEs or Excel DLLs into it.
+Deploy the current EXE; do not mix old EXEs or Excel DLLs into it.
 
 Verify the Release package with
 `Database Components/Tests/Packaging_CleanFolder_Test.ps1`: it reads synthetic
-CSV/XLSX files and renders the actual embedded WO/pick-list reports to PDFs in a
-clean folder without an app config or installed ReportViewer 15 dependency.
+CSV/XLSX files and renders both actual preview forms to PDF/TIFF for Work Order,
+quotation, empty, long-text, large-value and multipage samples in a clean folder
+with zero private DLLs/config. It verifies Common/WinForms load from the installed
+version-10 GAC runtime and that preview paper/margin settings are unchanged.
 It does not open the real app, access SQL, or send a physical print job. See
 [the testing guide](UNIT_TEST_GUIDE.md). A normal unit test can miss packaging failures.
 

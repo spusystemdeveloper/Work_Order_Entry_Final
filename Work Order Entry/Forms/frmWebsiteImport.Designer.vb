@@ -59,8 +59,8 @@ Partial Class frmWebsiteImport
         ImportHeaderStyle.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
         ImportHeaderStyle.BackColor = System.Drawing.Color.FromArgb(232, 238, 246)
         ImportHeaderStyle.ForeColor = System.Drawing.SystemColors.ControlText
-        ImportHeaderStyle.SelectionBackColor = System.Drawing.Color.FromArgb(37, 99, 160)
-        ImportHeaderStyle.SelectionForeColor = System.Drawing.Color.White
+        ImportHeaderStyle.SelectionBackColor = System.Drawing.Color.FromArgb(232, 238, 246)
+        ImportHeaderStyle.SelectionForeColor = System.Drawing.SystemColors.ControlText
         ImportHeaderStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         ImportAlternateStyle.BackColor = System.Drawing.Color.FromArgb(245, 247, 250)
         Me.gridOrders.DefaultCellStyle = ImportBodyStyle

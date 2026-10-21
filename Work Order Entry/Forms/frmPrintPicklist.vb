@@ -59,12 +59,22 @@ Public Class frmPrintPicklist
 
 
         Catch ex As Exception
-            AppPrompt.Show(ex.Message)
+            ErrorLogger.LogError(ex, "Pick List preview; OrderID=" & wo.ToString())
+            Dim message As String = ex.Message
+            If ex.InnerException IsNot Nothing Then
+                message &= vbCrLf & vbCrLf & "Details: " & ex.GetBaseException().Message
+            End If
+            AppPrompt.Show(message)
         End Try
 
 
 
     End Sub
+    Private Sub rptviewer_ReportError(sender As Object, e As Microsoft.Reporting.WinForms.ReportErrorEventArgs) Handles rptviewer.ReportError
+        ' Capture asynchronous processing errors without changing ReportViewer handling.
+        ErrorLogger.LogError(e.Exception, "Pick List rendering; OrderID=" & wo.ToString())
+    End Sub
+
     Private Function getLoc() As String
         Dim f = (From a In db.Configurations Select a.StoreID).FirstOrDefault
 

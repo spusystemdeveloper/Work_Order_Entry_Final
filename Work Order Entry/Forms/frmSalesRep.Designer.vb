@@ -90,8 +90,8 @@ Partial Class frmSalesRep
         DataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(232, 238, 246)
         DataGridViewCellStyle2.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
         DataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(232, 238, 246)
+        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.WindowText
         DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.gridSalesRep.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle2
         Me.gridSalesRep.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing

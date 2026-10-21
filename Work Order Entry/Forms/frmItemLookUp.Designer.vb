@@ -119,6 +119,14 @@ Partial Class frmItemLookUp
         Me.txtBarcode = New System.Windows.Forms.TextBox()
         Me.chkBarcode = New System.Windows.Forms.CheckBox()
         Me.panelTotal = New System.Windows.Forms.Panel()
+        Me.grpWithholding = New System.Windows.Forms.GroupBox()
+        Me.withholdingLayout = New System.Windows.Forms.TableLayoutPanel()
+        Me.lblWithholdingBasis = New System.Windows.Forms.Label()
+        Me.lblWithholding1 = New System.Windows.Forms.Label()
+        Me.lblWithholding2 = New System.Windows.Forms.Label()
+        Me.lblWithholding5 = New System.Windows.Forms.Label()
+        Me.lblWithholding15 = New System.Windows.Forms.Label()
+        Me.withholdingToolTip = New System.Windows.Forms.ToolTip(Me.components)
         Me.panelTotalsContainer = New System.Windows.Forms.Panel()
         Me.chkBoxQtoWo = New System.Windows.Forms.CheckBox()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
@@ -855,6 +863,7 @@ Partial Class frmItemLookUp
         'panelTotal
         '
         Me.panelTotal.BackColor = System.Drawing.SystemColors.Control
+        Me.panelTotal.Controls.Add(Me.grpWithholding)
         Me.panelTotal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.panelTotal.Controls.Add(Me.chkBoxQtoWo)
         Me.panelTotal.Controls.Add(Me.GroupBox3)
@@ -866,6 +875,59 @@ Partial Class frmItemLookUp
         Me.panelTotal.Padding = New System.Windows.Forms.Padding(5)
         Me.panelTotal.Size = New System.Drawing.Size(1186, 79)
         Me.panelTotal.TabIndex = 24
+        '
+        'grpWithholding
+        '
+        Me.grpWithholding.Controls.Add(Me.withholdingLayout)
+        Me.grpWithholding.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular)
+        Me.grpWithholding.Location = New System.Drawing.Point(5, 3)
+        Me.grpWithholding.Name = "grpWithholding"
+        Me.grpWithholding.Size = New System.Drawing.Size(290, 70)
+        Me.grpWithholding.TabIndex = 25
+        Me.grpWithholding.TabStop = False
+        Me.grpWithholding.Text = "Suggested W/Tax"
+        '
+        'withholdingLayout
+        '
+        Me.withholdingLayout.ColumnCount = 2
+        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50!))
+        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50!))
+        Me.withholdingLayout.Controls.Add(Me.lblWithholdingBasis, 0, 0)
+        Me.withholdingLayout.SetColumnSpan(Me.lblWithholdingBasis, 2)
+        Me.withholdingLayout.Controls.Add(Me.lblWithholding1, 0, 1)
+        Me.withholdingLayout.Controls.Add(Me.lblWithholding2, 1, 1)
+        Me.withholdingLayout.Controls.Add(Me.lblWithholding5, 0, 2)
+        Me.withholdingLayout.Controls.Add(Me.lblWithholding15, 1, 2)
+        Me.withholdingLayout.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.withholdingLayout.Name = "withholdingLayout"
+        Me.withholdingLayout.RowCount = 3
+        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333!))
+        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333!))
+        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333!))
+        Me.withholdingLayout.TabStop = False
+        '
+        'Read-only suggestion labels; full values are also available in tooltips.
+        '
+        Me.lblWithholdingBasis.AutoEllipsis = True
+        Me.lblWithholdingBasis.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblWithholdingBasis.Name = "lblWithholdingBasis"
+        Me.lblWithholdingBasis.Text = "VAT-exclusive: 0.00"
+        Me.lblWithholding1.AutoEllipsis = True
+        Me.lblWithholding1.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblWithholding1.Name = "lblWithholding1"
+        Me.lblWithholding1.Text = "1%: 0.00"
+        Me.lblWithholding2.AutoEllipsis = True
+        Me.lblWithholding2.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblWithholding2.Name = "lblWithholding2"
+        Me.lblWithholding2.Text = "2%: 0.00"
+        Me.lblWithholding5.AutoEllipsis = True
+        Me.lblWithholding5.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblWithholding5.Name = "lblWithholding5"
+        Me.lblWithholding5.Text = "5%: 0.00"
+        Me.lblWithholding15.AutoEllipsis = True
+        Me.lblWithholding15.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblWithholding15.Name = "lblWithholding15"
+        Me.lblWithholding15.Text = "15%: 0.00"
         '
         'panelTotalsContainer
         '
@@ -1043,8 +1105,8 @@ Partial Class frmItemLookUp
         DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(232, 237, 244)
         DataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(232, 237, 244)
+        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
         DataGridViewCellStyle1.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Bold)
         DataGridViewCellStyle1.Padding = New System.Windows.Forms.Padding(6, 4, 6, 4)
         DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
@@ -1641,8 +1703,8 @@ Partial Class frmItemLookUp
         DataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
         DataGridViewCellStyle24.BackColor = System.Drawing.Color.FromArgb(232, 237, 244)
         DataGridViewCellStyle24.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        DataGridViewCellStyle24.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle24.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle24.SelectionBackColor = System.Drawing.Color.FromArgb(232, 237, 244)
+        DataGridViewCellStyle24.SelectionForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
         DataGridViewCellStyle24.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Bold)
         DataGridViewCellStyle24.Padding = New System.Windows.Forms.Padding(6, 4, 6, 4)
         DataGridViewCellStyle24.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
@@ -2009,6 +2071,14 @@ Partial Class frmItemLookUp
     Friend WithEvents panelButtons As System.Windows.Forms.Panel
     Friend WithEvents cmdSelect As System.Windows.Forms.Button
     Friend WithEvents panelTotal As System.Windows.Forms.Panel
+    Friend WithEvents grpWithholding As System.Windows.Forms.GroupBox
+    Friend WithEvents withholdingLayout As System.Windows.Forms.TableLayoutPanel
+    Friend WithEvents lblWithholdingBasis As System.Windows.Forms.Label
+    Friend WithEvents lblWithholding1 As System.Windows.Forms.Label
+    Friend WithEvents lblWithholding2 As System.Windows.Forms.Label
+    Friend WithEvents lblWithholding5 As System.Windows.Forms.Label
+    Friend WithEvents lblWithholding15 As System.Windows.Forms.Label
+    Friend WithEvents withholdingToolTip As System.Windows.Forms.ToolTip
     Friend WithEvents panelTotalsContainer As System.Windows.Forms.Panel
     Friend WithEvents GroupBox2 As System.Windows.Forms.GroupBox
     Friend WithEvents txtSub As System.Windows.Forms.TextBox

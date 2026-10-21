@@ -104,6 +104,8 @@ Partial Class frmRecall
         headerStyle.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
         headerStyle.Padding = New System.Windows.Forms.Padding(6, 4, 6, 4)
         headerStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        headerStyle.SelectionBackColor = System.Drawing.Color.FromArgb(232, 237, 244)
+        headerStyle.SelectionForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
         Me.gridOrder.ColumnHeadersDefaultCellStyle = headerStyle
         cellStyle.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Regular)
         cellStyle.BackColor = System.Drawing.Color.White

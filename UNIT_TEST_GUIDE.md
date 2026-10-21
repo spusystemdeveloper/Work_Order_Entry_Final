@@ -1,5 +1,169 @@
 # Work Order Entry unit tests
 
+## Current ReportViewer 2010 deployment
+
+The October 21 main build uses installed ReportViewer 10.0.0.0, not private
+version-15 DLLs. See
+`Database Components/Tests/REPORTVIEWER_2010_MAIN_DEPLOYMENT_2026-10-21.md`.
+The latest EXE includes withholding suggestions; both Release/x86 builds, Debug,
+106 unit, 30 localhost withholding and 28 checkbox checks passed. The expanded
+EXE-only packaging probe rendered both actual preview forms for six cases;
+all 32 pages matched the accepted version-10 candidate exactly. Keep existing
+Debug/Release store configs byte-for-byte around builds. Every target PC needs
+the ReportViewer 2010 prerequisite installed once before EXE-only updates.
+
+## Suggested customer withholding amounts
+
+Work Order shows a read-only Suggested W/Tax panel beside its totals when the
+selected customer has recognized enabled flags. It uses the existing displayed
+VAT-exclusive Sub Total directly, including the order's existing exemption/tax
+treatment. It does not divide every total by 1.12, deduct withholding from the
+order, combine rates, save withholding amounts, modify customer properties or
+fill RMS tender fields. These are separate estimates for cashier reference,
+not a determination that a particular tax category legally applies.
+
+Confirmed RMS customer mapping (CustomCaption.Style identifies each caption):
+
+| Rate | Customer property | Required value | Caption style / caption |
+| --- | --- | --- | --- |
+| 1% | CustomNumber3 | 1 | 8 / W/Tax 1% |
+| 2% | CustomNumber4 | 2 | 9 / W/Tax 2% |
+| 5% | CustomNumber5 | 5 | 10 / W/Tax 5% |
+| 15% | CustomText2 | text 15 (surrounding spaces ignored) | 2 / W/Tax 15% |
+
+Missing, duplicate or unrelated captions do not enable estimates. Caption
+comparison ignores letter case, whitespace and a trailing colon. Other flag
+values are disabled. The customer SELECT is parameterized and runs only on
+customer changes; subtotal edits reuse flags. Clearing/resetting or selecting
+another customer reloads current flags. Optional lookup failures hide estimates
+and are logged without interrupting existing customer/save validation. No SQL
+runs during Designer construction. The panel is hidden for quotations.
+
+Run `Database Components/Tests/WithholdingSuggestions_LocalDB_UI_Test.ps1`
+after a Debug build. It creates/removes an owned localhost LocalDB fixture,
+points only its process's in-memory contexts at that fixture, and does not
+change registry or installed configuration. It never shows/loads the real
+application form; a separate test host renders only its totals panel. Thirty
+checks cover actual customer SELECTs, independent rates, exact flags/captions,
+customer switching, cached flags, actual UpdateAmt results, tax-exempt totals,
+signed/fractional/large values, tooltips, invalid/empty input, quotation hiding,
+unchanged totals, tab stops and no overlap at the two supported screen widths.
+Five unit tests cover rate detection, math, rounding and caption recognition.
+
+October 21 validation: both Release/x86 solutions and Debug built; 106 unit,
+30 localhost UI/query and 28 RecallFormatting checks passed. Debug EXE config
+was preserved byte-for-byte. Final render evidence is in ignored
+`TestResults/Withholding-8c09dbef/`. This is synthetic localhost validation, not
+live-store saves, physical printing or execution of RMS POS. No live database
+was accessed for this feature and the RMS investigation remains paused.
+The compiled customer/caption SELECT also passed a read-only check against the
+actual restored localhost DVO_STORE_DB schema (customer ID 11 returned 1%, 2%
+and 5%); no app form or configuration was loaded and no data was written.
+
+Manual acceptance: select a tagged customer, enter/edit/remove items, switch
+customers, recall/import/restore a draft, toggle Work Order/Quotation and
+refresh. Verify the applicable amounts against the displayed subtotal and check
+that existing totals, save/password checks, printing and shortcuts behave as
+before. Hover over an ellipsized large amount to read the complete value.
+
+## Cebu one-off commitment recovery
+
+`Database Components/Tests/Cebu_ZeroCommitments_Core_LocalDB_Test.ps1` tests
+the exact UPDATE/audit body of the October 21 recovery in an owned disposable
+LocalDB database. It does not execute the complete production recovery or relax
+its backup/server guards. Twelve checks cover exact target quantities, stock,
+prices, unrelated items, audits, repeat execution and failure rollback.
+See `Database Components/Recovery/CEBU_ZERO_COMMITMENTS_2026-10-21.md` for live
+authorization, scope, backup limits, regression results and execution status.
+Never use an application save or a live rollback as a rehearsal for this repair.
+
+## ReportViewer 2010 isolated candidate
+
+Historical October 20 experiment; superseded for deployment by the October 21
+main-project adoption recorded in
+`Database Components/Tests/REPORTVIEWER_2010_MAIN_DEPLOYMENT_2026-10-21.md`.
+Current builds require installed ReportViewer 2010 and deliver an EXE-only update.
+
+The October 20 compatibility experiment is documented in
+`Database Components/Tests/REPORTVIEWER_2010_COMPATIBILITY_RESULTS_2026-10-20.md`.
+The isolated Release/x86 build passed 101 candidate unit tests, EXE-only
+clean-folder and existing localhost UNC rendering checks using installed
+ReportViewer 10.0.0.0. Both actual preview forms rendered six cases, including
+real Work Order/Sales Quotation titles, empty, long-text, large-value and
+multipage fixtures. All 32 TIFF pages matched count/dimensions; 27 were exact,
+five had two differing Work Order title-edge pixels each. The strict pixel
+assertion returned false and was not weakened. Other pixels and preview page
+settings matched; operator acceptance remains required.
+All 137 code/resource files matched; only isolated dependency references differ.
+No real project reference/config, shared deployment or live database was changed.
+Affected-unit and physical printer/copy acceptance remain outstanding. This is
+not proof of the cause of the original report error. At that time the normal
+application's ReportViewer 15 package remained unchanged. The October 21 adoption
+changes the packaging contract to installed version-10 GAC loading.
+
+## Shared-folder report failure: diagnostic follow-up
+
+The October 20 failure after copying the complete Release folder remains
+unresolved pending its actual inner exception. Read-only inspection found
+matching ReportViewer DLL hashes on the supplied share. Synthetic Work Order
+and Pick List reports passed from that shared application base, including the
+actual deployed preview forms' embedded resources and page settings, on the
+development PC. These results do not certify another user's PC or real WO data.
+
+The diagnostic-only update logs synchronous preview failures and asynchronous
+ReportError exceptions through ErrorLogger; existing popups show the root cause
+when present. It leaves e.Handled, data queries, RDLC, printers, copy counts,
+page setup and printing behavior unchanged. No remote-trust switch was added.
+All four synthetic diagnostic checks passed (nested errors captured, default
+handling intact), plus both Release/x86 builds, Debug, 101 unit tests and the
+clean-folder packaging/render checks. Debug config preserved byte-for-byte.
+Ignored evidence: `TestResults/SharedReportDiagnosis/` and
+`TestResults/SharedReportValidation/`. No shared files or database were changed.
+
+The following diagnostic procedure applies to the historical version-15 build,
+not the current ReportViewer 2010 EXE. To obtain the missing evidence, deploy
+that historical diagnostic EXE only in a
+controlled maintenance/test window, retaining the branch's config and matching
+five DLLs. Repeat the failing preview on the affected PC; no new order/save is
+needed. Record the WO number, which PCs fail, and the popup's Details text.
+The full chain is appended to `Logs/Error_yyyy-MM-dd.log` beside the launched
+EXE if that user can write there. If logging is denied, supply the Details text;
+do not change shared permissions or runtime trust settings as an unverified fix.
+The diagnostic build has not been copied to the share by the assistant, and
+the actual client's inner exception has not yet been captured. RMS remains paused.
+
+## Neutral column-header selection colors
+
+All 17 addin grids use their normal header colors even when a column contains
+the current cell; selected rows remain highlighted. Designer header styles and
+the main-grid runtime formatter both set matching normal/selection colors.
+Sorting, keyboard selection, read-only flags and checkbox NullValue defaults
+are unchanged. Check Price Level, main lookup/selected items, customer, sales
+rep and recall grids after selecting rows/clicking sortable headers.
+
+The October 20 comparison passed 40 checks across 19 Designer/runtime states,
+including unchanged row colors and column/interaction settings. Price Level
+before/after renders are in ignored `TestResults/HeaderHighlightValidation/`.
+No form Load or SQL was invoked. Both Release/x86 solutions, Debug build, all
+101 unit tests and 28 RecallFormatting_UI_Test.ps1 checks passed; Debug config
+was preserved byte-for-byte. Manual application acceptance remains outstanding.
+
+## Queueing column visibility
+
+UP-STORE and PREPARED display only for work orders when the saved branch
+Queueing Mode is enabled. Save the mode in Settings and close the settings
+dialog to apply it. Both columns stay hidden for quotations. Verify off/on,
+refresh, recall and quote-to-WO conversion; hiding must not clear existing cell
+values or change save/queue behavior. No Designer checkbox defaults changed.
+
+The October 20 in-memory probe passed 85 checks over repeated off/on settings,
+formatting, Settings UI refresh, quotation and conversion, with true UP-STORE
+and prepared quantity 3 retained. It did not invoke form Load or save settings;
+the EXE configuration hash was unchanged. Both Release/x86 solutions, Debug
+build, all 101 unit tests and 28 RecallFormatting_UI_Test.ps1 checks passed.
+Ignored evidence: `TestResults/QueueColumnValidation/`. Manual acceptance of
+the actual saved Settings flow remains; no store database was accessed.
+
 ## New-order preallocation validation
 
 After a Debug build, run
@@ -1204,13 +1368,16 @@ For Release deployment dependencies, run:
 & '.\Database Components\Tests\Packaging_CleanFolder_Test.ps1'
 ```
 
-Build Release first. This copies only the application EXE and its five packaged
-ReportViewer DLLs into an owned `TestResults` folder, compiles an x86 probe and
-checks compilation of the actual Import entry point, CSV import, XLSX import,
-single Excel dependency loading, WO report rendering, pick-list report rendering,
-physical ReportViewer loading and the absence of extra dependency DLLs. PDFs use
-synthetic data. No store SQL, app login, screen automation or print job is involved.
-The check reproduced the old embedding failure before the DLL packaging fix.
+Build Release first with the installed ReportViewer 2010 prerequisite. This
+copies only the application EXE into an owned `TestResults` folder and compiles
+an x86 probe. It checks actual Import entry-point JIT, CSV/XLSX imports and single
+Excel dependency identity. Both actual preview forms render normal Work Order,
+quotation, empty, long-text, large-value and multipage PDF/TIFF samples without
+invoking their production Load handlers. It asserts unchanged 850x650 preview
+paper and existing zero integer margins, version-10 references/GAC loading and
+zero private DLLs/config. No store SQL, app login or physical print job is involved.
+The former five-DLL requirement belonged to the historical version-15 package;
+the changed deployment contract is explicit, not a suppressed dependency failure.
 
 Two additional disposable SQL suites cover the October 14 identity incident:
 
