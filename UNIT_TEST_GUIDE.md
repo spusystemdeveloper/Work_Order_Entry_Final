@@ -1,5 +1,134 @@
 # Work Order Entry unit tests
 
+## Printed withholding reference (V4 and V8)
+
+Save each pre-change rprtOrder.rdlc before editing. Build V4 and both production
+solutions Release/x86 and run the main unit suite with Debug/Release configs
+preserved. Run `Database Components/Tests/PrintedWithholding_LocalDB_Test.ps1`
+separately for each compiled EXE with `-ApplicationPath`, `-BaselineReport` and
+`-OutputDirectory`. Its C# probe creates/drops an owned, GUID-named LocalDB
+database; only synthetic fixture data is written. It calls the actual compiled
+reference helper and renders the actual embedded template with installed
+ReportViewer 2010. Production preview Load is never invoked because V4's Load
+physically prints. No printer or RMS is used.
+
+Each version passed 44 checks: saved-order customer/type, exact rates/rounding,
+tax-exempt/zero/signed bases, missing/duplicate/unrelated captions, missing orders,
+optional lookup failure, stored totals, unchanged pre-existing RDLC elements,
+PDF/TIFF rendering, preview settings and retained printable EMF page counts for
+normal, quotation, no-rate and multi-page reports. Samples include sole 15%, all
+rates, empty lines and large amounts. Compare printable pages using the existing
+print extension's >408-byte EMF rule; raw PDF/TIFF may contain legacy blank pages.
+The original print-extension code and that filter remain unchanged.
+
+With pdfplumber available, run
+`python Database Components/Tests/PrintedWithholding_Pdf_Test.py <output-root>`
+where the root contains `V4Render` and `V8Render` output directories. All 72
+comparisons passed: exact enabled amounts, unchanged total text, reference clear
+of signatures, and identical word positions/pages for hidden references and
+quotations. Visible references can cause normal RDLC reflow; those comparisons
+preserve existing text/values rather than requiring identical positions.
+V4's very large totals retain their existing line wrapping; character-level
+comparison verifies the full original amounts. Render sample PDFs with
+pdftoppm and visually inspect the new section, including large reference values.
+
+Also run Packaging_CleanFolder_Test.ps1 (passed with installed ReportViewer
+2010), PrintLayout_UI_Test.ps1 (91 passed), main unit tests (106 passed), and
+the existing V4 save/customer/withholding/empty-result suites (54/28/57/33 passed).
+These local fixtures do not certify live-store data or physical printer output.
+
+## Main action column readability
+
+For Invoice uses the same 9-point Tahoma font as neighboring regular actions.
+The action column is now 144 pixels wide (141 inside its padding), extending
+into the former grid-side gap. Content-panel right padding is one pixel and
+the button-column left padding is zero, so grid usable widths remain unchanged.
+Its existing
+branch visibility and click handler are unchanged. SmallScreenLayout_UI_Test
+now checks text-plus-icon fit and matching font size at 1024, 1366 and 1600
+widths, normal/simulated 125% scaling, and main-form bounds at 1600x900.
+All 1344 scoped layout checks passed, including thin-separator checks against
+both grids at each width and scale. Withholding tests use content widths
+1212/1766 after this 18-pixel action-column increase; all 55 passed. Both main
+Release builds, Debug, 106 unit and 28 checkbox checks passed; configs retained.
+
+Dialog-fitting cases retain their existing 728-pixel test working-area height.
+An exploratory taller dialog case hit the Settings scroll-edge assertion; no
+Settings behavior was changed or certified at that additional height. The
+1600x900 acceptance in this change is scoped to the main form's controls.
+Actual monitor/DPI readability remains a manual acceptance check.
+
+## Imported V4 basic save guards
+
+`Database Components/Tests/V4EmptySearchResults_UI_Test.ps1 -ApplicationPath
+<absolute-V4-EXE-path>` tests actual V4 grid Paint handlers and empty-selection
+handlers without SQL or production-form Load. Its 33 checks cover unbound versus
+bound-empty states, text in the grid body, unchanged row data, empty-to-populated
+and populated-to-empty transitions, empty Customer/Sales Rep/item selection,
+existing Esc handlers in both lookup text boxes and grids, closed SQL connections
+and unchanged configs. The original compiled V4 reproduces an empty Sales Rep
+ArgumentOutOfRangeException. The item no-match modal and filter-restoration code
+are deliberately unchanged; this fixture does not invoke that modal SQL flow.
+
+After removing V4's empty LoadLevel MessageBox, manually verify item/price
+selection has no blank dialog and retains pricing, approval and Cancel behavior.
+The automated V4 guard/customer/withholding fixtures do not certify that full
+legacy GSC price-selection flow.
+
+V4's optional withholding strip is checked separately with
+`Database Components/Tests/V4WithholdingSuggestions_LocalDB_UI_Test.ps1
+-ApplicationPath <absolute-V4-EXE-path>`. The test uses its own disposable
+LocalDB database, replaces endpoints only inside its test process, and never
+loads the production form or runs a save/print. Its 57 checks cover captions,
+all enabled-rate combinations packing left, cached rates, customer changes,
+existing taxable/tax-exempt UpdateAmt results, quote/reset hiding, large values,
+and actual docked-footer bounds at 1366/1600 widths. The fixture detaches only
+V4's legacy quotation confirmation handler to avoid a modal prompt; the new
+display handler remains attached. This is not an actual GSC/RMS workflow test.
+
+Build the active `Work Order Entry V4/Work Order Entry_4/Work Order Entry`
+project as Release/x86. Run `Database Components/Tests/V4SaveGuards_UI_Test.ps1`
+with `-ApplicationPath` for an isolated candidate or let it use V4's Release
+output. It tests compiled selection/header/row gates and compiled save/lookup
+call ordering without application startup or SQL. It does not claim V4 saves
+are atomic or exercise GSC's actual stored procedures. See the separate
+`Work Order Entry V4/V4_GSC_VALIDATION_UPDATE.md` for manual localhost acceptance.
+All 54 V4 checks passed. Use an older-GSC-compatible test restore for full
+workflow acceptance: the current localhost GSC search function has one argument,
+whereas this V4 target intentionally retains its older three-argument mapping.
+
+Run `Database Components/Tests/V4DuplicateCustomer_LocalDB_UI_Test.ps1`
+with `-ApplicationPath` to check the actual V4 search and selection handlers
+against two same-name synthetic customers in its owned localhost fixture.
+The unmodified baseline reproduces the stale-row wrong-account error; the
+candidate passes 28 checks including selected ID/account, per-customer price
+level, existing approval setting, employee/tax flags, Sales Rep, Enter handling,
+rebound account searches and empty/header selection. Production forms are never
+shown/loaded; only their grid is hosted offscreen. No save or print is executed.
+
+## Independent WPF sample startup
+
+`DVO_WORK_ORDER_V8_WPF_MODERN` is a .NET 8 sample outside the production solutions.
+Its App.xaml must specify StartupUri="MainWindow.xaml" so launching its EXE
+opens the sample window. Build its own project in Release and check that the
+process has a visible main window. Its hardcoded data and mock Save action do
+not validate production saving, printing, tax or RMS behavior.
+The corrected sample built with zero warnings/errors in `bin/Release/StartupFixed`
+and its real main window handle/title were verified after launching outside
+the restricted process environment. Earlier default-folder attempts were locked
+by existing sample processes. No production application/database was launched.
+
+## Separate UI preview
+
+`UI Preview/WorkOrderUiPreview.vbproj` is a standalone sample-data visual demo,
+not part of either production solution. Build/open its own Release EXE as
+described in `UI Preview/README.md`. Its `--check` mode renders 1366/1920 window
+widths and checks sample filtering, empty results, all four withholding tabs,
+unchanged fixed totals and visible actions. No main form, database, store
+configuration, RMS or physical printer is loaded. These checks do not validate
+production save/printing behavior; operator readability/scaling review remains
+necessary. The main application's UI has not been replaced by this preview.
+
 ## Current ReportViewer 2010 deployment
 
 The October 21 main build uses installed ReportViewer 10.0.0.0, not private
@@ -14,13 +143,31 @@ the ReportViewer 2010 prerequisite installed once before EXE-only updates.
 
 ## Suggested customer withholding amounts
 
-Work Order shows a read-only Suggested W/Tax panel beside its totals when the
+Work Order shows a read-only Suggested W/Tax strip above its totals when the
 selected customer has recognized enabled flags. It uses the existing displayed
 VAT-exclusive Sub Total directly, including the order's existing exemption/tax
 treatment. It does not divide every total by 1.12, deduct withholding from the
 order, combine rates, save withholding amounts, modify customer properties or
 fill RMS tender fields. These are separate estimates for cashier reference,
 not a determination that a particular tax category legally applies.
+
+The full-width pale blue strip uses 13.5-point bold amounts across one row,
+with the existing VAT-exclusive basis underneath. Only enabled rates appear;
+they pack from the left without blank slots for disabled rates, retaining their
+relative 1%, 2%, 5%, 15% order. A sole 15% suggestion occupies the first position.
+no tabs, keyboard stops or tender entry actions were added. Its 92 extra footer
+pixels are reclaimed when hidden (including quotations and untagged customers).
+The enlarged footer leaves a usable selected-item viewport at 1366x768.
+The localhost suite now also checks full-width placement above totals, bold
+font size, non-overlapping rates, large-text fit, and compact hidden states.
+October 21 display validation passed both Release/x86 builds, Debug, 106 unit,
+38 localhost withholding, 28 checkbox and 875 existing small-screen checks.
+Actual screenshots come from
+an isolated totals-panel host, not a live order or a full application login.
+October 22 left-packing validation passed 55 localhost withholding checks,
+including every enabled-rate combination and a customer switch back to all
+rates, plus both Release builds, Debug, 106 unit, 28 checkbox and 875 existing
+small-screen checks. Calculations and query/cache rules are unchanged.
 
 Confirmed RMS customer mapping (CustomCaption.Style identifies each caption):
 

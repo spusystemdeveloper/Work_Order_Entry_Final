@@ -58,6 +58,23 @@ Partial Public Class frmItemLookUp
                     labels(index).Text & Environment.NewLine & lblWithholdingBasis.Text &
                     Environment.NewLine & "Suggestion only. Enter the applicable tender in RMS.")
             Next
+            ' Pack applicable rates first; hidden labels must not leave empty slots.
+            withholdingLayout.SuspendLayout()
+            Try
+                Dim column As Integer = 0
+                For Each enabledFirst As Boolean In {True, False}
+                    For index As Integer = 0 To rates.Length - 1
+                        If withholdingRates.Contains(rates(index)) = enabledFirst Then
+                            If withholdingLayout.GetColumn(labels(index)) <> column Then
+                                withholdingLayout.SetColumn(labels(index), column)
+                            End If
+                            column += 1
+                        End If
+                    Next
+                Next
+            Finally
+                withholdingLayout.ResumeLayout()
+            End Try
             withholdingToolTip.SetToolTip(lblWithholdingBasis,
                 lblWithholdingBasis.Text & Environment.NewLine &
                 "Uses the existing order subtotal. Order totals are unchanged.")

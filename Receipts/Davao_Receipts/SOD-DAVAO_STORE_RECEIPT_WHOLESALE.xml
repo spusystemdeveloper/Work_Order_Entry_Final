@@ -1,0 +1,348 @@
+<XML>
+	<PROPERTIES>
+		<DESCRIPTION>SOD WORK ORDER NEW</DESCRIPTION>
+		<AUTHOR>SOD PROGRAMMER/SPU</AUTHOR>
+		<VERSION>December 02, 2019 </VERSION>
+	</PROPERTIES>
+	<!-- ========================= -->
+	<!-- Variable Declarations -->
+	<!-- ========================= -->
+	<!-- These variables may be altered: -->
+	<SET name="PaperWidth" custom="true" description="Paper Width" type="vbDouble"> 8.50 </SET>
+	<SET name="PaperHeight" custom="true" description="Paper Height" type="vbDouble"> 11.00 </SET>
+	<SET name="LogoWidth" custom="true" description="Logo Width" type="vbDouble"> 1.125 </SET>
+	<SET name="LogoFilename" custom="true" description="Logo Filename" type="String"/>
+	<SET name="HeaderHeight" custom="true" description="Margin Left" type="vbDouble"> 0.85 </SET>
+	<SET name="FooterHeight" custom="true" description="Footer Height" type="vbDouble"> 0.25 </SET>
+	<SET name="TotalsHeight" custom="true" description="Totals Height" type="vbDouble"> 1 </SET>
+	<SET name="MarginLeft" custom="true" description="Margin Left" type="vbDouble"> 0.25 </SET>
+	<SET name="MarginRight" custom="true" description="Margin Right" type="vbDouble"> 0.25 </SET>
+	<SET name="MarginTop" custom="true" description="Margin Top" type="vbDouble"> 0.98 </SET>
+	<SET name="MarginBottom" custom="true" description="Margin Bottom" type="vbDouble"> 0.50 </SET>
+	<SET name="PageWidth" description="Page Width" type="vbDouble"> PaperWidth - MarginLeft - MarginRight </SET>
+	<SET name="PageHeight" description="Page Height" type="vbDouble"> PaperHeight - MarginTop - MarginBottom  - HeaderHeight - FooterHeight</SET>
+	<!-- Margin -->
+	<MARGIN>
+		<TOP> MarginTop + HeaderHeight </TOP>
+		<BOTTOM> MarginBottom </BOTTOM>
+		<LEFT> MarginLeft </LEFT>
+		<RIGHT> MarginRight </RIGHT>
+		<ORIENTATION>orPortrait</ORIENTATION>
+	</MARGIN>
+	<FONT name="">
+		<!-- No ID is default font -->
+		<NAME> "Arial" </NAME>
+		<SIZE> 10 </SIZE>
+		<BOLD> False </BOLD>
+		<UNDERLINE> False </UNDERLINE>
+		<ITALIC> False </ITALIC>
+		<COLOR> vbBlack </COLOR>
+	</FONT>
+	<FONT name="Small">
+		<NAME> "Arial" </NAME>
+		<SIZE>8</SIZE>
+		<BOLD> False </BOLD>
+		<UNDERLINE> False </UNDERLINE>
+		<ITALIC> False </ITALIC>
+		<COLOR> vbBlack </COLOR>
+	</FONT>
+	<FONT name="SmallBold">
+		<NAME> "Arial" </NAME>
+		<SIZE>8</SIZE>
+		<BOLD> True </BOLD>
+		<UNDERLINE> False </UNDERLINE>
+		<ITALIC> False </ITALIC>
+		<COLOR> vbBlack </COLOR>
+	</FONT>
+	<FONT name="Tiny">
+		<NAME> "Arial" </NAME>
+		<SIZE> 8 </SIZE>
+		<BOLD> False </BOLD>
+		<UNDERLINE> False </UNDERLINE>
+		<ITALIC> True </ITALIC>
+		<COLOR> vbBlack </COLOR>
+	</FONT>
+	<FONT name="Large">
+		<NAME> "Arial" </NAME>
+		<SIZE> 12 </SIZE>
+		<BOLD> True </BOLD>
+		<UNDERLINE> False </UNDERLINE>
+		<ITALIC> False </ITALIC>
+		<COLOR> vbBlack </COLOR>
+	</FONT>
+	<FONT name="xSmall">
+		<NAME> "Arial" </NAME>
+		<SIZE> 6 </SIZE>
+		<BOLD> False </BOLD>
+		<UNDERLINE> False </UNDERLINE>
+		<ITALIC> True </ITALIC>
+		<COLOR> vbBlack </COLOR>
+	</FONT>
+	<SUB name="PrintHeader">
+		<!-- =========================================================================- -->
+		<!-- STUB -->
+		<!-- =========================================================================- -->
+		<TABLE>
+			<FONT> "Large" </FONT>
+			<BORDER> tbNone </BORDER>
+			<TOP> 0.25 </TOP>
+			<COLUMNHEADER>
+				<ALIGNMENT> " &lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.50 </WIDTH>
+				<TEXT> Configuration.StoreName</TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&gt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.49 </WIDTH>
+				<TEXT>Transaction.ReceiptTransactionName</TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+		<TABLE>
+			<BORDER> tbNone </BORDER>
+			<FONT> "SmallBold" </FONT>
+			<COLUMNHEADER>
+				<ALIGNMENT> " &lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.50 </WIDTH>
+				<TEXT> "DAVAO BRANCH - STORE" </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&gt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.49 </WIDTH>
+				<TEXT> Transaction.ReceiptTransactionNumberCaption ": " Transaction.ReceiptTransactionNumber  </TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+		<TABLE>
+			<!-- <TOP> PaperHeight - MarginBottom - FooterHeight </TOP> -->
+			<BORDER> tbNone </BORDER>
+			<FONT> "SmallBold" </FONT>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&gt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.99 </WIDTH>
+				<TEXT> "Page: \p of \t" </TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+		<!-- =========================================================================- -->
+		<!-- Logo -->
+		<!-- =========================================================================- -->
+		<!-- ========================= -->
+		<!-- Barcode -->
+		<!-- ========================= -->
+		<PARAGRAPH>
+			<TEXT newline="true"> "" </TEXT>
+		</PARAGRAPH>
+		<TABLE>
+			<BORDER> tbNone </BORDER>
+			<FONT> "Small" </FONT>
+			<TOP> 0.95 </TOP>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.41 </WIDTH>
+				<TEXT> "Account # : " Customer.AccountNumber </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.41 </WIDTH>
+				<TEXT> "Register: " Register.Number </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.50 </WIDTH>
+				<TEXT> "Date: " Transaction.Date</TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+		<TABLE>
+			<BORDER> tbNone </BORDER>
+			<FONT> "Small" </FONT>
+			<!-- <TOP> MarginTop + HeaderHeight + .20</TOP> -->
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.41 </WIDTH>
+				<TEXT> "Company  : " Customer.HomeAddress.Company  </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.41 </WIDTH>
+				<TEXT> "Cashier : " Cashier.Name</TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.50 </WIDTH>
+				<TEXT> "Time: " Transaction.Time</TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+		<TABLE>
+			<BORDER> tbNone </BORDER>
+			<FONT> "Small" </FONT>
+			<!-- <TOP> MarginTop + HeaderHeight + .20</TOP> -->
+			<COLUMNHEADER>
+				<WIDTH> PageWidth </WIDTH>
+				<TEXT> "Address    : " Customer.ShipToAddress.StreetAddress ", " Customer.ShipToAddress.StreetAddress2 " " Customer.ShipToAddress.CityStateZip</TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+		<PARAGRAPH>
+			<TEXT newline="true"> "" </TEXT>
+		</PARAGRAPH>
+		<TABLE>
+			<BORDER> tbNone </BORDER>
+			<FONT> "Small" </FONT>
+			<!-- <TOP> MarginTop + HeaderHeight + .20</TOP> -->
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.20 </WIDTH>
+				<TEXT> "Reference : " Transaction.ReferenceNumber</TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+		<TABLE>
+			<BORDER> tbNone </BORDER>
+			<FONT> "Small" </FONT>
+			<!-- <TOP> MarginTop + HeaderHeight + .20</TOP> -->
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth</WIDTH>
+				<TEXT> "Comment  : " Transaction.comment</TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+	</SUB>
+	<SUB name="PrintEntries">
+		<TABLE>
+			<TOP> HeaderHeight + MarginTop </TOP>
+			<FONT> "Small" </FONT>
+			<BORDER> tbtop </BORDER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.15 </WIDTH>
+				<TEXT> "Item Code" </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.46 </WIDTH>
+				<TEXT> "Description" </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&gt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.12 </WIDTH>
+				<TEXT> "Qty. Ord" </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&gt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.12 </WIDTH>
+				<TEXT> "Price" </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&gt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.13 </WIDTH>
+				<TEXT> "Extended" </TEXT>
+			</COLUMNHEADER>
+			<FOR each="Entry">
+				<ROW/>
+				<ROW> Entry.Item.ItemLookupCode "|" Entry.Item.Description " " Entry.Item.ExtendedDescription "|" Entry.Quantity "|" Entry.Price "|" Entry.ExtendedPrice" </ROW>
+			</FOR>
+			<ROW/>
+		</TABLE>
+		<TABLE>
+			<BORDER> tbtop </BORDER>
+			<FONT> "Small" </FONT>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.98 </WIDTH>
+				<TEXT> ""</TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+		<TABLE>
+			<BORDER> tbNone </BORDER>
+			<FONT> "SmallBold" </FONT>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.76 </WIDTH>
+				<TEXT> "" </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.15 </WIDTH>
+				<TEXT> "Sub Total:" </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.18 </WIDTH>
+				<TEXT> Transaction.SubTotal</TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+		<TABLE>
+			<BORDER> tbNone </BORDER>
+			<FONT> "SmallBold" </FONT>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.76 </WIDTH>
+				<TEXT> "" </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.15 </WIDTH>
+				<TEXT> "Sales Tax:" </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.18 </WIDTH>
+				<TEXT> Transaction.SalesTax</TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+		<TABLE>
+			<BORDER> tbNone </BORDER>
+			<FONT> "SmallBold" </FONT>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.76 </WIDTH>
+				<TEXT> "" </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.15 </WIDTH>
+				<TEXT> "Total:" </TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;" </ALIGNMENT>
+				<WIDTH> PageWidth * 0.18 </WIDTH>
+				<TEXT> Transaction.Total </TEXT>
+			</COLUMNHEADER>
+		</TABLE>
+	</SUB>
+	<SUB name="PrintAuthorize">
+		<TABLE>
+			<PENSTYLE> psSolid </PENSTYLE>
+			<FONT> "SmallBold" </FONT>
+			<BORDER> tbNone </BORDER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH>PageWidth * 0.35</WIDTH>
+				<TEXT>""</TEXT>
+			</COLUMNHEADER>
+			<COLUMNHEADER>
+				<ALIGNMENT> "&lt;~" </ALIGNMENT>
+				<WIDTH>PageWidth * 0.30</WIDTH>
+				<TEXT>""</TEXT>
+			</COLUMNHEADER>
+			<ROW> "Picked By: _______________________________ ""|Checked By: _______________________________" </ROW>
+			<ROW/>
+			<ROW> "" </ROW>
+			<ROW/>
+			<ROW> "Packed By: _______________________________" </ROW>
+		</TABLE>
+	</SUB>
+	<SUB name="OverlayFirstPage">
+		<CALL> "PrintHeader" </CALL>
+	</SUB>
+	<SUB name="OverlayMiddlePage">
+		<CALL> "PrintHeader" 	</CALL>
+	</SUB>
+	<SUB name="OverlayLastPage">
+		<CALL> "PrintHeader" 	</CALL>
+	</SUB>
+	<SUB name="OverlayOnlyPage">
+		<CALL> "PrintHeader" 	</CALL>
+	</SUB>
+	<DOCUMENT>
+		<!-- header MUST be printed as a NON-overlay on the first page ... export-to-HTML issues -->
+		<CALL> "PrintEntries" </CALL>
+		<CALL> "PrintAuthorize" </CALL>
+	</DOCUMENT>
+</XML>

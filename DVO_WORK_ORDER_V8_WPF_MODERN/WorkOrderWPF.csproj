@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>DVO_STORE_DB</RootNamespace>
+    <AssemblyName>DVO_WORK_ORDER_V8_WPF</AssemblyName>
+  </PropertyGroup>
+</Project>

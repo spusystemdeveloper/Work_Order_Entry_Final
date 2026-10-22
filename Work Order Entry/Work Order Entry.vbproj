@@ -126,6 +126,7 @@
     <Compile Include="Class\OrderCommitmentRules.vb" />
     <Compile Include="Class\OrderPriceApprovalRules.vb" />
     <Compile Include="Class\CustomerWithholdingSuggestions.vb" />
+    <Compile Include="Class\WorkOrderWithholdingReference.vb" />
     <Compile Include="Class\RecallReadData.vb" />
     <Compile Include="Forms\frmShortageAlerts.vb">
       <SubType>Form</SubType>

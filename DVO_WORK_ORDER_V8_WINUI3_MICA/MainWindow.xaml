@@ -1,0 +1,96 @@
+<Window x:Class="DVO_STORE_DB.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="using:CommunityToolkit.WinUI.UI.Controls"
+        Title="Work Order Entry_V8 - WinUI 3 Mica">
+    <Window.SystemBackdrop>
+        <MicaBackdrop Kind="BaseAlt"/>
+    </Window.SystemBackdrop>
+    <Grid Padding="16" RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Work Order Entry_V8 - Modern Windows 11" FontWeight="SemiBold" FontSize="14"/>
+
+        <Border Grid.Row="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+            <Grid ColumnSpacing="24">
+                <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition/></Grid.ColumnDefinitions>
+                <StackPanel Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="Customer:" Opacity="0.6" FontSize="12"/>
+                        <TextBlock Text="BARANGAY GOVERNMENT OF MAA [F8]" FontWeight="SemiBold" FontSize="12"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="Payment Type:" Opacity="0.6" FontSize="12"/>
+                        <TextBlock Text="CHARGE" FontWeight="SemiBold" FontSize="12"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Spacing="6">
+                    <StackPanel Orientation="Horizontal" Spacing="4">
+                        <TextBlock Text="Sales Rep:" Opacity="0.6" FontSize="12"/>
+                        <TextBlock Text="WALK-IN [F7]" FontWeight="SemiBold" FontSize="12"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBlock Text="Release Type:" Opacity="0.6" FontSize="12" VerticalAlignment="Center"/>
+                        <RadioButton Content="Pick-up" IsChecked="True" FontSize="12"/>
+                        <RadioButton Content="Delivery" FontSize="12"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" 
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+            <controls:DataGrid x:Name="InventoryGrid" AutoGenerateColumns="False" IsReadOnly="True" 
+                               RowHeight="36" HeaderHeight="38" AlternatingRowBackground="{ThemeResource CardBackgroundFillColorSecondaryBrush}"
+                               DoubleTapped="InventoryGrid_DoubleTapped">
+                <controls:DataGrid.Columns>
+                    <controls:DataGridTextColumn Header="ITEM CODE" Binding="{Binding Code}" Width="120"/>
+                    <controls:DataGridTextColumn Header="ITEM NAME" Binding="{Binding Name}" Width="*"/>
+                    <controls:DataGridTextColumn Header="ITEM PRICE" Binding="{Binding Price}" Width="100"/>
+                    <controls:DataGridTextColumn Header="AVAIL QTY" Binding="{Binding Avail}" Width="100"/>
+                    <controls:DataGridTextColumn Header="SOH" Binding="{Binding Soh}" Width="90"/>
+                    <controls:DataGridTextColumn Header="QTY COM" Binding="{Binding QtyCom}" Width="90"/>
+                </controls:DataGrid.Columns>
+            </controls:DataGrid>
+        </Border>
+
+        <Grid Grid.Row="3" ColumnSpacing="12">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="360"/></Grid.ColumnDefinitions>
+            <Border Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8">
+                <controls:DataGrid x:Name="SelectedGrid" AutoGenerateColumns="False" IsReadOnly="True" RowHeight="36">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn Header="ITEM CODE" Binding="{Binding Code}" Width="110"/>
+                        <controls:DataGridTextColumn Header="ITEM NAME" Binding="{Binding Name}" Width="*"/>
+                        <controls:DataGridTextColumn Header="QTY" Binding="{Binding Qty}" Width="70"/>
+                        <controls:DataGridTextColumn Header="PRICE" Binding="{Binding Price}" Width="80"/>
+                        <controls:DataGridTextColumn Header="TOTAL" Binding="{Binding Total}" Width="100"/>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </Border>
+            <Border Grid.Column="1" Background="{ThemeResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="8" Padding="16">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="TOTALS" FontSize="11" FontWeight="SemiBold" Opacity="0.5"/>
+                    <Grid Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}" Padding="12,8" CornerRadius="4">
+                        <TextBlock Text="Sub Total"/><TextBlock x:Name="TxtSub" Text="₱ 982.14" HorizontalAlignment="Right" FontFamily="Cascadia Mono"/>
+                    </Grid>
+                    <Grid Background="{ThemeResource CardBackgroundFillColorSecondaryBrush}" Padding="12,8" CornerRadius="4">
+                        <TextBlock Text="VAT (12%)"/><TextBlock x:Name="TxtVat" Text="₱ 117.86" HorizontalAlignment="Right" FontFamily="Cascadia Mono"/>
+                    </Grid>
+                    <Border Background="Black" CornerRadius="4" Padding="12">
+                        <Grid>
+                            <TextBlock Text="Total" Foreground="White" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="TxtTotal" Text="₱ 1,100.00" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Right" FontFamily="Cascadia Mono"/>
+                        </Grid>
+                    </Border>
+                    <Button x:Name="BtnSave" Content="Save [F12]" Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Stretch" Click="BtnSave_Click"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

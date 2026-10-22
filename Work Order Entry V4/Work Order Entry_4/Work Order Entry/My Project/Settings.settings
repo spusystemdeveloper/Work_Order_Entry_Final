@@ -1,0 +1,46 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="My" GeneratedClassName="MySettings" UseMySettingsClassName="true">
+  <Profiles />
+  <Settings>
+    <Setting Name="MySQL_user" Type="System.String" Scope="User">
+      <Value Profile="(Default)">aviorcom_testRemote2</Value>
+    </Setting>
+    <Setting Name="MySQL_pass" Type="System.String" Scope="User">
+      <Value Profile="(Default)">123$P@SSW0RD</Value>
+    </Setting>
+    <Setting Name="MySQL_svr" Type="System.String" Scope="User">
+      <Value Profile="(Default)">162.214.108.202</Value>
+    </Setting>
+    <Setting Name="MySQL_db" Type="System.String" Scope="User">
+      <Value Profile="(Default)">aviorcom_sodcommerce</Value>
+    </Setting>
+    <Setting Name="MySQL_port" Type="System.String" Scope="User">
+      <Value Profile="(Default)">3306</Value>
+    </Setting>
+    <Setting Name="ImportDefaultCust" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ECOMMERCE</Value>
+    </Setting>
+    <Setting Name="ImportDefaultRep" Type="System.String" Scope="User">
+      <Value Profile="(Default)">11</Value>
+    </Setting>
+    <Setting Name="ImportDefaultShipping" Type="System.String" Scope="User">
+      <Value Profile="(Default)">E-SHIPPING</Value>
+    </Setting>
+    <Setting Name="GSC_STORE_DBConnectionString" Type="(Connection string)" Scope="Application">
+      <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;SerializableConnectionString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  &lt;ConnectionString&gt;Data Source=172.16.4.50;Initial Catalog=GSC_STORE_DB;Persist Security Info=True;User ID=sa;&lt;/ConnectionString&gt;
+  &lt;ProviderName&gt;System.Data.SqlClient&lt;/ProviderName&gt;
+&lt;/SerializableConnectionString&gt;</DesignTimeValue>
+      <Value Profile="(Default)">Data Source=172.16.4.50;Initial Catalog=GSC_STORE_DB;Persist Security Info=True;User ID=sa;</Value>
+    </Setting>
+    <Setting Name="GSC_STORE_DBConnectionString1" Type="(Connection string)" Scope="Application">
+      <DesignTimeValue Profile="(Default)">&lt;?xml version="1.0" encoding="utf-16"?&gt;
+&lt;SerializableConnectionString xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"&gt;
+  &lt;ConnectionString&gt;Data Source=localhost;Initial Catalog=GSC_STORE_DB;Persist Security Info=True;User ID=sa;Password=starbright24680&lt;/ConnectionString&gt;
+  &lt;ProviderName&gt;System.Data.SqlClient&lt;/ProviderName&gt;
+&lt;/SerializableConnectionString&gt;</DesignTimeValue>
+      <Value Profile="(Default)">Data Source=localhost;Initial Catalog=GSC_STORE_DB;Persist Security Info=True;User ID=sa;Password=starbright24680</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

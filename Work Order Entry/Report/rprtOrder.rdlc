@@ -1390,6 +1390,27 @@ Order Taker</Value>
               <PaddingBottom>2pt</PaddingBottom>
             </Style>
           </Textbox>
+          <Textbox Name="WithholdingReference">
+            <CanGrow>false</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns><TextRun><Value>Withholding Tax (Reference)</Value><Style><FontSize>10pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns>
+                <Style />
+              </Paragraph>
+              <Paragraph>
+                <TextRuns><TextRun><Value>=Parameters!paramWithholdingReference.Value</Value><Style><FontSize>9pt</FontSize></Style></TextRun></TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <Top>2.10869in</Top>
+            <Left>0.30918in</Left>
+            <Height>0.57291in</Height>
+            <Width>5.15in</Width>
+            <ZIndex>25</ZIndex>
+            <Visibility><Hidden>=Parameters!paramType.Value &lt;&gt; "Work Order" Or Len(Parameters!paramWithholdingReference.Value) = 0</Hidden></Visibility>
+            <Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+          </Textbox>
         </ReportItems>
         <Height>6in</Height>
         <Style />
@@ -1484,6 +1505,12 @@ Order Taker</Value>
       <DataType>String</DataType>
       <AllowBlank>true</AllowBlank>
       <Prompt>ReportParameter1</Prompt>
+    </ReportParameter>
+    <ReportParameter Name="paramWithholdingReference">
+      <DataType>String</DataType>
+      <AllowBlank>true</AllowBlank>
+      <DefaultValue><Values><Value /></Values></DefaultValue>
+      <Prompt>Withholding Tax (Reference)</Prompt>
     </ReportParameter>
   </ReportParameters>
   <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>

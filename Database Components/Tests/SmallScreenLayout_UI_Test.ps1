@@ -30,7 +30,7 @@ function New-Form($name){
     return [Activator]::CreateInstance($type)
 }
 try{
-    foreach($width in @(1024,1366)){
+    foreach($width in @(1024,1366,1600)){
         foreach($scale in @(1.0,1.25)){
             # Assume a 40-pixel taskbar; real monitor/taskbar/DPI validation remains manual.
             $area=[Drawing.Rectangle]::new(0,0,$width,728)
@@ -67,7 +67,7 @@ try{
             try{
                 $f.WindowState='Normal'
                 if($scale -ne 1){$f.Scale([Drawing.SizeF]::new($scale,$scale))}
-                $f.ClientSize=[Drawing.Size]::new($width,704)
+                $f.ClientSize=[Drawing.Size]::new($width,$area.Height-24)
                 # Exercise the branch options with both bottom actions displayed.
                 (C $f 'cmdImport').Visible=$true;(C $f 'cmdForInvoice').Visible=$true
                 $f.PerformLayout()
@@ -78,6 +78,16 @@ try{
                 Check ($sub.Right -lt $vat.Left -and $vat.Right -lt $total.Left) 'Totals overlap'
                 Check ((C $f 'txtSub').ReadOnly -and (C $f 'txtVat').ReadOnly -and (C $f 'txtTotal').ReadOnly) 'Totals behavior changed'
                 $buttons=@((C $f 'panelButtons').Controls | Where-Object {$_ -is [Windows.Forms.Button] -and $visible.Invoke($_,@(2))})
+                $invoice=C $f 'cmdForInvoice'
+                Check ($invoice.Font.Size -eq (C $f 'cmdImport').Font.Size) 'For Invoice uses the same readable font size as neighboring actions'
+                $textSize=[Windows.Forms.TextRenderer]::MeasureText($invoice.Text,$invoice.Font)
+                $iconWidth=if($invoice.Image){$invoice.Image.Width}else{0}
+                Check ($invoice.ClientSize.Width -ge $textSize.Width+$iconWidth+$invoice.Padding.Horizontal+8) 'For Invoice text and icon fit without clipping'
+                $buttonLeft=(C $f 'panelButtons').Left+$invoice.Left
+                $lookupRight=(C $f 'panelGrid').Left+(C $f 'panelItem').Left+(C $f 'gridItem').Right
+                $selectedRight=(C $f 'panelGrid').Left+(C $f 'panelSelectItem').Left+(C $f 'gridSelectItem').Right
+                Check ($buttonLeft-$lookupRight -ge 0 -and $buttonLeft-$lookupRight -le [Math]::Ceiling(2*$scale)) 'Action buttons hug the lookup grid with only a thin separator'
+                Check ($buttonLeft-$selectedRight -ge 0 -and $buttonLeft-$selectedRight -le [Math]::Ceiling(2*$scale)) 'Action buttons hug the selected grid with only a thin separator'
                 foreach($button in $buttons){Inside $button.Parent $button}
                 for($i=0;$i -lt $buttons.Count;$i++){for($j=$i+1;$j -lt $buttons.Count;$j++){
                     Check (!$buttons[$i].Bounds.IntersectsWith($buttons[$j].Bounds)) 'Action buttons overlap'
@@ -87,6 +97,20 @@ try{
             }finally{$f.Dispose()}
         }
     }
+    # The user's 1600x900 display: check the main action column at its taller
+    # client area independently of the existing dialog-fitting fixture above.
+    $f=New-Form 'frmItemLookUp'
+    try{
+        $f.WindowState='Normal';$f.ClientSize=[Drawing.Size]::new(1600,836)
+        (C $f 'cmdForInvoice').Visible=$true;(C $f 'cmdImport').Visible=$true
+        $f.PerformLayout()
+        $invoice=C $f 'cmdForInvoice'
+        Inside $invoice.Parent $invoice
+        Check ($invoice.Width -ge 129) 'For Invoice has wider space on the 1600x900 main form'
+        $textSize=[Windows.Forms.TextRenderer]::MeasureText($invoice.Text,$invoice.Font)
+        Check ($invoice.ClientSize.Width -ge $textSize.Width+$invoice.Image.Width+$invoice.Padding.Horizontal+8) 'For Invoice text and icon fit at 1600x900'
+        foreach($name in @('panelButtons','panelTotalsContainer','panelGrid','panelSelectItem','gridSelectItem')){$c=C $f $name;Inside $c.Parent $c}
+    }finally{$f.Dispose()}
     $f=New-Form 'frmSettings'
     try{
         # Invoke only the new presentation Shown handler, never Show/Load. Check
@@ -96,7 +120,7 @@ try{
         $f.Size=[Drawing.Size]::new($area.Width+200,$area.Height+200)
         Check ([Windows.Forms.Screen]::FromControl($f).WorkingArea.Contains($f.Bounds)) 'Attached resize fitting must keep the actual window in its working area'
     }finally{$f.Dispose()}
-    Write-Output "PASS: $checks isolated small-screen checks at 1024x768 and 1366x768, normal and simulated 125% scaling. No SQL or order actions."
+    Write-Output "PASS: $checks isolated small-screen checks at 1024, 1366 and 1600 widths, normal and simulated 125% scaling; main actions also checked at 1600x900. No SQL or order actions."
 }finally{
     if((Get-FileHash -LiteralPath ($app+'.config')).Hash -ne $configHash){throw 'Store configuration changed'}
 }

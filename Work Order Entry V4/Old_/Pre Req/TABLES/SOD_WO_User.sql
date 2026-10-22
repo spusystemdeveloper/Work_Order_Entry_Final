@@ -1,0 +1,23 @@
+USE [QUEUEING_DB]
+GO
+
+/****** Object:  Table [dbo].[SOD_WO_User]    Script Date: 12/1/2020 11:25:15 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[SOD_WO_User](
+	[UserID] [int] IDENTITY(1000,1) NOT NULL,
+	[UserFullName] [varchar](max) NULL,
+	[UserName] [varchar](max) NOT NULL,
+	[UserPass] [varchar](max) NOT NULL,
+	[UserRegister] [int] NULL,
+ CONSTRAINT [PK_SOD_WO_User] PRIMARY KEY CLUSTERED 
+(
+	[UserID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+

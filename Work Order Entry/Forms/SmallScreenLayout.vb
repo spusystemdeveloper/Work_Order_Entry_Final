@@ -88,26 +88,30 @@ Partial Class frmItemLookUp
         arrangingSmallScreen = True
         Try
             Dim scale = Font.Size / 9.0F
+            Dim showSuggestions = grpWithholding IsNot Nothing AndAlso grpWithholding.Visible
+            Dim gap = CInt(6 * scale)
+            Dim stripHeight = If(showSuggestions, CInt(86 * scale), 0)
+            Dim totalsOffset = If(showSuggestions, stripHeight + gap, 0)
+            'Reserve a full-width read-only strip above the existing totals.
+            Dim totalsHeight = Math.Max(CInt(79 * scale), Math.Max(GroupBox2.Height, Math.Max(GroupBox3.Height, GroupBox4.Height)) + CInt(18 * scale))
+            panelTotalsContainer.Height = totalsHeight + totalsOffset
             Dim preferred = CInt(220 * scale)
             Dim minimum = CInt(120 * scale)
             panelSelectItem.Height = Math.Min(preferred, Math.Max(minimum, panelGrid.ClientSize.Height - Panel5.Height - 12))
 
             'Keep the original right-aligned totals widths when space allows.
-            Dim gap = CInt(6 * scale)
-            Dim suggestionWidth = If(grpWithholding IsNot Nothing AndAlso grpWithholding.Visible,
-                                     Math.Min(CInt(300 * scale), panelTotal.ClientSize.Width \ 3), 0)
-            Dim suggestionSpace = If(suggestionWidth > 0, suggestionWidth + gap, 0)
-            Dim available = Math.Max(3, panelTotal.ClientSize.Width - 10 - 2 * gap - suggestionSpace)
+            Dim available = Math.Max(3, panelTotal.ClientSize.Width - 10 - 2 * gap)
             Dim ratio = Math.Min(1.0F, available / (870.0F * scale))
             Dim subWidth = CInt(279 * scale * ratio)
             Dim vatWidth = CInt(279 * scale * ratio)
             Dim totalWidth = Math.Min(CInt(312 * scale * ratio), available - subWidth - vatWidth)
             Dim left = Math.Max(5, panelTotal.ClientSize.Width - 5 - subWidth - vatWidth - totalWidth - 2 * gap)
-            GroupBox2.SetBounds(left, GroupBox2.Top, subWidth, GroupBox2.Height)
-            GroupBox3.SetBounds(left + subWidth + gap, GroupBox3.Top, vatWidth, GroupBox3.Height)
-            GroupBox4.SetBounds(left + subWidth + vatWidth + 2 * gap, GroupBox4.Top, totalWidth, GroupBox4.Height)
-            If grpWithholding IsNot Nothing AndAlso suggestionWidth > 0 Then
-                grpWithholding.SetBounds(5, 3, suggestionWidth, panelTotal.ClientSize.Height - 6)
+            Dim totalsTop = totalsOffset + CInt(9 * scale)
+            GroupBox2.SetBounds(left, totalsTop, subWidth, GroupBox2.Height)
+            GroupBox3.SetBounds(left + subWidth + gap, totalsTop, vatWidth, GroupBox3.Height)
+            GroupBox4.SetBounds(left + subWidth + vatWidth + 2 * gap, totalsTop, totalWidth, GroupBox4.Height)
+            If showSuggestions Then
+                grpWithholding.SetBounds(5, 3, Math.Max(1, panelTotal.ClientSize.Width - 10), stripHeight)
             End If
         Finally
             arrangingSmallScreen = False

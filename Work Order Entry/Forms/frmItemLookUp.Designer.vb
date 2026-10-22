@@ -467,8 +467,8 @@ Partial Class frmItemLookUp
         Me.panelButtons.Dock = System.Windows.Forms.DockStyle.Right
         Me.panelButtons.Location = New System.Drawing.Point(1206, 0)
         Me.panelButtons.Name = "panelButtons"
-        Me.panelButtons.Padding = New System.Windows.Forms.Padding(3)
-        Me.panelButtons.Size = New System.Drawing.Size(117, 763)
+        Me.panelButtons.Padding = New System.Windows.Forms.Padding(0, 3, 3, 3)
+        Me.panelButtons.Size = New System.Drawing.Size(144, 763)
         Me.panelButtons.TabIndex = 23
         '
         'btnTax
@@ -564,7 +564,7 @@ Partial Class frmItemLookUp
         'cmdForInvoice
         '
         Me.cmdForInvoice.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdForInvoice.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular)
+        Me.cmdForInvoice.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
         Me.cmdForInvoice.Image = Global.WorkOrderEntry.My.Resources.Resources.icons8_invoice_15
         Me.cmdForInvoice.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
         Me.cmdForInvoice.Location = New System.Drawing.Point(3, 495)
@@ -574,7 +574,7 @@ Partial Class frmItemLookUp
         Me.cmdForInvoice.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
         Me.cmdForInvoice.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdForInvoice.Name = "cmdForInvoice"
-        Me.cmdForInvoice.Size = New System.Drawing.Size(111, 33)
+        Me.cmdForInvoice.Size = New System.Drawing.Size(129, 33)
         Me.cmdForInvoice.TabIndex = 18
         Me.cmdForInvoice.Text = "For Invoice"
         Me.cmdForInvoice.UseVisualStyleBackColor = False
@@ -873,37 +873,40 @@ Partial Class frmItemLookUp
         Me.panelTotal.Location = New System.Drawing.Point(10, 0)
         Me.panelTotal.Name = "panelTotal"
         Me.panelTotal.Padding = New System.Windows.Forms.Padding(5)
-        Me.panelTotal.Size = New System.Drawing.Size(1186, 79)
+        Me.panelTotal.Size = New System.Drawing.Size(1186, 171)
         Me.panelTotal.TabIndex = 24
         '
         'grpWithholding
         '
         Me.grpWithholding.Controls.Add(Me.withholdingLayout)
-        Me.grpWithholding.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Regular)
+        Me.grpWithholding.BackColor = System.Drawing.Color.AliceBlue
+        Me.grpWithholding.ForeColor = System.Drawing.Color.FromArgb(24, 55, 88)
+        Me.grpWithholding.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Bold)
         Me.grpWithholding.Location = New System.Drawing.Point(5, 3)
         Me.grpWithholding.Name = "grpWithholding"
-        Me.grpWithholding.Size = New System.Drawing.Size(290, 70)
+        Me.grpWithholding.Size = New System.Drawing.Size(1174, 86)
         Me.grpWithholding.TabIndex = 25
         Me.grpWithholding.TabStop = False
         Me.grpWithholding.Text = "Suggested W/Tax"
         '
         'withholdingLayout
         '
-        Me.withholdingLayout.ColumnCount = 2
-        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50!))
-        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50!))
-        Me.withholdingLayout.Controls.Add(Me.lblWithholdingBasis, 0, 0)
-        Me.withholdingLayout.SetColumnSpan(Me.lblWithholdingBasis, 2)
-        Me.withholdingLayout.Controls.Add(Me.lblWithholding1, 0, 1)
-        Me.withholdingLayout.Controls.Add(Me.lblWithholding2, 1, 1)
-        Me.withholdingLayout.Controls.Add(Me.lblWithholding5, 0, 2)
-        Me.withholdingLayout.Controls.Add(Me.lblWithholding15, 1, 2)
+        Me.withholdingLayout.ColumnCount = 4
+        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25!))
+        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25!))
+        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25!))
+        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25!))
+        Me.withholdingLayout.Controls.Add(Me.lblWithholding1, 0, 0)
+        Me.withholdingLayout.Controls.Add(Me.lblWithholding2, 1, 0)
+        Me.withholdingLayout.Controls.Add(Me.lblWithholding5, 2, 0)
+        Me.withholdingLayout.Controls.Add(Me.lblWithholding15, 3, 0)
+        Me.withholdingLayout.Controls.Add(Me.lblWithholdingBasis, 0, 1)
+        Me.withholdingLayout.SetColumnSpan(Me.lblWithholdingBasis, 4)
         Me.withholdingLayout.Dock = System.Windows.Forms.DockStyle.Fill
         Me.withholdingLayout.Name = "withholdingLayout"
-        Me.withholdingLayout.RowCount = 3
-        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333!))
-        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333!))
-        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333!))
+        Me.withholdingLayout.RowCount = 2
+        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 62!))
+        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38!))
         Me.withholdingLayout.TabStop = False
         '
         'Read-only suggestion labels; full values are also available in tooltips.
@@ -911,32 +914,48 @@ Partial Class frmItemLookUp
         Me.lblWithholdingBasis.AutoEllipsis = True
         Me.lblWithholdingBasis.Dock = System.Windows.Forms.DockStyle.Fill
         Me.lblWithholdingBasis.Name = "lblWithholdingBasis"
+        Me.lblWithholdingBasis.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Regular)
+        Me.lblWithholdingBasis.ForeColor = System.Drawing.Color.FromArgb(55, 65, 75)
+        Me.lblWithholdingBasis.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblWithholdingBasis.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
         Me.lblWithholdingBasis.Text = "VAT-exclusive: 0.00"
         Me.lblWithholding1.AutoEllipsis = True
         Me.lblWithholding1.Dock = System.Windows.Forms.DockStyle.Fill
         Me.lblWithholding1.Name = "lblWithholding1"
+        Me.lblWithholding1.Font = New System.Drawing.Font("Tahoma", 13.5!, System.Drawing.FontStyle.Bold)
+        Me.lblWithholding1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblWithholding1.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
         Me.lblWithholding1.Text = "1%: 0.00"
         Me.lblWithholding2.AutoEllipsis = True
         Me.lblWithholding2.Dock = System.Windows.Forms.DockStyle.Fill
         Me.lblWithholding2.Name = "lblWithholding2"
+        Me.lblWithholding2.Font = New System.Drawing.Font("Tahoma", 13.5!, System.Drawing.FontStyle.Bold)
+        Me.lblWithholding2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblWithholding2.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
         Me.lblWithholding2.Text = "2%: 0.00"
         Me.lblWithholding5.AutoEllipsis = True
         Me.lblWithholding5.Dock = System.Windows.Forms.DockStyle.Fill
         Me.lblWithholding5.Name = "lblWithholding5"
+        Me.lblWithholding5.Font = New System.Drawing.Font("Tahoma", 13.5!, System.Drawing.FontStyle.Bold)
+        Me.lblWithholding5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblWithholding5.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
         Me.lblWithholding5.Text = "5%: 0.00"
         Me.lblWithholding15.AutoEllipsis = True
         Me.lblWithholding15.Dock = System.Windows.Forms.DockStyle.Fill
         Me.lblWithholding15.Name = "lblWithholding15"
+        Me.lblWithholding15.Font = New System.Drawing.Font("Tahoma", 13.5!, System.Drawing.FontStyle.Bold)
+        Me.lblWithholding15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblWithholding15.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
         Me.lblWithholding15.Text = "15%: 0.00"
         '
         'panelTotalsContainer
         '
         Me.panelTotalsContainer.Controls.Add(Me.panelTotal)
         Me.panelTotalsContainer.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.panelTotalsContainer.Location = New System.Drawing.Point(0, 684)
+        Me.panelTotalsContainer.Location = New System.Drawing.Point(0, 592)
         Me.panelTotalsContainer.Name = "panelTotalsContainer"
-        Me.panelTotalsContainer.Padding = New System.Windows.Forms.Padding(10, 0, 10, 0)
-        Me.panelTotalsContainer.Size = New System.Drawing.Size(1206, 79)
+        Me.panelTotalsContainer.Padding = New System.Windows.Forms.Padding(10, 0, 1, 0)
+        Me.panelTotalsContainer.Size = New System.Drawing.Size(1206, 171)
         Me.panelTotalsContainer.TabIndex = 24
         '
         'chkBoxQtoWo
@@ -957,7 +976,7 @@ Partial Class frmItemLookUp
         Me.GroupBox3.Controls.Add(Me.txtVat)
         Me.GroupBox3.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Bold)
         Me.GroupBox3.ForeColor = System.Drawing.Color.Black
-        Me.GroupBox3.Location = New System.Drawing.Point(585, 9)
+        Me.GroupBox3.Location = New System.Drawing.Point(585, 101)
         Me.GroupBox3.Name = "GroupBox3"
         Me.GroupBox3.Size = New System.Drawing.Size(279, 58)
         Me.GroupBox3.TabIndex = 16
@@ -983,7 +1002,7 @@ Partial Class frmItemLookUp
         Me.GroupBox2.Controls.Add(Me.txtSub)
         Me.GroupBox2.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox2.ForeColor = System.Drawing.Color.Black
-        Me.GroupBox2.Location = New System.Drawing.Point(300, 9)
+        Me.GroupBox2.Location = New System.Drawing.Point(300, 101)
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.Size = New System.Drawing.Size(279, 58)
         Me.GroupBox2.TabIndex = 11
@@ -1009,7 +1028,7 @@ Partial Class frmItemLookUp
         Me.GroupBox4.Controls.Add(Me.txtTotal)
         Me.GroupBox4.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Bold)
         Me.GroupBox4.ForeColor = System.Drawing.Color.Black
-        Me.GroupBox4.Location = New System.Drawing.Point(867, 9)
+        Me.GroupBox4.Location = New System.Drawing.Point(867, 101)
         Me.GroupBox4.Name = "GroupBox4"
         Me.GroupBox4.Size = New System.Drawing.Size(312, 58)
         Me.GroupBox4.TabIndex = 17
@@ -1036,7 +1055,7 @@ Partial Class frmItemLookUp
         Me.panelGrid.Dock = System.Windows.Forms.DockStyle.Fill
         Me.panelGrid.Location = New System.Drawing.Point(0, 0)
         Me.panelGrid.Name = "panelGrid"
-        Me.panelGrid.Size = New System.Drawing.Size(1206, 684)
+        Me.panelGrid.Size = New System.Drawing.Size(1206, 592)
         Me.panelGrid.TabIndex = 25
         '
         'panelItem
@@ -1047,7 +1066,7 @@ Partial Class frmItemLookUp
         Me.panelItem.Dock = System.Windows.Forms.DockStyle.Fill
         Me.panelItem.Location = New System.Drawing.Point(0, 0)
         Me.panelItem.Name = "panelItem"
-        Me.panelItem.Padding = New System.Windows.Forms.Padding(10, 0, 10, 0)
+        Me.panelItem.Padding = New System.Windows.Forms.Padding(10, 0, 1, 0)
         Me.panelItem.Size = New System.Drawing.Size(1206, 464)
         Me.panelItem.TabIndex = 18
         '
@@ -1679,7 +1698,7 @@ Partial Class frmItemLookUp
         Me.panelSelectItem.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.panelSelectItem.Location = New System.Drawing.Point(0, 464)
         Me.panelSelectItem.Name = "panelSelectItem"
-        Me.panelSelectItem.Padding = New System.Windows.Forms.Padding(10, 0, 10, 11)
+        Me.panelSelectItem.Padding = New System.Windows.Forms.Padding(10, 0, 1, 11)
         Me.panelSelectItem.Size = New System.Drawing.Size(1206, 220)
         Me.panelSelectItem.TabIndex = 19
         '

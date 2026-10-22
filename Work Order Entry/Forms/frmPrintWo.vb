@@ -84,6 +84,11 @@ Public Class frmPrintWo
             Dim paramType As New ReportParameter("paramType", Type)
             rptviewer.LocalReport.SetParameters(paramType)
 
+            Using dbx = GetDB()
+                Dim reference = WorkOrderWithholdingReference.Load(dbx, wo, clsItemLookUp.Subtotal.ToString("N2"), Type)
+                rptviewer.LocalReport.SetParameters(New ReportParameter("paramWithholdingReference", reference))
+            End Using
+
             Me.rptviewer.LocalReport.DataSources.Add(ReportDataSourcedr)
             rptviewer.RefreshReport()
             'rptviewer.LocalReport.Print()

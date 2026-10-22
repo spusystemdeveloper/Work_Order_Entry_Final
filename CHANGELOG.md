@@ -4,6 +4,178 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### October 22: printed withholding reference in V4 and V8
+
+- Added Withholding Tax (Reference) beside existing Work Order totals in both
+  embedded templates. Each enabled customer rate is shown separately using the
+  exact VAT-exclusive subtotal already passed to the report. It never deducts
+  from totals or selects/fills an RMS tender.
+- Read the saved order's CustomerID and type rather than the main form's current
+  customer. Existing caption/flag checks and amount rounding are reused. Rates
+  reflect the customer's settings at printing time; no tax snapshot is saved.
+  Quotations and customers without applicable rates hide the section. If the
+  optional reference lookup fails, existing printing can continue without it.
+- Existing report elements/expressions, SQL functions/mappings, print invocation
+  and paper settings remain intact. Only the new textbox and parameter are added
+  to each report. Reference visibility may cause normal RDLC layout reflow.
+- V4 and both main Release/x86 builds plus 106 unit tests passed. Each compiled
+  version passed 44 owned LocalDB/helper/PDF/TIFF/EMF checks; 72 PDF comparisons
+  verified enabled amounts, no clipping into signatures, unchanged totals and
+  unchanged no-rate/quotation layouts. Actual print-extension page counts match
+  original reports after its existing blank-EMF filter. V4's original wrapping
+  of very large totals is retained, with every digit verified against baseline.
+- Existing V4 guard/customer/withholding/empty-result suites and 91 print UI
+  checks passed. Clean-folder EXE-only packaging/ReportViewer 2010 checks passed.
+  Configs preserved; no live database, RMS execution or physical printing tested.
+
+### October 22: clarify V4 empty search results
+
+- Added paint-only messages inside bound, empty Customer, Sales Rep and item
+  grids. Messages disappear when results return and do not add selectable rows,
+  tab stops, SQL calls or search/filter changes. Unbound/loading grids show no
+  false empty-results message.
+- Confirmed original V4 throws ArgumentOutOfRangeException when selecting from
+  an empty Sales Rep grid. Guarded OK/double-click selection and the existing
+  Enter path; no current Sales Rep is changed when no row exists. Customer and
+  item empty-selection guards already worked and remain unchanged.
+- Kept item search's existing No Items Found warning and previous-result/filter
+  restoration intact. No shortcut, price, calculation, save or database changes.
+- V4 and both main Release/x86 builds passed, with 106 main unit, 33 V4 empty UI,
+  54 V4 guard, 28 duplicate-customer, 57 withholding and 28 checkbox checks.
+  Configs preserved; updated the V4 EXE-only candidate. No live SQL executed.
+
+### October 22: remove V4 blank price-level prompt
+
+- Removed the empty MessageBox.Show call at the start of V4 LoadLevel. It
+  displayed a blank OK dialog before loading prices. Price queries, choices,
+  approval/password checks and cancellation behavior remain unchanged.
+- V4 and both main Release/x86 builds passed, along with 106 main unit and
+  139 V4 fixture/guard checks. Configurations preserved; updated the separate
+  V4 EXE-only build. Actual legacy GSC price-selection acceptance remains manual.
+
+### October 22: add suggested withholding display to V4
+
+- Added V4's read-only Suggested W/Tax strip above its existing totals, using
+  the same caption-checked customer flags as V8. Enabled 1/2/5/15% amounts pack
+  from the left and use V4's actual displayed VAT-exclusive subtotal. Customer
+  selection, recall/import recalculation and amount edits refresh the strip;
+  quotations and customers without applicable flags keep the compact footer.
+- Rates are fetched once per selected customer ID. Suggestions do not feed
+  saves, totals, approvals, stock, printing or RMS tendering. Old GSC SQL
+  functions/mappings and V4's existing tax calculations remain unchanged.
+- The footer adjusts selected-item space only when needed to keep customer
+  controls usable at 1366x768. V4 Release/x86 built with its existing reporting
+  warning; 57 owned LocalDB display/calculation checks, 54 V4 save-guard and
+  28 duplicate-customer checks passed. Both main Release/x86 solutions and
+  106 unit tests passed; store configurations preserved. No live SQL executed.
+
+### October 22: bring action buttons against the grids
+
+- Reduced the right gap beside lookup/selected-item grids to a thin separator.
+  Expanded the action column into that existing gap and removed its left
+  padding; buttons gain about 12 pixels while grid usable widths are retained.
+  Totals align with the same content edge. Fonts, heights, labels, icons and
+  click/keyboard behavior are unchanged.
+- Both Release/x86 solutions and Debug built; 106 unit, 55 localhost withholding,
+  28 checkbox and 1344 scoped layout checks passed. Added gap checks at normal
+  and simulated 125% scaling. Store configs unchanged; no live SQL.
+
+### October 22: give For Invoice more readable space
+
+- Widened the main form's right action column from 117 to 135 pixels, giving
+  docked buttons 129 pixels of usable width. For Invoice now uses Tahoma 9,
+  matching neighboring actions instead of its smaller 8.25-point font.
+- Its label, icon, visibility/branch settings and click handler are unchanged.
+  No queue, saving, printing or SQL behavior was changed. Withholding checks use
+  the resulting 18-pixel narrower content width.
+- Both Release/x86 solutions, Debug, 106 unit, 55 localhost withholding and 28
+  checkbox checks passed. 1332 layout checks cover 1024/1366/1600 widths and
+  simulated 125% scaling, plus the main action column at 1600x900. Configs
+  preserved byte-for-byte; no live SQL. Updated V8 EXE-only build.
+
+### October 22: pack enabled withholding suggestions from the left
+
+- Applicable W/Tax labels now occupy the first available positions rather than
+  leaving blank columns for disabled rates. A customer with only 15% starts at
+  the left; multiple rates retain their existing 1%, 2%, 5%, 15% order.
+- Layout only: customer flags, cached lookups, calculation basis, rounding,
+  tooltips, quotation hiding, totals and business rules are unchanged.
+- Both Release/x86 solutions and Debug built; 106 unit, 55 localhost withholding,
+  28 checkbox and 875 small-screen checks passed. The withholding fixture checks
+  all 16 enabled-rate combinations and restoring a previous customer layout.
+  Store configs preserved byte-for-byte; no live SQL. Updated the V8 EXE-only build.
+
+### October 21: V4 duplicate-company selection
+
+- Fixed V4's OK/double-click/Enter selection to use the actual selected row's
+  customer ID instead of a cached row index. Same-name accounts keep their own
+  account numbers, pricing flags, tax status and primary Sales Rep. Empty or
+  header selections cannot replace the current customer.
+- Removed LoadLevel's unused company-name lookup; its result had no active
+  pricing consumer. Existing price/approval rules and old GSC functions remain.
+- The unmodified baseline reproduced wrong-account selection. The candidate
+  passed 28 actual-query/selection checks with two same-name customers in an
+  owned localhost fixture. No live SQL or production app Load/save/print ran.
+
+### October 21: V4 basic validation with legacy GSC functions
+
+- Updated only the active imported V4 project with positive selected customer/
+  Sales Rep ID checks, required Work Order payment, empty-order prevention and
+  numeric checks on every row before header allocation or legacy updates.
+  Save/F12 use a common guard; quantity lookup failures stop saving.
+- Kept existing quotation requirements, GSC SQL mappings/procedure calls,
+  pricing/password checks, stock code, reporting and refresh flow. This is not
+  a V8 transaction/cancellation backport. See `Work Order Entry V4/V4_GSC_VALIDATION_UPDATE.md`
+  for scope, legacy limits, isolated checks and localhost acceptance steps.
+- All 54 compiled V4 guard checks passed. User confirmed targeting the older
+  live GSC search signature; the localhost restore's one-argument version is
+  not a matching full-workflow test target. No compatibility shim or SQL was
+  changed. Built a separate V4 EXE-only candidate; live deployment and old-GSC
+  end-to-end acceptance were not performed.
+
+### October 21: prominent withholding suggestions on the main form
+
+- Moved Suggested W/Tax into a full-width pale blue strip above the totals.
+  Shows the four enabled rates separately in 13.5-point bold text, with the
+  VAT-exclusive basis underneath. No tabs or additional keyboard stops.
+- Footer expands only when suggestions apply and collapses for quotations,
+  customers without recognized flags and reset states. Existing calculation,
+  customer lookup/cache, rounding, approval, save and printing code is unchanged.
+- Both Release/x86 solutions and Debug built; all 106 unit, 28 checkbox,
+  38 localhost withholding and 875 existing small-screen checks passed. The UI checks
+  cover strip geometry, font size, large amounts, unchanged totals and compact
+  hidden states. Debug/Release store configs preserved byte-for-byte; no live
+  database accessed. The visible strip uses about 92 more vertical pixels.
+  Updated `Work Order Entry/bin/Release/EXE-Only/Work Order Entry_V8.exe` for
+  manual acceptance; installed ReportViewer 2010 and store-specific config are
+  still required as before.
+
+### October 21: WPF sample startup
+
+- Set the independent `DVO_WORK_ORDER_V8_WPF_MODERN` sample's StartupUri to
+  MainWindow.xaml. Its generated entry point previously ran without creating
+  a window. Main application code, configuration and databases are unchanged.
+- Built a corrected copy in the sample's `bin/Release/StartupFixed` folder
+  because earlier invisible sample processes locked the default EXE. Verified
+  that the corrected copy creates its main window; no old processes were killed.
+
+### October 21: standalone Work Order UI preview
+
+- Adapted the supplied `DVO_WORK_ORDER_V8_WinForms` visual style in the preview
+  only: compact customer header, rounded white panels, blue accents, neutral
+  grids and withholding tabs. The new EXE is under `UI Preview/bin/Release/ModernBlue`;
+  the earlier teal EXE and supplied C# sample are retained. Uses standard
+  .NET 4.7.2/x86 controls without Guna, Mica or production workflow code.
+- Added an independent .NET Framework 4.7.2/x86 WinForms visual demo under
+  `UI Preview`, using a teal palette, darker text, neutral grid headers and
+  compact withholding tabs with every sample rate/amount visible in the titles.
+- Sample searching, empty results, row selection and tax tabs are interactive.
+  Save/print and other workflow buttons only show a preview notice. The project
+  has no production assembly reference, database, registry or ReportViewer use;
+  it is not included in either production solution. Main application source,
+  business rules and store configuration are unchanged. RMS remains paused.
+- See `UI Preview/README.md` for the separate EXE, build and visual checks.
+
 ### October 21: adopt installed ReportViewer 2010 for EXE-only updates
 
 - After the user confirmed the isolated candidate printed with the 2010
