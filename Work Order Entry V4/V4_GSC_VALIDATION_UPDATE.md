@@ -109,6 +109,36 @@ are supplied by this update. Do not copy development configuration into a store.
 
 ## Suggested withholding display (October 22)
 
+The current font revision matches the printed Sub Total: V4's withholding heading
+and amounts use 8-point bold; V8 uses its existing 10-point bold. CASH still
+prints `WTax N%`; CHARGE still prints `WTax N%_Charge`, based on saved payment.
+The rate flags, calculations and totals are unchanged. Read-only checks of
+localhost's latest CASH WOs 23311/23312 returned plain labels in both EXEs;
+only 1% and 15% were enabled. No missing-label defect was reproduced in those
+saved-data lookups. Both versions passed 62 local report checks and 160 PDF
+comparisons, with builds/unit/V4 regressions and EXE-only packaging passing.
+Use the updated EXE and saved CASH order number for physical print acceptance.
+
+The latest payment-label update prints CASH references as `WTax N%` and CHARGE
+references as `WTax N%_Charge`, using the first payment segment of the saved
+order's Comment. Later remarks mentioning another payment type do not affect
+labels. Missing/other payment types keep their existing neutral percent labels.
+Only enabled customer rates appear; computations, totals and quotation rules
+are unchanged. CHARGE uses one rate per line and the reference can grow to fit
+the longer labels at the approved 14-point bold font. No SQL update is needed.
+Both versions passed 62 local reference/render checks each and all 140 PDF
+comparisons, plus builds, regressions, packaging and configuration preservation.
+Physical printing remains a local manual acceptance check; no live DB was used.
+
+The subsequent readability build matches the approved print sample: the
+reference heading is 11 point and its amounts are 14 point/bold, with a
+0.85-inch reference area. Only this section's fonts/height change. Each version
+passed 46 local print-reference checks and all 74 cross-version PDF comparisons
+passed, including full large amounts and no overlap with signatures. Totals,
+quotation layouts and printable page counts are unchanged. EXE-only packaging,
+main/V4 regression tests and store-config preservation also passed. Perform the
+physical print check locally; no live store or printer was used in validation.
+
 The latest report build also adds Withholding Tax (Reference) to the printed
 Work Order, beside the existing totals. It uses the saved order's customer and
 the exact printed VAT-exclusive subtotal, showing each enabled rate separately.

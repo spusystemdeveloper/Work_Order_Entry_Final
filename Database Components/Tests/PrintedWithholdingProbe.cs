@@ -41,41 +41,69 @@ class PrintedWithholdingProbe
             var ns = currentXml.Root.Name.Namespace;
             var box = currentXml.Descendants(ns + "Textbox").Single(n => (string)n.Attribute("Name") == "WithholdingReference");
             Check(box.Value.Contains("Withholding Tax (Reference)"), "Compiled template contains reference section");
+            var paragraphs = box.Element(ns + "Paragraphs").Elements(ns + "Paragraph").ToArray();
+            var subtotalBox = currentXml.Descendants(ns + "Textbox").Single(n => (string)n.Attribute("Name") == "Textbox14");
+            var subtotalRun = subtotalBox.Descendants(ns + "TextRun").First();
+            string subtotalFont = (string)subtotalRun.Element(ns + "Style").Element(ns + "FontSize") ??
+                (string)subtotalBox.Element(ns + "Style").Element(ns + "FontSize") ?? "10pt";
+            Check(paragraphs[0].Descendants(ns + "FontSize").Single().Value == subtotalFont &&
+                paragraphs[1].Descendants(ns + "FontSize").Single().Value == subtotalFont &&
+                paragraphs[1].Descendants(ns + "FontWeight").Single().Value == "Bold",
+                "Printed withholding heading and bold amounts match the effective Sub Total font");
+            Check(box.Element(ns + "Height").Value == "0.85in", "Reference area accommodates larger text");
             box.Remove();
             currentXml.Root.Element(ns + "ReportParameters").Elements(ns + "ReportParameter").Single(n => (string)n.Attribute("Name") == "paramWithholdingReference").Remove();
             Check(XNode.DeepEquals(currentXml, XDocument.Load(baseline)), "Every pre-existing report element/expression unchanged");
             cx.Open(); Sql(cx, "CREATE DATABASE [" + db + "]"); created = true; cx.ChangeDatabase(db);
-            Sql(cx, @"CREATE TABLE dbo.[Order](ID int PRIMARY KEY,CustomerID int,[Type] int,Total money,Tax money);
+            Sql(cx, @"CREATE TABLE dbo.[Order](ID int PRIMARY KEY,CustomerID int,[Type] int,Total money,Tax money,Comment nvarchar(max));
 CREATE TABLE dbo.Customer(ID int PRIMARY KEY,CustomNumber3 float NOT NULL,CustomNumber4 float NOT NULL,CustomNumber5 float NOT NULL,CustomText2 nvarchar(30) NOT NULL);
 CREATE TABLE dbo.CustomCaption(Style int,Caption nvarchar(80));
 INSERT dbo.CustomCaption VALUES(2,N'W/Tax 15%'),(8,N'W/Tax 1%'),(9,N'W/Tax 2%'),(10,N'W/Tax 5%');
 INSERT dbo.Customer VALUES(10,1,2,5,N'15'),(20,0,0,0,N'15'),(30,0,0,0,N'');
-INSERT dbo.[Order] VALUES(100,10,2,1100,117.86),(101,20,2,1100,117.86),(102,10,3,1100,117.86),(103,30,2,1100,117.86);");
+INSERT dbo.[Order] VALUES(100,10,2,1100,117.86,N'CASH; Pick-up; CHARGE mentioned in remarks'),
+(101,20,2,1100,117.86,N' cash ; Pick-up;'),(102,10,3,1100,117.86,N'CHARGE; Delivery;'),
+(103,30,2,1100,117.86,N'CHARGE; Delivery;'),(104,10,2,1100,117.86,N' cHaRgE ; Delivery; CASH mentioned in remarks'),
+(105,20,2,1100,117.86,N'CHARGE; Delivery;'),(106,10,2,1100,117.86,NULL),
+(107,10,2,1100,117.86,N'CREDIT CARD; Pick-up; CHARGE in remarks'),(108,10,2,1100,117.86,N'DEBIT CARD; Pick-up;');");
             var builder = new SqlConnectionStringBuilder(cx.ConnectionString) {InitialCatalog = db};
             Check(builder.DataSource == "(localdb)\\MSSQLLocalDB" && builder.IntegratedSecurity, "Owned localhost endpoint required");
             context = Activator.CreateInstance(app.GetType("WorkOrderEntry.ItemLookUpDataContext", true), new object[] {builder.ConnectionString});
             string all = Reference(100, "982.14");
-            Check(all == "1%: 9.82     2%: 19.64" + Environment.NewLine + "5%: 49.11     15%: 147.32", "Each enabled rate uses printed VAT-exclusive subtotal");
-            Check(Reference(101, "982.14") == "15%: 147.32", "Saved order's different customer supplies its sole enabled rate");
-            Check(Reference(100, "1,100.00").Contains("1%: 11.00"), "Actual tax-exempt subtotal is not divided by VAT again");
+            Check(all == "WTax 1%: 9.82     WTax 2%: 19.64" + Environment.NewLine + "WTax 5%: 49.11     WTax 15%: 147.32", "Each enabled rate uses printed VAT-exclusive subtotal");
+            Check(Reference(101, "982.14") == "WTax 15%: 147.32", "Saved order's different customer supplies its sole enabled rate");
+            Check(Reference(100, "1,100.00").Contains("WTax 1%: 11.00"), "Actual tax-exempt subtotal is not divided by VAT again");
+            string charge = Reference(104, "982.14");
+            Check(charge == "WTax 1%_Charge: 9.82" + Environment.NewLine + "WTax 2%_Charge: 19.64" + Environment.NewLine + "WTax 5%_Charge: 49.11" + Environment.NewLine + "WTax 15%_Charge: 147.32", "CHARGE changes only enabled labels, preserving amounts");
+            Check(!all.Contains("_Charge"), "CASH remark mentioning CHARGE does not change labels");
+            Check(Reference(105, "982.14") == "WTax 15%_Charge: 147.32", "CHARGE shows only the customer's sole enabled rate");
+            string neutral = Reference(106, "982.14");
+            Check(neutral.StartsWith("1%: 9.82") && !neutral.Contains("WTax"), "Missing legacy payment keeps original neutral labels");
+            Check(Reference(107, "982.14") == neutral && Reference(108, "982.14") == neutral, "Other payment types keep original neutral labels");
+            Sql(cx, "UPDATE dbo.[Order] SET Comment=N'CASH; Pick-up;' WHERE ID=104");
+            Check(Reference(104, "982.14") == all, "Reprint follows saved payment change without stale suffix");
+            Sql(cx, "UPDATE dbo.[Order] SET Comment=N'CHARGE; Delivery;' WHERE ID=104");
             Check(Reference(102, "982.14") == "", "Stored quotation is excluded even with Work Order template name");
             Check(Reference(100, "982.14", "Sales Quotation") == "", "Quotation template excluded");
             Check(Reference(103, "982.14") == "", "No enabled rates excluded");
             Check(Reference(999, "982.14") == "" && Reference(0, "982.14") == "", "Missing order excluded");
             Check(Reference(100, "invalid") == "", "Invalid basis excluded");
-            Check(Reference(101, "-0.10") == "15%: -0.02", "Signed rounding retained");
-            Check(Reference(101, "0.00") == "15%: 0.00", "Zero reference remains a valid amount");
+            Check(Reference(101, "-0.10") == "WTax 15%: -0.02", "Signed rounding retained");
+            Check(Reference(101, "0.00") == "WTax 15%: 0.00", "Zero reference remains a valid amount");
             Sql(cx, "UPDATE dbo.CustomCaption SET Caption=N'Credit Terms' WHERE Style=2");
             Check(Reference(101, "982.14") == "", "Unrelated branch caption excluded");
             Sql(cx, "UPDATE dbo.CustomCaption SET Caption=N'W/Tax 15%' WHERE Style=2; INSERT dbo.CustomCaption VALUES(2,N'W/Tax 15%');");
             Check(Reference(101, "982.14") == "", "Ambiguous duplicate caption excluded");
             Sql(cx, "DELETE dbo.CustomCaption WHERE Style=2; INSERT dbo.CustomCaption VALUES(2,N'W/Tax 15%');");
             using (var cmd = cx.CreateCommand())
-            { cmd.CommandText = "SELECT COUNT(*) FROM dbo.[Order] WHERE Total=1100 AND Tax=117.86"; Check((int)cmd.ExecuteScalar() == 4, "Stored totals unchanged"); }
+            { cmd.CommandText = "SELECT COUNT(*) FROM dbo.[Order] WHERE Total=1100 AND Tax=117.86"; Check((int)cmd.ExecuteScalar() == 9, "Stored totals unchanged"); }
 
             Render("AllRates", all, "Work Order", 1, false);
             Render("AllRatesPreview", all, "Work Order", 1, false);
             Render("Only15", Reference(101, "982.14"), "Work Order", 1, false);
+            Render("Charge", charge, "Work Order", 1, false);
+            Render("ChargeOnly15", Reference(105, "982.14"), "Work Order", 1, false);
+            Render("ChargeLargeValues", Reference(104, "123,456,789.00"), "Work Order", 1, false);
+            Render("ChargeMultiPage", charge, "Work Order", 60, false);
             Render("NoRates", "", "Work Order", 1, false);
             Render("Quotation", all, "Sales Quotation", 1, false); // RDLC must also hide it.
             string large = Reference(100, "123,456,789.00");
@@ -89,6 +117,8 @@ INSERT dbo.[Order] VALUES(100,10,2,1100,117.86),(101,20,2,1100,117.86),(102,10,3
             Check(printablePages["AllRates"] == printablePages["BaselineNoRates"] && printablePages["Only15"] == printablePages["BaselineNoRates"], "Reference does not add printable direct-print pages");
             Check(printablePages["NoRates"] == printablePages["BaselineNoRates"] && printablePages["Quotation"] == printablePages["BaselineQuotation"], "No-rate and quotation printable page counts unchanged");
             Check(printablePages["MultiPage"] == printablePages["BaselineMultiPage"], "Multi-page printable page count unchanged");
+            Check(printablePages["Charge"] == printablePages["BaselineNoRates"] && printablePages["ChargeOnly15"] == printablePages["BaselineNoRates"], "CHARGE labels keep original printable page count");
+            Check(printablePages["ChargeMultiPage"] == printablePages["BaselineMultiPage"], "CHARGE multi-page count unchanged");
             Sql(cx, "DROP TABLE dbo.CustomCaption");
             Check(Reference(100, "982.14") == "", "Optional missing-caption failure cannot block printing");
             Console.WriteLine("PASS: " + checks + " printed-withholding local/helper/render checks; " + output);

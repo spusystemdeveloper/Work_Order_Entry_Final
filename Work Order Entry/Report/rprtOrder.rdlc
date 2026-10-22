@@ -1391,7 +1391,7 @@ Order Taker</Value>
             </Style>
           </Textbox>
           <Textbox Name="WithholdingReference">
-            <CanGrow>false</CanGrow>
+            <CanGrow>true</CanGrow>
             <KeepTogether>true</KeepTogether>
             <Paragraphs>
               <Paragraph>
@@ -1399,13 +1399,13 @@ Order Taker</Value>
                 <Style />
               </Paragraph>
               <Paragraph>
-                <TextRuns><TextRun><Value>=Parameters!paramWithholdingReference.Value</Value><Style><FontSize>9pt</FontSize></Style></TextRun></TextRuns>
+                <TextRuns><TextRun><Value>=Parameters!paramWithholdingReference.Value</Value><Style><FontSize>10pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns>
                 <Style />
               </Paragraph>
             </Paragraphs>
             <Top>2.10869in</Top>
             <Left>0.30918in</Left>
-            <Height>0.57291in</Height>
+            <Height>0.85in</Height>
             <Width>5.15in</Width>
             <ZIndex>25</ZIndex>
             <Visibility><Hidden>=Parameters!paramType.Value &lt;&gt; "Work Order" Or Len(Parameters!paramWithholdingReference.Value) = 0</Hidden></Visibility>

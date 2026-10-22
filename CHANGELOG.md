@@ -4,6 +4,56 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### October 22: match printed withholding font to Sub Total
+
+- Changed the withholding heading and amounts to each template's effective
+  Sub Total font: V4 8-point bold and V8 10-point bold. Retained CASH plain WTax
+  labels, CHARGE _Charge labels, enabled-rate filtering, amounts and totals.
+- Read-only review of the configured localhost DVO_STORE_DB found latest CASH
+  WOs 23311/23312 with only 1% and 15% enabled. Both delivered helpers returned
+  plain CASH labels; saved CHARGE WO 23310 returned _Charge. Missing CASH labels
+  were not reproduced in that saved-data lookup; no payment/flag rules changed.
+- V4 and both main Release/x86 builds, 106 unit tests and existing V4 regressions
+  passed. Each version passed 62 local print-reference checks; 160 PDF comparisons
+  verified actual font sizes, labels, complete amounts, unchanged totals and
+  quote/no-rate layouts. EXE-only packaging passed. Configs preserved; no live
+  database changes or physical printing. Refreshed both EXE-only builds.
+
+### October 22: match printed withholding labels to saved payment type
+
+- V4 and V8 now print CASH references as WTax 1%, WTax 2%, WTax 5% and WTax
+  15%, and CHARGE references with the corresponding _Charge suffix. Only the
+  customer's enabled rates appear. Reads the saved order comment's first
+  semicolon-delimited payment segment, ignoring payment words in later remarks.
+- Missing/other payment types keep the existing neutral percent labels. Customer
+  flags, amount computation/rounding, totals, quotation behavior and RMS tender
+  entry remain unchanged. No SQL object or schema update is required.
+- Confirmed long CHARGE labels could clip large amounts at 14 point. CHARGE
+  references now use one rate per line, and the reference textbox can grow to
+  fit. The approved 11-point heading/14-point bold amounts remain unchanged.
+- V4 and both main Release/x86 builds, 106 unit tests and existing V4 regressions
+  passed. Each version passed 62 local print-reference checks; 140 PDF checks
+  verified exact CASH/CHARGE labels, enabled rates, complete large amounts,
+  unchanged totals/no-rate/quotation layouts and signature separation. Original
+  printable-page counts matched normal and multi-page CASH/CHARGE samples.
+- Clean-folder EXE-only packaging and 91 print UI checks passed. Store configs
+  preserved and both EXE-only builds refreshed. Only owned disposable localhost
+  fixtures were used; no live database or physical printer was accessed.
+
+### October 22: enlarge printed withholding text in V4 and V8
+
+- Applied the approved sample's 11-point heading and 14-point bold withholding
+  amounts to both Work Order templates. Increased only the reference area's
+  height to 0.85 inch so both amount rows fit. Existing totals, rate lookup,
+  rounding, quotation visibility, print invocation and business rules are intact.
+- V4 and both main Release/x86 builds, 106 unit tests, existing V4 regressions,
+  91 print UI checks and EXE-only packaging passed. Each version passed 46 local
+  print-reference checks; 74 PDF comparisons confirmed full large amounts,
+  unchanged totals, no signature overlap, and unchanged hidden-reference and
+  quotation layouts. Original printable-page counts remain unchanged.
+- Updated both EXE-only builds. Store configs preserved byte-for-byte; only owned
+  disposable LocalDB fixtures used. Physical printer acceptance remains manual.
+
 ### October 22: printed withholding reference in V4 and V8
 
 - Added Withholding Tax (Reference) beside existing Work Order totals in both

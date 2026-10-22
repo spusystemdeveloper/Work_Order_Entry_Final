@@ -165,7 +165,7 @@ class PackagingProbe
                     string name = (string)parameter.Attribute("Name");
                     report.SetParameters(new ReportParameter(name,
                         name == "paramType" ? (Case == "Quotation" ? "Sales Quotation" : "Work Order") :
-                        name == "paramWithholdingReference" ? (Case == "Quotation" ? "" : "1%: 3.00     15%: 45.00") :
+                        name == "paramWithholdingReference" ? (Case == "Quotation" ? "" : "WTax 1%_Charge: 3.00     WTax 15%_Charge: 45.00") :
                         name == "paramDate" ? "10/14/2026" : name == "paramTime" ? "18:00" :
                         name == "paramTotal" || name == "paramSubtotal" ? "300.00" : name == "paramSalesTax" ? "0.00" : "Fixture"));
                 }

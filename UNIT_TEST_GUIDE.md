@@ -12,7 +12,9 @@ reference helper and renders the actual embedded template with installed
 ReportViewer 2010. Production preview Load is never invoked because V4's Load
 physically prints. No printer or RMS is used.
 
-Each version passed 44 checks: saved-order customer/type, exact rates/rounding,
+Each version now passes 62 checks: heading/bold amount fonts matching effective
+Sub Total size (V4 8 point; V8 10 point) and the 0.85-inch reference area, plus
+saved-order customer/type, exact rates/rounding,
 tax-exempt/zero/signed bases, missing/duplicate/unrelated captions, missing orders,
 optional lookup failure, stored totals, unchanged pre-existing RDLC elements,
 PDF/TIFF rendering, preview settings and retained printable EMF page counts for
@@ -23,9 +25,9 @@ The original print-extension code and that filter remain unchanged.
 
 With pdfplumber available, run
 `python Database Components/Tests/PrintedWithholding_Pdf_Test.py <output-root>`
-where the root contains `V4Render` and `V8Render` output directories. All 72
+where the root contains `V4Render` and `V8Render` output directories. All 160
 comparisons passed: exact enabled amounts, unchanged total text, reference clear
-of signatures, and identical word positions/pages for hidden references and
+of signatures, complete large reference amounts, and identical word positions/pages for hidden references and
 quotations. Visible references can cause normal RDLC reflow; those comparisons
 preserve existing text/values rather than requiring identical positions.
 V4's very large totals retain their existing line wrapping; character-level
@@ -36,6 +38,19 @@ Also run Packaging_CleanFolder_Test.ps1 (passed with installed ReportViewer
 2010), PrintLayout_UI_Test.ps1 (91 passed), main unit tests (106 passed), and
 the existing V4 save/customer/withholding/empty-result suites (54/28/57/33 passed).
 These local fixtures do not certify live-store data or physical printer output.
+
+Payment-label cases read the actual saved order's Comment prefix: CASH uses
+`WTax N%` and CHARGE uses `WTax N%_Charge`. The fixture checks mixed case/spacing,
+opposite payment words in remarks, current saved-payment changes on reprint,
+sole enabled rates, and null/card payment fallbacks preserving neutral labels.
+CHARGE renders one rate per line and the reference textbox grows so long labels
+and large amounts remain complete. Earlier 14-point validation retained complete
+amounts; the latest font matching uses each template's actual Sub Total size.
+The PDF suite now checks the rendered point size and bold font in each case.
+The earlier fixed-height version
+was confirmed to clip a CHARGE large amount; the PDF comparison now detects this.
+Check printable page counts for both CASH and CHARGE, including multi-page
+samples. Rate arithmetic, stored totals and quote/no-rate layouts remain checked.
 
 ## Main action column readability
 
