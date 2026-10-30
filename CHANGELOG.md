@@ -4,6 +4,613 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### October 29: authorized live Iloilo invoice-header cleanup
+
+- Deleted only SOD_InvoiceHeader ID 1 (SCHENKER) in live ILOILO_MAIN_WHSE_DB,
+  explicitly preserving Walk-In ID 227 / CustID 56. No other exact copies were
+  found. Row count 327 -> 326; remaining duplicate CustID groups zero.
+- Verified a full table-level XML/schema backup, reference/trigger guards,
+  isolated LocalDB rollback/commit tests, unchanged retained header values and
+  transaction 9850 financial records. Custom report query now returns one
+  Walk-In row. Native preview acceptance remains pending.
+- No app/schema/function changes. Recovery evidence and scope are documented in
+  Database Components/Recovery/INCIDENT_2026-10-29_ILOILO_INVOICE_HEADER_DUPLICATES.md.
+
+### October 29: Malabon customers added to localhost consignment
+
+- With explicit authorization, widened only localhost CONSIGNMENT_DB.Customer.
+  CustomText1 from nvarchar(30) to nvarchar(50) NOT NULL. Verified existing
+  values and rowversions unchanged; no source/live schema was changed.
+- Read only the three authorized Malabon databases and inserted 12 missing
+  accounts: SOD-MNL_NBS_DB 3, SOD-MNL_CITISTORE_DB 2, and
+  SOD-MALABON_METRO_STORE_DB 7. Existing-account guard remains in place;
+  this run found no matches. Final local customer count 118, duplicates zero.
+- Verified equivalent payment terms. Preserved Sales Rep assignments by mapping
+  the NBS Walk-In rep to local ID 1 and copying only two missing related reps
+  (MALABON OFFICE and SA_NORTH_4 - TERESA CARINO) with their source settings.
+  Related reps and customers committed together. Existing customers/reps were
+  verified unchanged, and identities/rowversions were generated locally.
+- Stored customer balances and notes were preserved; linked financial history
+  was not imported. No live writes, app/config changes or financial reconciliation.
+  Evidence/backups: TestResults/MalabonCustomerField-bfe77f07 and
+  TestResults/MalabonCustomerImport-8fa54da3.
+
+### October 28: localhost consignment register setup
+
+- Created the explicitly requested local register in previously empty
+  CONSIGNMENT_DB.Register: Number 1, description Consignment Local, StoreID 100
+  from existing Configuration. SQL generated ID 1; all other fields retain
+  database defaults. No identity reseed, device/receipt configuration, registry,
+  IP mapping or live database changes. Guarded transaction verified the inserted
+  row. Evidence: TestResults/ConsignmentRegister-4819541e.
+
+### October 28: QC customer copy to localhost CONSIGNMENT_DB
+
+- With explicit authorization, read QC PUREGOLD_DB (65 customers) and MERRYMART_DB
+  (41 customers). Skipped all 65 existing Puregold accounts and inserted 41
+  Merrymart customers into localhost CONSIGNMENT_DB. Final count: 106, with no
+  duplicate accounts and all pre-existing customer values unchanged.
+- Verified all eight payment-term/finance fields for source account type 4
+  against local type 4. Local IDs were generated normally; source identity and
+  rowversion values were excluded. Stored customer balances and tax settings
+  were copied; no transaction/receivable records or customer captions were copied.
+- QC was SELECT-only. Evidence and the local pre-import customer backup:
+  TestResults/QCCustomerImport-6fd1fe19. No application/configuration changes.
+
+### October 28: localhost CONSIGNMENT_DB print Address deployment
+
+- Applied the existing guarded `Add_WorkOrder_Print_Address.sql` directly to
+  localhost CONSIGNMENT_DB with explicit user authorization. Added only the
+  function's Address output; existing calculations, columns and permissions
+  remain unchanged. No live database or application source was changed.
+- Passed all 15 isolated migration checks, local empty-order/schema/permission
+  checks and repeat application. This restore contains no orders, so existing
+  order output comparison and a real preview remain untested. Original/updated
+  definitions and verification are in TestResults/ConsignmentAddressApply-15e73095.
+
+### October 28: V8 first Work Order account setup
+
+- When Login finds an empty existing SOD_WO_User table, V8 offers a first-user
+  dialog with chosen username/password, confirmation and positive register.
+  Creation returns to Login; existing password and register rules still apply.
+  No built-in password, automatic authentication or role/schema changes.
+- Initial creation rechecks emptiness under a transactional table lock; only one
+  competing client can create the first user. Existing accounts are preserved.
+  Missing tables/connection errors propagate instead of enabling setup.
+- LocalDB tests exercise actual Login/setup callers, cancellation, invalid
+  input, existing-user behavior and competing creation. V4/V7.1 unchanged.
+  Passed 35 checks (FirstAccount-5e7ff429), both Release/x86 solutions, 119 unit
+  tests and clean-folder packaging (Packaging-01677c86). No live account created.
+
+### October 28: ILOILO branch deployment driver and updater profile
+
+- Prepared Deploy_ILOILO_MAIN_WHSE_DB.sql tailored for ILOILO_MAIN_WHSE_DB (StoreID 1600).
+  Live read-only audit confirmed existing branch functions (SOD_fn_GetQty referencing
+  Cebu StoreID 3002, SOD_fntbl_CheckQty, SOD_fntbl_CheckExQty, SOD_ViewItems)
+  which are preserved to protect multi-store stock logic.
+- Deploys all missing tables (Queueing, QueueingItems, PickerList, SOD_Item_Logs,
+  SOD_Reg, SOD_WO_CustType, SOD_WO_CustTypeUser, SOD_WO_LOGS, SOD_WO_User),
+  functions, views, and sequence-backed triggers, and updates SOD_sp_InsertQoute /
+  SOD_sp_InsertQouteEntry to modern 8/12 parameter signatures. Includes preflight
+  and post-deployment validation verifying all 41 required application objects.
+- Fixed trg_OrderEntry_ItemLogs to fallback to ISNULL(@lastcommitted, ISNULL(i.QuantityCommitted, 0))
+  when updating orders created before SOD_Item_Logs existed, and updated SOD_Item_Logs.LastCommitted
+  to allow NULLs, preventing ERROR 0017 on existing order saves.
+- Updated Database Updater (UpdaterCore.cs and UpdaterForm.cs) to add the ILOILO
+  profile. When selected, it defaults to ILOILO_MAIN_WHSE_DB, loads
+  Deploy_ILOILO_MAIN_WHSE_DB.sql, and includes Add_WorkOrder_Username_Columns.sql.
+- Built and validated in Debug and Release x86; passed all 101 updater checks in
+  DatabaseUpdater_LocalDB_Test.ps1, all 119 unit tests in Run-UnitTests.ps1, and
+  clean builds for both solutions. No live write was executed.
+
+### October 28: reusable Portable printing Address migration
+
+- Portable offers Add_WorkOrder_Print_Address.sql for compatible store database
+  names, retaining the old CONSIGNMENT-only script for recovery compatibility.
+  Only the reviewed legacy function or this migration's already-fixed output
+  is accepted. Custom calculations, branch text and literal formatting stop for
+  review; system databases and missing functions are rejected.
+- Fifteen focused LocalDB checks passed, including all existing output values,
+  VAT-exempt/fractional totals, repeat execution and transaction rollback.
+  No restored or live database was modified.
+
+### October 28: reusable Portable configuration username alignment
+
+- Portable now offers Add_WorkOrder_Username_Columns.sql for compatible store
+  databases of any name. It adds only missing Pass2Username/Pass3Username as
+  nullable nvarchar(50), preserving all configuration rows and values. Existing
+  incompatible fields, missing tables/view conflicts and system DBs stop.
+- Retained the old CONSIGNMENT-only file for compatibility, removed its catalog
+  entry to avoid duplicate selections. Printing Address migration is unchanged.
+- Validation uses owned disposable LocalDB only; no restored/live deployment.
+  Passed 11 focused migration checks, 98 updater checks, 119 unit tests, both
+  Release/x86 solutions and Debug/Release updater builds. Config preserved.
+
+### October 28: Portable CONSIGNMENT printing Address output
+
+- Added an optional target-guarded migration to the Portable updater for the
+  reviewed legacy SOD_fntbl_WoDetails. It adds Address with the existing V8
+  customer-address concatenation while preserving all previous output values,
+  totals, joins and branch text. Customized definitions stop before changes.
+- Eleven disposable LocalDB tests cover existing output equality, exempt and
+  fractional totals, NULL address components, repeat deployment, rollback and
+  custom-definition rejection. No restored-store/live migration was executed.
+
+### October 28: CONSIGNMENT approval-username migration
+
+- Included the target-guarded migration in the Portable updater selection list,
+  with explicit CONSIGNMENT_DB-only notes; GSC and DVO catalogs are unchanged.
+  Rebuilt Debug/Release updater packages. Passed 87 updater checks and nine
+  focused disposable LocalDB checks. No restored-store or live deployment.
+
+- Read-only localhost inspection confirmed missing Pass2Username/Pass3Username.
+  Prepared Add_CONSIGNMENT_WorkOrder_Username_Columns.sql for updater
+  selection. Adds only missing nullable
+  nvarchar(50) fields; existing settings are preserved. Exact target, transaction
+  and compatible-schema guards remain required. Not applied to restored/live DB.
+- Nine disposable LocalDB guard, rollback, repeat and preservation checks passed.
+
+### October 27: quotation conversion stock validation
+
+- Read-only localhost DVO inspection confirmed WO 23337 saved 100,000 pieces
+  and commitments rose from 2,692 to 102,692 against stock 71,202. Did not alter
+  that order, stock or commitment. Exact entered cell representation is not
+  recoverable from SQL; reproduced a concrete bypass with the same stock amounts:
+  Val("100,000") counted 100 while the save converted it to 100000.
+- Shared quantity validation now uses the save-compatible numeric conversion
+  for numeric inputs, including thousands separators, in both duplicate totals
+  and row checks. Keep the legacy invalid-input handling and existing messages.
+- Type-3 quotation to type-2 Work Order saves require current availability in
+  the same atomic commitment UPDATE. Limit this extra guard to the existing
+  stock-checked item types 0/3. Default commitment calls and non-inventory type-7
+  exemptions remain unchanged. A shortage rolls back the conversion transaction.
+  No new SQL objects/schema, new classes, pricing, VAT or total formulas.
+- Both Release/x86 solution builds and 119 units passed. The 24-case validator
+  comparison still passes 240 assertions; 12 further checks cover six formatted
+  quantity cases and the actual SaveOrder conversion entry point. Multi-user
+  suites passed 52 checks each under normal/versioned reads, including rejected
+  rollback, valid fractional conversion, duplicate-item rollback, non-inventory
+  exemption and two competing conversions. Preallocation regressions passed 80.
+- Only owned disposable fixtures were written. Native RMS settlement in the
+  concurrency suite is simulated; no full native recall/save/print workflow or
+  physical print. No live access or restored-store repair; configs preserved.
+  RMS investigation stays paused. Existing WO 23337 needs separate handling.
+
+### October 27: prevent duplicate release-type confirmations
+
+- Both release radios now share ReleaseType_CheckedChanged, which ignores
+  unchecked events. A switch therefore confirms once, regardless of item count.
+  Keep the queued Pick-up reminder once and the existing queue-off wording.
+- Updated both import paths' handler detach/attach references to the shared
+  handler. Release values, confirmation choices, delivery pick-location behavior,
+  quantities/prepared values, save/SQL and report code are unchanged.
+- Expanded ReleaseTypePrompt_UI_Test.ps1 to switch the actual radios with 1 and
+  6 items, Yes/No, queue-on/off, empty orders and already-selected options. The
+  earlier direct-method test missed the duplicate CheckedChanged events.
+  Passed 129 queue-off and 123 queue-on assertions, both Release/x86 builds and
+  all 119 units. No SQL, form Load, settings saves or live access; configs
+  preserved and RMS investigation remains paused.
+
+### October 27: release-type prompts respect queueing mode
+
+- The existing Pick-up release handler always asked users to recheck pick
+  location/prepared quantity even when those columns were hidden by queueing
+  settings. Gate that reminder with UseQueueingForCurrentOrder().
+- For non-queued orders, Delivery uses a plain release-type confirmation.
+  Queued Delivery retains the existing UP-STORE explanation. Existing release
+  values, forDelivery behavior, hidden values, quantities, totals and all save/
+  SQL paths are unchanged. The ordinary release confirmations remain.
+- Both required Release/x86 builds and all 119 unit tests passed. The new
+  ReleaseTypePrompt_UI_Test.ps1 passed 33 queue-off and 30 queue-on assertions,
+  including confirmation/cancellation, hidden-column visibility and unchanged
+  quantity/price/prepared/release values. It uses its own test-host config and
+  never loads the production form, connects to SQL or saves settings/orders.
+  No live access; EXE configurations preserved; RMS investigation stays paused.
+
+### October 27: V8 shared quantity validation
+
+- Keep ValidateAllQty and ValidateAllQtyForQoute as the public entry points,
+  delegating to one private ValidateQuantities method. Reduced their combined
+  block from 229 to 130 lines with the original caches, case-insensitive
+  duplicate aggregation, item-type checks, prompts, styling, totals, numeric
+  conversions and error counters intact. Only the Work Order path adds back
+  recalled reservations; quotation/conversion validation does not.
+- Local tests exposed an existing uncommitted Designer issue before reaching
+  either validator: gridSelectItem had no attached columns, and the lookup
+  PRICE/COST/DESCRIPTION fields collided with missing selected-grid fields.
+  With explicit user approval, restored only the 20-column attachment, the
+  three selected columns/styles, and distinct lookup field names. Retained
+  other UI edits and Boolean checkbox defaults; no resx edit in this step.
+- Both required Release/x86 solutions and 119 unit tests passed. Paired actual
+  validator tests passed 240 assertions across 24 cases, plus 27 fixture checks
+  per EXE. The working baseline's validator bodies were verified identical to
+  the before-change source, because the immediate baseline had the same broken
+  Designer. No behavior assertions were relaxed.
+- MultiUser_Save_LocalDB_Test.ps1 passed 43 normal and 43 versioned-read checks.
+  Checkbox (28), readability (50) and small-screen (1,344) checks passed. All
+  database writes were confined to owned disposable LocalDB fixtures; RMS
+  settlement in the concurrency suite is simulated. No live/store-restore
+  writes, actual RMS execution or physical print. Configurations preserved;
+  RMS investigation stays paused.
+
+### October 27: V8 readability cleanup
+
+- Removed 32 complete obsolete commented-out procedures from the active main
+  form (2,153 lines including their blank lines). Retained rule explanations
+  and verified all executable non-grid code against the before-change source.
+- Split GridColumnWidth into three private methods for sizing, column setup and
+  readability. All original grid assignments retain their values and order;
+  selected-grid checkbox defaults and Designer files are unchanged. Main form
+  reduced from 7,870 to 5,691 lines without adding a class or dependency.
+- Grouped the same 17 Work Order report parameters in CreateReportParameters
+  and set them together. Retained website naming, numeric formatting, template
+  type and withholding reference; removed the repeated addition of the same
+  report data source. RDLC content and paper settings are unchanged.
+- Both required Release/x86 solutions built. Passed 119 units, 120 compiled
+  parameter checks, 208 paired grid assertions (including identical pixels),
+  28 checkbox, 50 readability, 1,344 small-screen, 73 local printed-withholding,
+  284 V8 PDF checks and EXE-only packaging/render checks. No native store save
+  or physical printing; fixtures are disposable LocalDB/synthetic data.
+- Sandbox VSTest/SqlClient restrictions required local tests outside the
+  sandbox. The existing grid wrapper misread a successful helper exit status;
+  direct invocation passed the same full 16-case/208-assertion comparison.
+  App EXE configurations were preserved; no SQL or V4 changes in this cleanup.
+  RMS investigation remains paused and no live access occurred.
+
+### October 27: unmarked items default to GOODS; REVIEW retired
+
+- At the user's request, blank Notes and ordinary Notes without a WTax marker
+  now classify as GOODS for the 1% suggestion. Retired [WTAX:REVIEW] text is
+  ignored, so a line with only that old marker also defaults to GOODS.
+- Explicit GOODS, SERVICES, EWT15 and GIFT_CERT classifications keep priority.
+  Unknown/conflicting WTax markers remain excluded rather than guessed. The
+  1% rate still requires customer/order enablement; VAT bases, rounding, 5%
+  eligibility, totals and stored Notes are unchanged. No SQL update or migration.
+- All affected Release/x86 builds and both main unit suites passed (119 each).
+  Each V4/V7.1/V8 owned LocalDB item/UI/reprint suite passed 142 checks, including
+  null/blank/ordinary/retired-marker reprints and unchanged WALK-IN eligibility.
+  EXE-only packaging passed; no live connection or physical printing.
+
+
+### October 26: V4 WALK-IN Set W/Tax
+
+- Added the same per-order rate picker to active V4, using its neighboring
+  Settings button's existing icon/style. Visible only for WALK-IN Work Orders;
+  supports 1%, 2%, 5%, 15%, Cancel and an explicit all-off selection.
+- Preserve existing ShippingNotes and store the same versioned marker used by
+  V8. New headers persist it after the original GSC insert call; recalled
+  headers include it in the existing mapped header update. Recall and reprint
+  read saved selections; named customers retain their normal customer flags.
+- Old GSC SQL routines, signatures, search and legacy per-step save behavior
+  remain unchanged. No schema deployment, V8 transaction refactor, calculation,
+  total, stock, customer-setting or tender changes.
+- V4 and both required Release/x86 solutions built; 117 main unit tests passed.
+  Owned LocalDB checks: 138 V4 item/picker/recall/render, 24 V4 mapped header/tax
+  saves, 73 V4 print-reference checks; clean EXE-only V4 render/picker checks
+  passed. Required main packaging and 43 V8 concurrency checks per read mode
+  passed separately. Configs preserved. Closed-order settlement was simulated;
+  native RMS POS and physical printing remain manual acceptance.
+
+### October 26: V8 WALK-IN order withholding selections
+
+- Set W/Tax uses the existing Set Tax icon, white background, text/border
+  colors, font, height and image spacing to match adjacent action buttons.
+- Added a WALK-IN-only Set W/Tax button below the existing right-hand actions.
+  Select 1%, 2%, 5%, 15%, or no rates for the current Work Order; Cancel keeps
+  the prior selection. Identify WALK-IN by its customer AccountNumber, not a
+  hard-coded customer ID or duplicate company name.
+- Save a versioned marker in existing Order.ShippingNotes, preserving other
+  text. New/split orders write it in their existing save transaction; recalled
+  orders update it under the existing lock, snapshot and transaction. Recall
+  and reprint use those saved rates, including explicit all-off. Changing to
+  a named customer restores normal customer-rate behavior.
+- No new schema, SQL deployment, dependencies or production classes. Shared
+  customer settings, item bases, VAT exemptions, rounding, totals, commitments
+  and tender behavior are unchanged. V4 is unchanged.
+- Local validation: both required Release/x86 builds; 117 unit tests; 138
+  item/picker/recall/render checks; 73 printed-reference checks; 25 credit
+  warning checks; EXE-only packaging; 43 actual transaction/concurrency checks
+  in each of normal and versioned-read disposable LocalDB fixtures. Existing
+  EXE configs preserved. Settlement retention was simulated, not RMS POS.
+
+### October 26: V8 CHARGE credit-limit warning events
+
+- Recheck the existing available-credit comparison when payment changes to
+  CHARGE, the total changes, or customer credit loading completes (including
+  another customer with the same available balance). Ignore stale balances
+  belonging to the previous customer and avoid nested warning dialogs.
+- Keep the existing warning text, credit calculation and warning-only behavior;
+  no save blocking, SQL changes, withholding deductions or V4 changes.
+- Both required Release/x86 solutions and 114 unit tests passed. An owned
+  LocalDB fixture passed 25 compiled event/dialog checks; no live connection,
+  production form Load or save. Existing application EXE configs preserved.
+
+### October 24: authorized live HO WO 18947 to 18946 recovery
+
+- Executed only the explicitly authorized ID mapping after the user confirmed
+  HO clients closed. Created a current-day copy-only/checksum backup, verified
+  it, passed the guarded live rollback rehearsal, then committed and verified.
+- Preserved four entry IDs/values, queue/GroupTo, four approvals, eighteen old
+  audit events plus one mapping event, five order item logs, all thirteen
+  trigger states/hashes and inventory. Total 27274.67, tax 0 unchanged.
+- No reseed: identity remains 18947 and the next automatic allocation remains
+  18948. Negative pre-existing commitments/failure cause were not repaired.
+- Added exact guarded recovery, SELECT verification and a 42-check disposable
+  LocalDB fixture with real backup guards; main/queue/V4 Release builds and
+  114 unit tests passed, app configs preserved. SQL verification is complete;
+  actual RMS UI acceptance is pending. See the October 24 incident record.
+
+### October 24: customer-controlled 5% withholding suggestion
+
+- At the user's request pending accounting review, customer-enabled 5% uses the
+  whole existing VAT-exclusive subtotal when VAT applies, without an item VAT5
+  marker. Keep 1%/2%/15% item-specific bases, customer eligibility/caption guards,
+  exemptions, signed cent rounding and unchanged order subtotal/VAT/total.
+- Existing VAT5 notes do not add/double 5%. Review warnings now explicitly
+  concern income marker exclusions; the screen explains the separate 5% rule.
+- No database, SQL, RMS receipt, report layout, save or live data changes.
+- Validation: main/queue/V4 Release builds, 114 unit tests, 123 local item/UI/
+  print checks per version, 73 report checks per version, 568 PDF checks and
+  clean-folder packaging passed. Existing configs preserved. Tests used only
+  owned disposable LocalDB fixtures; no RMS POS/physical printer execution.
+
+### October 24: tighten amount spacing and align order-total colon
+
+- Move the right-aligned withholding amount column left, closer to its colons.
+  Give Sub Total/Sales Tax/Order Total a fixed shared colon column; preserve
+  totals values, fonts, report parameters and all calculation code.
+- Scope is the two RDLC templates only. No SQL, live database, receipt,
+  application configuration or business-rule changes.
+- Passed: Release main/queue/V4 builds, 112 units, 121 item checks per version,
+  73 report checks per version, 568 PDF checks and clean-folder packaging.
+  Narrow amount columns retain large values and normal/bold weights; both
+  preview and direct-print colon positions checked. Existing configs preserved.
+  Disposable LocalDB only; no physical printing or live-store testing.
+
+### October 24: tighten withholding colon spacing
+
+- Move the fixed colon column closer to WTax/Total WTax/estimated payment
+  labels in both reports. Narrow only the label box; keep right-aligned
+  amount positions, font weights, wording, arithmetic and paper unchanged.
+- RDLC-only change; no source calculation, SQL, live data or business-rule edits.
+- Passed: main/queue/V4 Release builds, 112 units, 121 item checks per version,
+  73 report checks per version, 542 PDF checks and packaging. Long CHARGE labels
+  remain unwrapped; configurations preserved. Local fixtures only; no physical
+  printer/live-store testing. Updated both EXE-only outputs.
+
+### October 24: align withholding columns (V4/V8)
+
+- Split the existing printed reference into label, colon and right-aligned
+  amount columns, matching the approved mockup. Keep individual WTax normal,
+  Total WTax/estimated payment bold, and all wording/amounts unchanged.
+- RDLC-only production change: no VB calculation, SQL, store settings, receipt,
+  business-rule or live database changes. Keep review warnings in the label
+  area and preserve original row order, zero hiding and quotation exclusion.
+- Validation passed: Release/x86 main/queue/V4 builds, 112 unit tests, 121
+  item-marker/UI/print checks per version, 73 report checks per version, 542
+  PDF checks and clean-folder packaging. Existing EXE configs preserved.
+  Only owned disposable LocalDB was used; physical printing remains manual.
+
+### October 24: compact half-sheet Work Orders (V4/V8)
+
+- Keep existing paper/printer settings (preview 8.5 x 6.5 inches; direct print
+  8.5 x 6 inches) and item table. Trim unused canvas to prevent blank overflow
+  pages; put Picked/Checked/Packed signatures on one row. Work Order totals use
+  Order Total; quotations retain their existing total label and signature rules.
+- Individual nonzero WTax lines are regular 10pt. Add bold Total WTax and bold
+  Est. Cash/Charge/Debit/Credit Due below them. Preserve CHARGE suffixes, hidden
+  zero lines, review warnings, saved totals, rounding and reference calculations.
+- Release/x86 main, queue and V4 builds passed; 112 unit tests, 121 item-marker/
+  UI/print checks per version, 71 report/helper checks per version, 386 PDF
+  checks and clean-folder packaging passed. Six ordinary and wrapped-description
+  items, four rates, large values, empty/no-rate/quotation and 60-line pagination
+  covered. Store EXE configs preserved. Only disposable LocalDB fixtures used;
+  no live database or physical printing. Initial sandbox test-host/SQL failures
+  were resolved by rerunning local validation outside AppContainer restrictions.
+
+### October 23: restore original print template and left withholding column
+
+- Revert the subsequent item VAT columns and revised totals/Amount Due layout
+  in V4/V8. Restore the original item table and Sub Total / Sales Tax / Total.
+  Print nonzero WTax amounts as one left column, with CASH/CHARGE/DEBIT/CREDIT
+  net amount at the top; retain CHARGE tender suffixes and hidden zero amounts.
+- No calculation, saved-total, main-screen, SQL or business-rule changes. Remove
+  the superseded VAT-column-only test and retain the mixed-order arithmetic tests.
+  Quotations and no-withholding layouts retain their original content/positions.
+- Local builds and 112 unit tests passed, with 121 marker/UI/render checks per
+  version, 62 print regressions per version, 224 PDF comparisons and EXE-only
+  packaging. Restored samples visually inspected; EXE configs preserved. No live
+  access or physical printing. Both EXE-only outputs refreshed.
+
+### October 23: printed Work Order VAT and Amount Due breakdown
+
+- V4/V8 Work Orders add per-line VAT-exclusive amounts and VAT, retaining the
+  existing quantity, unit price and line total. Report-only cumulative cent
+  rounding allocates the existing header VAT across line gross amounts, including
+  exempt/zero VAT, without changing saved values or assuming a new VAT rate.
+- Footer shows actual VAT-exclusive amount, VAT and Work Order Total, followed
+  by nonzero Less deductions and Amount Due for every payment type. Previous
+  payment-specific tender suffixes are replaced by neutral Goods/Services/EWT
+  labels; underlying customer eligibility and item-marker calculations unchanged.
+  Amount Due remains hidden without nonzero withholding; review warnings remain.
+- Quotations retain their original table/footer. No SQL, mapping, main-screen,
+  tender, stock or save-rule changes. Davao RMS receipt excluded; no live access.
+- Validation passed locally: main/queue/V4 Release/x86 builds, 112 unit tests,
+  127 marker/UI/render checks per version, 64 print regressions per version,
+  300 PDF layout comparisons, 90 rendered line-VAT reconciliation checks and
+  EXE-only packaging. Mixed, zero, exempt, saved-VAT-ratio and cent-rounding
+  samples verified; quotation word positions unchanged. EXE configs preserved.
+  No actual RMS POS settlement or physical printer test was performed.
+
+### October 23: hide zero main-screen withholding amounts
+
+- V4/V8 main screens hide enabled withholding labels whose rounded amount is
+  zero and pack remaining nonzero amounts to the left. The VAT-exclusive basis,
+  review warnings, customer eligibility, formulas, totals and shortcuts remain
+  unchanged. No SQL changes or live access.
+- Local validation passed: main/queue/V4 Release/x86 builds, 112 unit tests,
+  115 marker/UI/print checks per version, V8/V4 UI suites (57/59), packaging,
+  and inspected footer screenshots. Existing EXE configs preserved byte-for-byte.
+
+### October 23: hide zero printed withholding amounts
+
+- V4/V8 printed Work Orders omit WTax rows whose rounded amount is zero and
+  show the net payment row only when at least one enabled withholding amount
+  is nonzero. Missing-marker review warnings remain visible. Main-form display,
+  calculations, saved totals, VAT and tender behavior are unchanged.
+- Local checks passed: V4/main/queue Release/x86 builds, 112 unit tests,
+  79 marker/UI/print checks per version, 62 print regressions per version,
+  180 PDF comparisons and EXE-only packaging. Layouts inspected; existing EXE
+  configs preserved. No live database access or physical printing.
+
+### October 23: single-column printed payment breakdown
+
+- V4/V8 Work Order prints omit the Withholding Tax (Reference) heading and show
+  enabled WTax amounts one per line. The saved CASH/CHARGE/DEBIT/CREDIT payment
+  is printed first as saved total minus the sum of enabled item-based withholding.
+  CARD names are shortened for display. Customers with no enabled rates show
+  the full payment amount. Quotes remain excluded; missing markers retain their
+  review warning. Saved totals, VAT, item bases and tender posting are unchanged.
+- Local validation passed: V4/main/queue Release/x86 builds, 112 unit tests,
+  76 item-marker/UI/print checks per version, 62 print regressions per version,
+  160 PDF comparisons and EXE-only packaging. Rendered layouts inspected;
+  original EXE configs preserved. No live access or physical printing.
+
+### October 23: focused helper cleanup
+
+- Remove the unused whole-subtotal FormatAmounts wrapper in V4/V8 and the two
+  V8 price-confirmation list helpers that had no production callers. Update
+  their tests to check the IsConfirmedPrice function used by the application.
+- Reuse SetString when writing Boolean settings, retaining lowercase true/false,
+  existing keys, defaults and save/refresh behavior. No business-rule changes.
+- V4 and both required Release/x86 solutions built; all 112 unit tests, temporary
+  Boolean settings add/update/persistence checks, 73 item-marker/UI/print checks
+  per version and EXE-only packaging passed. Existing EXE configs preserved.
+  Only owned local fixtures used; no live access. RMS investigation stays paused.
+
+### October 23: duplicate Settings resource build fix
+
+- Give SmallScreenLayout.resx an explicit unique manifest name. Its shared VB
+  source contains a partial frmSettings class, which otherwise makes MSBuild
+  generate the same resource output as frmSettings.resx. No runtime or database
+  behavior changes.
+- Debug/x86 main project and both required Release/x86 solutions built; compiled
+  Settings/layout resource names are distinct. All 112 unit tests passed outside
+  the sandbox after its testhost connection timeout. EXE configs preserved.
+
+### October 23: item-marker withholding suggestions in V4 and V8
+
+- Main-form and printed Work Order references now scope 1%/2%/15% bases to
+  GOODS/SERVICES/EWT15 Notes markers, with separate explicitly marked VAT5 and
+  zero-contribution gift certificates. Existing customer flags/caption checks
+  still enable rates; missing/conflicting markers show review exclusions instead
+  of guessing. Actual existing VAT-exclusive subtotal is allocated by line gross;
+  totals, prices, exemptions, approvals, save/stock rules and shortcuts unchanged.
+- Printing follows the existing open OrderEntry / closed TransactionEntry paths
+  and retains CASH/CHARGE labels, font and RDLC. Zero-VAT orders do not suggest
+  VAT5; current item Notes are read for every refreshed calculation/reprint.
+- Required Release/x86 builds and 112 unit tests passed; 73 actual compiled
+  marker/UI/report checks per version passed in owned local fixtures. Existing
+  V4/V8 UI/guard/customer/recall, 62 print checks each, 91 print UI, 160 PDF
+  comparisons, 12 marker PDF cases and EXE-only packaging passed. Debug/Release
+  configs preserved; both EXE-only deliveries refreshed after validation.
+- Read-only localhost WO 23309 check returned 1%_Charge 7.95 in both builds.
+  No existing store writes, SQL object changes, live access or Davao RMS XML
+  receipt edits in this task. RMS investigation remains paused. See
+  ITEM_WITHHOLDING_REFERENCE.md for sample computation, limitations and rollout.
+
+### October 23: confirmed zero-stock non-inventory service/rebate markers
+
+- User authorized localhost MSI/DVO_STORE_DB item-marker updates only and clarified
+  that “update also” meant service/rebate items, not addin or receipt code.
+  Reviewed descriptions and appended SERVICES to 162 unmarked services and EWT15
+  to two unmarked rebate entries. Existing service, rebate and commission samples
+  were preserved; totals are 163 SERVICES and four EWT15 zero-stock non-inventory
+  items. Existing positive-stock GOODS and gift-certificate markers were retained.
+- Used an explicit 164-item ID/code/description manifest, Quantity=0 and ItemType=7
+  guards, exact append checks and full non-Notes column comparison before commit
+  (excluding automatic rowversion). All 9,864 existing marker notes were protected.
+  Stock, commitments, prices, tax settings and other item values were unchanged;
+  existing item/history triggers remained enabled. Independent read-back passed.
+- Nine ambiguous service-department entries (rental, warranty and claim/support
+  programs) remain unmarked. No blanket department/category or non-inventory
+  classification was applied. No live access or application/business-rule changes.
+  Manifest and execution audit: TestResults/DavaoWTaxZeroNonInventory-20261023.
+
+### October 23: approved localhost positive-stock GOODS markers
+
+- User explicitly confirmed treating all currently unmarked Item.Quantity > 0
+  items as GOODS in localhost MSI/DVO_STORE_DB, including the one inactive item.
+  Appended [WTAX:GOODS] to 9,859 items; all 9,860 positive-stock items are now
+  marked. Existing five sample marker notes were preserved. Zero-stock items
+  were excluded; prior services, rebates, commission and gift-certificate samples
+  remain marked as before. The separate older (TAX1%) note remains intact.
+- An initial attempt timed out and rolled back; read-back confirmed only the
+  original positive-stock sample remained marked. The retry used individual
+  audit rows and an indexed, null-safe comparison of every non-Notes item column
+  except automatic rowversion. No assertions were removed or timeout increased.
+  Verified counts and preservation before commit, then independently read back.
+- No prices, stock, commitments, VAT settings, application calculations or SQL
+  business rules changed. Existing item-history triggers ran normally. No live
+  access. Audit/scripts are in TestResults/DavaoWTaxPositiveStock-20261023.
+
+### October 23: explicitly authorized localhost item-classification samples
+
+- Appended agreed Item.Notes markers to five identified sample items in localhost
+  MSI/DVO_STORE_DB only: 55157RMS GOODS; SVC00118 SERVICES; SVC00132 and SVC00121
+  EWT15 (rebates and commission); GC00001 GIFT_CERT. All five had blank Notes.
+  No VAT5 eligibility was assumed and the existing 60976BDL (TAX1%) note remains.
+- Committed with target/identity/count guards and an exact append check; compared
+  every other item column before commit, excluding automatic rowversion. Stock,
+  commitments, prices, VAT settings and other item values remained unchanged.
+  Existing update triggers ran normally, including their item-history entries.
+- This changes sample classifications only, not application computations or
+  business rules. No live/source server, schema, report or addin code changed.
+  Local audit/script: TestResults/DavaoWTaxSamples-20261023. See the Davao receipt
+  README for sample codes and limitations; no build was needed for this data task.
+
+### October 23: Davao RMS receipt withholding reference
+
+- Runtime investigation remains open: the full-page receipt still lacks the
+  reference despite the corrected installed/stored template and enabled localhost
+  customer fields. Narrow POS WTax Tendered rows are actual payments, not proof
+  of this feature. Added a separate raw-field/condition diagnostic XML for a
+  user-run localhost preview; elevated RMS could not be controlled by the desktop
+  helper. No database records/settings changed and no further fix is claimed.
+- Follow-up: the user's preview was a Sales Receipt, so the original work-order-only
+  condition hid the entire section. Both source XML filenames now allow sales
+  receipts and work orders; quotes stay unchanged. Seven offline tests pass,
+  including total 178.00 / VAT 19.07 producing 1.59/3.18/7.95/23.84. Replacing
+  the local Program Files template was denied by Windows file permissions;
+  installed XML remains unchanged. Copy/reload the corrected source for preview.
+- Added a Suggested W/Tax (Reference) section below the wholesale work-order
+  receipt totals, using the existing Sub Total font. Shows only enabled customer
+  1/2/5/15% fields with their configured W/Tax captions. Uses actual total minus
+  sales tax, with cent rounding; receipt totals and all existing content remain
+  unchanged. This is an RMS XML template, independent of the addin reports.
+- Seven offline XML/amount contract tests passed. Syntax/fields checked against
+  the supplied Microsoft RMS customization guide. Actual RMS preview/physical
+  printing remains required; no live database or installed receipt was changed.
+  See Receipts/Davao_Receipts/README.md for setup and preview cases.
+
+### October 22: V4 recalled-order Taxable flags
+
+- Fixed two missing assignments in the existing recall update methods. Header
+  Taxable follows the original GSC insert rule (VAT amount greater than zero);
+  existing lines store the caller's customer-exemption-derived Taxable value.
+  Tax amounts, totals, pricing, quantities and old GSC SQL calls are unchanged.
+- Reproduced the stale header flag with the prior EXE in an owned localhost
+  fixture. The candidate passed 19 actual compiled V4 recall checks, including
+  taxable/exempt transitions, repeated saves, quotation and zero-VAT cases.
+  Existing V4 guard/selection/display checks and 106 main unit tests passed;
+  V4 and both production Release/x86 builds passed. Configurations preserved.
+- Required V8 concurrency regressions passed 39 checks each with normal and
+  versioned reads in separate disposable fixtures; these do not exercise RMS POS
+  or establish V4 transaction guarantees.
+- Source-only correction on future saves; no historical backfill or live database
+  change. The user's already-repaired Gensan WO 287885 was not retested on live.
+  RMS investigation remains paused.
+
 ### October 22: match printed withholding font to Sub Total
 
 - Changed the withholding heading and amounts to each template's effective

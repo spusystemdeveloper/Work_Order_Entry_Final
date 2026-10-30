@@ -36,62 +36,15 @@ Public Class frmPrintWo
 
             clsItemLookUp.viewWoDetials(wo)
 
-            If Convert.ToString(clsItemLookUp.Comment).Contains("SOD WEBSITE") Then
-
-                Dim paramComp As New ReportParameter("paramComp", "Starbright Office Depot, Inc." & " - WEBSITE")
-                rptviewer.LocalReport.SetParameters(paramComp)
-
-            Else
-
-                Dim paramComp As New ReportParameter("paramComp", "Starbright Office Depot, Inc.")
-                rptviewer.LocalReport.SetParameters(paramComp)
-            End If
-
-            Dim paramAddress As New ReportParameter("paramAddress", Convert.ToString(clsItemLookUp.Address))
-            rptviewer.LocalReport.SetParameters(paramAddress)
-            Dim paramBranch As New ReportParameter("paramBranch", Convert.ToString(clsItemLookUp.Branch))
-            rptviewer.LocalReport.SetParameters(paramBranch)
-            Dim paramWOno As New ReportParameter("paramWOno", Convert.ToString(clsItemLookUp.Orderid))
-            rptviewer.LocalReport.SetParameters(paramWOno)
-            Dim paramAccountNo As New ReportParameter("paramAccountNo", Convert.ToString(clsItemLookUp.AccountNo))
-            rptviewer.LocalReport.SetParameters(paramAccountNo)
-            Dim paramCompany As New ReportParameter("paramCompany", Convert.ToString(clsItemLookUp.Company))
-            rptviewer.LocalReport.SetParameters(paramCompany)
-            Dim paramRegister As New ReportParameter("paramRegister", Convert.ToString(clsItemLookUp.Register))
-            rptviewer.LocalReport.SetParameters(paramRegister)
-            Dim paramCashier As New ReportParameter("paramCashier", Convert.ToString(clsItemLookUp.Cashier))
-            rptviewer.LocalReport.SetParameters(paramCashier)
-            Dim paramDate As New ReportParameter("paramDate", Convert.ToString(clsItemLookUp.OrderDate))
-            rptviewer.LocalReport.SetParameters(paramDate)
-            Dim paramTime As New ReportParameter("paramTime", Convert.ToString(clsItemLookUp.Ordertime))
-            rptviewer.LocalReport.SetParameters(paramTime)
-            Dim paramReference As New ReportParameter("paramReference", Convert.ToString(clsItemLookUp.Reference))
-            rptviewer.LocalReport.SetParameters(paramReference)
-            Dim paramComment As New ReportParameter("paramComment", Convert.ToString(clsItemLookUp.Comment))
-            rptviewer.LocalReport.SetParameters(paramComment)
-
-
-
-            Dim paramSubtotal As New ReportParameter("paramSubtotal", clsItemLookUp.Subtotal.ToString("N2"))
-            rptviewer.LocalReport.SetParameters(paramSubtotal)
-            Dim paramSalesTax As New ReportParameter("paramSalesTax", clsItemLookUp.SalesTax.ToString("N2"))
-            rptviewer.LocalReport.SetParameters(paramSalesTax)
-
-            Dim paramTotal As New ReportParameter("paramTotal", clsItemLookUp.Total.ToString("N2"))
-            rptviewer.LocalReport.SetParameters(paramTotal)
-
             Type = OrderPrintRules.ResolveTemplateName(Type)
-            Dim paramType As New ReportParameter("paramType", Type)
-            rptviewer.LocalReport.SetParameters(paramType)
-
+            Dim withholdingReference As String
             Using dbx = GetDB()
-                Dim reference = WorkOrderWithholdingReference.Load(dbx, wo, clsItemLookUp.Subtotal.ToString("N2"), Type)
-                rptviewer.LocalReport.SetParameters(New ReportParameter("paramWithholdingReference", reference))
+                withholdingReference = WorkOrderWithholdingReference.Load(
+                    dbx, wo, clsItemLookUp.Subtotal.ToString("N2"), Type)
             End Using
+            rptviewer.LocalReport.SetParameters(CreateReportParameters(withholdingReference))
 
-            Me.rptviewer.LocalReport.DataSources.Add(ReportDataSourcedr)
             rptviewer.RefreshReport()
-            'rptviewer.LocalReport.Print()
 
 
         Catch ex As Exception
@@ -105,6 +58,33 @@ Public Class frmPrintWo
 
     End Sub
 
+
+    Private Function CreateReportParameters(ByVal withholdingReference As String) As ReportParameter()
+        Dim companyName As String = "Starbright Office Depot, Inc."
+        If Convert.ToString(clsItemLookUp.Comment).Contains("SOD WEBSITE") Then
+            companyName &= " - WEBSITE"
+        End If
+
+        Return {
+            New ReportParameter("paramComp", companyName),
+            New ReportParameter("paramAddress", Convert.ToString(clsItemLookUp.Address)),
+            New ReportParameter("paramBranch", Convert.ToString(clsItemLookUp.Branch)),
+            New ReportParameter("paramWOno", Convert.ToString(clsItemLookUp.Orderid)),
+            New ReportParameter("paramAccountNo", Convert.ToString(clsItemLookUp.AccountNo)),
+            New ReportParameter("paramCompany", Convert.ToString(clsItemLookUp.Company)),
+            New ReportParameter("paramRegister", Convert.ToString(clsItemLookUp.Register)),
+            New ReportParameter("paramCashier", Convert.ToString(clsItemLookUp.Cashier)),
+            New ReportParameter("paramDate", Convert.ToString(clsItemLookUp.OrderDate)),
+            New ReportParameter("paramTime", Convert.ToString(clsItemLookUp.Ordertime)),
+            New ReportParameter("paramReference", Convert.ToString(clsItemLookUp.Reference)),
+            New ReportParameter("paramComment", Convert.ToString(clsItemLookUp.Comment)),
+            New ReportParameter("paramSubtotal", clsItemLookUp.Subtotal.ToString("N2")),
+            New ReportParameter("paramSalesTax", clsItemLookUp.SalesTax.ToString("N2")),
+            New ReportParameter("paramTotal", clsItemLookUp.Total.ToString("N2")),
+            New ReportParameter("paramType", Type),
+            New ReportParameter("paramWithholdingReference", withholdingReference)
+        }
+    End Function
 
     Private Sub PrintSetting()
 

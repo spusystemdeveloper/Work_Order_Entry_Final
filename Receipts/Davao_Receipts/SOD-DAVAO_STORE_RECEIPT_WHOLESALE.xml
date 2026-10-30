@@ -306,6 +306,71 @@
 			</COLUMNHEADER>
 		</TABLE>
 	</SUB>
+	<!-- Reference only: no deduction from totals and no tender/transaction writes. -->
+	<SUB name="PrintWithholdingReference">
+		<IF>
+			<CONDITION> ((Transaction.Type = transactionWorkOrder) | (Transaction.Type = transactionSales)) &amp; (Customer.ID &gt; 0) </CONDITION>
+			<THEN>
+				<!-- Match the customer's configured W/Tax fields; unrelated captions stay hidden. -->
+				<SET name="WTaxEnabled1" type="vbBoolean"> (Customer.CustomCaptionNumber3 = "W/Tax 1%") &amp; (Customer.CustomNumber3 = 1) </SET>
+				<SET name="WTaxEnabled2" type="vbBoolean"> (Customer.CustomCaptionNumber4 = "W/Tax 2%") &amp; (Customer.CustomNumber4 = 2) </SET>
+				<SET name="WTaxEnabled5" type="vbBoolean"> (Customer.CustomCaptionNumber5 = "W/Tax 5%") &amp; (Customer.CustomNumber5 = 5) </SET>
+				<SET name="WTaxEnabled15" type="vbBoolean"> (Customer.CustomCaptionText2 = "W/Tax 15%") &amp; (Customer.CustomText2 = "15") </SET>
+				<IF>
+					<CONDITION> WTaxEnabled1 | WTaxEnabled2 | WTaxEnabled5 | WTaxEnabled15 </CONDITION>
+					<THEN>
+						<!-- Actual tax-exclusive amount; do not assume every order has 12% VAT. -->
+						<SET name="WTaxBase" type="vbCurrency"> Transaction.Total - Transaction.SalesTax </SET>
+						<!-- Round suggested amounts to cents, with midpoint values away from zero. -->
+						<SET name="WTaxAmount1" type="vbCurrency"> Int(Abs(WTaxBase) * 1 + 0.5) / 100 </SET>
+						<SET name="WTaxAmount2" type="vbCurrency"> Int(Abs(WTaxBase) * 2 + 0.5) / 100 </SET>
+						<SET name="WTaxAmount5" type="vbCurrency"> Int(Abs(WTaxBase) * 5 + 0.5) / 100 </SET>
+						<SET name="WTaxAmount15" type="vbCurrency"> Int(Abs(WTaxBase) * 15 + 0.5) / 100 </SET>
+						<IF>
+							<CONDITION> WTaxBase &lt; 0 </CONDITION>
+							<THEN>
+								<SET name="WTaxAmount1" type="vbCurrency"> 0 - WTaxAmount1 </SET>
+								<SET name="WTaxAmount2" type="vbCurrency"> 0 - WTaxAmount2 </SET>
+								<SET name="WTaxAmount5" type="vbCurrency"> 0 - WTaxAmount5 </SET>
+								<SET name="WTaxAmount15" type="vbCurrency"> 0 - WTaxAmount15 </SET>
+							</THEN>
+						</IF>
+						<TABLE>
+							<BORDER> tbNone </BORDER>
+							<FONT> "SmallBold" </FONT>
+							<COLUMNHEADER>
+								<ALIGNMENT> "&lt;" </ALIGNMENT>
+								<WIDTH> PageWidth * 0.55 </WIDTH>
+								<TEXT> "Suggested W/Tax (Reference)" </TEXT>
+							</COLUMNHEADER>
+							<COLUMNHEADER>
+								<ALIGNMENT> "&gt;" </ALIGNMENT>
+								<WIDTH> PageWidth * 0.25 </WIDTH>
+								<TEXT> "" </TEXT>
+							</COLUMNHEADER>
+							<ROW> "VAT-exclusive:" "|" WTaxBase </ROW>
+							<IF>
+								<CONDITION> WTaxEnabled1 </CONDITION>
+								<THEN><ROW> "WTax 1%" "|" WTaxAmount1 </ROW></THEN>
+							</IF>
+							<IF>
+								<CONDITION> WTaxEnabled2 </CONDITION>
+								<THEN><ROW> "WTax 2%" "|" WTaxAmount2 </ROW></THEN>
+							</IF>
+							<IF>
+								<CONDITION> WTaxEnabled5 </CONDITION>
+								<THEN><ROW> "WTax 5%" "|" WTaxAmount5 </ROW></THEN>
+							</IF>
+							<IF>
+								<CONDITION> WTaxEnabled15 </CONDITION>
+								<THEN><ROW> "WTax 15%" "|" WTaxAmount15 </ROW></THEN>
+							</IF>
+						</TABLE>
+					</THEN>
+				</IF>
+			</THEN>
+		</IF>
+	</SUB>
 	<SUB name="PrintAuthorize">
 		<TABLE>
 			<PENSTYLE> psSolid </PENSTYLE>
@@ -343,6 +408,7 @@
 	<DOCUMENT>
 		<!-- header MUST be printed as a NON-overlay on the first page ... export-to-HTML issues -->
 		<CALL> "PrintEntries" </CALL>
+		<CALL> "PrintWithholdingReference" </CALL>
 		<CALL> "PrintAuthorize" </CALL>
 	</DOCUMENT>
 </XML>

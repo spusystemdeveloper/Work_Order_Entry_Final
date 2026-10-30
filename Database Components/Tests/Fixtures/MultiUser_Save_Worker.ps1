@@ -51,6 +51,13 @@ try {
     $instanceFlags=[Reflection.BindingFlags]'Instance,Public,NonPublic'
     $form.GetType().GetField('isBulkLoading',$instanceFlags).SetValue($form,$true)
     $form.GetType().GetField('isLoadingRecalledOrder',$instanceFlags).SetValue($form,$true)
+    if($request.PSObject.Properties['WalkInRates']) {
+        $rates=[Collections.Generic.List[int]]::new()
+        foreach($rate in $request.WalkInRates){$rates.Add([int]$rate)}
+        $form.GetType().GetField('walkInCustomer',$instanceFlags).SetValue($form,$true)
+        $form.GetType().GetField('walkInRatesCustomerID',$instanceFlags).SetValue($form,1)
+        $form.GetType().GetField('walkInRates',$instanceFlags).SetValue($form,$rates)
+    }
     $workOrder=$form.GetType().GetProperty('chkWorkOrder',$instanceFlags).GetValue($form)
     $quote=$form.GetType().GetProperty('chkQuote',$instanceFlags).GetValue($form)
     $workOrder.Checked=$true

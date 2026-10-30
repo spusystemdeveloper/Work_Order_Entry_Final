@@ -36,7 +36,7 @@ namespace WorkOrderDatabaseUpdater
             Text = "Work Order Database Updater"; Width = 1180; Height = 820; MinimumSize = new Size(960, 680);
             StartPosition = FormStartPosition.CenterScreen; Font = new Font("Segoe UI", 9);
             authentication.Items.AddRange(new object[] { "Windows login", "SQL login" }); authentication.SelectedIndex = 0;
-            profile.Items.AddRange(new object[] { "GSC", "DVO", "Portable" }); profile.SelectedIndex = 0;
+            profile.Items.AddRange(new object[] { "GSC", "DVO", "Portable", "ILOILO" }); profile.SelectedIndex = 0;
             var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6, Padding = new Padding(12) };
             layout.RowStyles.Add(new RowStyle(SizeType.AutoSize)); layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
             layout.RowStyles.Add(new RowStyle(SizeType.AutoSize)); layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
@@ -69,7 +69,16 @@ namespace WorkOrderDatabaseUpdater
             grid.CellClick += (s, e) => ShowSql();
             foreach (var field in new TextBox[] { server, database, user, password }) field.TextChanged += (s, e) => InvalidateTarget();
             authentication.SelectedIndexChanged += (s, e) => { user.Enabled = password.Enabled = authentication.SelectedIndex == 1; InvalidateTarget(); };
-            profile.SelectedIndexChanged += (s, e) => LoadPackage();
+            profile.SelectedIndexChanged += (s, e) =>
+            {
+                if (profile.Text == "ILOILO" && (database.Text == "GSC_STORE_DB" || database.Text == "DVO_STORE_DB"))
+                    database.Text = "ILOILO_MAIN_WHSE_DB";
+                else if (profile.Text == "GSC" && (database.Text == "ILOILO_MAIN_WHSE_DB" || database.Text == "DVO_STORE_DB"))
+                    database.Text = "GSC_STORE_DB";
+                else if (profile.Text == "DVO" && (database.Text == "ILOILO_MAIN_WHSE_DB" || database.Text == "GSC_STORE_DB"))
+                    database.Text = "DVO_STORE_DB";
+                LoadPackage();
+            };
             reload.Click += (s, e) => LoadPackage();
             choose.Click += (s, e) => {
                 using (var dialog = new FolderBrowserDialog { Description = "Select the Database Components folder (contains Deployment and Migrations)." })

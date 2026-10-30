@@ -30,6 +30,8 @@ function State($name,$value){$module.GetField($name,$static).SetValue($null,$val
 try{
  $cx.Open();Sql "CREATE DATABASE [$db]";$created=$true;$cx.ChangeDatabase($db)
  Sql @'
+CREATE TABLE dbo.Item(ID int PRIMARY KEY,Notes ntext);
+INSERT dbo.Item VALUES(1,N'[WTAX:GOODS] [WTAX:VAT5]');
 CREATE TABLE dbo.Customer(ID int PRIMARY KEY,CustomNumber3 float NOT NULL,CustomNumber4 float NOT NULL,CustomNumber5 float NOT NULL,CustomText2 nvarchar(30) NOT NULL);
 CREATE TABLE dbo.CustomCaption(Style int NOT NULL,Caption nvarchar(80));
 INSERT dbo.CustomCaption VALUES(2,N'W/Tax 15%'),(8,N'W/Tax 1%'),(9,N'W/Tax 2%'),(10,N'W/Tax 5%');
@@ -66,12 +68,15 @@ INSERT dbo.Customer VALUES(8,0,0,0,N'');
  $work=Control 'chkWorkOrder';$quote=Control 'chkQuote';$customer=Control 'txtCustomer'
  $sub=Control 'txtSub';$vat=Control 'txtVat';$total=Control 'txtTotal';$group=Control 'grpWithholding'
  $work.Checked=$true;$quote.Checked=$false
+ $grid=Control 'gridSelectItem';$grid.AllowUserToAddRows=$false
+ $seedRow=$grid.Rows.Add();$grid.Rows[$seedRow].Cells['ItemID'].Value=1
+ $grid.Rows[$seedRow].Cells['Price'].Value=[decimal]1100;$grid.Rows[$seedRow].Cells['QTY'].Value=1;$grid.Rows[$seedRow].Cells[10].Value=1
  State 'iCusID' 1;$customer.Text='Fixture customer'
  $sub.Text='982.14';$vat.Text='117.86';$total.Text='1,100.00';Render
- foreach($pair in @(@('lblWithholding1','1%: 9.82'),@('lblWithholding2','2%: 19.64'),@('lblWithholding5','5%: 49.11'),@('lblWithholding15','15%: 147.32'))){
-  Check ((Control $pair[0]).Text -eq $pair[1] -and (Control $pair[0]).Visible) ('Separate enabled rate: '+$pair[1])
+ foreach($pair in @(@('lblWithholding1','1%: 9.82'),@('lblWithholding2','2%: 0.00'),@('lblWithholding5','5%: 49.11'),@('lblWithholding15','15%: 0.00'))){
+  Check ((Control $pair[0]).Text -eq $pair[1] -and ((Control $pair[0]).Visible -eq (-not $pair[1].EndsWith(': 0.00')))) ('Separate enabled rate: '+$pair[1])
  }
- Check ($group.Visible -and (Control 'lblWithholdingBasis').Text -eq 'VAT-exclusive: 982.14') 'actual subtotal displayed as calculation basis'
+ Check ($group.Visible -and (Control 'lblWithholdingBasis').Text -eq 'VAT-exclusive: 982.14 | By item markers') 'actual subtotal displayed as calculation basis'
  Check ($sub.Text -eq '982.14' -and $vat.Text -eq '117.86' -and $total.Text -eq '1,100.00') 'suggestions leave all three totals unchanged'
  Check (-not $group.TabStop -and -not (Control 'withholdingLayout').TabStop) 'no additional keyboard tab stops'
 
@@ -81,8 +86,8 @@ INSERT dbo.Customer VALUES(8,0,0,0,N'');
   $box=Control 'GroupBox2'
   Check ($group.Bottom -lt $box.Top -and $group.Width -ge ($totals.ClientSize.Width-12)) ('full-width strip above totals at panel width '+$width)
   Check ((Control 'lblWithholding1').Font.Bold -and (Control 'lblWithholding1').Font.Size -ge 13) ('larger bold suggestion amounts at panel width '+$width)
-  $labels=@((Control 'lblWithholding1'),(Control 'lblWithholding2'),(Control 'lblWithholding5'),(Control 'lblWithholding15'))
-  Check ($labels[0].Top -eq $labels[3].Top -and $labels[0].Right -le $labels[1].Left -and $labels[1].Right -le $labels[2].Left -and $labels[2].Right -le $labels[3].Left) ('four separate amounts share one row at panel width '+$width)
+  $labels=@((Control 'lblWithholding1'),(Control 'lblWithholding5'),(Control 'lblWithholding2'),(Control 'lblWithholding15'))
+  Check ($labels[0].Visible -and $labels[1].Visible -and -not $labels[2].Visible -and -not $labels[3].Visible -and $labels[0].Top -eq $labels[1].Top -and $labels[0].Right -le $labels[1].Left -and (Control 'withholdingLayout').GetColumn($labels[0]) -eq 0 -and (Control 'withholdingLayout').GetColumn($labels[1]) -eq 1) ('nonzero amounts precede hidden zero labels at panel width '+$width)
   $bmp=New-Object Drawing.Bitmap($totals.Width,$totals.Height)
   try{$totals.DrawToBitmap($bmp,(New-Object Drawing.Rectangle(0,0,$bmp.Width,$bmp.Height)));$bmp.Save((Join-Path $output ('Totals-'+$width+'.png')))}finally{$bmp.Dispose()}
  }
@@ -97,28 +102,31 @@ INSERT dbo.Customer VALUES(8,0,0,0,N'');
   $names=@('lblWithholding1','lblWithholding2','lblWithholding5','lblWithholding15')
   $packed=$true;$nextColumn=0
   foreach($index in 0..3){
-   $label=Control $names[$index];$enabled=($mask -band (1 -shl $index)) -ne 0
+   $label=Control $names[$index];$enabled=(($mask -band (1 -shl $index)) -ne 0) -and ($index -eq 0 -or $index -eq 2)
    if($enabled){$packed=$packed -and $label.Visible -and $layout.GetColumn($label) -eq $nextColumn;$nextColumn++}
    else{$packed=$packed -and -not $label.Visible}
   }
-  Check ($packed -and $group.Visible -eq ($mask -ne 0)) ('enabled rates pack left without gaps for combination '+$mask)
+  Check ($packed -and $group.Visible -eq ($mask -ne 0)) ('nonzero enabled rates pack left without gaps for combination '+$mask)
   if($mask -eq 8){
    $bmp=New-Object Drawing.Bitmap($totals.Width,$totals.Height)
    try{$totals.DrawToBitmap($bmp,(New-Object Drawing.Rectangle(0,0,$bmp.Width,$bmp.Height)));$bmp.Save((Join-Path $output 'Only15-Left.png'))}finally{$bmp.Dispose()}
   }
  }
  State 'iCusID' 1;Render
- Check ($layout.GetColumn((Control 'lblWithholding1')) -eq 0 -and $layout.GetColumn((Control 'lblWithholding15')) -eq 3) 'all-rate customer restores original rate order after compact layouts'
+ Check ($layout.GetColumn((Control 'lblWithholding1')) -eq 0 -and $layout.GetColumn((Control 'lblWithholding15')) -eq 3) 'all-rate customer keeps nonzero rates first after compact layouts'
 
  $form.ClientSize=New-Object Drawing.Size(1366,704);Render;$form.PerformLayout()
  Check ((Control 'gridSelectItem').Height -ge 75 -and (Control 'panelItem').Height -ge (Control 'Panel5').Height) '1366x768 retains selected-item viewport and customer controls with strip visible'
 
  # A changed database row is not fetched again for every quantity/price edit.
  Sql 'UPDATE dbo.Customer SET CustomNumber3=0 WHERE ID=1'
+ State 'bTaxExcempt' $true
  $sub.Text='1,100.00';$vat.Text='0.00';Render
  Check ((Control 'lblWithholding1').Text -eq '1%: 11.00') 'tax-exempt actual subtotal used without dividing by 1.12; cached rates reused'
+ Sql "UPDATE dbo.Item SET Notes=N'[WTAX:EWT15]' WHERE ID=1"
  $sub.Text='3.33';Render
  Check ((Control 'lblWithholding15').Text -eq '15%: 0.50') 'fractional amount refresh'
+ Check ((Control 'lblWithholding15').Visible -and $layout.GetColumn((Control 'lblWithholding15')) -eq 0) 'sole nonzero 15 percent packs into the first column'
  $sub.Text='123,456,789.00';Render
  Check ((Control 'lblWithholding15').Text -eq '15%: 18,518,518.35') 'large amount retains complete suggestion text'
  Check ((Control 'withholdingToolTip').GetToolTip((Control 'lblWithholding15')).Contains('18,518,518.35')) 'full large amount available in tooltip'
@@ -130,6 +138,8 @@ INSERT dbo.Customer VALUES(8,0,0,0,N'');
  }
  Check $largeFits 'large bold amounts fit without truncation at 1366-screen panel width'
 
+ Sql "UPDATE dbo.Item SET Notes=N'[WTAX:SERVICES]' WHERE ID=1"
+ State 'bTaxExcempt' $false
  # Same display name, different customer ID: the explicit recalculation hook reloads.
  State 'iCusID' 2;Render
  Check ((Control 'lblWithholding2').Visible -and -not (Control 'lblWithholding1').Visible -and -not (Control 'lblWithholding5').Visible -and -not (Control 'lblWithholding15').Visible) 'customer switch clears previous enabled rates'
@@ -152,7 +162,7 @@ INSERT dbo.Customer VALUES(8,0,0,0,N'');
 
  # Exercise the actual totals caller used after imports, recall and item edits.
  $grid=Control 'gridSelectItem';$grid.AllowUserToAddRows=$false
- $row=$grid.Rows.Add();$grid.Rows[$row].Cells['Price'].Value=[decimal]1100
+ $grid.Rows.Clear();$row=$grid.Rows.Add();$grid.Rows[$row].Cells['ItemID'].Value=1;$grid.Rows[$row].Cells['Price'].Value=[decimal]1100
  $grid.Rows[$row].Cells['QTY'].Value=[decimal]1
  $grid.Rows[$row].Cells[10].Value=1
  $form.UpdateAmt()
@@ -163,9 +173,12 @@ INSERT dbo.Customer VALUES(8,0,0,0,N'');
  Check ((Control 'lblWithholding2').Text -eq '2%: 22.00') 'tax-exempt recalculation refreshes suggestion using actual subtotal'
  $grid.Rows.Clear();$form.UpdateAmt()
  Check ((Control 'lblWithholding2').Text -eq '2%: 0.00') 'removing all items clears previous amount'
+ Check (-not (Control 'lblWithholding2').Visible) 'removing all items hides the zero suggestion'
  State 'iCusID' 0;$customer.Text='';Render;Check (-not $group.Visible) 'clearing customer clears suggestions'
  # Check the real docked footer as well as the separately rendered strip.
  $totalsParent.Controls.Add($totals);$totalsParent.Controls.SetChildIndex($totals,$totalsIndex)
+ $row=$grid.Rows.Add();$grid.Rows[$row].Cells['ItemID'].Value=1
+ $grid.Rows[$row].Cells['Price'].Value=560;$grid.Rows[$row].Cells['QTY'].Value=1;$grid.Rows[$row].Cells[10].Value=1
  State 'iCusID' 2;$customer.Text='Fixture customer';$sub.Text='500.00';Render
  foreach($width in @(1366,1600)){
   $form.ClientSize=New-Object Drawing.Size($width,704);$form.PerformLayout();$totals.PerformLayout()

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
 	<AutoRefresh>0</AutoRefresh>
   <DataSources>
@@ -61,7 +61,7 @@
                     </Style>
                   </TextRun>
                 </TextRuns>
-                <Style />
+                <Style/>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
@@ -117,7 +117,7 @@
                     </Style>
                   </TextRun>
                 </TextRuns>
-                <Style />
+                <Style/>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
@@ -306,55 +306,48 @@ Order Taker</Value>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Sub Total      :   </Value>
+                    <Value>Sub Total</Value>
                     <Style>
                       <FontWeight>Bold</FontWeight>
                     </Style>
                   </TextRun>
                 </TextRuns>
                 <Style>
-                  <TextAlign>Right</TextAlign>
+                  <TextAlign>Left</TextAlign>
                 </Style>
               </Paragraph>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Sales Tax      :   </Value>
+                    <Value>Sales Tax</Value>
                     <Style>
                       <FontWeight>Bold</FontWeight>
                     </Style>
                   </TextRun>
                 </TextRuns>
                 <Style>
-                  <TextAlign>Right</TextAlign>
+                  <TextAlign>Left</TextAlign>
                 </Style>
               </Paragraph>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>Total      :  </Value>
+                    <Value>=IIF(Parameters!paramType.Value="Work Order", "Order Total", "Total")</Value>
                     <Style>
                       <FontWeight>Bold</FontWeight>
                     </Style>
                   </TextRun>
-                  <TextRun>
-                    <Value xml:space="preserve"> </Value>
-                    <Style>
-                      <FontSize>8pt</FontSize>
-                      <FontWeight>Bold</FontWeight>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
+                  </TextRuns>
                 <Style>
-                  <TextAlign>Right</TextAlign>
+                  <TextAlign>Left</TextAlign>
                 </Style>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
             <Top>2.10869in</Top>
-            <Left>5.76111in</Left>
+            <Left>5.30in</Left>
             <Height>0.57291in</Height>
-            <Width>1.18056in</Width>
+            <Width>0.90in</Width>
             <ZIndex>7</ZIndex>
             <Style>
               <Border>
@@ -372,7 +365,7 @@ Order Taker</Value>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>=iif((Parameters!paramType.Value="Work Order"),"Picked By : ________________________","Picked By : ________________________")</Value>
+                    <Value>=iif((Parameters!paramType.Value="Work Order"),"Picked By : __________________","Picked By : __________________")</Value>
                     <Style>
                       <FontWeight>Bold</FontWeight>
                     </Style>
@@ -384,10 +377,10 @@ Order Taker</Value>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>3.06354in</Top>
+            <Top>3.58in</Top>
             <Left>0.28834in</Left>
             <Height>0.17708in</Height>
-            <Width>3.04118in</Width>
+            <Width>2.58in</Width>
             <ZIndex>8</ZIndex>
             <Style>
               <Border>
@@ -405,7 +398,7 @@ Order Taker</Value>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>=iif((Parameters!paramType.Value="Work Order"),"Checked By : ________________________","Checked By : ________________________")</Value>
+                    <Value>=iif((Parameters!paramType.Value="Work Order"),"Checked By : __________________","Checked By : __________________")</Value>
                     <Style>
                       <FontWeight>Bold</FontWeight>
                     </Style>
@@ -417,10 +410,10 @@ Order Taker</Value>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>3.06354in</Top>
-            <Left>3.39896in</Left>
+            <Top>3.58in</Top>
+            <Left>2.92in</Left>
             <Height>0.17708in</Height>
-            <Width>3.04166in</Width>
+            <Width>2.58in</Width>
             <ZIndex>9</ZIndex>
             <Style>
               <Border>
@@ -438,7 +431,7 @@ Order Taker</Value>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>=iif((Parameters!paramType.Value="Work Order"),"Packed By : ________________________","Packed By : ________________________")</Value>
+                    <Value>=iif((Parameters!paramType.Value="Work Order"),"Packed By : __________________","Packed By : __________________")</Value>
                     <Style>
                       <FontWeight>Bold</FontWeight>
                     </Style>
@@ -450,10 +443,10 @@ Order Taker</Value>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>3.54271in</Top>
-            <Left>0.28834in</Left>
+            <Top>3.58in</Top>
+            <Left>5.56in</Left>
             <Height>0.17708in</Height>
-            <Width>3.04166in</Width>
+            <Width>2.48in</Width>
             <ZIndex>10</ZIndex>
             <Style>
               <Border>
@@ -542,7 +535,7 @@ Order Taker</Value>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style/>
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox17</rd:DefaultName>
@@ -721,7 +714,7 @@ Order Taker</Value>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!Itemcode.Value</Value>
-                                  <Style />
+                                  <Style/>
                                 </TextRun>
                               </TextRuns>
                               <Style>
@@ -753,10 +746,10 @@ Order Taker</Value>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!ItemDesc.Value</Value>
-                                  <Style />
+                                  <Style/>
                                 </TextRun>
                               </TextRuns>
-                              <Style />
+                              <Style/>
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>ItemDesc</rd:DefaultName>
@@ -783,7 +776,7 @@ Order Taker</Value>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!QtyOrder.Value</Value>
-                                  <Style />
+                                  <Style/>
                                 </TextRun>
                               </TextRuns>
                               <Style>
@@ -815,7 +808,7 @@ Order Taker</Value>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!Price.Value</Value>
-                                  <Style />
+                                  <Style/>
                                 </TextRun>
                               </TextRuns>
                               <Style>
@@ -847,7 +840,7 @@ Order Taker</Value>
                               <TextRuns>
                                 <TextRun>
                                   <Value>=Fields!Extended.Value</Value>
-                                  <Style />
+                                  <Style/>
                                 </TextRun>
                               </TextRuns>
                               <Style>
@@ -875,11 +868,11 @@ Order Taker</Value>
             </TablixBody>
             <TablixColumnHierarchy>
               <TablixMembers>
-                <TablixMember />
-                <TablixMember />
-                <TablixMember />
-                <TablixMember />
-                <TablixMember />
+                <TablixMember/>
+                <TablixMember/>
+                <TablixMember/>
+                <TablixMember/>
+                <TablixMember/>
               </TablixMembers>
             </TablixColumnHierarchy>
             <TablixRowHierarchy>
@@ -888,7 +881,7 @@ Order Taker</Value>
                   <KeepWithGroup>After</KeepWithGroup>
                 </TablixMember>
                 <TablixMember>
-                  <Group Name="Details" />
+                  <Group Name="Details"/>
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
@@ -951,9 +944,9 @@ Order Taker</Value>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
             <Top>2.11889in</Top>
-            <Left>6.60382in</Left>
+            <Left>6.45in</Left>
             <Height>0.57291in</Height>
-            <Width>1.48782in</Width>
+            <Width>1.59164in</Width>
             <ZIndex>12</ZIndex>
             <Style>
               <Border>
@@ -1339,7 +1332,7 @@ Order Taker</Value>
                     </Style>
                   </TextRun>
                 </TextRuns>
-                <Style />
+                <Style/>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox22</rd:DefaultName>
@@ -1371,7 +1364,7 @@ Order Taker</Value>
                     </Style>
                   </TextRun>
                 </TextRuns>
-                <Style />
+                <Style/>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox18</rd:DefaultName>
@@ -1395,33 +1388,121 @@ Order Taker</Value>
             <KeepTogether>true</KeepTogether>
             <Paragraphs>
               <Paragraph>
-                <TextRuns><TextRun><Value>Withholding Tax (Reference)</Value><Style><FontSize>10pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns>
-                <Style />
-              </Paragraph>
-              <Paragraph>
-                <TextRuns><TextRun><Value>=Parameters!paramWithholdingReference.Value</Value><Style><FontSize>10pt</FontSize><FontWeight>Bold</FontWeight></Style></TextRun></TextRuns>
-                <Style />
+                <TextRuns><TextRun><Value>=Code.WithholdingHtml(Parameters!paramWithholdingReference.Value, 0)</Value><Style><FontSize>10pt</FontSize><FontWeight>Normal</FontWeight></Style><MarkupType>HTML</MarkupType></TextRun></TextRuns>
+                <Style/>
               </Paragraph>
             </Paragraphs>
             <Top>2.10869in</Top>
             <Left>0.30918in</Left>
-            <Height>0.85in</Height>
-            <Width>5.15in</Width>
+            <Height>1.30in</Height>
+            <Width>1.50in</Width>
             <ZIndex>25</ZIndex>
             <Visibility><Hidden>=Parameters!paramType.Value &lt;&gt; "Work Order" Or Len(Parameters!paramWithholdingReference.Value) = 0</Hidden></Visibility>
             <Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
           </Textbox>
-        </ReportItems>
-        <Height>6in</Height>
-        <Style />
+        <Textbox Name="WithholdingColon">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns><TextRun><Value>=Code.WithholdingHtml(Parameters!paramWithholdingReference.Value, 1)</Value><Style><FontSize>10pt</FontSize><FontWeight>Normal</FontWeight></Style><MarkupType>HTML</MarkupType></TextRun></TextRuns>
+                <Style><TextAlign>Center</TextAlign></Style>
+              </Paragraph>
+            </Paragraphs>
+            <Top>2.10869in</Top>
+            <Left>1.85in</Left>
+            <Height>1.30in</Height>
+            <Width>0.16in</Width>
+            <ZIndex>26</ZIndex>
+            <Visibility><Hidden>=Parameters!paramType.Value &lt;&gt; "Work Order" Or Len(Parameters!paramWithholdingReference.Value) = 0</Hidden></Visibility>
+            <Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+          </Textbox>
+        <Textbox Name="WithholdingAmounts">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns><TextRun><Value>=Code.WithholdingHtml(Parameters!paramWithholdingReference.Value, 2)</Value><Style><FontSize>10pt</FontSize><FontWeight>Normal</FontWeight></Style><MarkupType>HTML</MarkupType></TextRun></TextRuns>
+                <Style><TextAlign>Right</TextAlign></Style>
+              </Paragraph>
+            </Paragraphs>
+            <Top>2.10869in</Top>
+            <Left>2.05in</Left>
+            <Height>1.30in</Height>
+            <Width>1.00in</Width>
+            <ZIndex>27</ZIndex>
+            <Visibility><Hidden>=Parameters!paramType.Value &lt;&gt; "Work Order" Or Len(Parameters!paramWithholdingReference.Value) = 0</Hidden></Visibility>
+            <Style><Border><Style>None</Style></Border><PaddingLeft>2pt</PaddingLeft><PaddingRight>2pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+          </Textbox>
+        <Textbox Name="TotalsColons">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>:</Value>
+                    <Style>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>:</Value>
+                    <Style>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>:</Value>
+                    <Style>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <Top>2.10869in</Top>
+            <Left>6.20in</Left>
+            <Height>0.57291in</Height>
+            <Width>0.16in</Width>
+            <ZIndex>28</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Middle</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+            </Style>
+          </Textbox>
+          </ReportItems>
+        <Height>3.85in</Height>
+        <Style/>
       </Body>
-      <Width>8.30208in</Width>
+      <Width>8.24in</Width>
       <Page>
         <LeftMargin>1in</LeftMargin>
         <RightMargin>1in</RightMargin>
         <TopMargin>1in</TopMargin>
         <BottomMargin>1in</BottomMargin>
-        <Style />
+        <Style/>
       </Page>
 
   <ReportParameters>
@@ -1509,11 +1590,33 @@ Order Taker</Value>
     <ReportParameter Name="paramWithholdingReference">
       <DataType>String</DataType>
       <AllowBlank>true</AllowBlank>
-      <DefaultValue><Values><Value /></Values></DefaultValue>
+      <DefaultValue><Values><Value/></Values></DefaultValue>
       <Prompt>Withholding Tax (Reference)</Prompt>
     </ReportParameter>
   </ReportParameters>
-  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <Code>Public Function WithholdingHtml(ByVal value As String, ByVal column As Integer) As String
+    Dim result As New System.Text.StringBuilder()
+    For Each line As String In value.Split(New String() {vbCrLf}, System.StringSplitOptions.None)
+        If result.Length &gt; 0 Then result.Append("&lt;br/&gt;")
+        Dim text = line
+        Dim separator = line.LastIndexOf(":"c)
+        If separator &gt;= 0 AndAlso Not line.StartsWith("Needs review:") Then
+            If column = 0 Then text = line.Substring(0, separator)
+            If column = 1 Then text = ":"
+            If column = 2 Then text = line.Substring(separator + 1).Trim()
+        ElseIf column &lt;&gt; 0 Then
+            text = ""
+        End If
+        text = text.Replace("&amp;", "&amp;amp;").Replace("&lt;", "&amp;lt;").Replace("&gt;", "&amp;gt;")
+        If text.Length = 0 Then text = "&amp;nbsp;"
+        If line.StartsWith("Total WTax:") OrElse line.StartsWith("Est. ") Then
+            result.Append("&lt;b&gt;" &amp; text &amp; "&lt;/b&gt;")
+        Else
+            result.Append(text)
+        End If
+    Next
+    Return result.ToString()
+End Function</Code><ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
   <rd:ReportUnitType>Inch</rd:ReportUnitType>
   <rd:ReportID>0b8cb55c-253e-47ee-b960-52b9dd2da207</rd:ReportID>
 </Report>

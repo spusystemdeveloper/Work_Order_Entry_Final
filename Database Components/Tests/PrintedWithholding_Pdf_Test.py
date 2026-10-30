@@ -1,58 +1,55 @@
-import re
-from collections import Counter
+"""Verify compact half-sheet layout, fonts, totals and pagination using local PDFs."""
+import re,sys
 from pathlib import Path
-import sys
 import pdfplumber
-base=Path(sys.argv[1])
-checks=0
-def check(value, label):
-    global checks
-    assert value, label
-    checks+=1
-
-def words(path):
-    with pdfplumber.open(path) as pdf:
-        return [[(w['text'],round(w['x0'],2),round(w['top'],2),round(w['x1'],2),round(w['bottom'],2)) for w in p.extract_words()] for p in pdf.pages]
+base=Path(sys.argv[1]);checks=0
+def check(ok,label):
+ global checks
+ assert ok,label
+ checks+=1
 for version in ('V4','V8'):
-    folder=base/(version+'Render')
-    for after,before in [('NoRates','BaselineNoRates'),('Quotation','BaselineQuotation')]:
-        check(words(folder/(after+'.pdf')) == words(folder/(before+'.pdf')), version+' '+after+' every existing word/position/page unchanged')
-    baseline_words=Counter(w[0] for w in sum(words(folder/'BaselineNoRates.pdf'),[]))
-    for name,rates in [('AllRates',(1,2,5,15)),('Only15',(15,)),('AllRatesPreview',(1,2,5,15)),('Charge',(1,2,5,15)),('ChargeOnly15',(15,)),('ChargeLargeValues',(1,2,5,15)),('ChargeMultiPage',(1,2,5,15)),('LargeValues',(1,2,5,15)),('MultiPage',(1,2,5,15)),('Empty',(1,2,5,15))]:
-        with pdfplumber.open(folder/(name+'.pdf')) as pdf:
-            texts=[p.extract_text() or '' for p in pdf.pages]
-            text='\n'.join(texts)
-            check(text.count('Withholding Tax (Reference)')==1,version+' '+name+' heading appears once')
-            check(tuple(int(r) for r in re.findall(r'\b(1|2|5|15)%(?:_Charge)?:',text))==rates,version+' '+name+' all and only enabled rates')
-            suffix='_Charge' if name.startswith('Charge') else ''
-            check(all(f'WTax {r}%{suffix}:' in text for r in rates) and ('_Charge' in text) == bool(suffix), version+' '+name+' exact payment labels')
-            if name.endswith('LargeValues'):
-                expected=[f'{r}%{suffix}: {a}' for r,a in ((1,'1,234,567.89'),(2,'2,469,135.78'),(5,'6,172,839.45'),(15,'18,518,518.35'))]
-                check(all(s in text for s in expected), version+' '+name+' large reference amounts fit completely')
-            page=next(p for p,t in zip(pdf.pages,texts) if 'Withholding Tax (Reference)' in t)
-            pagewords=page.extract_words()
-            heading=next(w for w in pagewords if w['text']=='Withholding')
-            picked=next((w for w in pagewords if w['text']=='Picked'),None)
-            ratewords=[w for w in pagewords if re.fullmatch('(1|2|5|15)%(?:_Charge)?:',w['text'])]
-            expected_size=8 if version=='V4' else 10
-            ratechar=next(c for c in page.chars if abs(c['x0']-ratewords[0]['x0'])<0.5 and abs(c['top']-ratewords[0]['top'])<0.5)
-            check(abs(ratechar['size']-expected_size)<0.1 and 'Bold' in ratechar['fontname'],version+' '+name+' rendered font matches Sub Total')
-            check(all(w['top']>=heading['bottom'] for w in ratewords),version+' '+name+' amounts below heading')
-            if picked:
-                check(max(w['bottom'] for w in ratewords)<picked['top'],version+' '+name+' reference clear of signatures')
-            # V4's existing narrow total box wraps very large numbers. Use PDF
-            # character order to verify the full value across the wrapped lines.
-            characters=''.join(c['text'] for p in pdf.pages for c in p.chars)
-            check('123,456,789.00' in characters if name.endswith('LargeValues') else '1,100.00' in characters,version+' '+name+' unchanged total rendered')
-            if name in ('AllRates','Only15','Charge','ChargeOnly15'):
-                rendered=Counter(w[0] for w in sum(words(folder/(name+'.pdf')),[]))
-                check(not (baseline_words-rendered),version+' '+name+' existing report text and total values retained')
-    with pdfplumber.open(folder/'BaselineLargeValues.pdf') as pdf:
-        baseline_characters=''.join(c['text'] for p in pdf.pages for c in p.chars)
-    with pdfplumber.open(folder/'LargeValues.pdf') as pdf:
-        current_characters=''.join(c['text'] for p in pdf.pages for c in p.chars)
-    check(baseline_characters.count('123,456,789.00') == current_characters.count('123,456,789.00') == 2, version+' large existing subtotal/total preserve every digit despite legacy wrapping')
-    with pdfplumber.open(folder/'AllRates.pdf') as pdf:
-        text='\n'.join(p.extract_text() or '' for p in pdf.pages)
-        check(all(s in text for s in ('1%: 9.82','2%: 19.64','5%: 49.11','15%: 147.32')), version+' rendered exact amounts')
-print(f'PASS: {checks} PDF text/layout comparisons across both versions')
+ folder=base/(version+'Render')
+ for name in ('NoRates','Quotation'):
+  with pdfplumber.open(folder/(name+'.pdf')) as pdf:
+   text='\n'.join(p.extract_text() or '' for p in pdf.pages)
+   check('Total WTax:' not in text and 'Est.' not in text and 'WTax 1%' not in text,version+' '+name+' reference hidden')
+   check('1,100.00' in text,version+' '+name+' original total retained')
+ for name,rates in [('AllRates',(1,5)),('Only15',(15,)),('AllRatesPreview',(1,5)),('Charge',(1,5)),('ChargeOnly15',(15,)),('ChargeLargeValues',(1,5)),('ChargeMultiPage',(1,5)),('LargeValues',(1,5)),('MultiPage',(1,5)),('Empty',(1,5)),('SixItems',(1,5)),('SixLongItems',(1,5)),('SixFourRates',(1,2,5,15))]:
+  with pdfplumber.open(folder/(name+'.pdf')) as pdf:
+   text='\n'.join(p.extract_text() or '' for p in pdf.pages)
+   check('#Error' not in text and '<b>' not in text and 'Less:' not in text,version+' '+name+' no errors or markup')
+   check(tuple(int(r) for r in re.findall(r'WTax (1|2|5|15)%(?:_Charge)?\s*:',text))==rates,version+' '+name+' only nonzero enabled rates')
+   check(not re.search(r'WTax (?:1|2|5|15)%(?:_Charge)?\s*:\s*0\.00',text),version+' '+name+' zeros hidden')
+   page=next(p for p in pdf.pages if re.search(r'Total WTax\s*:',p.extract_text() or ''));ww=page.extract_words()
+   rows=[w for w in ww if w['text']=='WTax' and any(abs(x['top']-w['top'])<.5 and re.match(r'(1|2|5|15)%',x['text']) for x in ww)]
+   total=next(w for w in ww if w['text']=='Total' and any(x['text']=='WTax' and abs(x['top']-w['top'])<.5 for x in ww));est=next(w for w in ww if w['text']=='Est.')
+   check(len(rows)==len(rates) and len({round(w['x0'],1) for w in rows})==1,version+' '+name+' one column')
+   check(max(w['bottom'] for w in rows)<total['top']<est['top'],version+' '+name+' summary/payment below rates')
+   for w in rows:
+    chars=[c for c in page.chars if abs(c['top']-w['top'])<.5 and w['x0']-.1<=c['x0']<w['x1']]
+    check(chars and all('Bold' not in c['fontname'] for c in chars),version+' '+name+' individual WTax regular')
+    nums=[x for x in ww if abs(x['top']-w['top'])<.5 and re.match(r'^-?[\d,]+\.\d{2}$',x['text']) and x['x0']<360]
+    check(nums and all('Bold' not in c['fontname'] for x in nums for c in page.chars if abs(c['top']-x['top'])<.5 and x['x0']-.1<=c['x0']<x['x1']),version+' '+name+' individual amounts regular')
+   for w in (total,est):check(any('Bold' in c['fontname'] and abs(c['top']-w['top'])<.5 and abs(c['x0']-w['x0'])<.5 for c in page.chars),version+' '+name+' summary/payment bold')
+   rightcolons=[x for x in ww if x['text']==':' and 440<x['x0']<475 and any(y['x0']>460 and abs(y['top']-x['top'])<1 and re.match(r'^-?[\d,]+\.\d{2}$',y['text']) for y in ww)]
+   check(len(rightcolons)==3 and max(x['x0'] for x in rightcolons)-min(x['x0'] for x in rightcolons)<.5,version+' '+name+' Sub Total/Sales Tax/Order Total colons aligned')
+   blockrows=rows+[total,est]
+   values=[];colons=[]
+   for row in blockrows:
+    same=[x for x in ww if abs(x['top']-row['top'])<.5 and x['x0']<350]
+    value=next(x for x in same if re.match(r'^-?[\d,]+\.\d{2}$',x['text']));values.append(value)
+    colons.append(next(x for x in same if x['text']==':'))
+    bold=row is total or row is est
+    check(all(('Bold' in c['fontname'])==bold for c in page.chars if abs(c['top']-value['top'])<.5 and value['x0']-.1<=c['x0']<value['x1']),version+' '+name+' amount weight matches label')
+   check(max(x['x1'] for x in values)-min(x['x1'] for x in values)<.5,version+' '+name+' all amounts right aligned')
+   check(max(x['x0'] for x in colons)-min(x['x0'] for x in colons)<.5,version+' '+name+' all colons aligned')
+   signs=[w for w in ww if w['text'] in ('Picked','Checked','Packed')]
+   check(len(signs)==3 and max(w['top'] for w in signs)-min(w['top'] for w in signs)<.5,version+' '+name+' signatures in one row')
+   check(est['bottom']<min(w['top'] for w in signs),version+' '+name+' no signature overlap')
+   check('123,456,789.00' in text if name.endswith('LargeValues') else '1,100.00' in text,version+' '+name+' original total retained')
+   if name in ('SixItems','SixFourRates'):
+    check(len(pdf.pages)==1,version+' '+name+' six rows fit half-sheet')
+    check(all('TEST-'+str(i) in text for i in range(1,7)),version+' '+name+' all six lines retained')
+   if name=='SixLongItems':check(all('TEST-'+str(i) in text for i in range(1,7)),version+' long descriptions retained')
+   if name in ('MultiPage','ChargeMultiPage'):check('TEST-60' in text,version+' '+name+' all sixty items retained')
+print(f'PASS: {checks} compact half-sheet PDF checks across V4/V8; local synthetic rendering only.')

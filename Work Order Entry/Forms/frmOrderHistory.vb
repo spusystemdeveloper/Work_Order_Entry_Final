@@ -79,4 +79,16 @@ Public Class frmOrderHistory
             If Not IsDisposed AndAlso Not Disposing Then loadButton.Enabled = True
         End Try
     End Sub
+
+    Private Sub InitializeComponent()
+        Me.SuspendLayout()
+        '
+        'frmOrderHistory
+        '
+        Me.ClientSize = New System.Drawing.Size(284, 261)
+        Me.Name = "frmOrderHistory"
+        Me.ResumeLayout(False)
+
+    End Sub
+
 End Class

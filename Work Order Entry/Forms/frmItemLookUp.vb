@@ -306,168 +306,6 @@ Public Class frmItemLookUp
 
     End Sub
 
-    'Private Sub GridColumnWidth()
-
-    '    Try
-
-    '        With gridItem
-    '            .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-    '            '.Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnsMode.Fill
-    '            .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-    '            .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-    '            .Columns(4).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-
-    '            .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-    '            .Columns(7).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-    '            '.Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-    '            '.Columns(18).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-
-    '            .Columns(0).Frozen = True
-    '            '.Columns(1).MinimumWidth = 450
-    '            .Columns(1).MinimumWidth = 1000
-    '            'for column width
-    '            '.Columns(0).Width = 100
-    '            '.Columns(1).Width = 400
-    '            '.Columns(2).Width = 90
-    '            '.Columns(3).Width = 0
-    '            '.Columns(4).Width = 90
-    '            '.Columns(5).Width = 100
-    '            'for column name
-    '            .Columns(0).DefaultCellStyle.Font = New Font("Arial", 10, FontStyle.Bold)
-    '            .Columns(0).HeaderText = "ITEM CODE"
-    '            .Columns(1).HeaderText = "ITEM NAME"
-    '            .Columns(2).HeaderText = "ITEM PRICE"
-    '            .Columns(3).HeaderText = "COST"
-    '            .Columns(4).HeaderText = "QUANTITY"
-    '            .Columns(5).HeaderText = "CHILD QTY"
-    '            .Columns(7).HeaderText = "SKU Level"
-    '            .Columns(17).HeaderText = "SOH"
-    '            .Columns(18).HeaderText = "QTY COM"
-
-    '            'for format & alignment
-    '            .Columns(2).DefaultCellStyle.Format = "C"
-    '            .Columns(3).DefaultCellStyle.Format = "N2"
-    '            .Columns(4).DefaultCellStyle.Format = "N0"
-    '            .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
-    '            .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
-    '            .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
-    '            .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-    '            .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-    '            .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter
-    '            .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-    '            .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-    '            .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-    '            .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-
-
-    '            .Columns(3).Visible = False
-    '            .Columns(5).Visible = False
-    '            .Columns(6).Visible = False
-    '            .Columns(7).Visible = False
-    '            .Columns(8).Visible = False
-    '            .Columns(9).Visible = False
-    '            .Columns(10).Visible = False
-    '            .Columns(11).Visible = False
-    '            .Columns(12).Visible = False
-    '            .Columns(13).Visible = False
-    '            .Columns(14).Visible = False
-    '            .Columns(15).Visible = False
-    '            .Columns(16).Visible = False
-    '        End With
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ErrorCount = ErrorCount + 1
-    '    End Try
-
-
-    'End Sub
-
-    'Private Sub GridColumnWidth()
-
-    '    Try
-
-    '        With gridItem
-
-    '            ' Auto size columns
-    '            .Columns(0).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-    '            .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill ' ✅ for wrapping
-    '            .Columns(2).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-    '            .Columns(3).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-    '            .Columns(4).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-    '            .Columns(5).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-    '            .Columns(7).AutoSizeMode = DataGridViewAutoSizeColumnsMode.DisplayedCells
-
-    '            ' Enable row auto height (IMPORTANT for wrap)
-    '            .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells
-
-    '            ' Freeze first column
-    '            .Columns(0).Frozen = True
-
-    '            ' Remove this (prevents wrapping)
-    '            '.Columns(1).MinimumWidth = 1000
-
-    '            ' Column headers
-    '            .Columns(0).DefaultCellStyle.Font = New Font("Arial", 12, FontStyle.Bold)
-    '            .Columns(0).HeaderText = "ITEM CODE"
-    '            .Columns(1).HeaderText = "ITEM NAME"
-    '            .Columns(2).HeaderText = "ITEM PRICE"
-    '            .Columns(3).HeaderText = "COST"
-    '            .Columns(4).HeaderText = "QUANTITY"
-    '            .Columns(5).HeaderText = "CHILD QTY"
-    '            .Columns(7).HeaderText = "SKU Level"
-    '            .Columns(17).HeaderText = "SOH"
-    '            .Columns(18).HeaderText = "QTY COM"
-
-    '            ' ✅ Wrap + styling for ITEM NAME
-    '            .Columns(1).DefaultCellStyle.WrapMode = DataGridViewTriState.True
-    '            .Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopLeft
-    '            .Columns(1).DefaultCellStyle.Padding = New Padding(5)
-
-    '            ' Format & alignment
-    '            .Columns(2).DefaultCellStyle.Format = "C"
-    '            .Columns(3).DefaultCellStyle.Format = "N2"
-    '            .Columns(4).DefaultCellStyle.Format = "N0"
-
-    '            .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
-    '            .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
-
-    '            .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopRight
-
-    '            .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-    '            .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-
-    '            .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.TopCenter
-
-    '            .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-    '            .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-
-    '            .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-    '            .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-
-    '            ' Hide columns
-    '            .Columns(3).Visible = False
-    '            .Columns(5).Visible = False
-    '            .Columns(6).Visible = False
-    '            .Columns(7).Visible = False
-    '            .Columns(8).Visible = False
-    '            .Columns(9).Visible = False
-    '            .Columns(10).Visible = False
-    '            .Columns(11).Visible = False
-    '            .Columns(12).Visible = False
-    '            .Columns(13).Visible = False
-    '            .Columns(14).Visible = False
-    '            .Columns(15).Visible = False
-    '            .Columns(16).Visible = False
-
-    '        End With
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ErrorCount = ErrorCount + 1
-    '    End Try
-
-    'End Sub
 
     Private Sub ApplyGridItemLayout()
 
@@ -496,152 +334,137 @@ Public Class frmItemLookUp
     End Sub
 
     Private Sub GridColumnWidth()
-
         Try
-            With gridItem
+            If gridItem.Columns.Count < 19 Then Exit Sub
 
-                If .Columns.Count < 19 Then
-                    Exit Sub
-                End If
-
-                .SuspendLayout()
-
-                '=================================
-                ' PERFORMANCE SETTINGS
-                '=================================
-                .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
-                .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None
-                .AllowUserToResizeRows = False
-                .RowTemplate.Height = 44
-                .ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-                .ColumnHeadersHeight = 34
-                .ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False
-                .ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
-
-                '=================================
-                ' COLUMN WIDTHS
-                '=================================
-                .Columns(0).Width = 120
-                .Columns(1).MinimumWidth = 320
-                .Columns(2).Width = 108
-                .Columns(3).Width = 100
-                .Columns(4).Width = 96
-                .Columns(5).Width = 90
-                .Columns(7).Width = 90
-                ' Fit visible SOH values without rounding fractional stock or sizing all rows.
-                .Columns(17).MinimumWidth = 110
-                .Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
-                .Columns(18).Width = 94
-
-                ' Fill remaining width with Item Name
-                .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
-                .Columns(1).FillWeight = 1.0!
-
-                ' Freeze first column
-                .Columns(0).Frozen = True
-
-                '=================================
-                ' COLUMN HEADERS
-                '=================================
-                .Columns(0).DefaultCellStyle.Font = GridLoadedFont
-
-                .Columns(0).HeaderText = "ITEM CODE"
-                .Columns(1).HeaderText = "ITEM NAME"
-                .Columns(2).HeaderText = "ITEM PRICE"
-                .Columns(3).HeaderText = "COST"
-                .Columns(4).HeaderText = "AVAIL QTY"
-                .Columns(5).HeaderText = "CHILD QTY"
-                .Columns(7).HeaderText = "SKU LEVEL"
-                .Columns(17).HeaderText = "SOH"
-                .Columns(18).HeaderText = "QTY COM"
-
-                '=================================
-                ' ITEM NAME WRAP
-                '=================================
-                .Columns(1).DefaultCellStyle.WrapMode = DataGridViewTriState.True
-                .Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
-                .Columns(1).DefaultCellStyle.Padding = New Padding(6, 4, 6, 4)
-
-                '=================================
-                ' FORMATS
-                '=================================
-                .Columns(2).DefaultCellStyle.Format = "C"
-                .Columns(3).DefaultCellStyle.Format = "N2"
-                .Columns(4).DefaultCellStyle.Format = "#,0.###############"
-
-                '=================================
-                ' ALIGNMENTS
-                '=================================
-                .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
-                .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
-
-                .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
-
-                .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-                .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-
-                .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-
-                .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-                .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-
-                .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
-                .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
-
-                .DefaultCellStyle.WrapMode = DataGridViewTriState.False
-                .RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.NotSet
-
-                '=================================
-                ' HIDE COLUMNS
-                '=================================
-                .Columns(3).Visible = False
-                .Columns(5).Visible = False
-                .Columns(6).Visible = False
-                .Columns(7).Visible = False
-                .Columns(8).Visible = False
-                .Columns(9).Visible = False
-                .Columns(10).Visible = False
-                .Columns(11).Visible = False
-                .Columns(12).Visible = False
-                .Columns(13).Visible = False
-                .Columns(14).Visible = False
-                .Columns(15).Visible = False
-                .Columns(16).Visible = False
-
-                ApplyGridReadability(gridItem)
-                .RowTemplate.DefaultCellStyle.Font = GridLoadedFont
-                .RowsDefaultCellStyle.Font = GridLoadedFont
-                For rowIndex As Integer = 0 To .Rows.Count - 1
-                    ' Inspect shared rows without materializing a row per item.
-                    If .Rows.SharedRow(rowIndex).Height <> .RowTemplate.Height Then
-                        .Rows(rowIndex).Height = .RowTemplate.Height
-                    End If
-                Next
-                For Each index As Integer In {2, 3, 4, 5, 7, 17, 18}
-                    .Columns(index).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
-                    .Columns(index).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
-                Next
-
-                ' Size visible numeric cells only; retain space for short values.
-                For Each index As Integer In {2, 4, 18}
-                    .Columns(index).MinimumWidth = If(index = 2, 108, If(index = 4, 96, 94))
-                    .Columns(index).AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
-                Next
-
-                .ResumeLayout()
-
-            End With
-
+            gridItem.SuspendLayout()
+            ConfigureItemGridSizing()
+            ConfigureItemGridColumns()
+            ApplyItemGridReadability()
+            gridItem.ResumeLayout()
         Catch ex As Exception
             AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf &
                         "REASON : " & ex.Message,
                         "MESSAGE : ERROR 0006",
                         MessageBoxButtons.OK,
                         MessageBoxIcon.Error)
-
             ErrorCount += 1
         End Try
+    End Sub
 
+    Private Sub ConfigureItemGridSizing()
+        With gridItem
+            ' PERFORMANCE SETTINGS
+            .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
+            .AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None
+            .AllowUserToResizeRows = False
+            .RowTemplate.Height = 44
+            .ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+            .ColumnHeadersHeight = 34
+            .ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False
+            .ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
+            ' COLUMN WIDTHS
+            .Columns(0).Width = 120
+            .Columns(1).MinimumWidth = 320
+            .Columns(2).Width = 108
+            .Columns(3).Width = 100
+            .Columns(4).Width = 96
+            .Columns(5).Width = 90
+            .Columns(7).Width = 90
+            ' Fit visible SOH values without rounding fractional stock or sizing all rows.
+            .Columns(17).MinimumWidth = 110
+            .Columns(17).AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            .Columns(18).Width = 94
+
+            ' Fill remaining width with Item Name
+            .Columns(1).AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            .Columns(1).FillWeight = 1.0!
+
+            ' Freeze first column
+            .Columns(0).Frozen = True
+        End With
+    End Sub
+
+    Private Sub ConfigureItemGridColumns()
+        With gridItem
+            ' COLUMN HEADERS
+            .Columns(0).DefaultCellStyle.Font = GridLoadedFont
+
+            .Columns(0).HeaderText = "ITEM CODE"
+            .Columns(1).HeaderText = "ITEM NAME"
+            .Columns(2).HeaderText = "ITEM PRICE"
+            .Columns(3).HeaderText = "COST"
+            .Columns(4).HeaderText = "AVAIL QTY"
+            .Columns(5).HeaderText = "CHILD QTY"
+            .Columns(7).HeaderText = "SKU LEVEL"
+            .Columns(17).HeaderText = "SOH"
+            .Columns(18).HeaderText = "QTY COM"
+            ' ITEM NAME WRAP
+            .Columns(1).DefaultCellStyle.WrapMode = DataGridViewTriState.True
+            .Columns(1).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
+            .Columns(1).DefaultCellStyle.Padding = New Padding(6, 4, 6, 4)
+            ' FORMATS
+            .Columns(2).DefaultCellStyle.Format = "C"
+            .Columns(3).DefaultCellStyle.Format = "N2"
+            .Columns(4).DefaultCellStyle.Format = "#,0.###############"
+            ' ALIGNMENTS
+            .Columns(2).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+            .Columns(2).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+
+            .Columns(3).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+
+            .Columns(4).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+            .Columns(4).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+            .Columns(5).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+            .Columns(17).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+            .Columns(17).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+            .Columns(18).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleCenter
+            .Columns(18).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter
+
+            .DefaultCellStyle.WrapMode = DataGridViewTriState.False
+            .RowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.NotSet
+            ' HIDE COLUMNS
+            .Columns(3).Visible = False
+            .Columns(5).Visible = False
+            .Columns(6).Visible = False
+            .Columns(7).Visible = False
+            .Columns(8).Visible = False
+            .Columns(9).Visible = False
+            .Columns(10).Visible = False
+            .Columns(11).Visible = False
+            .Columns(12).Visible = False
+            .Columns(13).Visible = False
+            .Columns(14).Visible = False
+            .Columns(15).Visible = False
+            .Columns(16).Visible = False
+        End With
+    End Sub
+
+    Private Sub ApplyItemGridReadability()
+        With gridItem
+            ApplyGridReadability(gridItem)
+            .RowTemplate.DefaultCellStyle.Font = GridLoadedFont
+            .RowsDefaultCellStyle.Font = GridLoadedFont
+            For rowIndex As Integer = 0 To .Rows.Count - 1
+                ' Inspect shared rows without materializing a row per item.
+                If .Rows.SharedRow(rowIndex).Height <> .RowTemplate.Height Then
+                    .Rows(rowIndex).Height = .RowTemplate.Height
+                End If
+            Next
+            For Each index As Integer In {2, 3, 4, 5, 7, 17, 18}
+                .Columns(index).DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight
+                .Columns(index).HeaderCell.Style.Alignment = DataGridViewContentAlignment.MiddleRight
+            Next
+
+            ' Size visible numeric cells only; retain space for short values.
+            For Each index As Integer In {2, 4, 18}
+                .Columns(index).MinimumWidth = If(index = 2, 108, If(index = 4, 96, 94))
+                .Columns(index).AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            Next
+        End With
     End Sub
 
     Private Sub gridItem_DataBindingComplete(ByVal sender As Object, ByVal e As DataGridViewBindingCompleteEventArgs) Handles gridItem.DataBindingComplete
@@ -669,71 +492,6 @@ Public Class frmItemLookUp
     End Sub
 
     ''Make loaded items appear in bold and larger font in the grid
-    'Private Sub gridItem_CellFormatting(ByVal sender As Object, ByVal e As DataGridViewCellFormattingEventArgs) Handles gridItem.CellFormatting
-    '    Try
-    '        'Ignore header row and new row
-    '        If e.RowIndex < 0 OrElse e.RowIndex >= gridItem.Rows.Count Then Exit Sub
-
-    '        Dim row As DataGridViewRow = gridItem.Rows(e.RowIndex)
-
-    '        ' TODO: Adjust this logic to match your own definition of "loaded"
-    '        ' Example below: treat the item as loaded if "QTY COM" (column 18) is greater than 0
-    '        Dim isLoaded As Boolean = False
-    '        Try
-    '            'Use the column index or name that represents loaded quantity/status
-    '            Dim qtyComIndex As Integer = 18 ' change if your "loaded" column is different
-    '            If qtyComIndex >= 0 AndAlso qtyComIndex < row.Cells.Count Then
-    '                Dim val = row.Cells(qtyComIndex).Value
-    '                If val IsNot Nothing AndAlso IsNumeric(val) AndAlso CDec(val) > 0D Then
-    '                    isLoaded = True
-    '                End If
-    '            End If
-    '        Catch
-    '            'Ignore per-row errors in determining loaded state
-    '        End Try
-
-    '        'Set a larger base font size for the ITEM ROWS only (do not touch the header font)
-    '        'You can adjust the size (e.g., 11, 12, 13) to whatever you prefer.
-    '        Dim baseSize As Single = 12.0F
-
-    '        'Choose a safe base font for cells (fallback if DefaultCellStyle.Font is not set)
-    '        Dim baseFamily As FontFamily
-    '        Try
-    '            'Force Arial for item rows
-    '            baseFamily = New FontFamily("Calibri")
-    '        Catch
-    '            'If Arial is not available for some reason, fall back to the grid's current font family
-    '            Dim fallbackFont As Font = gridItem.DefaultCellStyle.Font
-    '            If fallbackFont Is Nothing Then
-    '                fallbackFont = gridItem.Font
-    '            End If
-    '            If fallbackFont Is Nothing Then
-    '                fallbackFont = Me.Font
-    '            End If
-    '            baseFamily = fallbackFont.FontFamily
-    '        End Try
-
-    '        'All item rows bold in Arial; loaded items a bit bigger and bold
-    '        Dim normalFont As New Font(baseFamily, baseSize, FontStyle.Bold)
-    '        Dim loadedFont As New Font(baseFamily, baseSize + 2.0F, FontStyle.Bold)
-
-    '        'Increase row height a bit more to give extra vertical spacing between rows
-    '        If gridItem.RowTemplate.Height < 26 Then
-    '            gridItem.RowTemplate.Height = 26
-    '        End If
-
-    '        If isLoaded Then
-    '            'Bold and clearly larger font for LOADED items (item rows only)
-    '            e.CellStyle.Font = loadedFont
-    '        Else
-    '            'Normal (but larger) font for NOT loaded items
-    '            e.CellStyle.Font = normalFont
-    '        End If
-
-    '    Catch
-    '        'Ignore formatting-time exceptions to avoid breaking the grid
-    '    End Try
-    'End Sub
     Private Sub gridItem_CellFormatting(ByVal sender As Object, ByVal e As DataGridViewCellFormattingEventArgs) Handles gridItem.CellFormatting
         Try
             If e.RowIndex < 0 OrElse e.RowIndex >= gridItem.Rows.Count Then Exit Sub
@@ -1285,290 +1043,7 @@ Public Class frmItemLookUp
         End If
     End Sub
 
-    '    Private Sub InsertEntry()
 
-    '        Try
-    '            Dim iRow As Integer
-    '            Dim dCost As Double
-    '            Dim iOrderID As Integer
-    '            Dim iItemID As Integer
-    '            Dim dFullPrice As Double
-    '            Dim dPrice As Double
-    '            Dim dQuantityOnOrder As Double
-    '            Dim iSalesRepID As Integer
-    '            Dim iTaxable As Integer
-    '            Dim sDescription As String
-    '            Dim sComment As String
-    '            Dim iReturnValue As Integer
-    '            Dim qtyPrep As Integer
-
-    '            If Me.txtSales.Text = "" Then
-    '                MsgBox("Please select a Sales Representative", vbExclamation, "Message!")
-    '                frmSalesRep.Show()
-    '                Exit Sub
-    '            ElseIf Me.cboPayment.Text = "" And getEntryType() = 2 Then
-    '                MsgBox("Please select a Payment Method", vbExclamation, "Message!")
-    '                cboPayment.Focus()
-    '                Exit Sub
-    '            ElseIf Me.txtCustomer.Text = "" Then
-    '                MsgBox("Please select a Customer", vbExclamation, "Message!")
-    '                frmCustomer.Show()
-    '                Exit Sub
-    '            ElseIf gridSelectItem.Rows.Count = 0 Then
-    '                MsgBox("Please select Item to order", vbExclamation, "Message!")
-    '                Exit Sub
-    '            End If
-
-    '            For x As Integer = 0 To gridSelectItem.Rows.Count - 1
-    '                For y As Integer = 0 To gridSelectItem.Rows.Count - 1
-    '                    If y <> x AndAlso gridSelectItem.Rows(x).Cells(0).Value.ToString = gridSelectItem.Rows(y).Cells(0).Value.ToString Then
-
-    '                        Dim res As Integer
-    '                        res = MsgBox("There are Same Items in one Entry! Please Sum up the Qty Order!" & vbCrLf & vbCrLf & "This might cause an issue in the future." & vbCrLf & vbCrLf & "Do you wish to continue ?", MsgBoxStyle.YesNo + MsgBoxStyle.Exclamation, "Message!")
-    '                        If res = MsgBoxResult.Yes Then
-    '                            GoTo Proceed
-    '                        ElseIf res = MsgBoxResult.No Then
-    '                            Exit Sub
-    '                        End If
-    '                    End If
-    '                Next
-    '            Next
-
-    'Proceed:
-
-    '            ' Work Orders with more than MaxItemsPerWorkOrder items are split across
-    '            ' multiple Work Orders (e.g. 24 items -> 4 Work Orders of 6 items each).
-    '            Dim rowChunks As New List(Of List(Of Integer))
-    '            If getEntryType() = 2 AndAlso gridSelectItem.Rows.Count > MaxItemsPerWorkOrder Then
-    '                Dim currentChunk As New List(Of Integer)
-    '                For r As Integer = 0 To gridSelectItem.Rows.Count - 1
-    '                    currentChunk.Add(r)
-    '                    If currentChunk.Count = MaxItemsPerWorkOrder Then
-    '                        rowChunks.Add(currentChunk)
-    '                        currentChunk = New List(Of Integer)
-    '                    End If
-    '                Next
-    '                If currentChunk.Count > 0 Then rowChunks.Add(currentChunk)
-    '            Else
-    '                Dim allRows As New List(Of Integer)
-    '                For r As Integer = 0 To gridSelectItem.Rows.Count - 1
-    '                    allRows.Add(r)
-    '                Next
-    '                rowChunks.Add(allRows)
-    '            End If
-
-    '            If getEntryType() = 2 Then
-    '                Dim confirmMsg As String = "Do you want to save this entry as Work Order ?"
-
-    '                If rowChunks.Count > 1 Then
-    '                    Dim preview As New System.Text.StringBuilder()
-    '                    preview.AppendLine("This entry has " & gridSelectItem.Rows.Count & " items and will be split into " & rowChunks.Count & " Work Orders (max " & MaxItemsPerWorkOrder & " items each):")
-    '                    preview.AppendLine()
-
-    '                    For i As Integer = 0 To rowChunks.Count - 1
-    '                        Dim chunk = rowChunks(i)
-    '                        preview.AppendLine("Work Order " & (i + 1) & " of " & rowChunks.Count & " (" & chunk.Count & " item" & If(chunk.Count > 1, "s", "") & "):")
-    '                        For Each r In chunk
-    '                            Dim itemCode As String = Convert.ToString(gridSelectItem.Item(0, r).Value)
-    '                            Dim qty As String = Convert.ToString(gridSelectItem.Item(2, r).Value)
-    '                            preview.AppendLine("   " & itemCode & " x" & qty)
-    '                        Next
-    '                        preview.AppendLine()
-    '                    Next
-
-    '                    preview.Append(confirmMsg)
-    '                    confirmMsg = preview.ToString()
-    '                End If
-
-    '                iReturnValue = MsgBox(confirmMsg, MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
-    '            ElseIf getEntryType() = 3 Then
-    '                iReturnValue = MsgBox("Do you want to save this entry as Sales Quotation ?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
-    '            End If
-
-    '            If iReturnValue = MsgBoxResult.Yes Then
-
-    '                Cursor.Current = Cursors.WaitCursor
-
-    '                Dim orderComment As String = ""
-
-    '                If getEntryType() = 2 Then
-
-    '                    orderComment = cboPayment.Text & "; " & getReleaseType() & "; " & txtRemarks.Text
-
-    '                Else
-
-    '                    orderComment = txtRemarks.Text
-
-    '                End If
-
-    '                Dim useQueueing As Boolean = UseQueueingForCurrentOrder()
-
-    '                Dim createdOrderIDs As New List(Of Integer)
-
-    '                Using dbSave = GetDB()
-    '                    If dbSave.Connection.State = ConnectionState.Closed Then dbSave.Connection.Open()
-
-    '                    Using saveTransaction = dbSave.Connection.BeginTransaction()
-    '                        dbSave.Transaction = saveTransaction
-
-    '                        Try
-    '                            If Not QueueingTablesAvailable(dbSave) Then
-    '                                Throw New InvalidOperationException(
-    '                                    "The Queueing compatibility tables are missing. " &
-    '                                    "Install the Work Order database migration before using this application.")
-    '                            End If
-
-    '                            For chunkIndex As Integer = 0 To rowChunks.Count - 1
-    '                                Dim chunk = rowChunks(chunkIndex)
-
-    '                                Dim dChunkTotal As Double = 0
-    '                                For Each r In chunk
-    '                                    dChunkTotal += Convert.ToDouble(gridSelectItem.Item(5, r).Value)
-    '                                Next
-
-    '                                Dim dChunkVat As Double
-    '                                If bTaxExcempt Then
-    '                                    dChunkVat = 0
-    '                                Else
-    '                                    dChunkVat = dChunkTotal - (dChunkTotal / 1.12)
-    '                                End If
-
-    '                                Dim chunkComment As String = orderComment
-    '                                If rowChunks.Count > 1 Then
-    '                                    chunkComment = orderComment & " (Split " & (chunkIndex + 1) & " of " & rowChunks.Count & ")"
-    '                                End If
-
-    '                                iOrderID = dbSave.SOD_sp_InsertQoute(sReg, iCusID, iSalesID,
-    '                                                                   dChunkVat,
-    '                                                                   dChunkTotal,
-    '                                                                   chunkComment,
-    '                                                                   usrUsername.ToUpper,
-    '                                                                   getEntryType())
-    '                                EnsureRecallQueueHeader(dbSave, iOrderID)
-    '                                dbSave.SubmitChanges()
-    '                                createdOrderIDs.Add(iOrderID)
-
-    '                                For Each iRow In chunk
-    '                                    dCost = gridSelectItem.Item(9, iRow).Value
-    '                                    iItemID = gridSelectItem.Item(11, iRow).Value
-    '                                    dFullPrice = gridSelectItem.Item(12, iRow).Value
-    '                                    dPrice = gridSelectItem.Item(3, iRow).Value
-    '                                    dQuantityOnOrder = gridSelectItem.Item(2, iRow).Value
-    '                                    iSalesRepID = iSalesID
-
-    '                                    If bTaxExcempt Then
-    '                                        iTaxable = 0
-    '                                    Else
-    '                                        iTaxable = Convert.ToInt32(gridSelectItem.Item(Taxable.Index, iRow).Value)
-    '                                    End If
-
-    '                                    sDescription = gridSelectItem.Item(13, iRow).Value
-    '                                    sComment = gridSelectItem.Item(14, iRow).Value
-    '                                    qtyPrep = gridSelectItem.Item(18, iRow).Value
-
-    '                                    Dim ipickLoc As String
-    '                                    If Convert.ToBoolean(gridSelectItem.Item(17, iRow).Value) Then
-    '                                        ipickLoc = "UP-STORE"
-    '                                    Else
-    '                                        ipickLoc = "STORE"
-    '                                    End If
-
-    '                                    dbSave.SOD_sp_InsertQouteEntry(dCost, iOrderID, iItemID, dFullPrice, dPrice,
-    '                                                                   dQuantityOnOrder, iSalesRepID, iTaxable,
-    '                                                                   sDescription, ipickLoc, qtyPrep, getEntryType())
-
-    '                                    Dim item = (From candidate In dbSave.Items
-    '                                                Where candidate.ID = iItemID
-    '                                                Select candidate).SingleOrDefault()
-
-    '                                    If item Is Nothing Then
-    '                                        Throw New InvalidOperationException("Item " & iItemID & " was not found while saving the order.")
-    '                                    End If
-
-    '                                    If ispriceApproved = 1 AndAlso dPrice < GetApprovedMinPrice(item) Then
-    '                                        AddPriceLog(dbSave, iOrderID, iItemID, dFullPrice, dPrice,
-    '                                                    frmPassword.txtPass.Text, "Inserted")
-    '                                    End If
-
-    '                                    If getEntryType() = 2 AndAlso item.ItemType <> 7 Then
-    '                                        clsItemLookUp.ApplyQuantityCommittedDifference(
-    '                                            dbSave, iItemID, dQuantityOnOrder)
-    '                                    End If
-
-    '                                    If useQueueing AndAlso dQuantityOnOrder = qtyPrep Then
-    '                                        MarkQueueItemPrepared(dbSave, iOrderID, iItemID)
-    '                                    End If
-    '                                Next
-
-    '                                ApplyTaxChangeReasonCode(dbSave, iOrderID)
-
-    '                                If getEntryType() = 3 OrElse Not useQueueing Then
-    '                                    If QueueingTablesAvailable(dbSave) Then
-    '                                        RemoveQueueProcessingItems(dbSave, iOrderID)
-    '                                    End If
-    '                                End If
-
-    '                                If getEntryType() = 2 Then
-    '                                    dbSave.ExecuteCommand(
-    '                                        "UPDATE dbo.OrderEntry SET VoucherID = 0 " &
-    '                                        "WHERE ID = (SELECT TOP 1 ID FROM dbo.OrderEntry WHERE OrderID = {0} ORDER BY ID DESC)",
-    '                                        iOrderID)
-    '                                End If
-    '                            Next chunkIndex
-
-    '                            dbSave.SubmitChanges()
-    '                            saveTransaction.Commit()
-    '                        Catch
-    '                            saveTransaction.Rollback()
-    '                            Throw
-    '                        End Try
-    '                    End Using
-    '                End Using
-
-    '                If getEntryType() = 2 Then
-
-    '                    If createdOrderIDs.Count > 1 Then
-    '                        MessageBox.Show("Successfully Saved into " & createdOrderIDs.Count & " Work Orders (item limit is " & MaxItemsPerWorkOrder & " per Work Order) !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    '                    Else
-    '                        MessageBox.Show("Successfully Saved into Work Order !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    '                    End If
-
-    '                    If useQueueing AndAlso StoreProcessingSettings.AllowOrderGrouping Then
-    '                        For Each createdOrderID In createdOrderIDs
-    '                            checkCustomerGroupWo(iCusID, createdOrderID, "Insert")
-    '                        Next
-    '                    End If
-    '                    prompWO(String.Join(", ", createdOrderIDs))
-
-    '                    'removed pick list if mag save ug work order
-    '                    'If rbtnPickup.Checked = True Then
-
-    '                    '    If checkIfpickupALL() = False Then
-    '                    '        frmPrintPicklist.wo = iOrderID
-    '                    '        frmPrintPicklist.ShowDialog()
-    '                    '    End If
-
-    '                    'End If
-
-    '                ElseIf getEntryType() = 3 Then
-    '                    MessageBox.Show("Successfully Saved into Sales Quotation !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
-    '                    frmPrintWo.Type = "Sales Quotation"
-    '                    frmPrintWo.wo = iOrderID
-    '                    frmPrintWo.ShowDialog()
-    '                End If
-
-    '                RefreshDetails(True)
-    '                clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
-
-    '                Cursor.Current = Cursors.Default
-    '            End If
-    '        Catch ex As Exception
-    '            MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0015", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '            ErrorCount = ErrorCount + 1
-    '        End Try
-    '    End Sub
-
-    'refactored version by google gemini flash
     Private Function InsertEntry() As OrderSaveOutcome
         Dim committed As Boolean = False
         Try
@@ -1727,6 +1202,10 @@ Public Class frmItemLookUp
                             getEntryType())
 
                             EnsureRecallQueueHeader(dbSave, iOrderID)
+                            If walkInRates IsNot Nothing AndAlso walkInRatesCustomerID = iCusID AndAlso getEntryType() = 2 Then
+                                Dim savedHeader = dbSave.Orders.Single(Function(header) header.ID = iOrderID)
+                                savedHeader.ShippingNotes = ShippingNotesWithWithholding(savedHeader.ShippingNotes)
+                            End If
                             createdOrderIDs.Add(iOrderID)
 
                             ' Insert Detail Entries
@@ -2060,6 +1539,7 @@ Proceed:
                     orderRecord.Tax = Decimal.Parse(txtVat.Text)
                     orderRecord.Total = Decimal.Parse(txtTotal.Text)
                     orderRecord.Comment = orderComment
+                    orderRecord.ShippingNotes = ShippingNotesWithWithholding(orderRecord.ShippingNotes)
                     orderRecord.LastUpdated = DateTime.Now
 
                     Dim queueHeader As Queueing = Nothing
@@ -2142,7 +1622,8 @@ Proceed:
                             Dim commitmentDifference = OrderCommitmentRules.CalculateChange(
                                 originalOrderType, targetOrderType, previousQuantity, quantityOnOrder, item.ItemType)
                             clsItemLookUp.ApplyQuantityCommittedDifference(
-                                dbSave, itemID, commitmentDifference)
+                                dbSave, itemID, commitmentDifference,
+                                requireAvailableStock:=(originalOrderType = 3 AndAlso targetOrderType = 2))
                         End If
 
                         If ispriceApproved = 1 AndAlso price < GetApprovedMinPrice(item) Then
@@ -2775,17 +2256,6 @@ Proceed:
 
     End Sub
 
-    'Private Sub cmdSCustomer_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSCustomer.Click
-
-    '    Try
-
-    '        ShowCustomer()
-    '    Catch ex As Exception
-    '        MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 30", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ErrorCount = ErrorCount + 1
-    '    End Try
-
-    'End Sub
     Private Sub cmdSCustomer_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdSCustomer.Click
         'comment
         'Try
@@ -2837,48 +2307,6 @@ Proceed:
     End Sub
 
     'Old function
-    'Public Sub GetCustomerPriceLevel()
-
-    '    Try
-
-    '        txtPriceLevel.Text = clsCustomer.getPriceLevel(txtCustomer.Text)
-    '        txtCustomerId.Text = clsCustomer.getCustomerID(txtCustomer.Text)
-    '        txtAR.Text = clsAccountReceivable.getCreditLimit(txtCustomer.Text)
-    '        txtOpenWO.Text = clsAccountReceivable.getOpenWO(txtCustomer.Text)
-    '        txtCreditLimit.Text = clsAccountReceivable.getCustomerCreditLimit(txtCustomer.Text)
-    '        txtAvailable.Text = Val(txtCreditLimit.Text) - (Val(txtAR.Text) + Val(txtOpenWO.Text))
-
-    '    Catch ex As Exception
-
-    '    End Try
-
-    '    txtPriceLevel.Text = clsCustomer.getPriceLevel(txtCustomer.Text)
-    '    Dim priceLevel As Integer
-
-    '    ' Check if the text can be converted to an integer
-    '    If Integer.TryParse(txtPriceLevel.Text, priceLevel) Then
-    '        Select Case priceLevel
-    '            Case 0
-    '                txtPriceLevel.Text = "Price"
-    '            Case 1
-    '                txtPriceLevel.Text = "PriceA"
-    '            Case 2
-    '                txtPriceLevel.Text = "PriceB"
-    '            Case 3
-    '                txtPriceLevel.Text = "PriceC"
-    '            Case Else
-    '                txtPriceLevel.Text = "None"
-    '        End Select
-
-    '        ' Assuming txtCustomer.Text contains the item code
-    '        Dim priceAmount As Decimal = clsCustomer.getPriceAmount(txtCustomer.Text, priceLevel)
-    '        txtPrice.Text = priceAmount.ToString()
-    '    Else
-    '        ' Handle case where text is not a valid integer
-    '        txtPriceLevel.Text = "Invalid input"
-    '    End If
-
-    'End Sub
 
     'new function
 
@@ -2909,6 +2337,9 @@ Proceed:
             txtOpenWO.Text = openWO.ToString()
             txtCreditLimit.Text = creditLimit.ToString()
             txtAvailable.Text = available.ToString()
+            ' Check after loading this customer's balance, even if the amount
+            ' is identical to the previous customer's available credit.
+            WarnIfCreditLimitExceeded()
 
             ' Handle price level mapping
             Dim priceLevel As Integer
@@ -3180,6 +2611,9 @@ Proceed:
         ResetShortageReductions()
         recalledSnapshot = Nothing
         activeRecallOrderID = 0
+        walkInRates = Nothing
+        walkInRatesCustomerID = 0
+        withholdingCustomerID = 0
 
         Try
 
@@ -3258,167 +2692,7 @@ Proceed:
         End Try
 
     End Sub
-    'Public Sub RefreshDetailsOpen(ByVal reloaditem As Boolean)
-
-    '    Try
-
-    '        Cursor.Current = Cursors.WaitCursor
-
-    '        db.Refresh(Data.Linq.RefreshMode.OverwriteCurrentValues)
-    '        db = New ItemLookUpDataContext(DB_Conn("constr"))
-
-    '        txtSales.Text = ""
-    '        txtCustomer.Text = ""
-    '        txtSearch.Text = ""
-    '        txtRemarks.Text = String.Empty
-    '        txtType.Text = String.Empty
-    '        txtRemarks.Enabled = True
-
-    '        gridSelectItem.Rows.Clear()
-    '        cboPayment.SelectedIndex = -1
-    '        bEmployee = False
-    '        iPrice = 0
-    '        iSalesID = 0
-    '        iCusID = 0
-    '        sAcctNum = ""
-    '        sTitle = ""
-    '        bTaxExcempt = False
-    '        dTotalTSales = 0
-    '        dTotalVSales = 0
-    '        dTotalSales = 0
-    '        Me.txtSub.Text = "0.00"
-    '        Me.txtVat.Text = "0.00"
-    '        Me.txtTotal.Text = "0.00"
-
-    '        lblStatItemSelected.Text = gridSelectItem.RowCount & " item" & IIf(gridSelectItem.RowCount > 1, "s", "") & " selected"
-
-    '        lblOrderNo.Text = "Order #: "
-    '        Me.txtCustomer.Focus()
-
-    '        TreeView1.Nodes.Clear()
-
-    '        lblStatItemCount.Text = gridItem.RowCount & " items"
-    '        txtSearch.Text = String.Empty
-    '        'searching
-    '        'txtSearch.Focus()
-    '        ispriceApproved = 1
-
-    '        chkWorkOrder.Checked = True
-    '        gridSelectItem.Columns(17).Visible = True
-    '        gridSelectItem.Columns(18).Visible = True
-
-    '        chkWorkOrder.Enabled = True
-    '        chkQuote.Enabled = True
-
-    '        rbtnDelivery.Enabled = True
-    '        rbtnPickup.Enabled = True
-
-    '        rbtnPickup.Checked = True
-    '        cboPayment.Enabled = True
-
-    '        chkWebsite.Checked = False
-    '        txtRemarks.ReadOnly = False
-
-    '        If reloaditem = True Then
-    '            loadData()
-    '            GridColumnWidth()
-    '        End If
-
-    '        Cursor.Current = Cursors.Default
-    '    Catch ex As Exception
-    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0037", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ErrorCount = ErrorCount + 1
-    '    End Try
-
-    'End Sub
     'comment
-    'Private Sub gridSelectItem_CellBeginEdit(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellCancelEventArgs) Handles gridSelectItem.CellBeginEdit
-
-    '    'Try
-
-    '    '    If e.ColumnIndex = 2 Then
-
-    '    '        curQty = CType(gridSelectItem(e.ColumnIndex, e.RowIndex).Value, Double)
-
-    '    '    ElseIf e.ColumnIndex = 3 Then
-    '    '        Try
-    '    '            curPrice = CType(gridSelectItem(e.ColumnIndex, e.RowIndex).Value, Double)
-    '    '        Catch ex As Exception
-
-    '    '        End Try
-
-    '    '    End If
-
-    '    'Catch ex As Exception
-    '    '    MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0038", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    '    ErrorCount = ErrorCount + 1
-    '    'End Try
-
-    '    Try
-    '        Dim NaN As System.Text.RegularExpressions.Regex = New System.Text.RegularExpressions.Regex("[^\d]")
-    '        Dim str As String = gridSelectItem.Item(e.ColumnIndex, e.RowIndex).Value
-
-    '        ' Validate and correct empty or non-numeric values in column 2
-    '        If e.ColumnIndex = 2 Then
-    '            If str = String.Empty Or NaN.IsMatch(str) Then
-    '                gridSelectItem.Item(e.ColumnIndex, e.RowIndex).Value = 0
-    '            End If
-    '        End If
-
-    '        gridSelectItem.Rows(e.RowIndex).Selected = True
-    '        gridSelectItem.CurrentCell = gridSelectItem.Rows(e.RowIndex).Cells(e.ColumnIndex)
-    '        Dim editVal As Double = Convert.ToDouble(gridSelectItem.CurrentCell.Value)
-
-    '        If e.ColumnIndex = 2 Then
-    '            If gridSelectItem.RowCount > 0 Then
-    '                iErrCnt = 0
-    '                ValidateAllQty()
-    '                If iErrCnt > 0 Then
-    '                    MsgBox("Insufficient quantity to fulfill the request!", MsgBoxStyle.Exclamation, "Message")
-    '                    gridSelectItem.CurrentCell.Value = curQty
-    '                    gridSelectItem.CurrentCell.Style.ForeColor = Color.Black
-    '                    gridSelectItem.CurrentCell.Style.SelectionForeColor = Color.Black
-    '                End If
-    '            End If
-    '            Me.ActiveControl = txtSearch
-    '        End If
-
-    '        If e.ColumnIndex = 3 Then
-    '            'curPrice = CType(gridSelectItem(e.ColumnIndex, e.RowIndex).Value, Double)
-    '            'For x = 0 To iPrice
-    '            '    clsItemLookUp.LoadLevel(x, gridSelectItem.Item(0, gridSelectItem.CurrentRow.Index).Value, 0)
-    '            'Next x
-    '            'If bAllow = False Then
-    '            '    ' Call ValidatePriceInput to get the current price
-    '            '    ValidatePriceInput()
-    '            '    Dim currentPrice As Decimal
-    '            '    If Decimal.TryParse(txtPrice.Text, currentPrice) Then
-    '            '        If editVal <= dLowest AndAlso editVal < currentPrice Then
-    '            '            If bFlag = True Then
-    '            '                frmPassword.sType = "EditPrice"
-    '            '                Dim pDialog As DialogResult = frmPassword.ShowDialog()
-    '            '                If pDialog = Windows.Forms.DialogResult.Cancel Then
-    '            '                    gridSelectItem.CurrentCell.Value = curPrice
-    '            '                End If
-    '            '            End If
-    '            '        End If
-    '            '    End If
-    '            'End If
-    '        End If
-    '        If e.ColumnIndex = 18 Then
-    '            If Convert.ToInt32(gridSelectItem.Item(2, e.RowIndex).Value) < Convert.ToInt32(gridSelectItem.Item(18, e.RowIndex).Value) Then
-    '                MessageBox.Show("Qty Prepared cannot be greater than the Ordered Qty", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-    '                gridSelectItem.Item(18, e.RowIndex).Value = 0
-    '            End If
-    '        End If
-
-    '        UpdateAmt()
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0051", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ErrorCount += 1
-    '    End Try
-    'End Sub
 
     Private Sub gridSelectItem_CellBeginEdit(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellCancelEventArgs) Handles gridSelectItem.CellBeginEdit
 
@@ -3615,153 +2889,23 @@ err_flag:
 
     End Sub
 
-    'Public Function ValidateAllQty() As DialogResult
-
-    '    Try
-
-    '        Dim sLineItemCode, sPrevItemCode
-    '        Dim sMsg As String = ""
-    '        Dim dReqQty, dCommittedQty As Double
-    '        Dim dAvailable, dNetAvailable As Double
-    '        Dim sCurIndex As Integer
-
-    '        dReqQty = 0
-    '        dAvailable = 0
-    '        dNetAvailable = 0
-    '        dCommittedQty = 0
-    '        sPrevItemCode = String.Empty
-    '        sCurIndex = 0
-
-
-    '        For i As Integer = 0 To gridSelectItem.Rows.Count - 1
-
-    '            If IsNumeric(gridSelectItem(2, i).Value) = False Then
-    '                gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-    '                sMsg = "The string '" & gridSelectItem(2, i).Value & "' is not a valid quantity."
-    '                iErrCnt = iErrCnt + 1
-    '            End If
-
-    '            If Val(gridSelectItem(2, i).Value) <= 0 Then
-    '                gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-    '                sMsg = "An invalid quantity was detected."
-    '                iErrCnt = iErrCnt + 1
-    '            End If
-
-    '            If IsNumeric(gridSelectItem(3, i).Value) = False Then
-    '                gridSelectItem.Rows(i).Cells(3).Style.ForeColor = Color.Red
-    '                If gridSelectItem(3, i).Value = "-" Then
-    '                    Return MessageBox.Show("Please Check the Price for the Item : " & vbCrLf & vbCrLf & gridSelectItem(1, i).Value, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '                End If
-    '                sMsg = "The number '" & gridSelectItem(3, i).Value & "' is not a valid amount."
-    '                iErrCnt = iErrCnt + 1
-    '            End If
-
-    '            sPrevItemCode = gridSelectItem(0, i).Value
-    '            sCurIndex = gridSelectItem(11, i).Value
-
-
-    '            If clsItemLookUp.GetItemType(sPrevItemCode) = 0 Or clsItemLookUp.GetItemType(sPrevItemCode) = 3 Then
-
-    '                If IsNumeric(Split(lblOrderNo.Text, ": ")(1)) Then
-
-    '                    dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode) + clsRecall.CommittedWO(Split(lblOrderNo.Text, ": ")(1), sCurIndex)
-
-    '                Else
-
-    '                    dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode)
-
-    '                End If
-
-    '                dCommittedQty = 0
-
-    '                For n As Integer = 0 To gridSelectItem.Rows.Count - 1
-    '                    sLineItemCode = gridSelectItem(0, n).Value
-    '                    If sPrevItemCode = sLineItemCode Then
-    '                        dCommittedQty = dCommittedQty + Val(gridSelectItem(2, n).Value)
-    '                    End If
-    '                Next
-
-    '                dAvailable = dNetAvailable - dCommittedQty
-
-    '                MessageBox.Show("dNetAvailable " & dNetAvailable)
-    '                MessageBox.Show("dCommittedQty " & dCommittedQty)
-    '                MessageBox.Show("dAvailable " & dAvailable)
-
-    '                'If chkWorkOrder.Checked = True And chkBoxQtoWo.Checked = False Then
-
-    '                If dAvailable < 0 Then
-
-    '                        gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-    '                        gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.Red
-    '                        iErrCnt = iErrCnt + 1
-    '                        sMsg = "Please Check The Latest Available Quantity." & vbCrLf & vbCrLf & "The Available Quantity Of The Item(s) Has Been Changed/Updated Prior To Saving."
-
-    '                    Else
-
-    '                        gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Black
-    '                        gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.White
-
-    '                    End If
-    '                ' End If
-    '                'ElseIf chkWorkOrder.Checked = True And chkBoxQtoWo.Checked = True Then
-
-    '                '    MessageBox.Show("mao ni ang checking sa qty if mag save ang wo from quote")
-    '                '    MessageBox.Show(" comqty < available  " & dCommittedQty & " < " & dAvailable)
-
-
-    '                '    If dCommittedQty <= dAvailable Or dCommittedQty <= 0 Then
-
-    '                '        gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-    '                '        gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.Red
-    '                '        iErrCnt = iErrCnt + 1
-    '                '        sMsg = "Please Check The Latest Available Quantity." & vbCrLf & vbCrLf & "The Available Quantity Of The Item(s) Has Been Changed/Updated Prior To Saving."
-
-    '                '    Else
-
-    '                '        gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Black
-    '                '        gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.White
-
-    '                '    End If
-
-    '                'End If
-    '                'ElseIf chkWorkOrder.Checked = True And chkBoxQtoWo.Checked = True Then
-
-    '                '    'MessageBox.Show("mao ni ang checking sa qty if mag save ang wo from quote")
-    '                '    'MessageBox.Show("comqty vs available: " & dCommittedQty & " vs " & dAvailable)
-
-    '                '    If dCommittedQty < dAvailable Then
-    '                '        gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-    '                '        gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.Red
-    '                '        iErrCnt = iErrCnt + 1
-    '                '        sMsg = "Please Check The Latest Available Quantity." & vbCrLf & vbCrLf & "The Available Quantity Of The Item(s) Has Been Changed/Updated Prior To Saving."
-    '                '    Else
-    '                '        gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Black
-    '                '        gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.White
-    '                '    End If
-
-    '                'End If
-
-    '            End If
-
-    '        Next
-
-    '        UpdateAmt()
-
-    '        If sMsg = String.Empty Or sMsg = "" Then
-    '            Return Nothing
-    '        Else
-    '            Return MessageBox.Show(sMsg, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-    '        End If
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0040", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ErrorCount = ErrorCount + 1
-    '        Return Nothing
-    '    End Try
-
-
-    'End Function
     Public Function ValidateAllQty() As DialogResult
+        Return ValidateQuantities(includeRecalledReservation:=True)
+    End Function
+
+    Public Function ValidateAllQtyForQoute() As DialogResult
+        Return ValidateQuantities(includeRecalledReservation:=False)
+    End Function
+
+    Private Shared Function ReadRequestedQuantity(ByVal value As Object) As Double
+        ' Numeric input must mean the same quantity here and when it is saved.
+        ' Val("100,000") reads only 100; Convert.ToDouble reads the full 100000.
+        If IsNumeric(value) Then Return Convert.ToDouble(value)
+        Return Val(value)
+    End Function
+
+    ' Work Orders may reuse their existing reservation; quotations must not.
+    Private Function ValidateQuantities(ByVal includeRecalledReservation As Boolean) As DialogResult
 
         Try
 
@@ -3777,7 +2921,7 @@ err_flag:
             For r As Integer = 0 To gridSelectItem.Rows.Count - 1
                 Dim code As String = If(gridSelectItem(0, r).Value?.ToString(), "")
                 If Not String.IsNullOrEmpty(code) Then
-                    Dim qVal As Double = Val(gridSelectItem(2, r).Value)
+                    Dim qVal As Double = ReadRequestedQuantity(gridSelectItem(2, r).Value)
                     If totalQtyByItem.ContainsKey(code) Then
                         totalQtyByItem(code) += qVal
                     Else
@@ -3798,7 +2942,7 @@ err_flag:
                     iErrCnt = iErrCnt + 1
                 End If
 
-                If Val(gridSelectItem(2, i).Value) <= 0 Then
+                If ReadRequestedQuantity(gridSelectItem(2, i).Value) <= 0 Then
                     gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
                     sMsg = "An invalid quantity was detected."
                     iErrCnt = iErrCnt + 1
@@ -3825,230 +2969,16 @@ err_flag:
                 If itemType = 0 OrElse itemType = 3 Then
 
                     If Not netAvailableCache.TryGetValue(sPrevItemCode, dNetAvailable) Then
-                        Dim orderParts As String() = Split(lblOrderNo.Text, ": ")
-                        If orderParts.Length > 1 AndAlso IsNumeric(orderParts(1)) Then
-                            dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode) + clsRecall.CommittedWO(CInt(orderParts(1)), sCurIndex)
+                        If includeRecalledReservation Then
+                            Dim orderParts As String() = Split(lblOrderNo.Text, ": ")
+                            If orderParts.Length > 1 AndAlso IsNumeric(orderParts(1)) Then
+                                dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode) + clsRecall.CommittedWO(CInt(orderParts(1)), sCurIndex)
+                            Else
+                                dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode)
+                            End If
                         Else
                             dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode)
                         End If
-                        netAvailableCache(sPrevItemCode) = dNetAvailable
-                    End If
-
-                    If totalQtyByItem.ContainsKey(sPrevItemCode) Then
-                        dCommittedQty = totalQtyByItem(sPrevItemCode)
-                    Else
-                        dCommittedQty = 0
-                    End If
-
-                    dAvailable = dNetAvailable - dCommittedQty
-
-                    If dAvailable < 0 Then
-                        gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-                        gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.Red
-                        iErrCnt = iErrCnt + 1
-
-                        sMsg = "Please Check The Latest Available Quantity." & vbCrLf & vbCrLf & "The Available Quantity Of The Item(s) Has Been Changed/Updated Prior To Saving."
-                        needsCatalogReload = True
-                    Else
-                        gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Black
-                        gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.White
-                    End If
-
-                End If
-
-            Next
-
-            If needsCatalogReload Then
-                loadData()
-                GridColumnWidth()
-            End If
-
-            UpdateAmt()
-
-            If sMsg = String.Empty Or sMsg = "" Then
-                Return Nothing
-            Else
-                Return AppPrompt.Show(sMsg, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-            End If
-
-        Catch ex As Exception
-            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0042", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ErrorCount = ErrorCount + 1
-            Return Nothing
-        End Try
-
-    End Function
-    'comment
-    'Public Function ValidateAllQtyForQoute() As DialogResult
-    '    MessageBox.Show("ValidateAllQtyForQoute()")
-    '    Try
-
-    '        Dim sLineItemCode, sPrevItemCode
-    '        Dim sMsg As String = ""
-    '        Dim dReqQty, dCommittedQty As Double
-    '        Dim dAvailable, dNetAvailable As Double
-    '        Dim sCurIndex As Integer
-
-    '        dReqQty = 0
-    '        dAvailable = 0
-    '        dNetAvailable = 0
-    '        dCommittedQty = 0
-    '        sPrevItemCode = String.Empty
-    '        sCurIndex = 0
-
-
-    '        For i As Integer = 0 To gridSelectItem.Rows.Count - 1
-
-    '            If IsNumeric(gridSelectItem(2, i).Value) = False Then
-    '                gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-    '                sMsg = "The string '" & gridSelectItem(2, i).Value & "' is not a valid quantity."
-    '                iErrCnt = iErrCnt + 1
-    '            End If
-
-    '            If Val(gridSelectItem(2, i).Value) <= 0 Then
-    '                gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-    '                sMsg = "An invalid quantity was detected."
-    '                iErrCnt = iErrCnt + 1
-    '            End If
-
-    '            If IsNumeric(gridSelectItem(3, i).Value) = False Then
-    '                gridSelectItem.Rows(i).Cells(3).Style.ForeColor = Color.Red
-    '                If gridSelectItem(3, i).Value = "-" Then
-    '                    Return MessageBox.Show("Please Check the Price for the Item : " & vbCrLf & vbCrLf & gridSelectItem(1, i).Value, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '                End If
-    '                sMsg = "The number '" & gridSelectItem(3, i).Value & "' is not a valid amount."
-    '                iErrCnt = iErrCnt + 1
-    '            End If
-
-    '            sPrevItemCode = gridSelectItem(0, i).Value
-    '            sCurIndex = gridSelectItem(11, i).Value
-
-    '            If clsItemLookUp.GetItemType(sPrevItemCode) = 0 Or clsItemLookUp.GetItemType(sPrevItemCode) = 3 Then
-
-    '                If IsNumeric(Split(lblOrderNo.Text, ": ")(1)) Then
-
-    '                    dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode) + clsItemLookUp.getItemQtyCommitted(sPrevItemCode) + clsRecall.CommittedWO(Split(lblOrderNo.Text, ": ")(1), sCurIndex)
-
-    '                Else
-
-    '                    dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode)
-
-    '                End If
-
-    '                dCommittedQty = 0
-
-    '                For n As Integer = 0 To gridSelectItem.Rows.Count - 1
-    '                    sLineItemCode = gridSelectItem(0, n).Value
-    '                    If sPrevItemCode = sLineItemCode Then
-    '                        dCommittedQty = dCommittedQty + Val(gridSelectItem(2, n).Value)
-    '                    End If
-    '                Next
-
-    '                dAvailable = dNetAvailable - dCommittedQty
-
-    '                MessageBox.Show("dNetAvailable: " & dNetAvailable)
-    '                MessageBox.Show("dCommittedQty: " & dCommittedQty)
-    '                MessageBox.Show("dAvailable =: " & dNetAvailable & " - " & dCommittedQty & " = " & dAvailable)
-    '                MessageBox.Show("dAvailable: " & dAvailable)
-    '                MessageBox.Show("if dAvailable < 0")
-
-
-    '                If dAvailable < dCommittedQty Then
-
-    '                    gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-    '                    gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.Red
-    '                    iErrCnt = iErrCnt + 1
-    '                    sMsg = "Please Check The Latest Available Quantity." & vbCrLf & vbCrLf & "The Available Quantity Of The Item(s) Has Been Changed/Updated Prior To Saving."
-
-    '                Else
-    '                    gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Black
-    '                    gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.White
-
-    '                End If
-
-    '            End If
-
-    '        Next
-
-    '        UpdateAmt()
-
-    '        If sMsg = String.Empty Or sMsg = "" Then
-    '            Return Nothing
-    '        Else
-    '            Return MessageBox.Show(sMsg, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-    '        End If
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0040", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ErrorCount = ErrorCount + 1
-    '        Return Nothing
-    '    End Try
-    'End Function
-
-    Public Function ValidateAllQtyForQoute() As DialogResult
-        Try
-
-            Dim sPrevItemCode As String = String.Empty
-            Dim sMsg As String = ""
-            Dim dCommittedQty As Double
-            Dim dAvailable, dNetAvailable As Double
-            Dim sCurIndex As Integer
-            Dim needsCatalogReload As Boolean = False
-
-            ' Pre-aggregate requested quantities by item code to avoid O(N^2) inner loop
-            Dim totalQtyByItem As New Dictionary(Of String, Double)(StringComparer.OrdinalIgnoreCase)
-            For r As Integer = 0 To gridSelectItem.Rows.Count - 1
-                Dim code As String = If(gridSelectItem(0, r).Value?.ToString(), "")
-                If Not String.IsNullOrEmpty(code) Then
-                    Dim qVal As Double = Val(gridSelectItem(2, r).Value)
-                    If totalQtyByItem.ContainsKey(code) Then
-                        totalQtyByItem(code) += qVal
-                    Else
-                        totalQtyByItem(code) = qVal
-                    End If
-                End If
-            Next
-
-            ' Local caches to eliminate duplicate database queries for the same item
-            Dim itemTypeCache As New Dictionary(Of String, Integer)(StringComparer.OrdinalIgnoreCase)
-            Dim netAvailableCache As New Dictionary(Of String, Double)(StringComparer.OrdinalIgnoreCase)
-
-            For i As Integer = 0 To gridSelectItem.Rows.Count - 1
-
-                If IsNumeric(gridSelectItem(2, i).Value) = False Then
-                    gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-                    sMsg = "The string '" & gridSelectItem(2, i).Value & "' is not a valid quantity."
-                    iErrCnt = iErrCnt + 1
-                End If
-
-                If Val(gridSelectItem(2, i).Value) <= 0 Then
-                    gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-                    sMsg = "An invalid quantity was detected."
-                    iErrCnt = iErrCnt + 1
-                End If
-
-                If IsNumeric(gridSelectItem(3, i).Value) = False Then
-                    gridSelectItem.Rows(i).Cells(3).Style.ForeColor = Color.Red
-                    If gridSelectItem(3, i).Value = "-" Then
-                        Return AppPrompt.Show("Please Check the Price for the Item : " & vbCrLf & vbCrLf & gridSelectItem(1, i).Value, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
-                    End If
-                    sMsg = "The number '" & gridSelectItem(3, i).Value & "' is not a valid amount."
-                    iErrCnt = iErrCnt + 1
-                End If
-
-                sPrevItemCode = If(gridSelectItem(0, i).Value?.ToString(), "")
-                sCurIndex = If(IsNumeric(gridSelectItem(11, i).Value), CInt(gridSelectItem(11, i).Value), 0)
-
-                Dim itemType As Integer
-                If Not itemTypeCache.TryGetValue(sPrevItemCode, itemType) Then
-                    itemType = clsItemLookUp.GetItemType(sPrevItemCode)
-                    itemTypeCache(sPrevItemCode) = itemType
-                End If
-
-                If itemType = 0 OrElse itemType = 3 Then
-
-                    If Not netAvailableCache.TryGetValue(sPrevItemCode, dNetAvailable) Then
-                        dNetAvailable = clsItemLookUp.getItemQty(sPrevItemCode)
                         netAvailableCache(sPrevItemCode) = dNetAvailable
                     End If
 
@@ -4090,10 +3020,11 @@ err_flag:
             End If
 
         Catch ex As Exception
-            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0040", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, If(includeRecalledReservation, "MESSAGE : ERROR 0042", "MESSAGE : ERROR 0040"), MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
+
     End Function
 
     Private Sub gridSelectItem_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles gridSelectItem.KeyDown
@@ -4265,36 +3196,6 @@ err_flag:
 
     End Sub
 
-    'Private Sub ImportQuote()
-
-    '    Try
-
-    '        If Me.txtSales.Text = "" Then
-    '            MsgBox("Please select sales representative", vbExclamation, "Message!")
-    '            Exit Sub
-    '        ElseIf Me.txtCustomer.Text = "" Then
-    '            MsgBox("Please select customer", vbExclamation, "Message!")
-    '            Exit Sub
-    '        End If
-
-    '        ofdImport.Title = "Please Select a File"
-    '        ofdImport.InitialDirectory = "C:\Users\SBD_USER1\Desktop\RMS_IAN_FILES\SALES_AGENT_SQL_JOB"
-    '        ofdImport.FileName = String.Empty
-
-    '        Dim fileDialog As DialogResult = ofdImport.ShowDialog()
-
-    '        If fileDialog = Windows.Forms.DialogResult.OK Then
-    '            Dim frm As New frmUploader
-    '            frm.lblFile.Text = ofdImport.FileName
-    '            frm.ShowDialog(Me)
-    '        End If
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0049", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ErrorCount = ErrorCount + 1
-    '    End Try
-
-    'End Sub
 
     Private Sub gridItem_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles gridItem.KeyUp
 
@@ -4620,6 +3521,7 @@ err_flag:
                     (manualTaxExemptionReasonID.HasValue AndAlso
                      x.DefaultTaxChangeReasonCodeID = manualTaxExemptionReasonID.Value)
                 iCusID = x.CustID
+                LoadWalkInWithholding(orderid)
                 txtCustomer.Text = x.Company
                 txtType.Text = x.CustomText5
                 GetCustomerPriceLevel()
@@ -5104,13 +4006,13 @@ err_flag:
             cboPayment.SelectedIndex = 1
             txtRemarks.ReadOnly = True
 
-            RemoveHandler rbtnDelivery.CheckedChanged, AddressOf rbtnDelivery_CheckedChanged
-            RemoveHandler rbtnPickup.CheckedChanged, AddressOf rbtnPickup_CheckedChanged
+            RemoveHandler rbtnDelivery.CheckedChanged, AddressOf ReleaseType_CheckedChanged
+            RemoveHandler rbtnPickup.CheckedChanged, AddressOf ReleaseType_CheckedChanged
 
             rbtnDelivery.Checked = True
 
-            AddHandler rbtnDelivery.CheckedChanged, AddressOf rbtnDelivery_CheckedChanged
-            AddHandler rbtnPickup.CheckedChanged, AddressOf rbtnPickup_CheckedChanged
+            AddHandler rbtnDelivery.CheckedChanged, AddressOf ReleaseType_CheckedChanged
+            AddHandler rbtnPickup.CheckedChanged, AddressOf ReleaseType_CheckedChanged
 
             rbtnDelivery.Enabled = True
             rbtnPickup.Enabled = True
@@ -5224,87 +4126,11 @@ err_flag:
 
     End Sub
 
-    'Private Sub updateItemData()
-
-    '    'Try
-    '    '    ToolStripStatusLabel1.Text = "STATUS : Updating Items ...... "
-
-    '    '    'clsItemLookUp.getLastUpdatedItems()
-
-    '    '    'Dim count = clsItemLookUp.dt3.Rows.Count
-
-    '    '    'If Not count = 0 Then
-
-    '    '    '    updateSuccess = False
-
-    '    '    '    For Each r As DataRow In clsItemLookUp.dt3.Rows
-
-    '    '    '        Try
-    '    '    '            SetItemAvailable(r("ItemCode").ToString(), Convert.ToInt64(r("Available")))
-    '    '    '        Catch ex As Exception
-    '    '    '        End Try
-
-    '    '    '    Next
-
-
-    '    '    '    updateSuccess = True
-
-    '    '    'End If
-    '    '    '    itemData.DataSource = load_data("SELECT * FROM SOD_ViewItems")
-
-    '    '    ToolStripStatusLabel1.Text = "STATUS :"
-
-
-    '    'Catch ex As Exception
-
-    '    '    MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0058", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    '    ErrorCount = ErrorCount + 1
-
-    '    'End Try
-
-    'End Sub
-
-    'Private Sub Update_Timer_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Update_Timer.Tick
-
-    '    'If updateSuccess = True Then
-
-    '    '    'If Not db_lastupdate = clsItemLookUp.checkTableUpdate() Then
-
-    '    '    '    db_lastupdate = clsItemLookUp.checkTableUpdate()
-
-    '    '    '    Try
-
-    '    '    '        Thread_1 = New Thread(AddressOf updateItemData)
-    '    '    '        Thread_1.Start()
-
-    '    '    '    Catch ex As Exception
-    '    '    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    '    '        ErrorCount = ErrorCount + 1
-    '    '    '    End Try
-
-    '    '    'End If
-
-    '    'End If
-
-    'End Sub
-
-    'Private Sub cmdLogout_Click(ByVal sender As System.Object, ByVal e As System.EventArgs)
-
-    'End Sub
 
     Private Sub Button1_Click_1(ByVal sender As System.Object, ByVal e As System.EventArgs)
         frmPrintWo.ShowDialog()
     End Sub
 
-    'Private Sub Check_errors_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Check_errors.Tick
-
-    '    If ErrorCount >= 5 Then
-    '        Update_Timer.Stop()
-    '        Check_errors.Stop()
-    '        MessageBox.Show("The Program Exceeded the Allowed Errors!" & vbCrLf & vbCrLf & "Program will be Restarted !", "IMPORTANT MESSAGE!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-    '        Application.Restart()
-    '    End If
-    'End Sub
 
     Private Sub cmdForInvoice_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdForInvoice.Click
         If Not StoreProcessingSettings.ShowForInvoiceButton Then
@@ -5379,50 +4205,11 @@ err_flag:
         End Try
     End Sub
 
-    'Private Sub MyInputBox(ByVal Prompt As String, ByVal text As String, ByVal btntext As String)
-
-    '    Dim frmInput As New Form
-    '    frmInput.Owner = Me
-    '    frmInput.StartPosition = FormStartPosition.CenterScreen
-    '    frmInput.ShowIcon = False
-    '    frmInput.Size = New Size(310, 120)
-    '    frmInput.MinimumSize = New Size(315, 120)
-    '    frmInput.FormBorderStyle = Windows.Forms.FormBorderStyle.FixedSingle
-    '    frmInput.KeyPreview = True
-    '    Dim btn As New Button()
-    '    btn.Text = btntext
-
-    '    btn.Height = 30
-    '    frmInput.Controls.Add(btn)
-    '    frmInput.MaximizeBox = False
-    '    frmInput.MinimizeBox = False
-    '    btn.Location = New Point(210, 165)
-    '    btn.Width = 80
-    '    AddHandler btn.Click, AddressOf inputclose
-    '    Dim lbl As New Label
-    '    lbl.Width = 280
-    '    lbl.Height = 50
-    '    frmInput.Controls.Add(lbl)
-    '    frmInput.ActiveControl = lbl
-    '    frmInput.AcceptButton = btn
-    '    'lbl.TextAlign = HorizontalAlignment.Centered
-    '    lbl.TextAlign = ContentAlignment.MiddleCenter
-    '    lbl.Font = New Font("Century Gothic", 35, FontStyle.Bold)
-    '    lbl.Location = New Point(10, 10)
-    '    lbl.Text = text
-    '    lbl.AutoSize = False
-    '    frmInput.Text = Prompt
-    '    frmInput.ShowDialog()
-
-    'End Sub
     Sub inputclose(ByVal s As Object, ByVal e As EventArgs)
 
         DirectCast(DirectCast(s, Control).Parent, Form).Close()
 
     End Sub
-
-
-
 
 
     Private Sub chkShowImage_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkShowImage.CheckedChanged
@@ -5559,8 +4346,12 @@ err_flag:
 
             If rbtnDelivery.Checked = True Then
 
-                Dim x = AppPrompt.MsgBox("Changing Release Type to Delivery will Automatically be Picked in UP-STORE" &
-                               vbCrLf & vbCrLf & "Do You want to Change ?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
+                Dim deliveryMessage As String = "Do You want to Change Release Type to Delivery?"
+                If UseQueueingForCurrentOrder() Then
+                    deliveryMessage = "Changing Release Type to Delivery will Automatically be Picked in UP-STORE" &
+                                      vbCrLf & vbCrLf & "Do You want to Change ?"
+                End If
+                Dim x = AppPrompt.MsgBox(deliveryMessage, MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
                 If x = MsgBoxResult.Yes Then
 
 
@@ -5575,7 +4366,9 @@ err_flag:
 
                 Dim x = AppPrompt.MsgBox("Do You want to Change Release Type to Pick-up?", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
                 If x = MsgBoxResult.Yes Then
-                    AppPrompt.Show("Please Re-Check the Pick Location and Prepared Qty.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    If UseQueueingForCurrentOrder() Then
+                        AppPrompt.Show("Please Re-Check the Pick Location and Prepared Qty.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    End If
                     forDelivery()
                 Else
                     Exit Sub
@@ -5587,16 +4380,11 @@ err_flag:
 
     End Sub
 
-    Private Sub rbtnDelivery_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles rbtnDelivery.CheckedChanged
+    Private Sub ReleaseType_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) _
+        Handles rbtnDelivery.CheckedChanged, rbtnPickup.CheckedChanged
 
+        If Not DirectCast(sender, RadioButton).Checked Then Exit Sub
         releaseType()
-
-    End Sub
-
-    Private Sub rbtnPickup_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles rbtnPickup.CheckedChanged
-
-        releaseType()
-
     End Sub
 
     Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
@@ -5663,13 +4451,13 @@ inputCust:
 
             cboPayment.SelectedIndex = 1
 
-            RemoveHandler rbtnDelivery.CheckedChanged, AddressOf rbtnDelivery_CheckedChanged
-            RemoveHandler rbtnPickup.CheckedChanged, AddressOf rbtnPickup_CheckedChanged
+            RemoveHandler rbtnDelivery.CheckedChanged, AddressOf ReleaseType_CheckedChanged
+            RemoveHandler rbtnPickup.CheckedChanged, AddressOf ReleaseType_CheckedChanged
 
             rbtnDelivery.Checked = True
 
-            AddHandler rbtnDelivery.CheckedChanged, AddressOf rbtnDelivery_CheckedChanged
-            AddHandler rbtnPickup.CheckedChanged, AddressOf rbtnPickup_CheckedChanged
+            AddHandler rbtnDelivery.CheckedChanged, AddressOf ReleaseType_CheckedChanged
+            AddHandler rbtnPickup.CheckedChanged, AddressOf ReleaseType_CheckedChanged
 
 
             txtRemarks.Text = "SOD WEBSITE / Order Number: " & w_order & " / Customer Name: " & w_cust
@@ -5797,99 +4585,6 @@ inputCust:
     End Sub
 
     'comment:
-    'Private Sub SearchBarcode()
-    '    Try
-    '        Dim SearchStrArr() As String = Split(sfilterTxt, ",")
-    '        Dim SubDescription2Filter As String = String.Join("' OR [SUBDESCRIPTION2] = '", SearchStrArr)
-    '        Dim FilterString As String = "[SUBDESCRIPTION2] = '" & SubDescription2Filter & "'"
-    '        Dim FilterStr = "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
-
-    '        gridItem.DataSource = load_data(FilterStr)
-
-    '        GridColumnWidth()
-    '        If isItemCode(searchStr) = True Then
-
-    '            If iCusID = 0 Then
-    '                MsgBox("Please select customer first!", vbExclamation, "Message")
-    '            Else
-
-    '                Dim availVal = clsItemLookUp.getItemQty(gridItem.Item(0, gridItem.CurrentCell.RowIndex).Value)
-    '                If availVal < 1 Then
-    '                    MsgBox("This item is out of stock.", vbExclamation, "Message!")
-    '                    Exit Sub
-    '                Else
-    '                    InsertSelectedItem(gridItem.CurrentCell.RowIndex)
-    '                    gridSelectItem.Focus()
-    '                    gridSelectItem.BeginEdit(True)
-    '                End If
-    '                TreeView1.Nodes.Clear()
-    '            End If
-
-    '        End If
-    '        checkSearch1()
-    '        TreeView1.Nodes.Clear()
-    '        iRow = 0
-    '        txtBarcode.Focus()
-    '        lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ErrorCount = ErrorCount + 1
-    '    End Try
-    'End Sub
-    'Private Sub SearchBarcode()
-    '    Try
-    '        Dim SearchStrArr() As String = Split(sfilterTxt, ",")
-
-    '        Dim BarcodeFilter As String = String.Join("%' OR [SUBDESCRIPTION2] LIKE '%", SearchStrArr)
-    '        Dim ItemLookupFilter As String = String.Join("%' OR [ItemLookupCode] LIKE '%", SearchStrArr)
-
-    '        Dim FilterString As String =
-    '        "[SUBDESCRIPTION2] LIKE '%" & BarcodeFilter & "%' OR " &
-    '        "[ItemLookupCode] LIKE '%" & ItemLookupFilter & "%'"
-
-    '        Dim FilterStr As String =
-    '        "SELECT TOP 500 * FROM SOD_VIEWITEMSWO WHERE Inactive = 0 AND (" & FilterString & ")"
-
-    '        gridItem.DataSource = load_data(FilterStr)
-
-    '        GridColumnWidth()
-
-    '        If isItemCode(searchStr) = True Then
-
-    '            If iCusID = 0 Then
-    '                MsgBox("Please select customer first!", vbExclamation, "Message")
-    '            Else
-
-    '                Dim availVal = clsItemLookUp.getItemQty(gridItem.Item(0, gridItem.CurrentCell.RowIndex).Value)
-
-    '                If availVal < 1 Then
-    '                    MsgBox("This item is out of stock.", vbExclamation, "Message!")
-    '                    Exit Sub
-    '                Else
-    '                    InsertSelectedItem(gridItem.CurrentCell.RowIndex)
-    '                    gridSelectItem.Focus()
-    '                    gridSelectItem.BeginEdit(True)
-    '                End If
-
-    '                TreeView1.Nodes.Clear()
-
-    '            End If
-
-    '        End If
-
-    '        checkSearch1()
-    '        TreeView1.Nodes.Clear()
-    '        iRow = 0
-    '        txtBarcode.Focus()
-
-    '        lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0059", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ErrorCount = ErrorCount + 1
-    '    End Try
-    'End Sub
     Private Sub SearchBarcode()
         Try
             Dim SearchStrArr() As String = Split(sfilterTxt, ",")
@@ -6227,54 +4922,6 @@ inputCust:
             AppPrompt.Show("An error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
-    'Public Sub ValidatePriceInput()
-    '    Try
-    '        ' Ensure a valid row is selected
-    '        If gridSelectItem.CurrentRow Is Nothing Then
-    '            MessageBox.Show("Please select a valid row.", "Invalid Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-    '            Exit Sub
-    '        End If
-
-    '        ' Get item code and current price from the selected row
-    '        Dim itemCode As String = gridSelectItem.Item(0, gridSelectItem.CurrentRow.Index).Value.ToString()
-    '        Dim currentPrice As Decimal = Convert.ToDecimal(gridSelectItem.Item(3, gridSelectItem.CurrentRow.Index).Value)
-
-    '        ' Retrieve item details from database
-    '        Dim item = db.Items.FirstOrDefault(Function(i) i.ItemLookupCode = itemCode)
-    '        If item Is Nothing Then
-    '            txtPrice.Text = "No matching price found"
-    '            Exit Sub
-    '        End If
-
-    '        ' Determine the appropriate price level
-    '        Dim selectedPrice As Decimal? = Nothing
-    '        Select Case txtPriceLevel.Text
-    '            Case "Price" : selectedPrice = item.Price
-    '            Case "PriceA" : selectedPrice = item.PriceA
-    '            Case "PriceB" : selectedPrice = item.PriceB
-    '            Case "PriceC" : selectedPrice = item.PriceC
-    '        End Select
-
-    '        ' Display and compare prices
-    '        If selectedPrice.HasValue Then
-    '            txtPrice.Text = selectedPrice.Value.ToString("N2")
-    '            ' If user-entered price is lower than allowed, prompt for override
-    '            If currentPrice < selectedPrice.Value Then
-    '                ' Uncomment below if you want to enforce password check
-    '                'frmPassword.sType = "EditPrice"
-    '                'Dim pDialog As DialogResult = frmPassword.ShowDialog()
-    '                'If pDialog = DialogResult.Cancel Then
-    '                '    gridSelectItem.Item(3, gridSelectItem.CurrentRow.Index).Value = curPrice
-    '                'End If
-    '            End If
-    '        Else
-    '            txtPrice.Text = "No matching price found"
-    '        End If
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("An error occurred: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    End Try
-    'End Sub
 
     ' --------------------- CODE ni sya para e fetch ang tama na item sa gridlevel sa frmLinqLevel --------------
     Public Sub filterLinqLevel()
@@ -6303,31 +4950,34 @@ inputCust:
         End Try
     End Sub
 
-    'Private Sub txtTotal_TextChanged(sender As Object, e As EventArgs) Handles txtTotal.TextChanged
-    '    Dim total As Decimal
-    '    Dim available As Decimal
 
-    '    ' Try parsing both textboxes safely
-    '    If Decimal.TryParse(txtTotal.Text, total) AndAlso Decimal.TryParse(txtAvailable.Text, available) Then
-    '        If total > available Then
-    '            MessageBox.Show("Exceeded available credit limit.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-    '        End If
-    '    End If
-    'End Sub
+    Private creditWarningOpen As Boolean
 
-    Private Sub txtTotal_TextChanged(sender As Object, e As EventArgs) Handles txtTotal.TextChanged
+    Private Sub CreditWarningInputsChanged(sender As Object, e As EventArgs) _
+        Handles txtTotal.TextChanged, cboPayment.TextChanged
+        WarnIfCreditLimitExceeded()
+    End Sub
+
+    Private Sub WarnIfCreditLimitExceeded()
+        If Not IsHandleCreated OrElse creditWarningOpen OrElse
+           Not String.Equals(cboPayment.Text.Trim(), "CHARGE", StringComparison.OrdinalIgnoreCase) Then Return
+
+        ' Do not compare a newly selected customer with the previous balance.
+        Dim balanceCustomerID As Integer
+        If iCusID <= 0 OrElse Not Integer.TryParse(txtCustomerId.Text, balanceCustomerID) OrElse
+           balanceCustomerID <> iCusID Then Return
+
         Dim total As Decimal
         Dim available As Decimal
+        If Not Decimal.TryParse(txtTotal.Text, total) OrElse
+           Not Decimal.TryParse(txtAvailable.Text, available) OrElse total <= available Then Return
 
-        ' Check if ComboBox selection is "Charge"
-        If cboPayment.SelectedItem IsNot Nothing AndAlso cboPayment.SelectedItem.ToString().ToLower() = "charge" Then
-            ' Try parsing both textboxes safely
-            If Decimal.TryParse(txtTotal.Text, total) AndAlso Decimal.TryParse(txtAvailable.Text, available) Then
-                If total > available Then
-                    AppPrompt.Show("Exceeded available credit limit.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                End If
-            End If
-        End If
+        creditWarningOpen = True
+        Try
+            AppPrompt.Show("Exceeded available credit limit.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        Finally
+            creditWarningOpen = False
+        End Try
     End Sub
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
@@ -6368,109 +5018,6 @@ inputCust:
     End Sub
 
 
-    'Private Sub cmdOpenWO_Click_1(sender As Object, e As EventArgs) Handles cmdOpenWO.Click
-    '    Try
-
-    '        If Me.gridItem.Rows.Count = 0 Then
-    '            Exit Sub
-    '        End If
-
-    '        frmCheckWO.lblItemCodeWO.Text = gridItem.Item(0, gridItem.CurrentRow.Index).Value.ToString()
-    '        frmCheckWO.lblItemNameWO.Text = gridItem.Item(1, gridItem.CurrentRow.Index).Value.ToString()
-    '        frmCheckWO.ShowDialog()
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("FROM  frmItemLookUp Form " & vbCrLf & vbCrLf & "REASON :  " & ex.Message, "MESSAGE : Error 28", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        ErrorCount = ErrorCount + 1
-    '    End Try
-    'End Sub
-
-    'Private Function HasInvalidPrice() As Boolean
-
-    '    Try
-
-    '        If IsNumeric(Split(lblOrderNo.Text, ": ")(1)) Then
-    '            MessageBox.Show("has work order")
-    '        End If
-
-    '        For Each row As DataGridViewRow In gridSelectItem.Rows
-    '            If row.IsNewRow Then Continue For
-
-    '            Dim itemCode As String = row.Cells(0).Value?.ToString()
-    '            Dim currentPrice As Decimal
-
-    '            If String.IsNullOrEmpty(itemCode) OrElse row.Cells(3).Value Is Nothing Then Continue For
-    '            If Not Decimal.TryParse(row.Cells(3).Value.ToString(), currentPrice) Then Continue For
-
-    '            ' Fetch item from DB
-    '            Dim item = (From a In db.Items
-    '                        Where a.ItemLookupCode.Equals(itemCode)
-    '                        Select a).FirstOrDefault()
-
-    '            If item IsNot Nothing Then
-    '                Dim allowedPrice As Decimal?
-
-    '                Select Case Me.txtPriceLevel.Text
-    '                    Case "Price" : allowedPrice = item.Price
-    '                    Case "PriceA" : allowedPrice = item.PriceA
-    '                    Case "PriceB" : allowedPrice = item.PriceB
-    '                    Case "PriceC" : allowedPrice = item.PriceC
-    '                    Case Else : allowedPrice = Nothing
-    '                End Select
-
-    '                ' Check if user price is below allowed price
-    '                If allowedPrice.HasValue AndAlso currentPrice < allowedPrice.Value Then
-    '                    Return True ' password required
-    '                End If
-
-    '                ' Color only rows that are below allowed price
-    '                If Decimal.TryParse(row.Cells(3).Value?.ToString(), currentPrice) AndAlso currentPrice < allowedPrice Then
-    '                    MarkRowAsPriceOverridden(row)
-    '                End If
-
-    '            End If
-    '        Next
-    '    Catch ex As Exception
-    '        MessageBox.Show("Error during price validation: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    End Try
-
-    '    Return False ' all prices >= allowed → no password
-    'End Function
-
-    'Private Sub RevertInvalidPrices()
-    '    For Each row As DataGridViewRow In gridSelectItem.Rows
-    '        If row.IsNewRow Then Continue For
-
-    '        Dim itemCode As String = row.Cells(0).Value?.ToString()
-    '        Dim currentPrice As Decimal
-
-    '        If String.IsNullOrEmpty(itemCode) OrElse row.Cells(3).Value Is Nothing Then Continue For
-    '        If Not Decimal.TryParse(row.Cells(3).Value.ToString(), currentPrice) Then Continue For
-
-    '        Dim item = (From a In db.Items
-    '                    Where a.ItemLookupCode.Equals(itemCode)
-    '                    Select a).FirstOrDefault()
-
-    '        If item IsNot Nothing Then
-    '            Dim allowedPrice As Decimal?
-
-    '            Select Case Me.txtPriceLevel.Text
-    '                Case "Price" : allowedPrice = item.Price
-    '                Case "PriceA" : allowedPrice = item.PriceA
-    '                Case "PriceB" : allowedPrice = item.PriceB
-    '                Case "PriceC" : allowedPrice = item.PriceC
-    '                Case Else : allowedPrice = Nothing
-    '            End Select
-
-    '            If allowedPrice.HasValue AndAlso currentPrice < allowedPrice.Value Then
-    '                row.Cells(3).Value = allowedPrice.Value ' reset to allowed price
-    '                row.DefaultCellStyle.BackColor = Color.White
-    '                row.DefaultCellStyle.ForeColor = Color.Black
-    '            End If
-    '        End If
-    '    Next
-    'End Sub
-
     Private Sub MarkRowAsPriceOverridden(row As DataGridViewRow)
         ' Change the background color of the entire row
         DatagridColor = 1
@@ -6480,450 +5027,7 @@ inputCust:
     End Sub
 
     'Validate Save function ni sya
-    'Private Function ValidateAndSave() As Boolean
-    '    'Try
-    '    Dim needsPassword As Boolean = False
-    '        Dim rowsNeedingOverride As New List(Of DataGridViewRow)
 
-    '        ' Step 1: Scan rows to check if any price is invalid
-    '        For Each row As DataGridViewRow In gridSelectItem.Rows
-    '            If row.IsNewRow Then Continue For
-
-    '            Dim itemCode As String = row.Cells(0).Value?.ToString()
-    '            Dim currentPrice As Decimal
-
-    '            If String.IsNullOrEmpty(itemCode) OrElse row.Cells(3).Value Is Nothing Then Continue For
-    '            If Not Decimal.TryParse(row.Cells(3).Value.ToString(), currentPrice) Then Continue For
-
-    '            ' --- Get item details ---
-    '            Dim item = (From a In db.Items
-    '                        Where a.ItemLookupCode.Equals(itemCode)
-    '                        Select a).FirstOrDefault()
-    '            If item Is Nothing Then Continue For
-
-    '            ' --- Determine price bounds (selected level = lower bound) ---
-    '            Dim lowerPrice As Decimal = item.Price
-    '            Dim upperPrice As Decimal = item.PriceC
-    '            Select Case Me.txtPriceLevel.Text
-    '                Case "Price" : lowerPrice = item.Price : upperPrice = item.Price
-    '                Case "PriceA" : lowerPrice = item.PriceA : upperPrice = item.PriceA
-    '                Case "PriceB" : lowerPrice = item.PriceB : upperPrice = item.PriceB
-    '                Case "PriceC" : lowerPrice = item.PriceC : upperPrice = item.PriceC
-    '            End Select
-
-    '            Dim allowedPrice As Decimal? = Nothing
-
-    '            If WoRecallType = 0 Then
-    '                ' --- New order: must not go below selected price ---
-    '                allowedPrice = lowerPrice
-
-    '            ElseIf WoRecallType = 1 Then
-    '                ' --- Recall order ---
-    '                Dim orderID As Integer = Convert.ToInt32(Split(lblOrderNo.Text, ": ")(1))
-
-    '                ' Get Work Order price if item already existed in WO
-    '                Dim orderEntry = (From o In db.OrderEntries
-    '                                  Join i In db.Items On i.ID Equals o.ItemID
-    '                                  Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
-    '                                  Select o).FirstOrDefault()
-
-    '                If orderEntry IsNot Nothing Then
-    '                    Dim woOrderPrice As Decimal = orderEntry.Price
-
-    '                    ' --- Validation logic (same as ValidatePriceRow) ---
-    '                    If currentPrice = woOrderPrice Then
-    '                        ' exactly the same as WO price → valid
-    '                        allowedPrice = currentPrice
-
-    '                    ElseIf currentPrice >= lowerPrice AndAlso currentPrice <= upperPrice Then
-    '                        ' within allowed price range → valid
-    '                        allowedPrice = currentPrice
-
-    '                    Else
-    '                        ' outside WO price and range → requires password
-    '                        allowedPrice = Math.Max(woOrderPrice, lowerPrice)
-    '                    End If
-    '                Else
-    '                    ' New item in recall: treat as new order
-    '                    allowedPrice = lowerPrice
-    '                End If
-    '            End If
-
-    '            ' --- Compare final price ---
-    '            If allowedPrice.HasValue AndAlso currentPrice < allowedPrice.Value Then
-    '                needsPassword = True
-    '                rowsNeedingOverride.Add(row)
-    '            End If
-    '        Next
-
-    '        ' Step 2: Ask for password if needed
-    '        If needsPassword AndAlso Not bAllow Then
-    '            frmPassword.sType = "EditPrice"
-    '            MessageBox.Show("This work order requires a password to proceed.", "Password Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-
-    '            If frmPassword.ShowDialog() <> DialogResult.OK Then
-    '                Return False ' stop saving
-    '            End If
-
-    '            ' Step 3: Mark overridden rows
-    '            For Each row In rowsNeedingOverride
-    '                MarkRowAsPriceOverridden(row)
-    '            Next
-    '        End If
-
-    '        ' Step 4: Save the order
-    '        SaveOrder()
-    '        Return True
-
-    '    'Catch ex As Exception
-    '    '    MessageBox.Show("Error during validation: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    '    Return False
-    '    'End Try
-    'End Function
-
-    'Private Function ValidateAndSave() As Boolean
-    '    Try
-    '        Dim needsPassword As Boolean = False
-    '        Dim rowsNeedingOverride As New List(Of DataGridViewRow)
-
-    '        ' Step 1: Scan rows to check if any price is invalid
-    '        For Each row As DataGridViewRow In gridSelectItem.Rows
-    '            If row.IsNewRow Then Continue For
-
-    '            Dim itemCode As String = row.Cells(0).Value?.ToString()
-    '            Dim currentPrice As Decimal
-
-    '            If String.IsNullOrEmpty(itemCode) OrElse row.Cells(3).Value Is Nothing Then Continue For
-    '            If Not Decimal.TryParse(row.Cells(3).Value.ToString(), currentPrice) Then Continue For
-
-    '            ' --- Get item details ---
-    '            Dim item = (From a In db.Items
-    '                        Where a.ItemLookupCode.Equals(itemCode)
-    '                        Select a).FirstOrDefault()
-    '            If item Is Nothing Then Continue For
-
-    '            ' --- Determine price bounds (selected level = lower bound) ---
-    '            Dim lowerPrice As Decimal = item.Price
-    '            Dim upperPrice As Decimal = item.PriceC
-    '            Select Case Me.txtPriceLevel.Text
-    '                Case "Price" : lowerPrice = item.Price : upperPrice = item.Price
-    '                Case "PriceA" : lowerPrice = item.PriceA : upperPrice = item.PriceA
-    '                Case "PriceB" : lowerPrice = item.PriceB : upperPrice = item.PriceB
-    '                Case "PriceC" : lowerPrice = item.PriceC : upperPrice = item.PriceC
-    '            End Select
-
-    '            Dim allowedPrice As Decimal? = Nothing
-
-    '            If WoRecallType = 0 Then
-    '                ' --- New order: must not go below selected price ---
-    '                allowedPrice = lowerPrice
-
-    '            ElseIf WoRecallType = 1 Then
-    '                ' --- Recall order ---
-    '                'Dim orderID As Integer = Convert.ToInt32(Split(lblOrderNo.Text, ": ")(1))
-    '                Dim orderID As Integer
-    '                Dim lastPart = lblOrderNo.Text.Split(" "c).Last().Trim()
-
-    '                If Not Integer.TryParse(lastPart, orderID) Then
-    '                    'Throw New Exception("Invalid Work Order number: " & lblOrderNo.Text)
-    '                    WoRecallType = 0
-    '                End If
-
-
-    '                ' Get Work Order price if item already existed in WO
-    '                Dim orderEntry = (From o In db.OrderEntries
-    '                                  Join i In db.Items On i.ID Equals o.ItemID
-    '                                  Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
-    '                                  Select o).FirstOrDefault()
-
-    '                If orderEntry IsNot Nothing Then
-    '                    Dim woOrderPrice As Decimal = orderEntry.Price
-
-    '                    ' --- Validation logic (same as ValidatePriceRow) ---
-    '                    If currentPrice = woOrderPrice Then
-    '                        ' exactly the same as WO price → valid
-    '                        allowedPrice = currentPrice
-
-    '                    ElseIf currentPrice >= lowerPrice AndAlso currentPrice <= upperPrice Then
-    '                        ' within allowed price range → valid
-    '                        allowedPrice = currentPrice
-
-    '                    Else
-    '                        ' outside WO price and range → requires password
-    '                        allowedPrice = Math.Max(woOrderPrice, lowerPrice)
-    '                    End If
-    '                Else
-    '                    ' New item in recall: treat as new order
-    '                    allowedPrice = lowerPrice
-    '                End If
-    '            End If
-
-    '            ' --- Compare final price ---
-    '            If allowedPrice.HasValue AndAlso currentPrice < allowedPrice.Value Then
-    '                needsPassword = True
-    '                rowsNeedingOverride.Add(row)
-    '            End If
-    '        Next
-
-    '        ' Step 2: Ask for password if needed
-    '        If needsPassword AndAlso Not bAllow Then
-    '            frmPassword.sType = "EditPrice"
-    '            MessageBox.Show("This work order requires a password to proceed.", "Password Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-
-    '            If frmPassword.ShowDialog() <> DialogResult.OK Then
-    '                Return False ' stop saving
-    '            End If
-
-    '            ' Step 3: Mark overridden rows
-    '            For Each row In rowsNeedingOverride
-    '                MarkRowAsPriceOverridden(row)
-
-    '            Next
-    '        End If
-
-    '        ' Step 4: Save the order
-    '        SaveOrder()
-    '        Return True
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("Error during validation: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    Return False
-    '    End Try
-    'End Function
-
-    'Private Function ValidateAndSave() As Boolean
-    '    Dim needsPassword As Boolean = False
-    '    Dim rowsNeedingOverride As New List(Of DataGridViewRow)
-
-    '    For Each row As DataGridViewRow In gridSelectItem.Rows
-    '        If row.IsNewRow Then Continue For
-
-    '        Dim itemCode As String = row.Cells(0).Value?.ToString()
-    '        Dim currentPrice As Decimal
-
-    '        If String.IsNullOrEmpty(itemCode) OrElse row.Cells(3).Value Is Nothing Then Continue For
-    '        If Not Decimal.TryParse(row.Cells(3).Value.ToString(), currentPrice) Then Continue For
-
-    '        Dim item = (From a In db.Items
-    '                    Where a.ItemLookupCode.Equals(itemCode)
-    '                    Select a).FirstOrDefault()
-
-    '        If item Is Nothing Then Continue For
-
-    '        ' --- Determine price range based on customer's price level ---
-    '        Dim minPrice As Decimal ' Customer's assigned tier (lower bound)
-    '        Dim maxPrice As Decimal = item.Price ' Always base price (upper bound)
-
-    '        Select Case Me.txtPriceLevel.Text
-    '            Case "Price"
-    '                minPrice = item.Price
-    '                maxPrice = item.Price ' Range: $73.50 - $73.50
-    '            Case "PriceA"
-    '                minPrice = item.PriceA ' Range: $68.60 - $73.50
-    '            Case "PriceB"
-    '                minPrice = item.PriceB ' Range: $63.70 - $73.50
-    '            Case "PriceC"
-    '                minPrice = item.PriceC ' Range: $61.25 - $73.50
-    '            Case Else
-    '                minPrice = item.Price
-    '                maxPrice = item.Price
-    '        End Select
-
-    '        Dim requiresOverride As Boolean = False
-
-    '        If WoRecallType = 0 Then
-    '            ' --- New order: price must be within customer's range ---
-    '            If currentPrice < minPrice OrElse currentPrice > maxPrice Then
-    '                requiresOverride = True
-    '            End If
-
-    '        ElseIf WoRecallType = 1 Then
-    '            ' --- Recall order ---
-    '            Dim orderID As Integer
-    '            Dim lastPart = lblOrderNo.Text.Split(" "c).Last().Trim()
-    '            If Not Integer.TryParse(lastPart, orderID) Then
-    '                'Throw New Exception("Invalid Work Order number: " & lblOrderNo.Text)
-    '                WoRecallType = 0
-    '            End If
-
-    '            Dim orderEntry = (From o In db.OrderEntries
-    '                              Join i In db.Items On i.ID Equals o.ItemID
-    '                              Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
-    '                              Select o).FirstOrDefault()
-
-    '            If orderEntry IsNot Nothing Then
-    '                Dim woOrderPrice As Decimal = orderEntry.Price
-
-    '                ' Valid if: matches WO price OR within customer's range
-    '                Dim isValidPrice As Boolean = (currentPrice = woOrderPrice) OrElse
-    '                                          (currentPrice >= minPrice AndAlso currentPrice <= maxPrice)
-
-    '                If Not isValidPrice Then
-    '                    requiresOverride = True
-    '                End If
-    '            Else
-    '                ' New item in recall: treat as new order
-    '                If currentPrice < minPrice OrElse currentPrice > maxPrice Then
-    '                    requiresOverride = True
-    '                End If
-    '            End If
-    '        End If
-
-    '        If requiresOverride Then
-    '            needsPassword = True
-    '            rowsNeedingOverride.Add(row)
-    '        End If
-    '    Next
-
-    '    ' Step 2: Ask for password if needed
-    '    If needsPassword AndAlso Not bAllow Then
-    '        frmPassword.sType = "EditPrice"
-    '        MessageBox.Show("This work order requires a password to proceed.", "Password Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-    '        If frmPassword.ShowDialog() <> DialogResult.OK Then
-    '            Return False
-    '        End If
-
-    '        For Each row In rowsNeedingOverride
-    '            MarkRowAsPriceOverridden(row)
-    '        Next
-    '    End If
-
-    '    SaveOrder()
-    '    Return True
-    'End Function
-    'Private Function ValidateAndSave() As Boolean
-    '    Try
-
-
-    '        Dim needsPassword As Boolean = False
-    '        Dim rowsNeedingOverride As New List(Of DataGridViewRow)
-
-    '        For Each row As DataGridViewRow In gridSelectItem.Rows
-    '            If row.IsNewRow Then Continue For
-
-    '            Dim itemCode As String = row.Cells(0).Value?.ToString()
-    '            Dim currentPrice As Decimal
-
-    '            If String.IsNullOrEmpty(itemCode) OrElse row.Cells(3).Value Is Nothing Then Continue For
-    '            If Not Decimal.TryParse(row.Cells(3).Value.ToString(), currentPrice) Then Continue For
-
-    '            Dim item = (From a In db.Items
-    '                        Where a.ItemLookupCode.Equals(itemCode)
-    '                        Select a).FirstOrDefault()
-
-    '            If item Is Nothing Then Continue For
-
-    '            ' --- Determine price range with $0.00 fallback logic ---
-    '            Dim minPrice As Decimal
-    '            Dim maxPrice As Decimal = item.Price
-
-    '            Select Case Me.txtPriceLevel.Text
-    '                Case "Price"
-    '                    minPrice = item.Price
-    '                    maxPrice = item.Price
-
-    '                Case "PriceA"
-    '                    If item.PriceA > 0 Then
-    '                        minPrice = item.PriceA
-    '                    Else
-    '                        minPrice = item.Price
-    '                        maxPrice = item.Price
-    '                    End If
-
-    '                Case "PriceB"
-    '                    If item.PriceB > 0 Then
-    '                        minPrice = item.PriceB
-    '                    ElseIf item.PriceA > 0 Then
-    '                        minPrice = item.PriceA
-    '                    Else
-    '                        minPrice = item.Price
-    '                        maxPrice = item.Price
-    '                    End If
-
-    '                Case "PriceC"
-    '                    If item.PriceC > 0 Then
-    '                        minPrice = item.PriceC
-    '                    ElseIf item.PriceB > 0 Then
-    '                        minPrice = item.PriceB
-    '                    ElseIf item.PriceA > 0 Then
-    '                        minPrice = item.PriceA
-    '                    Else
-    '                        minPrice = item.Price
-    '                        maxPrice = item.Price
-    '                    End If
-
-    '                Case Else
-    '                    minPrice = item.Price
-    '                    maxPrice = item.Price
-    '            End Select
-
-    '            Dim requiresOverride As Boolean = False
-
-    '            If WoRecallType = 0 Then
-    '                ' --- New order: price must be within customer's range ---
-    '                If currentPrice < minPrice OrElse currentPrice > maxPrice Then
-    '                    requiresOverride = True
-    '                End If
-
-    '            ElseIf WoRecallType = 1 Then
-    '                ' --- Recall order ---
-    '                Dim orderID As Integer
-    '                Dim lastPart = lblOrderNo.Text.Split(" "c).Last().Trim()
-    '                If Not Integer.TryParse(lastPart, orderID) Then
-    '                    'Throw New Exception("Invalid Work Order number: " & lblOrderNo.Text)
-    '                    WoRecallType = 0
-    '                End If
-
-    '                Dim orderEntry = (From o In db.OrderEntries
-    '                                  Join i In db.Items On i.ID Equals o.ItemID
-    '                                  Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
-    '                                  Select o).FirstOrDefault()
-
-    '                If orderEntry IsNot Nothing Then
-    '                    Dim woOrderPrice As Decimal = orderEntry.Price
-
-    '                    ' Valid if: matches WO price OR within customer's range
-    '                    Dim isValidPrice As Boolean = (currentPrice = woOrderPrice) OrElse
-    '                                              (currentPrice >= minPrice AndAlso currentPrice <= maxPrice)
-
-    '                    If Not isValidPrice Then
-    '                        requiresOverride = True
-    '                    End If
-    '                Else
-    '                    ' New item in recall: treat as new order
-    '                    If currentPrice < minPrice OrElse currentPrice > maxPrice Then
-    '                        requiresOverride = True
-    '                    End If
-    '                End If
-    '            End If
-
-    '            If requiresOverride Then
-    '                needsPassword = True
-    '                rowsNeedingOverride.Add(row)
-    '            End If
-    '        Next
-
-    '        ' Step 2: Ask for password if needed
-    '        If needsPassword AndAlso Not bAllow Then
-    '            frmPassword.sType = "EditPrice"
-    '            MessageBox.Show("This work order requires a password to proceed.", "Password Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
-    '            If frmPassword.ShowDialog() <> DialogResult.OK Then
-    '                Return False
-    '            End If
-
-    '            For Each row In rowsNeedingOverride
-    '                MarkRowAsPriceOverridden(row)
-    '            Next
-    '        End If
-
-    '        SaveOrder()
-    '        Return True
-    '    Catch ex As Exception
-    '        MessageBox.Show("Error during validation: " & ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '        Return False
-    '    End Try
-
-    'End Function
 
     Private Function ValidateAndSave() As Boolean
         ' Work Orders need a payment method before asking for price approval.
@@ -7066,282 +5170,6 @@ inputCust:
 
     End Function
 
-    'Public Sub ValidatePriceRow(rowIndex As Integer, columnIndex As Integer, type As Integer)
-    '    Try
-    '        ' --- Step 1: Extract row data ---
-    '        Dim row = gridSelectItem.Rows(rowIndex)
-    '        Dim currentPrice As Decimal
-
-    '        If Not Decimal.TryParse(row.Cells(columnIndex).Value?.ToString(), currentPrice) Then Exit Sub
-
-    '        Dim itemCode As String = row.Cells(0).Value?.ToString()
-    '        If String.IsNullOrWhiteSpace(itemCode) Then Exit Sub
-
-    '        ' --- Step 2: Fetch item details ---
-    '        Dim item = (From a In db.Items
-    '                    Where a.ItemLookupCode = itemCode
-    '                    Select a).FirstOrDefault()
-    '        If item Is Nothing Then Exit Sub
-
-    '        ' --- Step 3: Determine selected price level (acts as MIN allowed) ---
-    '        Dim selectedPrice As Decimal = item.Price
-    '        Select Case txtPriceLevel.Text
-    '            Case "Price" : selectedPrice = item.Price
-    '            Case "PriceA" : selectedPrice = item.PriceA
-    '            Case "PriceB" : selectedPrice = item.PriceB
-    '            Case "PriceC" : selectedPrice = item.PriceC
-    '        End Select
-
-    '        Dim highlight As Boolean = False
-
-    '        ' --- Step 4: Validation logic (no clamping) ---
-    '        If type = 0 Then
-    '            ' New order: allow anything >= selected level
-    '            highlight = (currentPrice < selectedPrice)
-
-    '        ElseIf type = 1 Then
-    '            ' Recall order
-    '            Dim orderID As Integer
-    '            If Not Integer.TryParse(lblOrderNo.Text.Split(":"c).LastOrDefault()?.Trim(), orderID) Then Exit Sub
-
-    '            Dim orderEntry = (From o In db.OrderEntries
-    '                              Join i In db.Items On i.ID Equals o.ItemID
-    '                              Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
-    '                              Select o).FirstOrDefault()
-
-    '            If orderEntry IsNot Nothing Then
-    '                ' Existing item: must match wo price or be valid within selected level
-    '                Dim woOrderPrice As Decimal = orderEntry.Price
-
-    '                If currentPrice = woOrderPrice Then
-    '                    highlight = False ' exact match → white
-    '                ElseIf currentPrice >= selectedPrice Then
-    '                    highlight = False ' valid within range → white
-    '                Else
-    '                    highlight = True  ' otherwise invalid → yellow
-    '                End If
-    '            Else
-    '                ' Newly added item in recall: follow selected level as minimum
-    '                highlight = (currentPrice < selectedPrice)
-    '            End If
-    '        End If
-
-    '        ' --- Step 5: Apply coloring ---
-    '        If highlight Then
-    '            row.DefaultCellStyle.BackColor = Color.Yellow
-    '            DatagridColor = 1
-    '        Else
-    '            row.DefaultCellStyle.BackColor = Color.White
-    '            DatagridColor = 0
-    '        End If
-    '        row.DefaultCellStyle.ForeColor = Color.Black
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("Error validating price: " & ex.Message,
-    '                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    End Try
-    'End Sub
-    'Public Sub ValidatePriceRow(rowIndex As Integer, columnIndex As Integer, type As Integer)
-    '    Try
-    '        ' --- Step 1: Extract row data ---
-    '        Dim row = gridSelectItem.Rows(rowIndex)
-    '        Dim currentPrice As Decimal
-    '        If Not Decimal.TryParse(row.Cells(columnIndex).Value?.ToString(), currentPrice) Then Exit Sub
-
-    '        Dim itemCode As String = row.Cells(0).Value?.ToString()
-    '        If String.IsNullOrWhiteSpace(itemCode) Then Exit Sub
-
-    '        ' --- Step 2: Fetch item details ---
-    '        Dim item = (From a In db.Items
-    '                    Where a.ItemLookupCode = itemCode
-    '                    Select a).FirstOrDefault()
-
-    '        If item Is Nothing Then Exit Sub
-
-    '        ' --- Step 3: Determine price range based on customer's price level ---
-    '        Dim minPrice As Decimal ' Customer's assigned tier (lower bound)
-    '        Dim maxPrice As Decimal = item.Price ' Always base price (upper bound)
-
-    '        Select Case txtPriceLevel.Text
-    '            Case "Price"
-    '                minPrice = item.Price
-    '                maxPrice = item.Price ' Range: exact price only
-    '            Case "PriceA"
-    '                minPrice = item.PriceA ' Range: PriceA to Price
-    '            Case "PriceB"
-    '                minPrice = item.PriceB ' Range: PriceB to Price
-    '            Case "PriceC"
-    '                minPrice = item.PriceC ' Range: PriceC to Price
-    '            Case Else
-    '                minPrice = item.Price
-    '                maxPrice = item.Price
-    '        End Select
-
-    '        Dim highlight As Boolean = False
-
-    '        ' --- Step 4: Validation logic ---
-    '        If type = 0 Then
-    '            ' --- New order: price must be within customer's range ---
-    '            highlight = (currentPrice < minPrice OrElse currentPrice > maxPrice)
-
-    '        ElseIf type = 1 Then
-    '            ' --- Recall order ---
-    '            Dim orderID As Integer
-    '            Dim lastPart = lblOrderNo.Text.Split(" "c).Last().Trim()
-    '            If Not Integer.TryParse(lastPart, orderID) Then Exit Sub
-
-    '            Dim orderEntry = (From o In db.OrderEntries
-    '                              Join i In db.Items On i.ID Equals o.ItemID
-    '                              Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
-    '                              Select o).FirstOrDefault()
-
-    '            If orderEntry IsNot Nothing Then
-    '                ' --- Existing item in WO ---
-    '                Dim woOrderPrice As Decimal = orderEntry.Price
-
-    '                ' Valid if: matches WO price OR within customer's range
-    '                Dim isValidPrice As Boolean = (currentPrice = woOrderPrice) OrElse
-    '                                          (currentPrice >= minPrice AndAlso currentPrice <= maxPrice)
-
-    '                highlight = Not isValidPrice
-    '            Else
-    '                ' --- New item added to recall: treat as new order ---
-    '                highlight = (currentPrice < minPrice OrElse currentPrice > maxPrice)
-    '            End If
-    '        End If
-
-    '        ' --- Step 5: Apply coloring ---
-    '        If highlight Then
-    '            row.DefaultCellStyle.BackColor = Color.Yellow
-    '            DatagridColor = 1
-    '        Else
-    '            row.DefaultCellStyle.BackColor = Color.White
-    '            DatagridColor = 0
-    '        End If
-
-    '        row.DefaultCellStyle.ForeColor = Color.Black
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("Error validating price: " & ex.Message,
-    '                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    End Try
-    'End Sub
-    'Public Sub ValidatePriceRow(rowIndex As Integer, columnIndex As Integer, type As Integer)
-    '    Try
-    '        ' --- Step 1: Extract row data ---
-    '        Dim row = gridSelectItem.Rows(rowIndex)
-    '        Dim currentPrice As Decimal
-    '        If Not Decimal.TryParse(row.Cells(columnIndex).Value?.ToString(), currentPrice) Then Exit Sub
-
-    '        Dim itemCode As String = row.Cells(0).Value?.ToString()
-    '        If String.IsNullOrWhiteSpace(itemCode) Then Exit Sub
-
-    '        ' --- Step 2: Fetch item details ---
-    '        Dim item = (From a In db.Items
-    '                    Where a.ItemLookupCode = itemCode
-    '                    Select a).FirstOrDefault()
-
-    '        If item Is Nothing Then Exit Sub
-
-    '        ' --- Step 3: Determine price range with $0.00 fallback logic ---
-    '        Dim minPrice As Decimal
-    '        Dim maxPrice As Decimal = item.Price ' Always base price (upper bound)
-
-    '        Select Case txtPriceLevel.Text
-    '            Case "Price"
-    '                minPrice = item.Price
-    '                maxPrice = item.Price
-
-    '            Case "PriceA"
-    '                If item.PriceA > 0 Then
-    '                    minPrice = item.PriceA
-    '                Else
-    '                    ' PriceA not set, fall back to base Price
-    '                    minPrice = item.Price
-    '                    maxPrice = item.Price
-    '                End If
-
-    '            Case "PriceB"
-    '                If item.PriceB > 0 Then
-    '                    minPrice = item.PriceB
-    '                ElseIf item.PriceA > 0 Then
-    '                    ' PriceB not set, fall back to PriceA
-    '                    minPrice = item.PriceA
-    '                Else
-    '                    ' Neither PriceB nor PriceA set, fall back to base Price
-    '                    minPrice = item.Price
-    '                    maxPrice = item.Price
-    '                End If
-
-    '            Case "PriceC"
-    '                If item.PriceC > 0 Then
-    '                    minPrice = item.PriceC
-    '                ElseIf item.PriceB > 0 Then
-    '                    ' PriceC not set, fall back to PriceB
-    '                    minPrice = item.PriceB
-    '                ElseIf item.PriceA > 0 Then
-    '                    ' PriceC and PriceB not set, fall back to PriceA
-    '                    minPrice = item.PriceA
-    '                Else
-    '                    ' No discount tiers set, fall back to base Price
-    '                    minPrice = item.Price
-    '                    maxPrice = item.Price
-    '                End If
-
-    '            Case Else
-    '                minPrice = item.Price
-    '                maxPrice = item.Price
-    '        End Select
-
-    '        Dim highlight As Boolean = False
-
-    '        ' --- Step 4: Validation logic ---
-    '        If type = 0 Then
-    '            ' --- New order: price must be within customer's range ---
-    '            highlight = (currentPrice < minPrice OrElse currentPrice > maxPrice)
-
-    '        ElseIf type = 1 Then
-    '            ' --- Recall order ---
-    '            Dim orderID As Integer
-    '            Dim lastPart = lblOrderNo.Text.Split(" "c).Last().Trim()
-    '            If Not Integer.TryParse(lastPart, orderID) Then Exit Sub
-
-    '            Dim orderEntry = (From o In db.OrderEntries
-    '                              Join i In db.Items On i.ID Equals o.ItemID
-    '                              Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
-    '                              Select o).FirstOrDefault()
-
-    '            If orderEntry IsNot Nothing Then
-    '                ' --- Existing item in WO ---
-    '                Dim woOrderPrice As Decimal = orderEntry.Price
-
-    '                ' Valid if: matches WO price OR within customer's range
-    '                Dim isValidPrice As Boolean = (currentPrice = woOrderPrice) OrElse
-    '                                          (currentPrice >= minPrice AndAlso currentPrice <= maxPrice)
-
-    '                highlight = Not isValidPrice
-    '            Else
-    '                ' --- New item added to recall: treat as new order ---
-    '                highlight = (currentPrice < minPrice OrElse currentPrice > maxPrice)
-    '            End If
-    '        End If
-
-    '        ' --- Step 5: Apply coloring ---
-    '        If highlight Then
-    '            row.DefaultCellStyle.BackColor = Color.Yellow
-    '            DatagridColor = 1
-    '        Else
-    '            row.DefaultCellStyle.BackColor = Color.White
-    '            DatagridColor = 0
-    '        End If
-
-    '        row.DefaultCellStyle.ForeColor = Color.Black
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("Error validating price: " & ex.Message,
-    '                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    End Try
-    'End Sub
     Public Sub ValidatePriceRow(rowIndex As Integer, columnIndex As Integer, type As Integer)
         Try
             ' --- Step 1: Extract row data ---
@@ -7407,69 +5235,6 @@ inputCust:
 
     End Function
 
-    'Public Sub InsertPriceLogs(orderId As Integer, itemId As Integer, mFullPrice As String, mUpdatedPrice As String, inputPass As String, sStatus As String)
-    '    Try
-    '        Dim approver As String = ""
-    '        'Dim approver As String = "Unknown"
-    '        Dim dPrice As Double
-    '        Dim dPricea As Double
-    '        Dim dPriceb As Double
-    '        Dim dPricec As Double
-    '        Dim sLastUpdate As DateTime
-
-    '        ' Get config row (assuming only 1 row for settings)
-    '        Dim cfg = (From c In db.SOD_WO_Confs
-    '                   Select c).FirstOrDefault()
-
-    '        If cfg IsNot Nothing Then
-    '            If cfg.Password = inputPass Then
-    '                approver = "Administrator" ' Hardcoded unless you add Pass1Username column
-    '            ElseIf cfg.Password2 = inputPass Then
-    '                approver = cfg.Pass2Username
-    '            ElseIf cfg.Password3 = inputPass Then
-    '                approver = cfg.Pass3Username
-    '            End If
-    '        End If
-
-    '        Dim iItemIDs = (From a In db.Items Where a.ID.Equals(itemId) Select a).ToList
-
-    '        For Each n In iItemIDs
-
-    '            dPrice = Double.Parse(n.Price)
-    '            dPricea = Double.Parse(n.PriceA)
-    '            dPriceb = Double.Parse(n.PriceB)
-    '            dPricec = Double.Parse(n.PriceC)
-    '            sLastUpdate = (n.LastUpdated)
-    '        Next
-
-    '        ' Create new log object
-    '        Dim newLog As New SOD_WO_LOG With {
-    '        .OrderId = orderId,
-    '        .ItemID = itemId,
-    '        .FullPrice = mFullPrice,
-    '        .UpdatedPrice = mUpdatedPrice,
-    '        .ApprovedUser = approver,  ' <- resolved username
-    '        .Status = sStatus,
-    '        .Date = DateTime.Now,
-    '        .Price = dPrice,
-    '        .Pricea = dPricea,
-    '        .Priceb = dPriceb,
-    '        .Pricec = dPricec,
-    '        .LastUpdatedPrice = sLastUpdate,
-    '        .OrderTaker = usrFullname.ToUpper
-    '    }
-
-    '        ' Add to context
-    '        db.SOD_WO_LOGs.InsertOnSubmit(newLog)
-
-    '        ' Save changes
-    '        db.SubmitChanges()
-
-    '    Catch ex As Exception
-    '        MessageBox.Show("Error inserting log: " & ex.Message,
-    '                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-    '    End Try
-    'End Sub
 
     Public Sub InsertPriceLogs(orderId As Integer, itemId As Integer, mFullPrice As String, mUpdatedPrice As String, inputPass As String, sStatus As String)
         Try
@@ -7599,14 +5364,6 @@ inputCust:
         Next
     End Sub
 
-    'Private Sub SetTaxChangeReasonCode(ByVal orderID As Integer)
-    '    If orderID <= 0 Then Exit Sub
-
-    '    Using dbx = GetDB()
-    '        ApplyTaxChangeReasonCode(dbx, orderID)
-    '        dbx.SubmitChanges()
-    '    End Using
-    'End Sub
 
     Private Sub PrepareNewOrderTaxReasons(dbx As ItemLookUpDataContext, orderID As Integer,
                                          orderType As Integer)

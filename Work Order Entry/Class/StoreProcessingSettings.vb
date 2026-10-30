@@ -225,14 +225,7 @@ Public NotInheritable Class StoreProcessingSettings
                                   ByVal configuration As System.Configuration.Configuration,
                                   ByVal key As String,
                                   ByVal value As Boolean)
-        Dim setting = configuration.AppSettings.Settings(key)
-        Dim textValue As String = value.ToString().ToLowerInvariant()
-
-        If setting Is Nothing Then
-            configuration.AppSettings.Settings.Add(key, textValue)
-        Else
-            setting.Value = textValue
-        End If
+        SetString(configuration, key, value.ToString().ToLowerInvariant())
     End Sub
 
     Private Shared Function ReadBoolean(ByVal key As String,

@@ -19,51 +19,40 @@
 
     End Function
     Public Shared Function CreateInitialWOUser(ByVal username As String, ByVal pass As String, ByVal register As Integer) As Boolean
-
-        Try
-            If HasAnyWOUsers() Then
-                Return False
-            End If
-
-            Dim query As New SOD_WO_User With {
-                .UserFullName = username,
-                .UserName = username,
-                .UserPass = pass,
-                .UserRegister = register
-            }
-
-            db.SOD_WO_Users.InsertOnSubmit(query)
-            db.SubmitChanges()
-
-            Return True
-        Catch ex As Exception
-            AppPrompt.Show(ex.Message)
-            Return False
-        End Try
-
+        If String.IsNullOrWhiteSpace(username) OrElse String.IsNullOrWhiteSpace(pass) OrElse register <= 0 Then
+            Throw New ArgumentException("A username, password and positive register number are required.")
+        End If
+        Using dbx = GetDB()
+            dbx.Connection.Open()
+            Using transaction = dbx.Connection.BeginTransaction()
+                dbx.Transaction = transaction
+                Try
+                    ' Recheck under the table lock: two first-run clients must
+                    ' not both create an account after observing an empty table.
+                    If dbx.ExecuteQuery(Of Long)(
+                        "SELECT COUNT_BIG(*) FROM dbo.SOD_WO_User WITH (TABLOCKX,HOLDLOCK)").Single() <> 0 Then
+                        transaction.Rollback()
+                        Return False
+                    End If
+                    dbx.SOD_WO_Users.InsertOnSubmit(New SOD_WO_User With {
+                        .UserFullName = username.Trim(), .UserName = username.Trim(),
+                        .UserPass = pass, .UserRegister = register})
+                    dbx.SubmitChanges()
+                    transaction.Commit()
+                    Return True
+                Catch
+                    transaction.Rollback()
+                    Throw
+                End Try
+            End Using
+        End Using
     End Function
 
     Public Shared Function HasAnyWOUsers() As Boolean
-
-        Try
-            Dim exist = (From u In db.SOD_WO_Users
-                         Select u).Count
-
-            If exist = 0 Then
-
-                Return False
-
-            Else
-
-                Return True
-
-            End If
-
-        Catch ex As Exception
-            AppPrompt.Show(ex.Message)
-            Return False
-        End Try
-
+        ' Database/schema failures must never be interpreted as an empty table.
+        Using dbx = GetDB()
+            Return dbx.SOD_WO_Users.Any()
+        End Using
     End Function
     Public Shared Function viewUserWithPass() As Object
 

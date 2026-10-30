@@ -28,6 +28,27 @@ in memory and are not stored in settings or run logs.
 
 ## Use
 
+Portable also includes `Add_WorkOrder_Print_Address.sql` for the
+missing Address output in a compatible legacy SOD_fntbl_WoDetails function,
+regardless of database name.
+It preserves existing calculations and adds the concatenated customer address.
+Only the reviewed legacy definition (or this migration's result on repeat runs)
+is accepted; customized functions stop for review. Select and apply explicitly
+after backup/restore testing. No customer columns or business rows are added.
+
+Portable includes `Add_WorkOrder_Username_Columns.sql` as an optional
+selection for compatible store databases regardless of database name. It adds missing nullable Pass2Username and
+Pass3Username columns to the existing SOD_WO_Conf table, preserving settings.
+Select only this migration for the missing-username-column error; no manual
+SQL import is needed. Existing incompatible definitions stop for review.
+The table must already exist; missing tables and system databases are rejected.
+The older CONSIGNMENT-only script remains for recovery compatibility but is no
+longer offered in the catalog. The old CONSIGNMENT printing file also remains
+for compatibility but is replaced by the reusable entry in the Portable list.
+The printing fix accepts only the reviewed legacy function or its already-fixed
+result. Other function definitions, including branch-specific calculations or
+branch text, stop for review. Existing correct custom functions are not replaced.
+
 1. Back up the target database and test the selected scripts on a disposable
    restore. Close database maintenance tools and choose a quiet period.
 2. Open the updater. Enter the SQL server and exact database name. Select
@@ -128,6 +149,14 @@ warning, not as a failed database update. Treat run folders as internal database
 documentation; custom scripts must not contain passwords or other secrets.
 
 ## Verification
+
+The Address migration was applied directly to localhost CONSIGNMENT_DB on
+October 28 with explicit authorization, preserving its reviewed legacy totals
+and permissions. All 15 isolated Address migration checks passed. The restore
+had no orders: local checks verified the added column, unchanged existing column
+definitions, empty-order behavior and repeat application, not an actual print
+preview. Evidence: `TestResults/ConsignmentAddressApply-15e73095`. This does not
+indicate deployment to any live store.
 
 `Database Components/Tests/DatabaseUpdater_LocalDB_Test.ps1` creates its own
 GUID-named LocalDB instance and SQL Server 2016 compatibility database. It checks

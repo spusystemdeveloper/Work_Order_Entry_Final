@@ -68,6 +68,21 @@ try {
         Check (@($catalog | Where-Object {$_.Id -eq 'Migrations/Improve_WorkOrder_ItemLogLookup.sql' -and $_.Category -eq 'Index / performance'}).Count -eq 1) "$profile offers the optional item-log performance index"
         Check (@($catalog | Where-Object {$_.Id -eq 'Migrations/Improve_RMS_VoucherLookup.sql' -and $_.Category -eq 'Index / performance'}).Count -eq 1) "$profile offers the optional RMS voucher lookup index"
         $packaged = [WorkOrderDatabaseUpdater.UpdateCatalog]::Load((Join-Path (Split-Path $exe) 'Database Components'), $profile)
+        $usernameId = 'Migrations/Add_WorkOrder_Username_Columns.sql'
+        $printId = 'Migrations/Add_WorkOrder_Print_Address.sql'
+        Check (@($catalog | Where-Object Id -eq 'Migrations/Add_CONSIGNMENT_WorkOrder_Print_Address.sql').Count -eq 0) "$profile does not offer duplicate legacy printing fix"
+        Check (@($catalog | Where-Object Id -eq $printId).Count -eq $(if($profile -eq 'Portable'){1}else{0})) "$profile exposes reusable printing migration only in Portable"
+        if($profile -eq 'Portable') {
+            Check ((@($packaged | Where-Object Id -eq $printId).Count -eq 1) -and
+                ($packaged | Where-Object Id -eq $printId).Hash -eq ($catalog | Where-Object Id -eq $printId).Hash) 'Portable built package contains reviewed printing migration'
+        }
+        $usernameScripts = @($catalog | Where-Object Id -eq $usernameId)
+        Check (@($catalog | Where-Object Id -eq 'Migrations/Add_CONSIGNMENT_WorkOrder_Username_Columns.sql').Count -eq 0) "$profile does not offer duplicate legacy username fix"
+        Check ($usernameScripts.Count -eq $(if($profile -eq 'Portable'){1}else{0})) "$profile exposes reusable username migration only in Portable"
+        if($profile -eq 'Portable') {
+            Check ((@($packaged | Where-Object Id -eq $usernameId).Count -eq 1) -and
+                ($packaged | Where-Object Id -eq $usernameId).Hash -eq $usernameScripts[0].Hash) 'Portable built package includes exact reviewed username migration'
+        }
         Check (($packaged | Where-Object Id -eq 'Migrations/Improve_RMS_VoucherLookup.sql').Hash -eq
             ($catalog | Where-Object Id -eq 'Migrations/Improve_RMS_VoucherLookup.sql').Hash) "$profile built package includes the exact reviewed voucher migration"
     }
@@ -235,6 +250,15 @@ INSERT dbo.SOD_Item_Logs VALUES(1,'01',7,'20200101');
     $schema = Scalar "SELECT definition FROM sys.sql_modules WHERE object_id=OBJECT_ID('dbo.SOD_UpdateTest')"
     Check ($schema -match 'RETURN 9') 'All rejected updates preserve the committed function'
     $hoPath = Join-Path $components 'Migrations\Add_HO_PO_WorkOrder_Password_Columns.sql'
+    $portableUsername = [WorkOrderDatabaseUpdater.UpdateCatalog]::Load($components,'Portable') | Where-Object Id -eq 'Migrations/Add_WorkOrder_Username_Columns.sql'
+    Sql "CREATE TABLE dbo.SOD_WO_Conf(id int PRIMARY KEY,StoreID int); INSERT dbo.SOD_WO_Conf VALUES(1,42);"
+    $beforeUsername = Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory'
+    Reject {Apply @($portableUsername,$failure)} 'Fixture failure' 'Later updater failure rolls back reusable username additions'
+    Check ((Scalar "SELECT COUNT(*) FROM sys.columns WHERE object_id=OBJECT_ID('dbo.SOD_WO_Conf') AND name IN('Pass2Username','Pass3Username')") -eq 0 -and (Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory') -eq $beforeUsername) 'Failed reusable migration leaves schema and history unchanged'
+    $null=Apply @($portableUsername)
+    $null=Apply @($portableUsername)
+    Check ((Scalar "SELECT COUNT(*) FROM sys.columns WHERE object_id=OBJECT_ID('dbo.SOD_WO_Conf') AND name IN('Pass2Username','Pass3Username') AND system_type_id=231 AND max_length=100 AND is_nullable=1") -eq 2 -and (Scalar 'SELECT StoreID FROM dbo.SOD_WO_Conf WHERE id=1') -eq 42) 'Updater deploys reusable fields repeatedly on GUID-named database without changing settings'
+    Check ((Scalar "SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory WHERE ScriptID='Migrations/Add_WorkOrder_Username_Columns.sql'") -eq 2) 'Reusable migration records both explicit updater deployments'
     $hoScript = [WorkOrderDatabaseUpdater.UpdateScript]::Load($hoPath, 'Custom/Add_HO_PO_WorkOrder_Password_Columns.sql', 'Custom SQL', 'HO target column migration', $false)
     $beforeWrongTarget = Scalar 'SELECT COUNT(*) FROM dbo.SOD_WO_DeploymentHistory'
     Reject { Apply @($hoScript) } 'targets HO_PO_DB only' 'HO migration rejects a different target database'

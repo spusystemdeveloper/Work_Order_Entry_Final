@@ -1,4 +1,436 @@
-# Work Order Entry unit tests
+﻿# Work Order Entry unit tests
+
+## October 28: reusable Portable username and printing migrations
+
+October 29 live Iloilo header cleanup was separately authorized. Before deleting
+SCHENKER header ID 1, an owned LocalDB fixture verified the exact ID-based delete,
+unchanged survivors, Walk-In ID 227 retention, rollback restoration and commit.
+After verified table-level export and live target/reference/trigger guards, only
+ID 1 was committed as deleted. All retained headers and transaction 9850's
+financial records were checked unchanged; the custom report returns one Walk-In
+row and no duplicate CustID groups remain. Evidence:
+TestResults/IloiloHeaderCleanup-6420007f. This data repair did not rebuild apps,
+execute RMS POS or confirm the native Invoice Manager preview.
+
+October 29 authorized local Malabon import: CustomText1 width 50 was checked
+after ALTER with existing values/rowversions unchanged. The customer transaction
+verified matching payment terms, mapped Sales Rep references, unchanged existing
+customer/Sales Rep rows, generated local IDs, and final count 118 with zero
+duplicate accounts. Twelve customers and two required related reps were added;
+all three source databases were read-only. Evidence and pre-change backups:
+TestResults/MalabonCustomerField-bfe77f07 and
+TestResults/MalabonCustomerImport-8fa54da3. This data/schema-only operation did
+not rebuild applications, reconcile balances or test RMS POS workflows.
+
+Local register setup verification: user-authorized Register 1 (Consignment Local)
+was inserted into previously empty localhost CONSIGNMENT_DB.Register using its
+Configuration.StoreID 100. Transaction checks verified the target, empty table,
+single configuration row, absence of insert triggers and exact inserted row.
+Receipt/device defaults remain unconfigured; no RMS POS/device test was run.
+Evidence: TestResults/ConsignmentRegister-4819541e. No source build was needed.
+
+Local customer import verification (separate from automated tests): the authorized
+QC PUREGOLD_DB/MERRYMART_DB copy into localhost CONSIGNMENT_DB skipped 65 existing
+accounts and inserted 41, yielding 106 customers and no duplicate accounts.
+Transaction checks verified unchanged existing rows and equivalent payment terms.
+Stored balances were copied as customer master fields; linked financial history
+and captions were not migrated. Orders remained empty; QC was SELECT-only.
+Evidence and local backup: TestResults/QCCustomerImport-6fd1fe19. This data-only
+operation required no application rebuild and is not a financial reconciliation.
+
+V8 first-user setup: after Debug build, run
+`Database Components/Tests/FirstAccount_LocalDB_Test.ps1`. The x86 probe
+creates/drops only SOD_FirstAccount_<GUID> on LocalDB, replacing endpoint fields
+and contexts only inside the fixture process. It calls actual Login to display
+the setup and answer its synthetic prompts; the production form Load and normal
+register-validation path are not invoked. It verifies cancellation, empty/
+mismatched passwords, masked fields, chosen register, existing-password lookup,
+existing-user rejection, missing-schema failure and concurrent creation. No
+real user credentials, registry writes, store config changes or live connection.
+Passed 35 checks (TestResults/FirstAccount-5e7ff429), including the actual
+existing-account wrong-password path. Both Release/x86 solutions and 119 unit
+tests passed. See FIRST_ACCOUNT_SETUP.md for user instructions.
+
+The Portable username fix is now Add_WorkOrder_Username_Columns.sql, reusable
+across compatible store database names. The focused test retains its filename
+ConsignmentUsernameColumns_LocalDB_Test.ps1 but uses Portable_Custom_Store on a
+new owned LocalDB instance. It covers missing table/view rejection, system DB
+guard, unchanged settings, repeat/partial schemas and rollback. Updater tests
+also execute it through UpdateRunner on a GUID-named fixture and verify
+deployment records and rollback with a later failing script. The old targeted
+SQL remains for compatibility; select the generic catalog entry instead.
+Passed 11 focused checks, 98 updater checks (DatabaseUpdater-5e6d7f05), both
+Release/x86 solutions, Debug/Release updater builds and 119 unit tests. Debug
+application configuration was preserved around builds/tests.
+
+Printing Address migration is now Add_WorkOrder_Print_Address.sql for compatible
+store database names. The original CONSIGNMENT-specific file is retained for
+compatibility but is no longer in the Portable catalog. Other branch function
+definitions are deliberately rejected for review, including changed branch
+text and differences inside string literals. Run
+`Database Components/Tests/ConsignmentPrintAddress_LocalDB_Test.ps1`.
+Fifteen checks passed against an owned LocalDB instance (Portable_Print_Store). They compare every
+existing output value and validate exempt/fractional totals, nullable address,
+repeat/rollback behavior, target/transaction guards and customization rejection.
+The Portable updater lists Add_WorkOrder_Print_Address.sql; select
+it explicitly after backup/restore testing. This adds a function result column,
+not a Customer table column. Existing restored/local/live data is untouched.
+Reusable printing update validation: 101 updater checks passed
+(TestResults/DatabaseUpdater-ada1d39d), including generic catalog visibility and
+built package hashes. Both Release/x86 solutions, Debug/Release updater builds
+and 119 unit tests passed; Debug EXE configuration preserved byte-for-byte.
+The read-only localhost CONSIGNMENT definition matched the reviewed baseline.
+Both Release/x86 solutions, Debug/Release updater builds, 119 unit tests and
+91 updater checks passed (TestResults/DatabaseUpdater-de48df1b). This verifies
+function output and packaging; it is not an interactive print acceptance test
+against the restored database, where this migration has not been applied.
+
+After backup/restore testing, select Add_WorkOrder_Username_Columns.sql from
+Portable for a compatible store target, review and apply. It does not run
+automatically. The HO_PO migration is not a substitute. Fixture files have
+unique paths and the owned database is dropped before its instance is deleted.
+
+## October 27: quotation-conversion stock checks
+
+Shared quantity validation reads numeric values with Convert.ToDouble, matching
+saving. Keep the legacy fallback for invalid values; the normal before/after
+24-case matrix still passes unchanged. The added --formatted probe mode uses
+the incident's 71,202 physical / 2,692 committed amounts in an owned fixture,
+checking numeric/text 100000, valid 60000, duplicate 40000 lines, 1000.5, and the
+actual convertToWorkOrder -> SaveOrder path. The shortage is blocked before any
+order writes. Existing local WO 23337 is read-only evidence, not a test fixture.
+
+Run QuantityValidation_LocalDB_Compare.ps1 as documented below; it now runs the
+six formatted cases after the paired comparison. Passed 240 paired assertions
+plus 12 new checks. Evidence: TestResults/QuantityValidation-4f8669e4.
+
+The existing ApplyQuantityCommittedDifference method has an optional
+requireAvailableStock flag (default False). Only SaveExistingOrderChanges for
+original Type 3 / target Type 2 enables it. Its atomic UPDATE checks current
+available stock for item types 0/3 while incrementing commitments under the same
+lock; UI preflight alone is insufficient after concurrent changes. Other
+commitment operations retain the existing query behavior and type-7 exemption.
+
+Run MultiUser_Save_LocalDB_Test.ps1 normally and with -VersionedReads. New cases
+invoke the actual compiled transaction and verify complete rollback of a
+shortage, valid fractional conversion, duplicate-line rollback, type-7
+conversion and two overlapping quote conversions competing for ten units.
+Exactly one eight-unit conversion commits; the loser remains a quotation and
+stock remains ten. Passed 52 checks in each mode (RMS settlement simulated).
+PreallocationValidation_LocalDB_Test.ps1 passed all 80 existing checks, including
+default three-argument commitment calls. Both required Release builds and 119
+units passed. Artifacts: MultiUser-6892624d, MultiUser-cfa32456,
+Preallocation-9018bf60. No live or restored-store writes; app configs preserved.
+
+## October 27: queue-aware release confirmations
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\ReleaseTypePrompt_UI_Test.ps1'
+```
+
+This compiles an x86 UI probe and runs queue-off/queue-on in separate processes
+using the probe's own EXE config. It switches the actual Pick-up/Delivery radios
+with 1 and 6 real selected-grid rows, captures and answers confirmation dialogs,
+and checks the original queued messages plus the plain non-queued confirmations.
+Both CheckedChanged events fire during these switches; the unchecked event must
+not prompt. Do not replace this test with a direct call to releaseType, because
+that missed the original duplicate-event defect.
+The prepared reminder is shown only for queued Pick-up after Yes. Tests also
+check No/empty-order/already-selected paths, queue-column visibility and unchanged release,
+quantity, price, prepared and legacy delivery location behavior. No production
+form Load, SQL, config/registry updates or saved orders. The normal application
+configuration hash is checked before/after. Passed 129 queue-off and 123 queue-on
+assertions; both Release/x86 solutions and 119 unit tests also passed.
+
+## October 27: shared V8 quantity validation
+
+ValidateAllQty() and ValidateAllQtyForQoute() keep their existing callers and
+return DialogResult through ValidateQuantities(includeRecalledReservation).
+The private flag enables only the original recalled-reservation lookup for Work
+Orders. Quotations do not add it. Duplicate aggregation, lookup caches, numeric
+conversions, exemptions by item type, catalog reload, totals, prompts and error
+counters retain their before-change behavior; this refactor fixes no unrelated
+validation/error-handling policy.
+
+For a paired compiled comparison, save a working before-change Debug EXE, then
+build the candidate and run:
+
+```powershell
+& '.\Database Components\Tests\QuantityValidation_LocalDB_Compare.ps1' `
+  -BaselineAssembly '<absolute-path-to-before-change-V8-EXE>'
+```
+
+The x86 probe creates/drops only its own SOD_QtyValidation_<GUID> LocalDB
+fixture and overrides connection fields only inside its test process. It calls
+both real validators without loading the application or invoking Save. Timer-
+closed test prompts are recorded and compared. All 240 assertions compare
+return values, counters, exact prompts, row values/colors, catalog reloads and
+totals across 24 cases: new/recalled orders, closed orders, legacy SOD_WO
+reservations, quotation reservation exclusion, duplicate codes, type 3/type 7,
+fractional/invalid quantities, invalid/unconfirmed prices, exemption, existing
+error counts, empty grids and caught-error captions. Each variant also passes
+27 endpoint/case/data-preservation checks. The runner supports Windows
+PowerShell 5.1's JSON-array behavior without relaxing case-count assertions.
+
+The immediate before-change Designer was already missing selected-grid
+columns. User approved a limited repair of the attachment and the three Price,
+Cost and Description columns plus their colliding lookup names. The paired
+baseline was TestResults/V8Readability-20261027/Before/Work Order Entry_V8.exe;
+its two validator bodies match the immediate before-change source. Artifacts:
+TestResults/QuantityValidation-d17c7b8c and V8QuantityValidation-20261027/Before.
+Other UI edits and checkbox Boolean defaults are preserved.
+
+Required Release builds and all 119 unit tests passed. Multi-user fixtures
+passed 43 default-locking and 43 versioned-read checks (RMS settlement is a
+simulation), with 28 checkbox, 50 readability and 1,344 small-screen checks.
+No live connection or writes to the user's restored GSC database. Actual store
+workflow and physical printing were not tested; existing EXE configs preserved.
+
+## October 27: V8 readability cleanup
+
+The main form removes only complete commented-out procedures and extracts the
+existing GridColumnWidth statements into ConfigureItemGridSizing,
+ConfigureItemGridColumns and ApplyItemGridReadability. The print form now builds
+17 parameters through CreateReportParameters and adds its data source once.
+No save/recall SQL, pricing, tax, report layout or checkbox type changes.
+
+After both Release/x86 solution builds and Run-UnitTests.ps1, run the existing
+RecallFormatting_UI_Test.ps1, ItemGridReadability_UI_Test.ps1,
+SmallScreenLayout_UI_Test.ps1 and Packaging_CleanFolder_Test.ps1. Preserve all
+store EXE configs around builds/tests. Compare GridFormatting_UI_Compare.ps1
+against a same-source before-change Debug EXE. On this host its Start-Process
+wrapper misreported the exit status despite valid helper results; running the
+same compiled GridFormattingProbe directly for Before/After and applying every
+original assertion passed all 208 checks across 16 cases, including pixels.
+Do not bypass a real helper failure or change comparison assertions.
+
+Current artifacts are under TestResults/V8Readability-20261027: before-change
+source/Debug EXE, compiled ReportParametersProbe (120 checks for ordinary,
+website and quotation names/values under en-US and fil-PH), GridCompare and
+Reports. The existing PrintedWithholding_LocalDB_Test.ps1 passed 73 checks.
+All V8 assertions in PrintedWithholding_Pdf_Test.py passed (284 checks), using
+Reports as the V8 render directory; V4 was outside this cleanup. The stock
+script's final summary mentions both versions, so interpret that invocation as
+V8-only. Normal unit count is 119; checkbox 28, readability 50, small-screen
+1,344. Fixture writes occur only in owned disposable LocalDB databases. The
+native print workflow and physical printer alignment remain manual acceptance.
+
+## October 27: default GOODS and retired REVIEW marker
+
+Unmarked/blank Item.Notes now defaults to GOODS. This produces a 1% suggestion
+only when that customer/order has 1% enabled. Existing [WTAX:REVIEW] tokens are
+ignored, not deleted from the database. Explicit SERVICES/EWT15/GIFT_CERT markers
+remain authoritative; unknown/conflicting markers are not silently guessed.
+5%, VAT exemption, existing subtotal allocation/rounding and stored totals remain
+unchanged. No SQL updates. Build validation: 119 unit tests per main project;
+142 actual item/UI/recall/reprint checks per V4/V7.1/V8 on owned local fixtures.
+
+
+V4 WALK-IN selections: build the active V4 project Release/x86 with its EXE
+configs preserved, then run ItemWithholding_LocalDB_Test.ps1 against that EXE
+and V4RecallTaxable_LocalDB_Test.ps1 with -ApplicationPath pointing at the same
+candidate. The shared item probe exercises the actual V4 picker, Cancel, marker
+retention, recall loader, named-customer fallback, explicit all-off, closed-order
+reprint and report rendering (138 checks). The V4 probe stages ShippingNotes as
+the form does and uses the unchanged mapped GSC-compatible header/line update
+methods (24 checks), verifying unrelated notes and unchanged tax/stock values.
+Run PrintedWithholding_LocalDB_Test.ps1 (73 checks). A clean-folder copy of V4
+also passes the item probe without private DLLs/config. These are disposable
+LocalDB fixtures; native RMS settlement is simulated. V4 keeps legacy save
+boundaries; the separate 43-check MultiUser suite in both read modes validates
+V8, not V4 concurrency guarantees. Both required solutions, 117 main units and
+Packaging_CleanFolder_Test.ps1 also passed. No live SQL is executed.
+
+V8 WALK-IN selections (October 26): the unit suite covers ShippingNotes marker
+round trips, unrelated text preservation, replacing a selection, explicit
+all-off versus absent markers and rejecting unsupported rates. Run
+ItemWithholding_LocalDB_Test.ps1 against the V8 Release EXE for the real picker,
+Cancel, saved/recalled rates, normal/closed-order reprints, named-customer
+fallback, explicit all-off despite a subsequently enabled customer flag and
+unchanged shared customer settings. The probe creates a private LocalDB fixture
+and renders the actual report; it never loads the production main form.
+Run PrintedWithholding_LocalDB_Test.ps1, Packaging_CleanFolder_Test.ps1 and both
+required Release/x86 solution builds. Preserve Debug/Release EXE configs around
+builds. MultiUser_Save_LocalDB_Test.ps1, normally and with -VersionedReads, now
+also exercises the actual save of selected/all-off markers, existing-note
+preservation, unchanged totals/commitments and injected transaction rollback.
+Results: 117 units, 138 item/picker checks, 73 print checks, packaging and 43
+transaction checks per read mode passed. Closed-order settlement is simulated;
+actual RMS POS retention and physical printing remain manual acceptance checks.
+The runtime Set W/Tax button copies the neighboring Set Tax button's icon and
+visual properties; inspect it beside Set Tax/Logout at the store's display scale.
+
+V8 credit warning: run `Database Components/Tests/CreditWarning_LocalDB_Test.ps1`
+after the Release/x86 build. Requires Windows, LocalDB and the Framework x86 C#
+compiler. It creates/drops an owned fixture, points only the test process at it,
+and invokes the compiled total/payment events and customer-credit loader without
+showing/loading the production form. The test dismisses real warning dialogs.
+Twenty-five checks cover CHARGE selected after items, customer changes (including
+equal balances), total changes, stale/invalid balances, other payment types,
+equal/sufficient credit and unchanged total, Save availability and customer limits.
+It does not test a production save or RMS POS; no SQL deployment is required.
+Run both required Release/x86 solution builds and Run-UnitTests.ps1, preserving
+existing application EXE configs. October 26: both builds, 114 units and 25 credit
+checks passed locally.
+
+HO WO 18947 -> 18946 recovery validation: run
+`Database Components/Tests/HO_Renumber18947_LocalDB_Test.ps1` only on Windows
+with LocalDB. It creates/drops its own instance/database and a real copy-only
+checksum fixture backup. Forty-two checks cover backup/maintenance/target
+rejection, injected rollback failures, snapshots, inventory, foreign/unknown
+references, trigger state, commit/repeat guards and actual legacy @@IDENTITY
+18948 without reseeding. It does not execute against live. The separate October
+24 incident record documents the independently authorized live backup, rehearsal,
+commit and SELECT verification; that is separate from these synthetic tests.
+
+
+Current 5% suggestion rule (October 24): customer enable/caption checks remain;
+VAT-applicable references use the entire existing VAT-exclusive subtotal, with
+no item VAT5 requirement. Income markers continue to govern 1%, 2%, 15%.
+Run both Release builds, V4 build, Run-UnitTests, ItemWithholding_LocalDB_Test
+per version and the rendered report suite. Unit cases cover unmarked and legacy
+VAT5-tagged items, unchanged income classes, signed/half-cent rounding and VAT
+exempt exclusion. Fixtures test customer-only enable/disable, independent screen
+and reprint values and unchanged saved totals. Local disposable fixtures only.
+Validated: 114 units; 123 item checks and 73 report checks per version; 568 PDF
+checks and packaging. Existing EXE configs preserved; physical printing manual.
+
+
+Current half-sheet print layout (October 24; with close-set colons and aligned amounts) supersedes the older payment-at-top
+layout notes below. Run ItemWithholding_LocalDB_Test.ps1 per compiled V4/V8 EXE,
+then PrintedWithholding_LocalDB_Test.ps1 per EXE with its pre-change report as
+-BaselineReport, followed by PrintedWithholding_Pdf_Test.py on the common output
+folder containing V4Render and V8Render. The report probe asserts unchanged
+item expressions/parameters, exact fixture amounts, regular individual WTax,
+bold summary/payment, aligned left/right totals colon positions and right edges of all rate/total/payment amounts, one-row signatures and six-item half-sheet fit. Long
+wrapped descriptions and 60-line orders may paginate; every line must remain.
+Blank canvas is trimmed; no change to preview/direct-print paper settings.
+Use the required builds, unit suite and Packaging_CleanFolder_Test.ps1. Existing
+Debug/Release EXE configs must be preserved around builds/tests. Current result:
+112 units; 121 item fixture checks and 73 report checks per version; 568 PDF
+checks; packaging passed. These use owned disposable LocalDB only, not RMS POS
+or real printer output. Inspect actual localhost previews and physical paper.
+
+
+The item VAT columns and Amount Due layout were reverted at the user's request.
+Run the item fixture per version, PrintedWithholding_LocalDB_Test.ps1 and
+PrintedWithholding_Pdf_Test.py to verify original report elements and no-rate /
+quotation positions, one left withholding column, payment amount at its top,
+hidden zero rows, fonts and signature spacing. VAT-column-only PDF tests were
+removed with the reverted layout. Required builds/unit tests and packaging stay
+applicable; no live database or physical printing is used.
+
+For main-screen zero withholding filtering, run both withholding UI suites and
+ItemWithholding_LocalDB_Test.ps1 for V4/V8 after rebuilding. Verify zero and
+rounded-zero labels hide, nonzero labels pack left and return after quantity or
+marker changes, sole 15% starts in column zero, and VAT/totals remain unchanged.
+The basis/review-warning panel retains its existing visibility rules.
+
+Printed zero filtering: ItemWithholding_LocalDB_Test.ps1 additionally verifies
+rounded-zero and no-matching-base cases hide payment, no enabled rates hide
+payment, and review-only warnings remain visible. The main UI also hides zero
+amount labels. PrintedWithholdingProbe.cs exercises actual no-rate output;
+PrintedWithholding_Pdf_Test.py checks nonzero rows only and no printed zero rows.
+
+For single-column printed payments, run ItemWithholding_LocalDB_Test.ps1 for
+V4 and V8. It checks CASH/CHARGE/DEBIT/CREDIT net amounts, zero/no enabled rates,
+item-specific amounts and unchanged stored totals. PrintedWithholdingProbe.cs
+and PrintedWithholding_Pdf_Test.py also assert the heading is absent, amounts
+are on separate lines, font matches Sub Total and signatures remain clear.
+Use owned LocalDB fixtures only; inspect rendered PDFs after template changes.
+
+The focused helper cleanup retains two direct price-confirmation unit cases:
+missing/placeholder values require confirmation, and numeric prices including
+zero are confirmed. The old counting/navigation helpers were test-only callers,
+not the form's navigation implementation. For settings cleanup, use a temporary
+mapped configuration to verify adding/updating lowercase Boolean values and
+preserving unrelated settings; never save test values to the store EXE config.
+Run both Release solutions, the V4 Release project, unit tests, item-marker
+fixtures for each version and EXE-only packaging after this cleanup.
+
+For the duplicate Settings resource build regression, build the main project in
+Debug/x86 and the solution in Release/x86. SmallScreenLayout.resx must retain its
+explicit WorkOrderEntry.SmallScreenLayout manifest name: its dependent VB source
+contains multiple partial form classes, so inferred naming collides with Settings.
+Preserve existing EXE configurations around these builds and unit tests.
+
+## Item-marker withholding references (current V4/V8 behavior)
+
+See ITEM_WITHHOLDING_REFERENCE.md for the marker contract and calculation.
+Customer eligibility stays unchanged; marker-specific bases replace applying
+every enabled percentage to the entire subtotal. No Davao RMS XML receipt edits.
+
+Run `Database Components/Tests/ItemWithholding_LocalDB_Test.ps1` separately for
+each compiled EXE, with `-ApplicationPath` and `-OutputDirectory`. Requires
+LocalDB, installed ReportViewer 2010 and Framework x86 csc. The C# probe creates
+and drops a GUID-named owned LocalDB fixture, exercises the actual compiled
+display/helper and unchanged embedded reports, and creates only an offscreen
+footer host (never production form Load). 73 checks passed per version: mixed
+goods/services, independent VAT5/EWT15, gifts, review exclusions, fresh marker
+reads, current customer eligibility, actual/exempt VAT, stale header flags,
+closed settled-line reprints, packing and paper settings. No physical printing
+or RMS POS is executed. Configuration hashes must remain unchanged.
+
+Existing WithholdingSuggestions_LocalDB_UI_Test.ps1 (55) and its V4 counterpart
+(57) now seed explicit item markers and retain their totals/exemption/layout
+assertions. PrintedWithholdingProbe.cs seeds GOODS+VAT5 and EWT15 lines; its
+62 checks each and 160 PDF checks verify zero for nonmatching enabled rates,
+while retaining CASH/CHARGE/neutral formatting, fonts and original total layout.
+The six new unit cases bring the main unit suite to 112. Run existing V4 guard,
+duplicate-customer, empty-result and recall-tax fixtures, PrintLayout_UI_Test.ps1
+(91), and Packaging_CleanFolder_Test.ps1. No save-coordinator code changed here.
+
+The owned-fixture samples and test evidence are in TestResults/ItemWithholding-
+20261023. A separate SELECT-only check of existing localhost settled WO 23309
+verified both compiled helpers returned 1%_Charge 7.95 from current item markers.
+The Davao receipt-folder hash snapshot must match after these tests; do not
+change its diagnostic XML or pending RMS-template investigation incidentally.
+
+## Davao RMS XML receipt withholding reference
+
+Run `python "Database Components/Tests/DavaoReceiptWithholding_Test.py"`.
+Seven offline contract tests evaluate the added XML's actual conditions and
+arithmetic using synthetic inputs: enabled/invalid rates and captions, sole
+15%, no customer, quotes, actual VAT-exclusive base, exemptions, zero/signed
+amounts, midpoint rounding and large amounts. A sales-receipt regression uses
+the user's 178.00 total and 19.07 VAT and verifies both source filenames match.
+A canonical hash preserves every
+original receipt element when the new section/call are removed. The original
+Sub Total font is reused; added currency variables use native vbCurrency.
+
+This is not the RMS receipt compiler, physical printing or live-store evidence.
+Use the localhost RMS preview checklist in Receipts/Davao_Receipts/README.md,
+including long/multi-page work orders and signature/page-break inspection.
+The existing Packaging_CleanFolder_Test.ps1 validates the separate addin's
+ReportViewer package, not this RMS XML engine. No SQL updates are needed.
+
+## V4 recalled-order Taxable flags
+
+Run `Database Components/Tests/V4RecallTaxable_LocalDB_Test.ps1` with
+`-ApplicationPath` pointing to the compiled V4 EXE (defaults to V4 EXE-Only).
+Requires installed ReportViewer 2010, x86 Windows PowerShell and LocalDB.
+It creates/drops a GUID-named database on `(localdb)\MSSQLLocalDB` and writes
+only synthetic customer/order/item/queue records. Its minimal tables follow the
+active V4 DBML, including rowversion. It replaces all application contexts with
+the guarded fixture endpoint before invoking any application SQL; never run
+production form Load or point this test at an existing store database.
+
+The prior EXE reproduces a stale header Taxable flag despite positive VAT.
+The fixed EXE passes 19 checks using actual compiled clsRecall.UpdateOrder and
+UpdateOrderEntry methods plus the existing UI UpdateAmt calculation: positive
+VAT flags, customer exemption transitions, unchanged totals/stock/commitments,
+active queue state, repeated saves, quotations and the original zero-VAT header
+rule. This does not add V8 transaction protections to V4 or test actual RMS.
+Application config hashes must remain unchanged.
+
+Also run existing V4 guard, duplicate-customer, withholding and empty-result
+tests, both production Release/x86 builds, and Run-UnitTests.ps1. The required
+MultiUser_Save_LocalDB_Test.ps1 normal and -VersionedReads checks exercise V8's
+save coordinator separately; they are not evidence of V4 or actual POS behavior.
+Manual localhost acceptance: recall/save a taxable order and an exempt order;
+verify stored header/line Taxable flags, VAT and total. No SQL deployment needed.
 
 ## Printed withholding reference (V4 and V8)
 

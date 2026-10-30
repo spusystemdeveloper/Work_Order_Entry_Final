@@ -1,4 +1,4 @@
-<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
+﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()>
 Partial Class frmItemLookUp
     Inherits System.Windows.Forms.Form
 
@@ -23,9 +23,15 @@ Partial Class frmItemLookUp
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
         Me.components = New System.ComponentModel.Container()
+        Dim SelectedPriceStyle As New System.Windows.Forms.DataGridViewCellStyle()
+        Dim SelectedCostStyle As New System.Windows.Forms.DataGridViewCellStyle()
+        Dim SelectedDescriptionStyle As New System.Windows.Forms.DataGridViewCellStyle()
         Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(frmItemLookUp))
         Dim DataGridViewCellStyle1 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle2 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
+        Dim DataGridViewCellStyle14 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle3 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle4 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle5 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
@@ -35,9 +41,6 @@ Partial Class frmItemLookUp
         Dim DataGridViewCellStyle9 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle10 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle11 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle12 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle13 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle14 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle15 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle16 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle17 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
@@ -47,30 +50,6 @@ Partial Class frmItemLookUp
         Dim DataGridViewCellStyle21 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle22 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Dim DataGridViewCellStyle23 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle24 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle25 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle26 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle27 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle28 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle29 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle30 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle31 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle32 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle33 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle34 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle35 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle36 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle37 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle38 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle39 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle40 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle41 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle42 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle43 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle44 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle45 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle46 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
-        Dim DataGridViewCellStyle47 As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.ofdImport = New System.Windows.Forms.OpenFileDialog()
         Me.txtRemarks = New System.Windows.Forms.TextBox()
         Me.lblRemarks = New System.Windows.Forms.Label()
@@ -92,8 +71,8 @@ Partial Class frmItemLookUp
         Me.lblStatItemSelected = New System.Windows.Forms.ToolStripStatusLabel()
         Me.lblStatItemCount = New System.Windows.Forms.ToolStripStatusLabel()
         Me.panelButtons = New System.Windows.Forms.Panel()
-        Me.btnTax = New System.Windows.Forms.Button()
         Me.Button2 = New System.Windows.Forms.Button()
+        Me.btnTax = New System.Windows.Forms.Button()
         Me.cmdOpenWO = New System.Windows.Forms.Button()
         Me.txtAvailable = New System.Windows.Forms.TextBox()
         Me.cmdImportWeb = New System.Windows.Forms.Button()
@@ -121,13 +100,11 @@ Partial Class frmItemLookUp
         Me.panelTotal = New System.Windows.Forms.Panel()
         Me.grpWithholding = New System.Windows.Forms.GroupBox()
         Me.withholdingLayout = New System.Windows.Forms.TableLayoutPanel()
-        Me.lblWithholdingBasis = New System.Windows.Forms.Label()
         Me.lblWithholding1 = New System.Windows.Forms.Label()
         Me.lblWithholding2 = New System.Windows.Forms.Label()
         Me.lblWithholding5 = New System.Windows.Forms.Label()
         Me.lblWithholding15 = New System.Windows.Forms.Label()
-        Me.withholdingToolTip = New System.Windows.Forms.ToolTip(Me.components)
-        Me.panelTotalsContainer = New System.Windows.Forms.Panel()
+        Me.lblWithholdingBasis = New System.Windows.Forms.Label()
         Me.chkBoxQtoWo = New System.Windows.Forms.CheckBox()
         Me.GroupBox3 = New System.Windows.Forms.GroupBox()
         Me.txtVat = New System.Windows.Forms.TextBox()
@@ -135,30 +112,32 @@ Partial Class frmItemLookUp
         Me.txtSub = New System.Windows.Forms.TextBox()
         Me.GroupBox4 = New System.Windows.Forms.GroupBox()
         Me.txtTotal = New System.Windows.Forms.TextBox()
+        Me.withholdingToolTip = New System.Windows.Forms.ToolTip(Me.components)
+        Me.panelTotalsContainer = New System.Windows.Forms.Panel()
         Me.panelGrid = New System.Windows.Forms.Panel()
         Me.panelItem = New System.Windows.Forms.Panel()
         Me.picPanel = New WorkOrderEntry.CustomPanel()
         Me.picItem = New WorkOrderEntry.ZoomPictureBox()
         Me.gridItem = New System.Windows.Forms.DataGridView()
-        Me.lookupItemLookupCode = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.ItemLookupCode = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.lookupDESCRIPTION = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.lookupPRICE = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.lookupCOST = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupAVAILABLE = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupParentQuantity = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupTaxID = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupSubDescription2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.AVAILABLE = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.ParentQuantity = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.TaxID = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.SubDescription2 = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.lookupPRICE1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupID = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupDESCRIPTION1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupExtendedDescription = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupItemType = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupInactive = New System.Windows.Forms.DataGridViewCheckBoxColumn()
-        Me.lookupITEMDES = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupSKULEVEL = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupFULLDESC = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupQuantity = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.lookupQuantityCommitted = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.ID = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.DESCRIPTION1 = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.ExtendedDescription = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.ItemType = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Inactive = New System.Windows.Forms.DataGridViewCheckBoxColumn()
+        Me.ITEMDES = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.SKULEVEL = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.FULLDESC = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Quantity = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.QuantityCommitted = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Panel4 = New System.Windows.Forms.Panel()
         Me.Label6 = New System.Windows.Forms.Label()
         Me.TreeView1 = New System.Windows.Forms.TreeView()
@@ -183,37 +162,40 @@ Partial Class frmItemLookUp
         Me.pnl2TextSearch = New System.Windows.Forms.Panel()
         Me.panelSelectItem = New System.Windows.Forms.Panel()
         Me.gridSelectItem = New System.Windows.Forms.DataGridView()
+        Me.Label4 = New System.Windows.Forms.Label()
+        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
+        Me.Price = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Cost = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.Description = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.ItemCode = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.ItemName = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.QTY = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Price = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DISC = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.TOTAL = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.LessV = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.VSales = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DiscP = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Cost = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Taxable = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.ItemID = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.FullPrice = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Description = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.Extended = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.DiscAmount = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.OrderEntryID = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.chkPickLoc = New System.Windows.Forms.DataGridViewCheckBoxColumn()
         Me.CustPrep = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.LASTPURCHASEDPRICE = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.Label4 = New System.Windows.Forms.Label()
-        Me.GroupBox1 = New System.Windows.Forms.GroupBox()
         Me.Update_Timer = New System.Windows.Forms.Timer(Me.components)
         Me.Check_errors = New System.Windows.Forms.Timer(Me.components)
         Me.Timer1 = New System.Windows.Forms.Timer(Me.components)
         Me.BottomStrip.SuspendLayout()
         Me.panelButtons.SuspendLayout()
         Me.panelTotal.SuspendLayout()
+        Me.grpWithholding.SuspendLayout()
+        Me.withholdingLayout.SuspendLayout()
         Me.GroupBox3.SuspendLayout()
         Me.GroupBox2.SuspendLayout()
         Me.GroupBox4.SuspendLayout()
+        Me.panelTotalsContainer.SuspendLayout()
         Me.panelGrid.SuspendLayout()
         Me.panelItem.SuspendLayout()
         Me.picPanel.SuspendLayout()
@@ -233,111 +215,111 @@ Partial Class frmItemLookUp
         '
         'txtRemarks
         '
-        Me.txtRemarks.Name = "txtRemarks"
-        Me.txtRemarks.TabIndex = 6
-        Me.txtRemarks.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Regular)
+        Me.txtRemarks.Font = New System.Drawing.Font("Tahoma", 9.0!)
         Me.txtRemarks.ForeColor = System.Drawing.SystemColors.WindowText
         Me.txtRemarks.Location = New System.Drawing.Point(8, 167)
+        Me.txtRemarks.Name = "txtRemarks"
         Me.txtRemarks.Size = New System.Drawing.Size(326, 22)
+        Me.txtRemarks.TabIndex = 6
         '
         'lblRemarks
         '
         Me.lblRemarks.AutoSize = True
+        Me.lblRemarks.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
+        Me.lblRemarks.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        Me.lblRemarks.Location = New System.Drawing.Point(8, 146)
         Me.lblRemarks.Name = "lblRemarks"
+        Me.lblRemarks.Size = New System.Drawing.Size(125, 13)
         Me.lblRemarks.TabIndex = 61
         Me.lblRemarks.Text = "Comment (e.g. PO#):"
-        Me.lblRemarks.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.lblRemarks.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.lblRemarks.Location = New System.Drawing.Point(8, 146)
-        Me.lblRemarks.Size = New System.Drawing.Size(126, 18)
         '
         'txtType
         '
         Me.txtType.BackColor = System.Drawing.SystemColors.Control
-        Me.txtType.Name = "txtType"
-        Me.txtType.ReadOnly = True
-        Me.txtType.TabIndex = 3
-        Me.txtType.TabStop = False
-        Me.txtType.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Regular)
+        Me.txtType.Font = New System.Drawing.Font("Tahoma", 9.0!)
         Me.txtType.ForeColor = System.Drawing.SystemColors.WindowText
         Me.txtType.Location = New System.Drawing.Point(8, 86)
+        Me.txtType.Name = "txtType"
+        Me.txtType.ReadOnly = True
         Me.txtType.Size = New System.Drawing.Size(208, 22)
+        Me.txtType.TabIndex = 3
+        Me.txtType.TabStop = False
         '
         'Label5
         '
         Me.Label5.AutoSize = True
+        Me.Label5.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
+        Me.Label5.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        Me.Label5.Location = New System.Drawing.Point(8, 65)
         Me.Label5.Name = "Label5"
         Me.Label5.Padding = New System.Windows.Forms.Padding(0, 0, 27, 0)
+        Me.Label5.Size = New System.Drawing.Size(178, 13)
         Me.Label5.TabIndex = 59
         Me.Label5.Text = "Business/Customer Type:"
-        Me.Label5.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.Label5.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.Label5.Location = New System.Drawing.Point(8, 65)
-        Me.Label5.Size = New System.Drawing.Size(177, 18)
         '
         'txtCustomer
         '
-        Me.txtCustomer.Name = "txtCustomer"
-        Me.txtCustomer.ReadOnly = True
-        Me.txtCustomer.TabIndex = 1
-        Me.txtCustomer.TabStop = False
-        Me.txtCustomer.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Regular)
+        Me.txtCustomer.Font = New System.Drawing.Font("Tahoma", 9.0!)
         Me.txtCustomer.ForeColor = System.Drawing.SystemColors.WindowText
         Me.txtCustomer.Location = New System.Drawing.Point(8, 46)
+        Me.txtCustomer.Name = "txtCustomer"
+        Me.txtCustomer.ReadOnly = True
         Me.txtCustomer.Size = New System.Drawing.Size(279, 22)
+        Me.txtCustomer.TabIndex = 1
+        Me.txtCustomer.TabStop = False
         '
         'Label3
         '
         Me.Label3.AutoSize = True
+        Me.Label3.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
+        Me.Label3.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        Me.Label3.Location = New System.Drawing.Point(8, 26)
         Me.Label3.Name = "Label3"
+        Me.Label3.Size = New System.Drawing.Size(65, 13)
         Me.Label3.TabIndex = 61
         Me.Label3.Text = "Customer:"
-        Me.Label3.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.Label3.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.Label3.Location = New System.Drawing.Point(8, 26)
-        Me.Label3.Size = New System.Drawing.Size(63, 18)
         '
         'txtSales
         '
-        Me.txtSales.Name = "txtSales"
-        Me.txtSales.ReadOnly = True
-        Me.txtSales.TabIndex = 4
-        Me.txtSales.TabStop = False
-        Me.txtSales.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Regular)
+        Me.txtSales.Font = New System.Drawing.Font("Tahoma", 9.0!)
         Me.txtSales.ForeColor = System.Drawing.SystemColors.WindowText
         Me.txtSales.Location = New System.Drawing.Point(8, 127)
+        Me.txtSales.Name = "txtSales"
+        Me.txtSales.ReadOnly = True
         Me.txtSales.Size = New System.Drawing.Size(279, 22)
+        Me.txtSales.TabIndex = 4
+        Me.txtSales.TabStop = False
         '
         'Label2
         '
         Me.Label2.AutoSize = True
+        Me.Label2.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
+        Me.Label2.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        Me.Label2.Location = New System.Drawing.Point(8, 106)
         Me.Label2.Name = "Label2"
+        Me.Label2.Size = New System.Drawing.Size(65, 13)
         Me.Label2.TabIndex = 54
         Me.Label2.Text = "Sales Rep:"
-        Me.Label2.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.Label2.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.Label2.Location = New System.Drawing.Point(8, 106)
-        Me.Label2.Size = New System.Drawing.Size(64, 18)
         '
         'txtSearch
         '
-        Me.txtSearch.Name = "txtSearch"
-        Me.txtSearch.TabIndex = 8
-        Me.txtSearch.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Regular)
+        Me.txtSearch.Font = New System.Drawing.Font("Tahoma", 9.0!)
         Me.txtSearch.ForeColor = System.Drawing.SystemColors.WindowText
         Me.txtSearch.Location = New System.Drawing.Point(8, 238)
+        Me.txtSearch.Name = "txtSearch"
         Me.txtSearch.Size = New System.Drawing.Size(279, 22)
+        Me.txtSearch.TabIndex = 8
         '
         'Label1
         '
         Me.Label1.AutoSize = True
+        Me.Label1.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
+        Me.Label1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        Me.Label1.Location = New System.Drawing.Point(8, 216)
         Me.Label1.Name = "Label1"
+        Me.Label1.Size = New System.Drawing.Size(190, 13)
         Me.Label1.TabIndex = 63
         Me.Label1.Text = "Look Up Item Code/Description: "
-        Me.Label1.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.Label1.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.Label1.Location = New System.Drawing.Point(8, 216)
-        Me.Label1.Size = New System.Drawing.Size(192, 18)
         '
         'BottomStrip
         '
@@ -465,64 +447,64 @@ Partial Class frmItemLookUp
         Me.panelButtons.Controls.Add(Me.cmdClose)
         Me.panelButtons.Controls.Add(Me.cmdSelect)
         Me.panelButtons.Dock = System.Windows.Forms.DockStyle.Right
-        Me.panelButtons.Location = New System.Drawing.Point(1206, 0)
+        Me.panelButtons.Location = New System.Drawing.Point(1179, 0)
         Me.panelButtons.Name = "panelButtons"
         Me.panelButtons.Padding = New System.Windows.Forms.Padding(0, 3, 3, 3)
         Me.panelButtons.Size = New System.Drawing.Size(144, 763)
         Me.panelButtons.TabIndex = 23
         '
-        'btnTax
-        '
-        Me.btnTax.Dock = System.Windows.Forms.DockStyle.Top
-        Me.btnTax.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
-        Me.btnTax.Image = CType(resources.GetObject("btnTax.Image"), System.Drawing.Image)
-        Me.btnTax.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.btnTax.Location = New System.Drawing.Point(3, 201)
-        Me.btnTax.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnTax.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.btnTax.BackColor = System.Drawing.Color.White
-        Me.btnTax.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.btnTax.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
-        Me.btnTax.Name = "btnTax"
-        Me.btnTax.Size = New System.Drawing.Size(111, 33)
-        Me.btnTax.TabIndex = 35
-        Me.btnTax.Text = "Set Tax"
-        Me.btnTax.UseVisualStyleBackColor = False
-        '
         'Button2
         '
+        Me.Button2.BackColor = System.Drawing.Color.White
         Me.Button2.Dock = System.Windows.Forms.DockStyle.Top
-        Me.Button2.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Button2.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.Button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Button2.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.Button2.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.Button2.Image = CType(resources.GetObject("Button2.Image"), System.Drawing.Image)
         Me.Button2.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.Button2.Location = New System.Drawing.Point(3, 234)
-        Me.Button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.Button2.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.Button2.BackColor = System.Drawing.Color.White
-        Me.Button2.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.Button2.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.Button2.Location = New System.Drawing.Point(0, 234)
         Me.Button2.Name = "Button2"
-        Me.Button2.Size = New System.Drawing.Size(111, 33)
+        Me.Button2.Size = New System.Drawing.Size(141, 33)
         Me.Button2.TabIndex = 16
         Me.Button2.Text = "Logout"
+        Me.Button2.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.Button2.UseVisualStyleBackColor = False
+        '
+        'btnTax
+        '
+        Me.btnTax.BackColor = System.Drawing.Color.White
+        Me.btnTax.Dock = System.Windows.Forms.DockStyle.Top
+        Me.btnTax.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.btnTax.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnTax.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.btnTax.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        Me.btnTax.Image = CType(resources.GetObject("btnTax.Image"), System.Drawing.Image)
+        Me.btnTax.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.btnTax.Location = New System.Drawing.Point(0, 201)
+        Me.btnTax.Name = "btnTax"
+        Me.btnTax.Size = New System.Drawing.Size(141, 33)
+        Me.btnTax.TabIndex = 35
+        Me.btnTax.Text = "Set Tax"
+        Me.btnTax.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.btnTax.UseVisualStyleBackColor = False
         '
         'cmdOpenWO
         '
+        Me.cmdOpenWO.BackColor = System.Drawing.Color.White
         Me.cmdOpenWO.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdOpenWO.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdOpenWO.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdOpenWO.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdOpenWO.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdOpenWO.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.cmdOpenWO.Image = CType(resources.GetObject("cmdOpenWO.Image"), System.Drawing.Image)
         Me.cmdOpenWO.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdOpenWO.Location = New System.Drawing.Point(3, 168)
-        Me.cmdOpenWO.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdOpenWO.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdOpenWO.BackColor = System.Drawing.Color.White
-        Me.cmdOpenWO.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.cmdOpenWO.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdOpenWO.Location = New System.Drawing.Point(0, 168)
         Me.cmdOpenWO.Name = "cmdOpenWO"
-        Me.cmdOpenWO.Size = New System.Drawing.Size(111, 33)
+        Me.cmdOpenWO.Size = New System.Drawing.Size(141, 33)
         Me.cmdOpenWO.TabIndex = 15
         Me.cmdOpenWO.Text = "Check WO"
+        Me.cmdOpenWO.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdOpenWO.UseVisualStyleBackColor = False
         '
         'txtAvailable
@@ -535,21 +517,21 @@ Partial Class frmItemLookUp
         '
         'cmdImportWeb
         '
+        Me.cmdImportWeb.BackColor = System.Drawing.Color.White
         Me.cmdImportWeb.Dock = System.Windows.Forms.DockStyle.Bottom
         Me.cmdImportWeb.Enabled = False
-        Me.cmdImportWeb.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdImportWeb.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdImportWeb.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdImportWeb.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdImportWeb.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.cmdImportWeb.Image = CType(resources.GetObject("cmdImportWeb.Image"), System.Drawing.Image)
         Me.cmdImportWeb.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdImportWeb.Location = New System.Drawing.Point(3, 462)
-        Me.cmdImportWeb.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdImportWeb.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdImportWeb.BackColor = System.Drawing.Color.White
-        Me.cmdImportWeb.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.cmdImportWeb.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdImportWeb.Location = New System.Drawing.Point(0, 462)
         Me.cmdImportWeb.Name = "cmdImportWeb"
-        Me.cmdImportWeb.Size = New System.Drawing.Size(111, 33)
+        Me.cmdImportWeb.Size = New System.Drawing.Size(141, 33)
         Me.cmdImportWeb.TabIndex = 25
         Me.cmdImportWeb.Text = "Import Web"
+        Me.cmdImportWeb.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdImportWeb.UseVisualStyleBackColor = False
         Me.cmdImportWeb.Visible = False
         '
@@ -563,39 +545,39 @@ Partial Class frmItemLookUp
         '
         'cmdForInvoice
         '
+        Me.cmdForInvoice.BackColor = System.Drawing.Color.FromArgb(CType(CType(240, Byte), Integer), CType(CType(246, Byte), Integer), CType(CType(253, Byte), Integer))
         Me.cmdForInvoice.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdForInvoice.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdForInvoice.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdForInvoice.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdForInvoice.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdForInvoice.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.cmdForInvoice.Image = Global.WorkOrderEntry.My.Resources.Resources.icons8_invoice_15
         Me.cmdForInvoice.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdForInvoice.Location = New System.Drawing.Point(3, 495)
-        Me.cmdForInvoice.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdForInvoice.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdForInvoice.BackColor = System.Drawing.Color.FromArgb(240, 246, 253)
-        Me.cmdForInvoice.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.cmdForInvoice.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdForInvoice.Location = New System.Drawing.Point(0, 495)
         Me.cmdForInvoice.Name = "cmdForInvoice"
-        Me.cmdForInvoice.Size = New System.Drawing.Size(129, 33)
+        Me.cmdForInvoice.Size = New System.Drawing.Size(141, 33)
         Me.cmdForInvoice.TabIndex = 18
         Me.cmdForInvoice.Text = "For Invoice"
+        Me.cmdForInvoice.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdForInvoice.UseVisualStyleBackColor = False
         Me.cmdForInvoice.Visible = False
         '
         'cmdImport
         '
+        Me.cmdImport.BackColor = System.Drawing.Color.FromArgb(CType(CType(240, Byte), Integer), CType(CType(246, Byte), Integer), CType(CType(253, Byte), Integer))
         Me.cmdImport.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdImport.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdImport.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdImport.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdImport.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdImport.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.cmdImport.Image = CType(resources.GetObject("cmdImport.Image"), System.Drawing.Image)
         Me.cmdImport.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdImport.Location = New System.Drawing.Point(3, 528)
-        Me.cmdImport.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdImport.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdImport.BackColor = System.Drawing.Color.FromArgb(240, 246, 253)
-        Me.cmdImport.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.cmdImport.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdImport.Location = New System.Drawing.Point(0, 528)
         Me.cmdImport.Name = "cmdImport"
-        Me.cmdImport.Size = New System.Drawing.Size(111, 34)
+        Me.cmdImport.Size = New System.Drawing.Size(141, 34)
         Me.cmdImport.TabIndex = 15
         Me.cmdImport.Text = "Import [F6]"
+        Me.cmdImport.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdImport.UseVisualStyleBackColor = False
         Me.cmdImport.Visible = False
         '
@@ -642,212 +624,212 @@ Partial Class frmItemLookUp
         '
         'Button1
         '
+        Me.Button1.BackColor = System.Drawing.Color.FromArgb(CType(CType(240, Byte), Integer), CType(CType(246, Byte), Integer), CType(CType(253, Byte), Integer))
         Me.Button1.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.Button1.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.Button1.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.Button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.Button1.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.Button1.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.Button1.Image = Global.WorkOrderEntry.My.Resources.Resources.icons8_print_15
         Me.Button1.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.Button1.Location = New System.Drawing.Point(3, 562)
-        Me.Button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.Button1.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.Button1.BackColor = System.Drawing.Color.FromArgb(240, 246, 253)
-        Me.Button1.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.Button1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.Button1.Location = New System.Drawing.Point(0, 562)
         Me.Button1.Name = "Button1"
-        Me.Button1.Size = New System.Drawing.Size(111, 33)
+        Me.Button1.Size = New System.Drawing.Size(141, 33)
         Me.Button1.TabIndex = 17
         Me.Button1.Text = "Print"
+        Me.Button1.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.Button1.UseVisualStyleBackColor = False
         '
         'cmdOk
         '
+        Me.cmdOk.BackColor = System.Drawing.Color.FromArgb(CType(CType(37, Byte), Integer), CType(CType(99, Byte), Integer), CType(CType(160, Byte), Integer))
         Me.cmdOk.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.cmdOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdOk.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
+        Me.cmdOk.ForeColor = System.Drawing.Color.White
         Me.cmdOk.Image = CType(resources.GetObject("cmdOk.Image"), System.Drawing.Image)
         Me.cmdOk.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdOk.Location = New System.Drawing.Point(3, 595)
-        Me.cmdOk.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdOk.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdOk.BackColor = System.Drawing.Color.FromArgb(37, 99, 160)
-        Me.cmdOk.ForeColor = System.Drawing.Color.White
-        Me.cmdOk.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdOk.Location = New System.Drawing.Point(0, 595)
         Me.cmdOk.Name = "cmdOk"
-        Me.cmdOk.Size = New System.Drawing.Size(111, 33)
+        Me.cmdOk.Size = New System.Drawing.Size(141, 33)
         Me.cmdOk.TabIndex = 20
         Me.cmdOk.Text = "Save [F12]"
+        Me.cmdOk.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdOk.UseVisualStyleBackColor = False
         '
         'cmdSettings
         '
+        Me.cmdSettings.BackColor = System.Drawing.Color.White
         Me.cmdSettings.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdSettings.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdSettings.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdSettings.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdSettings.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.cmdSettings.Image = CType(resources.GetObject("cmdSettings.Image"), System.Drawing.Image)
         Me.cmdSettings.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdSettings.Location = New System.Drawing.Point(3, 135)
-        Me.cmdSettings.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdSettings.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdSettings.BackColor = System.Drawing.Color.White
-        Me.cmdSettings.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.cmdSettings.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdSettings.Location = New System.Drawing.Point(0, 135)
         Me.cmdSettings.Name = "cmdSettings"
-        Me.cmdSettings.Size = New System.Drawing.Size(111, 33)
+        Me.cmdSettings.Size = New System.Drawing.Size(141, 33)
         Me.cmdSettings.TabIndex = 14
         Me.cmdSettings.Text = "Settings"
+        Me.cmdSettings.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdSettings.UseVisualStyleBackColor = False
         '
         'cmdRecall
         '
+        Me.cmdRecall.BackColor = System.Drawing.Color.FromArgb(CType(CType(240, Byte), Integer), CType(CType(246, Byte), Integer), CType(CType(253, Byte), Integer))
         Me.cmdRecall.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.cmdRecall.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdRecall.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.cmdRecall.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Bold)
+        Me.cmdRecall.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.cmdRecall.Image = CType(resources.GetObject("cmdRecall.Image"), System.Drawing.Image)
         Me.cmdRecall.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdRecall.Location = New System.Drawing.Point(3, 628)
-        Me.cmdRecall.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdRecall.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdRecall.BackColor = System.Drawing.Color.FromArgb(240, 246, 253)
-        Me.cmdRecall.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.cmdRecall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdRecall.Location = New System.Drawing.Point(0, 628)
         Me.cmdRecall.Name = "cmdRecall"
-        Me.cmdRecall.Size = New System.Drawing.Size(111, 33)
+        Me.cmdRecall.Size = New System.Drawing.Size(141, 33)
         Me.cmdRecall.TabIndex = 19
         Me.cmdRecall.Text = "Recall [F11]"
+        Me.cmdRecall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdRecall.UseVisualStyleBackColor = False
         '
         'cmdPriceLevel
         '
+        Me.cmdPriceLevel.BackColor = System.Drawing.Color.White
         Me.cmdPriceLevel.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdPriceLevel.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdPriceLevel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdPriceLevel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdPriceLevel.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdPriceLevel.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.cmdPriceLevel.Image = CType(resources.GetObject("cmdPriceLevel.Image"), System.Drawing.Image)
         Me.cmdPriceLevel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdPriceLevel.Location = New System.Drawing.Point(3, 102)
-        Me.cmdPriceLevel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdPriceLevel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdPriceLevel.BackColor = System.Drawing.Color.White
-        Me.cmdPriceLevel.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.cmdPriceLevel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdPriceLevel.Location = New System.Drawing.Point(0, 102)
         Me.cmdPriceLevel.Name = "cmdPriceLevel"
-        Me.cmdPriceLevel.Size = New System.Drawing.Size(111, 33)
+        Me.cmdPriceLevel.Size = New System.Drawing.Size(141, 33)
         Me.cmdPriceLevel.TabIndex = 13
         Me.cmdPriceLevel.Text = "Price Level"
+        Me.cmdPriceLevel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdPriceLevel.UseVisualStyleBackColor = False
         '
         'cmdInterStore
         '
+        Me.cmdInterStore.BackColor = System.Drawing.Color.White
         Me.cmdInterStore.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdInterStore.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdInterStore.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdInterStore.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdInterStore.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdInterStore.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.cmdInterStore.Image = CType(resources.GetObject("cmdInterStore.Image"), System.Drawing.Image)
         Me.cmdInterStore.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdInterStore.Location = New System.Drawing.Point(3, 69)
-        Me.cmdInterStore.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdInterStore.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdInterStore.BackColor = System.Drawing.Color.White
-        Me.cmdInterStore.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.cmdInterStore.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdInterStore.Location = New System.Drawing.Point(0, 69)
         Me.cmdInterStore.Name = "cmdInterStore"
-        Me.cmdInterStore.Size = New System.Drawing.Size(111, 33)
+        Me.cmdInterStore.Size = New System.Drawing.Size(141, 33)
         Me.cmdInterStore.TabIndex = 12
         Me.cmdInterStore.Text = "InterStore"
+        Me.cmdInterStore.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdInterStore.UseVisualStyleBackColor = False
         '
         'cmdRefresh
         '
+        Me.cmdRefresh.BackColor = System.Drawing.Color.White
         Me.cmdRefresh.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdRefresh.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdRefresh.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdRefresh.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.cmdRefresh.Image = CType(resources.GetObject("cmdRefresh.Image"), System.Drawing.Image)
         Me.cmdRefresh.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdRefresh.Location = New System.Drawing.Point(3, 36)
-        Me.cmdRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdRefresh.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdRefresh.BackColor = System.Drawing.Color.White
-        Me.cmdRefresh.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.cmdRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdRefresh.Location = New System.Drawing.Point(0, 36)
         Me.cmdRefresh.Name = "cmdRefresh"
-        Me.cmdRefresh.Size = New System.Drawing.Size(111, 33)
+        Me.cmdRefresh.Size = New System.Drawing.Size(141, 33)
         Me.cmdRefresh.TabIndex = 11
         Me.cmdRefresh.Text = "Refresh"
+        Me.cmdRefresh.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdRefresh.UseVisualStyleBackColor = False
         '
         'cmdRemove
         '
+        Me.cmdRemove.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(244, Byte), Integer), CType(CType(242, Byte), Integer))
         Me.cmdRemove.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdRemove.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdRemove.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdRemove.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdRemove.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdRemove.ForeColor = System.Drawing.Color.FromArgb(CType(CType(150, Byte), Integer), CType(CType(35, Byte), Integer), CType(CType(35, Byte), Integer))
         Me.cmdRemove.Image = CType(resources.GetObject("cmdRemove.Image"), System.Drawing.Image)
         Me.cmdRemove.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdRemove.Location = New System.Drawing.Point(3, 661)
-        Me.cmdRemove.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdRemove.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdRemove.BackColor = System.Drawing.Color.FromArgb(255, 244, 242)
-        Me.cmdRemove.ForeColor = System.Drawing.Color.FromArgb(150, 35, 35)
-        Me.cmdRemove.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdRemove.Location = New System.Drawing.Point(0, 661)
         Me.cmdRemove.Name = "cmdRemove"
-        Me.cmdRemove.Size = New System.Drawing.Size(111, 33)
+        Me.cmdRemove.Size = New System.Drawing.Size(141, 33)
         Me.cmdRemove.TabIndex = 21
         Me.cmdRemove.Text = "Remove [Del]"
+        Me.cmdRemove.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdRemove.UseVisualStyleBackColor = False
         '
         'cmdCancel
         '
+        Me.cmdCancel.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(244, Byte), Integer), CType(CType(242, Byte), Integer))
         Me.cmdCancel.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdCancel.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdCancel.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdCancel.ForeColor = System.Drawing.Color.FromArgb(CType(CType(150, Byte), Integer), CType(CType(35, Byte), Integer), CType(CType(35, Byte), Integer))
         Me.cmdCancel.Image = CType(resources.GetObject("cmdCancel.Image"), System.Drawing.Image)
         Me.cmdCancel.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdCancel.Location = New System.Drawing.Point(3, 694)
-        Me.cmdCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdCancel.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdCancel.BackColor = System.Drawing.Color.FromArgb(255, 244, 242)
-        Me.cmdCancel.ForeColor = System.Drawing.Color.FromArgb(150, 35, 35)
-        Me.cmdCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdCancel.Location = New System.Drawing.Point(0, 694)
         Me.cmdCancel.Name = "cmdCancel"
-        Me.cmdCancel.Size = New System.Drawing.Size(111, 33)
+        Me.cmdCancel.Size = New System.Drawing.Size(141, 33)
         Me.cmdCancel.TabIndex = 22
         Me.cmdCancel.Text = "Cancel [F9]"
+        Me.cmdCancel.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdCancel.UseVisualStyleBackColor = False
         '
         'cmdClose
         '
+        Me.cmdClose.BackColor = System.Drawing.Color.White
         Me.cmdClose.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.cmdClose.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdClose.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdClose.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdClose.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.cmdClose.Image = CType(resources.GetObject("cmdClose.Image"), System.Drawing.Image)
         Me.cmdClose.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdClose.Location = New System.Drawing.Point(3, 727)
-        Me.cmdClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdClose.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdClose.BackColor = System.Drawing.Color.White
-        Me.cmdClose.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.cmdClose.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdClose.Location = New System.Drawing.Point(0, 727)
         Me.cmdClose.Name = "cmdClose"
-        Me.cmdClose.Size = New System.Drawing.Size(111, 33)
+        Me.cmdClose.Size = New System.Drawing.Size(141, 33)
         Me.cmdClose.TabIndex = 23
         Me.cmdClose.Text = "Close [Esc]"
+        Me.cmdClose.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdClose.UseVisualStyleBackColor = False
         '
         'cmdSelect
         '
+        Me.cmdSelect.BackColor = System.Drawing.Color.White
         Me.cmdSelect.Dock = System.Windows.Forms.DockStyle.Top
-        Me.cmdSelect.Font = New System.Drawing.Font("Tahoma", 9.0!, System.Drawing.FontStyle.Regular)
+        Me.cmdSelect.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(CType(CType(210, Byte), Integer), CType(CType(218, Byte), Integer), CType(CType(228, Byte), Integer))
+        Me.cmdSelect.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.cmdSelect.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.cmdSelect.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.cmdSelect.Image = CType(resources.GetObject("cmdSelect.Image"), System.Drawing.Image)
         Me.cmdSelect.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.cmdSelect.Location = New System.Drawing.Point(3, 3)
-        Me.cmdSelect.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.cmdSelect.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(210, 218, 228)
-        Me.cmdSelect.BackColor = System.Drawing.Color.White
-        Me.cmdSelect.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.cmdSelect.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
+        Me.cmdSelect.Location = New System.Drawing.Point(0, 3)
         Me.cmdSelect.Name = "cmdSelect"
-        Me.cmdSelect.Size = New System.Drawing.Size(111, 33)
+        Me.cmdSelect.Size = New System.Drawing.Size(141, 33)
         Me.cmdSelect.TabIndex = 10
         Me.cmdSelect.Text = "Select"
+        Me.cmdSelect.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText
         Me.cmdSelect.UseVisualStyleBackColor = False
         '
         'txtBarcode
         '
         Me.txtBarcode.Anchor = CType(((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left) _
             Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.txtBarcode.Name = "txtBarcode"
-        Me.txtBarcode.TabIndex = 27
-        Me.txtBarcode.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Regular)
+        Me.txtBarcode.Font = New System.Drawing.Font("Tahoma", 9.0!)
         Me.txtBarcode.ForeColor = System.Drawing.SystemColors.WindowText
         Me.txtBarcode.Location = New System.Drawing.Point(8, 268)
+        Me.txtBarcode.Name = "txtBarcode"
         Me.txtBarcode.Size = New System.Drawing.Size(219, 22)
+        Me.txtBarcode.TabIndex = 27
         '
         'chkBarcode
         '
@@ -863,8 +845,8 @@ Partial Class frmItemLookUp
         'panelTotal
         '
         Me.panelTotal.BackColor = System.Drawing.SystemColors.Control
-        Me.panelTotal.Controls.Add(Me.grpWithholding)
         Me.panelTotal.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
+        Me.panelTotal.Controls.Add(Me.grpWithholding)
         Me.panelTotal.Controls.Add(Me.chkBoxQtoWo)
         Me.panelTotal.Controls.Add(Me.GroupBox3)
         Me.panelTotal.Controls.Add(Me.GroupBox2)
@@ -873,15 +855,15 @@ Partial Class frmItemLookUp
         Me.panelTotal.Location = New System.Drawing.Point(10, 0)
         Me.panelTotal.Name = "panelTotal"
         Me.panelTotal.Padding = New System.Windows.Forms.Padding(5)
-        Me.panelTotal.Size = New System.Drawing.Size(1186, 171)
+        Me.panelTotal.Size = New System.Drawing.Size(1168, 171)
         Me.panelTotal.TabIndex = 24
         '
         'grpWithholding
         '
-        Me.grpWithholding.Controls.Add(Me.withholdingLayout)
         Me.grpWithholding.BackColor = System.Drawing.Color.AliceBlue
-        Me.grpWithholding.ForeColor = System.Drawing.Color.FromArgb(24, 55, 88)
+        Me.grpWithholding.Controls.Add(Me.withholdingLayout)
         Me.grpWithholding.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Bold)
+        Me.grpWithholding.ForeColor = System.Drawing.Color.FromArgb(CType(CType(24, Byte), Integer), CType(CType(55, Byte), Integer), CType(CType(88, Byte), Integer))
         Me.grpWithholding.Location = New System.Drawing.Point(5, 3)
         Me.grpWithholding.Name = "grpWithholding"
         Me.grpWithholding.Size = New System.Drawing.Size(1174, 86)
@@ -892,71 +874,90 @@ Partial Class frmItemLookUp
         'withholdingLayout
         '
         Me.withholdingLayout.ColumnCount = 4
-        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25!))
-        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25!))
-        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25!))
-        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25!))
+        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.0!))
+        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.0!))
+        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.0!))
+        Me.withholdingLayout.ColumnStyles.Add(New System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25.0!))
         Me.withholdingLayout.Controls.Add(Me.lblWithholding1, 0, 0)
         Me.withholdingLayout.Controls.Add(Me.lblWithholding2, 1, 0)
         Me.withholdingLayout.Controls.Add(Me.lblWithholding5, 2, 0)
         Me.withholdingLayout.Controls.Add(Me.lblWithholding15, 3, 0)
         Me.withholdingLayout.Controls.Add(Me.lblWithholdingBasis, 0, 1)
-        Me.withholdingLayout.SetColumnSpan(Me.lblWithholdingBasis, 4)
         Me.withholdingLayout.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.withholdingLayout.Location = New System.Drawing.Point(3, 19)
         Me.withholdingLayout.Name = "withholdingLayout"
         Me.withholdingLayout.RowCount = 2
-        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 62!))
-        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38!))
-        Me.withholdingLayout.TabStop = False
+        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 62.0!))
+        Me.withholdingLayout.RowStyles.Add(New System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38.0!))
+        Me.withholdingLayout.Size = New System.Drawing.Size(1168, 64)
+        Me.withholdingLayout.TabIndex = 0
         '
-        'Read-only suggestion labels; full values are also available in tooltips.
+        'lblWithholding1
         '
-        Me.lblWithholdingBasis.AutoEllipsis = True
-        Me.lblWithholdingBasis.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblWithholdingBasis.Name = "lblWithholdingBasis"
-        Me.lblWithholdingBasis.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Regular)
-        Me.lblWithholdingBasis.ForeColor = System.Drawing.Color.FromArgb(55, 65, 75)
-        Me.lblWithholdingBasis.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
-        Me.lblWithholdingBasis.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
-        Me.lblWithholdingBasis.Text = "VAT-exclusive: 0.00"
         Me.lblWithholding1.AutoEllipsis = True
         Me.lblWithholding1.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblWithholding1.Name = "lblWithholding1"
         Me.lblWithholding1.Font = New System.Drawing.Font("Tahoma", 13.5!, System.Drawing.FontStyle.Bold)
-        Me.lblWithholding1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblWithholding1.Location = New System.Drawing.Point(3, 0)
+        Me.lblWithholding1.Name = "lblWithholding1"
         Me.lblWithholding1.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
+        Me.lblWithholding1.Size = New System.Drawing.Size(286, 39)
+        Me.lblWithholding1.TabIndex = 0
         Me.lblWithholding1.Text = "1%: 0.00"
+        Me.lblWithholding1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'lblWithholding2
+        '
         Me.lblWithholding2.AutoEllipsis = True
         Me.lblWithholding2.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblWithholding2.Name = "lblWithholding2"
         Me.lblWithholding2.Font = New System.Drawing.Font("Tahoma", 13.5!, System.Drawing.FontStyle.Bold)
-        Me.lblWithholding2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblWithholding2.Location = New System.Drawing.Point(295, 0)
+        Me.lblWithholding2.Name = "lblWithholding2"
         Me.lblWithholding2.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
+        Me.lblWithholding2.Size = New System.Drawing.Size(286, 39)
+        Me.lblWithholding2.TabIndex = 1
         Me.lblWithholding2.Text = "2%: 0.00"
+        Me.lblWithholding2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'lblWithholding5
+        '
         Me.lblWithholding5.AutoEllipsis = True
         Me.lblWithholding5.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblWithholding5.Name = "lblWithholding5"
         Me.lblWithholding5.Font = New System.Drawing.Font("Tahoma", 13.5!, System.Drawing.FontStyle.Bold)
-        Me.lblWithholding5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblWithholding5.Location = New System.Drawing.Point(587, 0)
+        Me.lblWithholding5.Name = "lblWithholding5"
         Me.lblWithholding5.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
+        Me.lblWithholding5.Size = New System.Drawing.Size(286, 39)
+        Me.lblWithholding5.TabIndex = 2
         Me.lblWithholding5.Text = "5%: 0.00"
+        Me.lblWithholding5.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        '
+        'lblWithholding15
+        '
         Me.lblWithholding15.AutoEllipsis = True
         Me.lblWithholding15.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.lblWithholding15.Name = "lblWithholding15"
         Me.lblWithholding15.Font = New System.Drawing.Font("Tahoma", 13.5!, System.Drawing.FontStyle.Bold)
-        Me.lblWithholding15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
+        Me.lblWithholding15.Location = New System.Drawing.Point(879, 0)
+        Me.lblWithholding15.Name = "lblWithholding15"
         Me.lblWithholding15.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
+        Me.lblWithholding15.Size = New System.Drawing.Size(286, 39)
+        Me.lblWithholding15.TabIndex = 3
         Me.lblWithholding15.Text = "15%: 0.00"
+        Me.lblWithholding15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
-        'panelTotalsContainer
+        'lblWithholdingBasis
         '
-        Me.panelTotalsContainer.Controls.Add(Me.panelTotal)
-        Me.panelTotalsContainer.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.panelTotalsContainer.Location = New System.Drawing.Point(0, 592)
-        Me.panelTotalsContainer.Name = "panelTotalsContainer"
-        Me.panelTotalsContainer.Padding = New System.Windows.Forms.Padding(10, 0, 1, 0)
-        Me.panelTotalsContainer.Size = New System.Drawing.Size(1206, 171)
-        Me.panelTotalsContainer.TabIndex = 24
+        Me.lblWithholdingBasis.AutoEllipsis = True
+        Me.withholdingLayout.SetColumnSpan(Me.lblWithholdingBasis, 4)
+        Me.lblWithholdingBasis.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.lblWithholdingBasis.Font = New System.Drawing.Font("Tahoma", 9.0!)
+        Me.lblWithholdingBasis.ForeColor = System.Drawing.Color.FromArgb(CType(CType(55, Byte), Integer), CType(CType(65, Byte), Integer), CType(CType(75, Byte), Integer))
+        Me.lblWithholdingBasis.Location = New System.Drawing.Point(3, 39)
+        Me.lblWithholdingBasis.Name = "lblWithholdingBasis"
+        Me.lblWithholdingBasis.Padding = New System.Windows.Forms.Padding(6, 0, 0, 0)
+        Me.lblWithholdingBasis.Size = New System.Drawing.Size(1162, 25)
+        Me.lblWithholdingBasis.TabIndex = 4
+        Me.lblWithholdingBasis.Text = "VAT-exclusive: 0.00"
+        Me.lblWithholdingBasis.TextAlign = System.Drawing.ContentAlignment.MiddleLeft
         '
         'chkBoxQtoWo
         '
@@ -976,7 +977,7 @@ Partial Class frmItemLookUp
         Me.GroupBox3.Controls.Add(Me.txtVat)
         Me.GroupBox3.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Bold)
         Me.GroupBox3.ForeColor = System.Drawing.Color.Black
-        Me.GroupBox3.Location = New System.Drawing.Point(585, 101)
+        Me.GroupBox3.Location = New System.Drawing.Point(567, 101)
         Me.GroupBox3.Name = "GroupBox3"
         Me.GroupBox3.Size = New System.Drawing.Size(279, 58)
         Me.GroupBox3.TabIndex = 16
@@ -1002,7 +1003,7 @@ Partial Class frmItemLookUp
         Me.GroupBox2.Controls.Add(Me.txtSub)
         Me.GroupBox2.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.GroupBox2.ForeColor = System.Drawing.Color.Black
-        Me.GroupBox2.Location = New System.Drawing.Point(300, 101)
+        Me.GroupBox2.Location = New System.Drawing.Point(282, 101)
         Me.GroupBox2.Name = "GroupBox2"
         Me.GroupBox2.Size = New System.Drawing.Size(279, 58)
         Me.GroupBox2.TabIndex = 11
@@ -1028,7 +1029,7 @@ Partial Class frmItemLookUp
         Me.GroupBox4.Controls.Add(Me.txtTotal)
         Me.GroupBox4.Font = New System.Drawing.Font("Tahoma", 9.75!, System.Drawing.FontStyle.Bold)
         Me.GroupBox4.ForeColor = System.Drawing.Color.Black
-        Me.GroupBox4.Location = New System.Drawing.Point(867, 101)
+        Me.GroupBox4.Location = New System.Drawing.Point(849, 101)
         Me.GroupBox4.Name = "GroupBox4"
         Me.GroupBox4.Size = New System.Drawing.Size(312, 58)
         Me.GroupBox4.TabIndex = 17
@@ -1048,6 +1049,16 @@ Partial Class frmItemLookUp
         Me.txtTotal.Text = "0.00"
         Me.txtTotal.TextAlign = System.Windows.Forms.HorizontalAlignment.Right
         '
+        'panelTotalsContainer
+        '
+        Me.panelTotalsContainer.Controls.Add(Me.panelTotal)
+        Me.panelTotalsContainer.Dock = System.Windows.Forms.DockStyle.Bottom
+        Me.panelTotalsContainer.Location = New System.Drawing.Point(0, 592)
+        Me.panelTotalsContainer.Name = "panelTotalsContainer"
+        Me.panelTotalsContainer.Padding = New System.Windows.Forms.Padding(10, 0, 1, 0)
+        Me.panelTotalsContainer.Size = New System.Drawing.Size(1179, 171)
+        Me.panelTotalsContainer.TabIndex = 24
+        '
         'panelGrid
         '
         Me.panelGrid.Controls.Add(Me.panelItem)
@@ -1055,7 +1066,7 @@ Partial Class frmItemLookUp
         Me.panelGrid.Dock = System.Windows.Forms.DockStyle.Fill
         Me.panelGrid.Location = New System.Drawing.Point(0, 0)
         Me.panelGrid.Name = "panelGrid"
-        Me.panelGrid.Size = New System.Drawing.Size(1206, 592)
+        Me.panelGrid.Size = New System.Drawing.Size(1179, 592)
         Me.panelGrid.TabIndex = 25
         '
         'panelItem
@@ -1067,7 +1078,7 @@ Partial Class frmItemLookUp
         Me.panelItem.Location = New System.Drawing.Point(0, 0)
         Me.panelItem.Name = "panelItem"
         Me.panelItem.Padding = New System.Windows.Forms.Padding(10, 0, 1, 0)
-        Me.panelItem.Size = New System.Drawing.Size(1206, 464)
+        Me.panelItem.Size = New System.Drawing.Size(1179, 372)
         Me.panelItem.TabIndex = 18
         '
         'picPanel
@@ -1103,318 +1114,247 @@ Partial Class frmItemLookUp
         '
         'gridItem
         '
-        Me.gridItem.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
-        Me.gridItem.RowHeadersDefaultCellStyle.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold)
-        Me.gridItem.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.lookupItemLookupCode, Me.lookupDESCRIPTION, Me.lookupPRICE, Me.lookupCOST, Me.lookupAVAILABLE, Me.lookupParentQuantity, Me.lookupTaxID, Me.lookupSubDescription2, Me.lookupPRICE1, Me.lookupID, Me.lookupDESCRIPTION1, Me.lookupExtendedDescription, Me.lookupItemType, Me.lookupInactive, Me.lookupITEMDES, Me.lookupSKULEVEL, Me.lookupFULLDESC, Me.lookupQuantity, Me.lookupQuantityCommitted})
         Me.gridItem.AllowUserToAddRows = False
         Me.gridItem.AllowUserToDeleteRows = False
         Me.gridItem.AllowUserToOrderColumns = True
+        Me.gridItem.AllowUserToResizeRows = False
+        DataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(CType(CType(246, Byte), Integer), CType(CType(248, Byte), Integer), CType(CType(251, Byte), Integer))
+        Me.gridItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle1
         Me.gridItem.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight
+        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(CType(CType(232, Byte), Integer), CType(CType(237, Byte), Integer), CType(CType(244, Byte), Integer))
+        DataGridViewCellStyle2.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        DataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        DataGridViewCellStyle2.Padding = New System.Windows.Forms.Padding(6, 4, 6, 4)
+        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(CType(CType(232, Byte), Integer), CType(CType(237, Byte), Integer), CType(CType(244, Byte), Integer))
+        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.gridItem.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle2
+        Me.gridItem.ColumnHeadersHeight = 34
+        Me.gridItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+        Me.gridItem.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.ItemLookupCode, Me.lookupDESCRIPTION, Me.lookupPRICE, Me.lookupCOST, Me.AVAILABLE, Me.ParentQuantity, Me.TaxID, Me.SubDescription2, Me.lookupPRICE1, Me.ID, Me.DESCRIPTION1, Me.ExtendedDescription, Me.ItemType, Me.Inactive, Me.ITEMDES, Me.SKULEVEL, Me.FULLDESC, Me.Quantity, Me.QuantityCommitted})
+        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle12.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(255, Byte), Integer))
+        DataGridViewCellStyle12.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        DataGridViewCellStyle12.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        DataGridViewCellStyle12.Padding = New System.Windows.Forms.Padding(6, 3, 6, 3)
+        DataGridViewCellStyle12.SelectionBackColor = System.Drawing.Color.FromArgb(CType(CType(37, Byte), Integer), CType(CType(99, Byte), Integer), CType(CType(160, Byte), Integer))
+        DataGridViewCellStyle12.SelectionForeColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(255, Byte), Integer))
+        DataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.gridItem.DefaultCellStyle = DataGridViewCellStyle12
         Me.gridItem.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.gridItem.EnableHeadersVisualStyles = False
+        Me.gridItem.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.gridItem.GridColor = System.Drawing.Color.FromArgb(CType(CType(218, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(232, Byte), Integer))
         Me.gridItem.Location = New System.Drawing.Point(352, 0)
         Me.gridItem.MultiSelect = False
         Me.gridItem.Name = "gridItem"
         Me.gridItem.ReadOnly = True
+        DataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle13.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle13.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold)
+        DataGridViewCellStyle13.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle13.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle13.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.gridItem.RowHeadersDefaultCellStyle = DataGridViewCellStyle13
         Me.gridItem.RowHeadersWidth = 51
-        Me.gridItem.ScrollBars = System.Windows.Forms.ScrollBars.Both
+        DataGridViewCellStyle14.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.gridItem.RowsDefaultCellStyle = DataGridViewCellStyle14
+        Me.gridItem.RowTemplate.DefaultCellStyle.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.gridItem.RowTemplate.Height = 44
         Me.gridItem.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.gridItem.Size = New System.Drawing.Size(844, 464)
+        Me.gridItem.Size = New System.Drawing.Size(826, 372)
         Me.gridItem.TabIndex = 0
         Me.gridItem.TabStop = False
-        DataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(232, 237, 244)
-        DataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(232, 237, 244)
-        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        DataGridViewCellStyle1.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Bold)
-        DataGridViewCellStyle1.Padding = New System.Windows.Forms.Padding(6, 4, 6, 4)
-        DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.gridItem.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
-        DataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(255, 255, 255)
-        DataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        DataGridViewCellStyle2.SelectionBackColor = System.Drawing.Color.FromArgb(37, 99, 160)
-        DataGridViewCellStyle2.SelectionForeColor = System.Drawing.Color.FromArgb(255, 255, 255)
-        DataGridViewCellStyle2.Font = New System.Drawing.Font("Tahoma", 10!, System.Drawing.FontStyle.Bold)
-        DataGridViewCellStyle2.Padding = New System.Windows.Forms.Padding(6, 3, 6, 3)
-        DataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.gridItem.DefaultCellStyle = DataGridViewCellStyle2
-        DataGridViewCellStyle3.Font = New System.Drawing.Font("Tahoma", 10!, System.Drawing.FontStyle.Bold)
-        Me.gridItem.RowsDefaultCellStyle = DataGridViewCellStyle3
-        DataGridViewCellStyle4.BackColor = System.Drawing.Color.FromArgb(246, 248, 251)
-        Me.gridItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle4
-        Me.gridItem.GridColor = System.Drawing.Color.FromArgb(218, 224, 232)
-        Me.gridItem.EnableHeadersVisualStyles = False
-        Me.gridItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-        Me.gridItem.ColumnHeadersHeight = 34
-        Me.gridItem.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.None
-        Me.gridItem.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.None
-        Me.gridItem.RowTemplate.Height = 44
-        Me.gridItem.AllowUserToResizeRows = False
-        Me.gridItem.RowTemplate.DefaultCellStyle.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
         '
-        'lookupItemLookupCode
+        'ItemLookupCode
         '
-        Me.lookupItemLookupCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupItemLookupCode.MinimumWidth = 5
-        Me.lookupItemLookupCode.Width = 120
-        Me.lookupItemLookupCode.HeaderText = "ITEM CODE"
-        Me.lookupItemLookupCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        DataGridViewCellStyle5.Font = New System.Drawing.Font("Tahoma", 10!, System.Drawing.FontStyle.Bold)
-        Me.lookupItemLookupCode.DefaultCellStyle = DataGridViewCellStyle5
-        Me.lookupItemLookupCode.DataPropertyName = "ItemLookupCode"
-        Me.lookupItemLookupCode.Name = "ItemLookupCode"
-        Me.lookupItemLookupCode.Visible = True
-        Me.lookupItemLookupCode.Frozen = True
+        Me.ItemLookupCode.DataPropertyName = "ItemLookupCode"
+        DataGridViewCellStyle3.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.ItemLookupCode.DefaultCellStyle = DataGridViewCellStyle3
+        Me.ItemLookupCode.Frozen = True
+        Me.ItemLookupCode.HeaderText = "ITEM CODE"
+        Me.ItemLookupCode.Name = "ItemLookupCode"
+        Me.ItemLookupCode.ReadOnly = True
+        Me.ItemLookupCode.Width = 120
         '
-        'lookupDESCRIPTION
+        'DESCRIPTION
         '
         Me.lookupDESCRIPTION.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        Me.lookupDESCRIPTION.MinimumWidth = 320
-        Me.lookupDESCRIPTION.FillWeight = 1!
-        Me.lookupDESCRIPTION.HeaderText = "ITEM NAME"
-        Me.lookupDESCRIPTION.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle6.Padding = New System.Windows.Forms.Padding(6, 4, 6, 4)
-        DataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.lookupDESCRIPTION.DefaultCellStyle = DataGridViewCellStyle6
         Me.lookupDESCRIPTION.DataPropertyName = "DESCRIPTION"
+        DataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle4.Padding = New System.Windows.Forms.Padding(6, 4, 6, 4)
+        DataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.lookupDESCRIPTION.DefaultCellStyle = DataGridViewCellStyle4
+        Me.lookupDESCRIPTION.FillWeight = 1.0!
+        Me.lookupDESCRIPTION.HeaderText = "ITEM NAME"
+        Me.lookupDESCRIPTION.MinimumWidth = 320
         Me.lookupDESCRIPTION.Name = "DESCRIPTION"
-        Me.lookupDESCRIPTION.Visible = True
-        Me.lookupDESCRIPTION.Frozen = False
+        Me.lookupDESCRIPTION.ReadOnly = True
         '
-        'lookupPRICE
+        'PRICE
         '
         Me.lookupPRICE.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
-        Me.lookupPRICE.MinimumWidth = 108
-        Me.lookupPRICE.Width = 108
-        Me.lookupPRICE.HeaderText = "ITEM PRICE"
-        Me.lookupPRICE.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        DataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        DataGridViewCellStyle7.Format = "C"
-        Me.lookupPRICE.DefaultCellStyle = DataGridViewCellStyle7
         Me.lookupPRICE.DataPropertyName = "PRICE"
+        DataGridViewCellStyle5.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        DataGridViewCellStyle5.Format = "C"
+        Me.lookupPRICE.DefaultCellStyle = DataGridViewCellStyle5
+        Me.lookupPRICE.HeaderText = "ITEM PRICE"
+        Me.lookupPRICE.MinimumWidth = 108
         Me.lookupPRICE.Name = "PRICE"
-        Me.lookupPRICE.Visible = True
-        Me.lookupPRICE.Frozen = False
+        Me.lookupPRICE.ReadOnly = True
+        Me.lookupPRICE.Width = 131
         '
-        'lookupCOST
+        'COST
         '
-        Me.lookupCOST.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupCOST.MinimumWidth = 5
-        Me.lookupCOST.Width = 100
-        Me.lookupCOST.HeaderText = "COST"
-        Me.lookupCOST.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        DataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        DataGridViewCellStyle8.Format = "N2"
-        Me.lookupCOST.DefaultCellStyle = DataGridViewCellStyle8
         Me.lookupCOST.DataPropertyName = "COST"
+        DataGridViewCellStyle6.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        DataGridViewCellStyle6.Format = "N2"
+        Me.lookupCOST.DefaultCellStyle = DataGridViewCellStyle6
+        Me.lookupCOST.HeaderText = "COST"
         Me.lookupCOST.Name = "COST"
+        Me.lookupCOST.ReadOnly = True
         Me.lookupCOST.Visible = False
-        Me.lookupCOST.Frozen = False
         '
-        'lookupAVAILABLE
+        'AVAILABLE
         '
-        Me.lookupAVAILABLE.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
-        Me.lookupAVAILABLE.MinimumWidth = 96
-        Me.lookupAVAILABLE.Width = 96
-        Me.lookupAVAILABLE.HeaderText = "AVAIL QTY"
-        Me.lookupAVAILABLE.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
+        Me.AVAILABLE.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.AVAILABLE.DataPropertyName = "AVAILABLE"
+        DataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        DataGridViewCellStyle7.Format = "#,0.###############"
+        Me.AVAILABLE.DefaultCellStyle = DataGridViewCellStyle7
+        Me.AVAILABLE.HeaderText = "AVAIL QTY"
+        Me.AVAILABLE.MinimumWidth = 96
+        Me.AVAILABLE.Name = "AVAILABLE"
+        Me.AVAILABLE.ReadOnly = True
+        Me.AVAILABLE.Width = 123
+        '
+        'ParentQuantity
+        '
+        Me.ParentQuantity.DataPropertyName = "ParentQuantity"
+        DataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.ParentQuantity.DefaultCellStyle = DataGridViewCellStyle8
+        Me.ParentQuantity.HeaderText = "CHILD QTY"
+        Me.ParentQuantity.Name = "ParentQuantity"
+        Me.ParentQuantity.ReadOnly = True
+        Me.ParentQuantity.Visible = False
+        Me.ParentQuantity.Width = 90
+        '
+        'TaxID
+        '
+        Me.TaxID.DataPropertyName = "TaxID"
+        Me.TaxID.HeaderText = "TaxID"
+        Me.TaxID.Name = "TaxID"
+        Me.TaxID.ReadOnly = True
+        Me.TaxID.Visible = False
+        '
+        'SubDescription2
+        '
+        Me.SubDescription2.DataPropertyName = "SubDescription2"
         DataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        DataGridViewCellStyle9.Format = "#,0.###############"
-        Me.lookupAVAILABLE.DefaultCellStyle = DataGridViewCellStyle9
-        Me.lookupAVAILABLE.DataPropertyName = "AVAILABLE"
-        Me.lookupAVAILABLE.Name = "AVAILABLE"
-        Me.lookupAVAILABLE.Visible = True
-        Me.lookupAVAILABLE.Frozen = False
-        '
-        'lookupParentQuantity
-        '
-        Me.lookupParentQuantity.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupParentQuantity.MinimumWidth = 5
-        Me.lookupParentQuantity.Width = 90
-        Me.lookupParentQuantity.HeaderText = "CHILD QTY"
-        Me.lookupParentQuantity.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.lookupParentQuantity.DefaultCellStyle = DataGridViewCellStyle10
-        Me.lookupParentQuantity.DataPropertyName = "ParentQuantity"
-        Me.lookupParentQuantity.Name = "ParentQuantity"
-        Me.lookupParentQuantity.Visible = False
-        Me.lookupParentQuantity.Frozen = False
-        '
-        'lookupTaxID
-        '
-        Me.lookupTaxID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupTaxID.MinimumWidth = 5
-        Me.lookupTaxID.Width = 100
-        Me.lookupTaxID.HeaderText = "TaxID"
-        Me.lookupTaxID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        Me.lookupTaxID.DefaultCellStyle = DataGridViewCellStyle11
-        Me.lookupTaxID.DataPropertyName = "TaxID"
-        Me.lookupTaxID.Name = "TaxID"
-        Me.lookupTaxID.Visible = False
-        Me.lookupTaxID.Frozen = False
-        '
-        'lookupSubDescription2
-        '
-        Me.lookupSubDescription2.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupSubDescription2.MinimumWidth = 5
-        Me.lookupSubDescription2.Width = 90
-        Me.lookupSubDescription2.HeaderText = "SKU LEVEL"
-        Me.lookupSubDescription2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        DataGridViewCellStyle12.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.lookupSubDescription2.DefaultCellStyle = DataGridViewCellStyle12
-        Me.lookupSubDescription2.DataPropertyName = "SubDescription2"
-        Me.lookupSubDescription2.Name = "SubDescription2"
-        Me.lookupSubDescription2.Visible = False
-        Me.lookupSubDescription2.Frozen = False
+        Me.SubDescription2.DefaultCellStyle = DataGridViewCellStyle9
+        Me.SubDescription2.HeaderText = "SKU LEVEL"
+        Me.SubDescription2.Name = "SubDescription2"
+        Me.SubDescription2.ReadOnly = True
+        Me.SubDescription2.Visible = False
+        Me.SubDescription2.Width = 90
         '
         'lookupPRICE1
         '
-        Me.lookupPRICE1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupPRICE1.MinimumWidth = 5
-        Me.lookupPRICE1.Width = 100
-        Me.lookupPRICE1.HeaderText = "PRICE 1"
-        Me.lookupPRICE1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        Me.lookupPRICE1.DefaultCellStyle = DataGridViewCellStyle13
         Me.lookupPRICE1.DataPropertyName = "PRICE 1"
-        Me.lookupPRICE1.Name = "PRICE 1"
+        Me.lookupPRICE1.HeaderText = "PRICE 1"
+        Me.lookupPRICE1.Name = "lookupPRICE1"
+        Me.lookupPRICE1.ReadOnly = True
         Me.lookupPRICE1.Visible = False
-        Me.lookupPRICE1.Frozen = False
         '
-        'lookupID
+        'ID
         '
-        Me.lookupID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupID.MinimumWidth = 5
-        Me.lookupID.Width = 100
-        Me.lookupID.HeaderText = "ID"
-        Me.lookupID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        Me.lookupID.DefaultCellStyle = DataGridViewCellStyle14
-        Me.lookupID.DataPropertyName = "ID"
-        Me.lookupID.Name = "ID"
-        Me.lookupID.Visible = False
-        Me.lookupID.Frozen = False
+        Me.ID.DataPropertyName = "ID"
+        Me.ID.HeaderText = "ID"
+        Me.ID.Name = "ID"
+        Me.ID.ReadOnly = True
+        Me.ID.Visible = False
         '
-        'lookupDESCRIPTION1
+        'DESCRIPTION1
         '
-        Me.lookupDESCRIPTION1.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupDESCRIPTION1.MinimumWidth = 5
-        Me.lookupDESCRIPTION1.Width = 100
-        Me.lookupDESCRIPTION1.HeaderText = "DESCRIPTION1"
-        Me.lookupDESCRIPTION1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        Me.lookupDESCRIPTION1.DefaultCellStyle = DataGridViewCellStyle15
-        Me.lookupDESCRIPTION1.DataPropertyName = "DESCRIPTION1"
-        Me.lookupDESCRIPTION1.Name = "DESCRIPTION1"
-        Me.lookupDESCRIPTION1.Visible = False
-        Me.lookupDESCRIPTION1.Frozen = False
+        Me.DESCRIPTION1.DataPropertyName = "DESCRIPTION1"
+        Me.DESCRIPTION1.HeaderText = "DESCRIPTION1"
+        Me.DESCRIPTION1.Name = "DESCRIPTION1"
+        Me.DESCRIPTION1.ReadOnly = True
+        Me.DESCRIPTION1.Visible = False
         '
-        'lookupExtendedDescription
+        'ExtendedDescription
         '
-        Me.lookupExtendedDescription.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupExtendedDescription.MinimumWidth = 5
-        Me.lookupExtendedDescription.Width = 100
-        Me.lookupExtendedDescription.HeaderText = "ExtendedDescription"
-        Me.lookupExtendedDescription.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        Me.lookupExtendedDescription.DefaultCellStyle = DataGridViewCellStyle16
-        Me.lookupExtendedDescription.DataPropertyName = "ExtendedDescription"
-        Me.lookupExtendedDescription.Name = "ExtendedDescription"
-        Me.lookupExtendedDescription.Visible = False
-        Me.lookupExtendedDescription.Frozen = False
+        Me.ExtendedDescription.DataPropertyName = "ExtendedDescription"
+        Me.ExtendedDescription.HeaderText = "ExtendedDescription"
+        Me.ExtendedDescription.Name = "ExtendedDescription"
+        Me.ExtendedDescription.ReadOnly = True
+        Me.ExtendedDescription.Visible = False
         '
-        'lookupItemType
+        'ItemType
         '
-        Me.lookupItemType.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupItemType.MinimumWidth = 5
-        Me.lookupItemType.Width = 100
-        Me.lookupItemType.HeaderText = "ItemType"
-        Me.lookupItemType.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        Me.lookupItemType.DefaultCellStyle = DataGridViewCellStyle17
-        Me.lookupItemType.DataPropertyName = "ItemType"
-        Me.lookupItemType.Name = "ItemType"
-        Me.lookupItemType.Visible = False
-        Me.lookupItemType.Frozen = False
+        Me.ItemType.DataPropertyName = "ItemType"
+        Me.ItemType.HeaderText = "ItemType"
+        Me.ItemType.Name = "ItemType"
+        Me.ItemType.ReadOnly = True
+        Me.ItemType.Visible = False
         '
-        'lookupInactive
+        'Inactive
         '
-        Me.lookupInactive.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupInactive.MinimumWidth = 5
-        Me.lookupInactive.Width = 100
-        Me.lookupInactive.HeaderText = "Inactive"
-        Me.lookupInactive.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        DataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle18.NullValue = False
-        Me.lookupInactive.DefaultCellStyle = DataGridViewCellStyle18
-        Me.lookupInactive.DataPropertyName = "Inactive"
-        Me.lookupInactive.Name = "Inactive"
-        Me.lookupInactive.Visible = False
-        Me.lookupInactive.Frozen = False
+        Me.Inactive.DataPropertyName = "Inactive"
+        Me.Inactive.HeaderText = "Inactive"
+        Me.Inactive.Name = "Inactive"
+        Me.Inactive.ReadOnly = True
+        Me.Inactive.Visible = False
         '
-        'lookupITEMDES
+        'ITEMDES
         '
-        Me.lookupITEMDES.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupITEMDES.MinimumWidth = 5
-        Me.lookupITEMDES.Width = 100
-        Me.lookupITEMDES.HeaderText = "ITEMDES"
-        Me.lookupITEMDES.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        Me.lookupITEMDES.DefaultCellStyle = DataGridViewCellStyle19
-        Me.lookupITEMDES.DataPropertyName = "ITEMDES"
-        Me.lookupITEMDES.Name = "ITEMDES"
-        Me.lookupITEMDES.Visible = False
-        Me.lookupITEMDES.Frozen = False
+        Me.ITEMDES.DataPropertyName = "ITEMDES"
+        Me.ITEMDES.HeaderText = "ITEMDES"
+        Me.ITEMDES.Name = "ITEMDES"
+        Me.ITEMDES.ReadOnly = True
+        Me.ITEMDES.Visible = False
         '
-        'lookupSKULEVEL
+        'SKULEVEL
         '
-        Me.lookupSKULEVEL.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupSKULEVEL.MinimumWidth = 5
-        Me.lookupSKULEVEL.Width = 100
-        Me.lookupSKULEVEL.HeaderText = "SKULEVEL"
-        Me.lookupSKULEVEL.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        Me.lookupSKULEVEL.DefaultCellStyle = DataGridViewCellStyle20
-        Me.lookupSKULEVEL.DataPropertyName = "SKULEVEL"
-        Me.lookupSKULEVEL.Name = "SKULEVEL"
-        Me.lookupSKULEVEL.Visible = False
-        Me.lookupSKULEVEL.Frozen = False
+        Me.SKULEVEL.DataPropertyName = "SKULEVEL"
+        Me.SKULEVEL.HeaderText = "SKULEVEL"
+        Me.SKULEVEL.Name = "SKULEVEL"
+        Me.SKULEVEL.ReadOnly = True
+        Me.SKULEVEL.Visible = False
         '
-        'lookupFULLDESC
+        'FULLDESC
         '
-        Me.lookupFULLDESC.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.lookupFULLDESC.MinimumWidth = 5
-        Me.lookupFULLDESC.Width = 100
-        Me.lookupFULLDESC.HeaderText = "FULLDESC"
-        Me.lookupFULLDESC.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        Me.lookupFULLDESC.DefaultCellStyle = DataGridViewCellStyle21
-        Me.lookupFULLDESC.DataPropertyName = "FULLDESC"
-        Me.lookupFULLDESC.Name = "FULLDESC"
-        Me.lookupFULLDESC.Visible = False
-        Me.lookupFULLDESC.Frozen = False
+        Me.FULLDESC.DataPropertyName = "FULLDESC"
+        Me.FULLDESC.HeaderText = "FULLDESC"
+        Me.FULLDESC.Name = "FULLDESC"
+        Me.FULLDESC.ReadOnly = True
+        Me.FULLDESC.Visible = False
         '
-        'lookupQuantity
+        'Quantity
         '
-        Me.lookupQuantity.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
-        Me.lookupQuantity.MinimumWidth = 110
-        Me.lookupQuantity.Width = 110
-        Me.lookupQuantity.HeaderText = "SOH"
-        Me.lookupQuantity.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        DataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.lookupQuantity.DefaultCellStyle = DataGridViewCellStyle22
-        Me.lookupQuantity.DataPropertyName = "Quantity"
-        Me.lookupQuantity.Name = "Quantity"
-        Me.lookupQuantity.Visible = True
-        Me.lookupQuantity.Frozen = False
+        Me.Quantity.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.Quantity.DataPropertyName = "Quantity"
+        DataGridViewCellStyle10.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.Quantity.DefaultCellStyle = DataGridViewCellStyle10
+        Me.Quantity.HeaderText = "SOH"
+        Me.Quantity.MinimumWidth = 110
+        Me.Quantity.Name = "Quantity"
+        Me.Quantity.ReadOnly = True
+        Me.Quantity.Width = 110
         '
-        'lookupQuantityCommitted
+        'QuantityCommitted
         '
-        Me.lookupQuantityCommitted.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
-        Me.lookupQuantityCommitted.MinimumWidth = 94
-        Me.lookupQuantityCommitted.Width = 94
-        Me.lookupQuantityCommitted.HeaderText = "QTY COM"
-        Me.lookupQuantityCommitted.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic
-        DataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.lookupQuantityCommitted.DefaultCellStyle = DataGridViewCellStyle23
-        Me.lookupQuantityCommitted.DataPropertyName = "QuantityCommitted"
-        Me.lookupQuantityCommitted.Name = "QuantityCommitted"
-        Me.lookupQuantityCommitted.Visible = True
-        Me.lookupQuantityCommitted.Frozen = False
+        Me.QuantityCommitted.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.QuantityCommitted.DataPropertyName = "QuantityCommitted"
+        DataGridViewCellStyle11.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.QuantityCommitted.DefaultCellStyle = DataGridViewCellStyle11
+        Me.QuantityCommitted.HeaderText = "QTY COM"
+        Me.QuantityCommitted.MinimumWidth = 94
+        Me.QuantityCommitted.Name = "QuantityCommitted"
+        Me.QuantityCommitted.ReadOnly = True
+        Me.QuantityCommitted.Width = 111
         '
         'Panel4
         '
@@ -1424,7 +1364,7 @@ Partial Class frmItemLookUp
         Me.Panel4.Dock = System.Windows.Forms.DockStyle.Left
         Me.Panel4.Location = New System.Drawing.Point(10, 0)
         Me.Panel4.Name = "Panel4"
-        Me.Panel4.Size = New System.Drawing.Size(342, 464)
+        Me.Panel4.Size = New System.Drawing.Size(342, 372)
         Me.Panel4.TabIndex = 17
         '
         'Label6
@@ -1433,7 +1373,7 @@ Partial Class frmItemLookUp
         Me.Label6.AutoSize = True
         Me.Label6.BackColor = System.Drawing.Color.White
         Me.Label6.Font = New System.Drawing.Font("Tahoma", 6.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label6.Location = New System.Drawing.Point(5, 445)
+        Me.Label6.Location = New System.Drawing.Point(5, 353)
         Me.Label6.Name = "Label6"
         Me.Label6.Size = New System.Drawing.Size(305, 11)
         Me.Label6.TabIndex = 67
@@ -1445,12 +1385,11 @@ Partial Class frmItemLookUp
         Me.TreeView1.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
         Me.TreeView1.Location = New System.Drawing.Point(0, 324)
         Me.TreeView1.Name = "TreeView1"
-        Me.TreeView1.Size = New System.Drawing.Size(342, 140)
+        Me.TreeView1.Size = New System.Drawing.Size(342, 48)
         Me.TreeView1.TabIndex = 1
         '
         'Panel5
         '
-        Me.Panel5.AutoScroll = False
         Me.Panel5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
         Me.Panel5.Controls.Add(Me.PictureBox3)
         Me.Panel5.Controls.Add(Me.chkWebsite)
@@ -1522,7 +1461,6 @@ Partial Class frmItemLookUp
         '
         'chkShowImage
         '
-        Me.chkShowImage.Anchor = CType((System.Windows.Forms.AnchorStyles.Top Or System.Windows.Forms.AnchorStyles.Left), System.Windows.Forms.AnchorStyles)
         Me.chkShowImage.AutoSize = True
         Me.chkShowImage.BackColor = System.Drawing.SystemColors.Control
         Me.chkShowImage.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
@@ -1567,13 +1505,13 @@ Partial Class frmItemLookUp
         'Label9
         '
         Me.Label9.AutoSize = True
+        Me.Label9.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
+        Me.Label9.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        Me.Label9.Location = New System.Drawing.Point(8, 7)
         Me.Label9.Name = "Label9"
+        Me.Label9.Size = New System.Drawing.Size(74, 13)
         Me.Label9.TabIndex = 71
         Me.Label9.Text = "Entry Type :"
-        Me.Label9.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.Label9.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.Label9.Location = New System.Drawing.Point(8, 7)
-        Me.Label9.Size = New System.Drawing.Size(73, 18)
         '
         'rbtnDelivery
         '
@@ -1602,37 +1540,37 @@ Partial Class frmItemLookUp
         'Label8
         '
         Me.Label8.AutoSize = True
+        Me.Label8.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
+        Me.Label8.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        Me.Label8.Location = New System.Drawing.Point(8, 197)
         Me.Label8.Name = "Label8"
+        Me.Label8.Size = New System.Drawing.Size(89, 13)
         Me.Label8.TabIndex = 68
         Me.Label8.Text = "Release Type :"
-        Me.Label8.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.Label8.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.Label8.Location = New System.Drawing.Point(8, 197)
-        Me.Label8.Size = New System.Drawing.Size(87, 18)
         '
         'cboPayment
         '
         Me.cboPayment.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
+        Me.cboPayment.Font = New System.Drawing.Font("Tahoma", 9.0!)
         Me.cboPayment.FormattingEnabled = True
         Me.cboPayment.Items.AddRange(New Object() {"CASH", "CHARGE", "CREDIT CARD", "DEBIT CARD"})
         Me.cboPayment.Location = New System.Drawing.Point(222, 86)
         Me.cboPayment.Name = "cboPayment"
-        Me.cboPayment.Size = New System.Drawing.Size(112, 24)
+        Me.cboPayment.Size = New System.Drawing.Size(112, 22)
         Me.cboPayment.TabIndex = 66
-        Me.cboPayment.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Regular)
         '
         'Label7
         '
         Me.Label7.AutoSize = True
+        Me.Label7.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
+        Me.Label7.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
         Me.Label7.ImageAlign = System.Drawing.ContentAlignment.MiddleRight
+        Me.Label7.Location = New System.Drawing.Point(222, 65)
         Me.Label7.Name = "Label7"
         Me.Label7.Padding = New System.Windows.Forms.Padding(0, 0, 27, 0)
+        Me.Label7.Size = New System.Drawing.Size(119, 13)
         Me.Label7.TabIndex = 65
         Me.Label7.Text = "Payment Type:"
-        Me.Label7.Font = New System.Drawing.Font("Tahoma", 8.25!, System.Drawing.FontStyle.Bold)
-        Me.Label7.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        Me.Label7.Location = New System.Drawing.Point(222, 65)
-        Me.Label7.Size = New System.Drawing.Size(116, 18)
         '
         'cmdSSales
         '
@@ -1676,19 +1614,19 @@ Partial Class frmItemLookUp
         '
         'pnl1Barcode
         '
-        Me.pnl1Barcode.Name = "pnl1Barcode"
-        Me.pnl1Barcode.TabIndex = 81
         Me.pnl1Barcode.BackColor = System.Drawing.SystemColors.Control
         Me.pnl1Barcode.Location = New System.Drawing.Point(6, 266)
+        Me.pnl1Barcode.Name = "pnl1Barcode"
         Me.pnl1Barcode.Size = New System.Drawing.Size(223, 26)
+        Me.pnl1Barcode.TabIndex = 81
         '
         'pnl2TextSearch
         '
-        Me.pnl2TextSearch.Name = "pnl2TextSearch"
-        Me.pnl2TextSearch.TabIndex = 82
         Me.pnl2TextSearch.BackColor = System.Drawing.SystemColors.Control
         Me.pnl2TextSearch.Location = New System.Drawing.Point(6, 236)
+        Me.pnl2TextSearch.Name = "pnl2TextSearch"
         Me.pnl2TextSearch.Size = New System.Drawing.Size(283, 26)
+        Me.pnl2TextSearch.TabIndex = 82
         '
         'panelSelectItem
         '
@@ -1696,312 +1634,62 @@ Partial Class frmItemLookUp
         Me.panelSelectItem.Controls.Add(Me.Label4)
         Me.panelSelectItem.Controls.Add(Me.GroupBox1)
         Me.panelSelectItem.Dock = System.Windows.Forms.DockStyle.Bottom
-        Me.panelSelectItem.Location = New System.Drawing.Point(0, 464)
+        Me.panelSelectItem.Location = New System.Drawing.Point(0, 372)
         Me.panelSelectItem.Name = "panelSelectItem"
         Me.panelSelectItem.Padding = New System.Windows.Forms.Padding(10, 0, 1, 11)
-        Me.panelSelectItem.Size = New System.Drawing.Size(1206, 220)
+        Me.panelSelectItem.Size = New System.Drawing.Size(1179, 220)
         Me.panelSelectItem.TabIndex = 19
         '
         'gridSelectItem
         '
-        Me.gridSelectItem.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Regular)
-        Me.gridSelectItem.RowHeadersDefaultCellStyle.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold)
         Me.gridSelectItem.AllowUserToAddRows = False
         Me.gridSelectItem.AllowUserToDeleteRows = False
         Me.gridSelectItem.AllowUserToOrderColumns = True
+        DataGridViewCellStyle15.BackColor = System.Drawing.Color.FromArgb(CType(CType(246, Byte), Integer), CType(CType(248, Byte), Integer), CType(CType(251, Byte), Integer))
+        Me.gridSelectItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle15
+        Me.gridSelectItem.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
         Me.gridSelectItem.BackgroundColor = System.Drawing.SystemColors.ButtonHighlight
+        DataGridViewCellStyle16.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle16.BackColor = System.Drawing.Color.FromArgb(CType(CType(232, Byte), Integer), CType(CType(237, Byte), Integer), CType(CType(244, Byte), Integer))
+        DataGridViewCellStyle16.Font = New System.Drawing.Font("Tahoma", 10.0!)
+        DataGridViewCellStyle16.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        DataGridViewCellStyle16.Padding = New System.Windows.Forms.Padding(6, 4, 6, 4)
+        DataGridViewCellStyle16.SelectionBackColor = System.Drawing.Color.FromArgb(CType(CType(232, Byte), Integer), CType(CType(237, Byte), Integer), CType(CType(244, Byte), Integer))
+        DataGridViewCellStyle16.SelectionForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        DataGridViewCellStyle16.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.gridSelectItem.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle16
         Me.gridSelectItem.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.ItemCode, Me.ItemName, Me.QTY, Me.Price, Me.DISC, Me.TOTAL, Me.LessV, Me.VSales, Me.DiscP, Me.Cost, Me.Taxable, Me.ItemID, Me.FullPrice, Me.Description, Me.Extended, Me.DiscAmount, Me.OrderEntryID, Me.chkPickLoc, Me.CustPrep, Me.LASTPURCHASEDPRICE})
+        Me.gridSelectItem.ColumnHeadersHeight = 34
+        Me.gridSelectItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
+        DataGridViewCellStyle17.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle17.BackColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(255, Byte), Integer))
+        DataGridViewCellStyle17.Font = New System.Drawing.Font("Tahoma", 10.0!)
+        DataGridViewCellStyle17.ForeColor = System.Drawing.Color.FromArgb(CType(CType(31, Byte), Integer), CType(CType(41, Byte), Integer), CType(CType(55, Byte), Integer))
+        DataGridViewCellStyle17.Padding = New System.Windows.Forms.Padding(6, 3, 6, 3)
+        DataGridViewCellStyle17.SelectionBackColor = System.Drawing.Color.FromArgb(CType(CType(37, Byte), Integer), CType(CType(99, Byte), Integer), CType(CType(160, Byte), Integer))
+        DataGridViewCellStyle17.SelectionForeColor = System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(255, Byte), Integer), CType(CType(255, Byte), Integer))
+        DataGridViewCellStyle17.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
+        Me.gridSelectItem.DefaultCellStyle = DataGridViewCellStyle17
         Me.gridSelectItem.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.gridSelectItem.EnableHeadersVisualStyles = False
+        Me.gridSelectItem.Font = New System.Drawing.Font("Tahoma", 10.0!)
+        Me.gridSelectItem.GridColor = System.Drawing.Color.FromArgb(CType(CType(218, Byte), Integer), CType(CType(224, Byte), Integer), CType(CType(232, Byte), Integer))
         Me.gridSelectItem.Location = New System.Drawing.Point(10, 29)
         Me.gridSelectItem.Name = "gridSelectItem"
+        DataGridViewCellStyle18.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
+        DataGridViewCellStyle18.BackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle18.Font = New System.Drawing.Font("Microsoft Sans Serif", 9.0!, System.Drawing.FontStyle.Bold)
+        DataGridViewCellStyle18.ForeColor = System.Drawing.SystemColors.WindowText
+        DataGridViewCellStyle18.SelectionBackColor = System.Drawing.SystemColors.Highlight
+        DataGridViewCellStyle18.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle18.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.gridSelectItem.RowHeadersDefaultCellStyle = DataGridViewCellStyle18
         Me.gridSelectItem.RowHeadersWidth = 51
+        Me.gridSelectItem.RowTemplate.Height = 30
         Me.gridSelectItem.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.CellSelect
-        Me.gridSelectItem.Size = New System.Drawing.Size(1186, 180)
+        Me.gridSelectItem.Size = New System.Drawing.Size(1168, 180)
         Me.gridSelectItem.TabIndex = 15
         Me.gridSelectItem.TabStop = False
-        DataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle24.BackColor = System.Drawing.Color.FromArgb(232, 237, 244)
-        DataGridViewCellStyle24.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        DataGridViewCellStyle24.SelectionBackColor = System.Drawing.Color.FromArgb(232, 237, 244)
-        DataGridViewCellStyle24.SelectionForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        DataGridViewCellStyle24.Font = New System.Drawing.Font("Tahoma", 9!, System.Drawing.FontStyle.Bold)
-        DataGridViewCellStyle24.Padding = New System.Windows.Forms.Padding(6, 4, 6, 4)
-        DataGridViewCellStyle24.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.gridSelectItem.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle24
-        DataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft
-        DataGridViewCellStyle25.BackColor = System.Drawing.Color.FromArgb(255, 255, 255)
-        DataGridViewCellStyle25.ForeColor = System.Drawing.Color.FromArgb(31, 41, 55)
-        DataGridViewCellStyle25.SelectionBackColor = System.Drawing.Color.FromArgb(37, 99, 160)
-        DataGridViewCellStyle25.SelectionForeColor = System.Drawing.Color.FromArgb(255, 255, 255)
-        DataGridViewCellStyle25.Font = New System.Drawing.Font("Tahoma", 10!, System.Drawing.FontStyle.Regular)
-        DataGridViewCellStyle25.Padding = New System.Windows.Forms.Padding(6, 3, 6, 3)
-        DataGridViewCellStyle25.WrapMode = System.Windows.Forms.DataGridViewTriState.[False]
-        Me.gridSelectItem.DefaultCellStyle = DataGridViewCellStyle25
-        Me.gridSelectItem.RowsDefaultCellStyle = DataGridViewCellStyle26
-        DataGridViewCellStyle27.BackColor = System.Drawing.Color.FromArgb(246, 248, 251)
-        Me.gridSelectItem.AlternatingRowsDefaultCellStyle = DataGridViewCellStyle27
-        Me.gridSelectItem.GridColor = System.Drawing.Color.FromArgb(218, 224, 232)
-        Me.gridSelectItem.EnableHeadersVisualStyles = False
-        Me.gridSelectItem.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
-        Me.gridSelectItem.ColumnHeadersHeight = 34
-        Me.gridSelectItem.AutoSizeRowsMode = System.Windows.Forms.DataGridViewAutoSizeRowsMode.None
-        Me.gridSelectItem.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
-        Me.gridSelectItem.RowTemplate.Height = 30
-        '
-        'ItemCode
-        '
-        Me.ItemCode.Name = "ItemCode"
-        Me.ItemCode.ReadOnly = True
-        Me.ItemCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.ItemCode.MinimumWidth = 6
-        Me.ItemCode.Width = 110
-        Me.ItemCode.HeaderText = "ITEM CODE"
-        Me.ItemCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        DataGridViewCellStyle28.Font = New System.Drawing.Font("Tahoma", 10!, System.Drawing.FontStyle.Bold)
-        Me.ItemCode.DefaultCellStyle = DataGridViewCellStyle28
-        '
-        'ItemName
-        '
-        Me.ItemName.Name = "ItemName"
-        Me.ItemName.ReadOnly = True
-        Me.ItemName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
-        Me.ItemName.MinimumWidth = 220
-        Me.ItemName.FillWeight = 100!
-        Me.ItemName.HeaderText = "ITEM NAME"
-        Me.ItemName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.ItemName.DefaultCellStyle = DataGridViewCellStyle29
-        '
-        'QTY
-        '
-        Me.QTY.Name = "QTY"
-        Me.QTY.Resizable = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.QTY.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
-        Me.QTY.MinimumWidth = 90
-        Me.QTY.Width = 90
-        Me.QTY.HeaderText = "QUANTITY"
-        Me.QTY.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        DataGridViewCellStyle30.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        DataGridViewCellStyle30.Format = "#,0.###############"
-        Me.QTY.DefaultCellStyle = DataGridViewCellStyle30
-        '
-        'Price
-        '
-        Me.Price.Name = "Price"
-        Me.Price.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
-        Me.Price.MinimumWidth = 100
-        Me.Price.Width = 100
-        Me.Price.HeaderText = "PRICE"
-        Me.Price.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        DataGridViewCellStyle31.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        DataGridViewCellStyle31.Format = "C"
-        DataGridViewCellStyle31.NullValue = Nothing
-        Me.Price.DefaultCellStyle = DataGridViewCellStyle31
-        '
-        'DISC
-        '
-        Me.DISC.Name = "DISC"
-        Me.DISC.ReadOnly = True
-        Me.DISC.Visible = False
-        Me.DISC.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.DISC.MinimumWidth = 6
-        Me.DISC.Width = 70
-        Me.DISC.HeaderText = "DISC"
-        Me.DISC.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DISC.DefaultCellStyle = DataGridViewCellStyle32
-        '
-        'TOTAL
-        '
-        Me.TOTAL.Name = "TOTAL"
-        Me.TOTAL.ReadOnly = True
-        Me.TOTAL.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
-        Me.TOTAL.MinimumWidth = 120
-        Me.TOTAL.Width = 120
-        Me.TOTAL.HeaderText = "TOTAL PRICE"
-        Me.TOTAL.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        DataGridViewCellStyle33.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        DataGridViewCellStyle33.Format = "C"
-        DataGridViewCellStyle33.NullValue = Nothing
-        Me.TOTAL.DefaultCellStyle = DataGridViewCellStyle33
-        '
-        'LessV
-        '
-        Me.LessV.Name = "LessV"
-        Me.LessV.ReadOnly = True
-        Me.LessV.Visible = False
-        Me.LessV.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.LessV.MinimumWidth = 6
-        Me.LessV.Width = 125
-        Me.LessV.HeaderText = "Less VAT"
-        Me.LessV.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.LessV.DefaultCellStyle = DataGridViewCellStyle34
-        '
-        'VSales
-        '
-        Me.VSales.Name = "VSales"
-        Me.VSales.ReadOnly = True
-        Me.VSales.Visible = False
-        Me.VSales.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.VSales.MinimumWidth = 6
-        Me.VSales.Width = 125
-        Me.VSales.HeaderText = "VAT Sales"
-        Me.VSales.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.VSales.DefaultCellStyle = DataGridViewCellStyle35
-        '
-        'DiscP
-        '
-        Me.DiscP.Name = "DiscP"
-        Me.DiscP.ReadOnly = True
-        Me.DiscP.Visible = False
-        Me.DiscP.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.DiscP.MinimumWidth = 6
-        Me.DiscP.Width = 125
-        Me.DiscP.HeaderText = "Disc Price"
-        Me.DiscP.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DiscP.DefaultCellStyle = DataGridViewCellStyle36
-        '
-        'Cost
-        '
-        Me.Cost.Name = "Cost"
-        Me.Cost.Visible = False
-        Me.Cost.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.Cost.MinimumWidth = 6
-        Me.Cost.Width = 125
-        Me.Cost.HeaderText = "Cost"
-        Me.Cost.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.Cost.DefaultCellStyle = DataGridViewCellStyle37
-        '
-        'Taxable
-        '
-        Me.Taxable.Name = "Taxable"
-        Me.Taxable.Visible = False
-        Me.Taxable.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.Taxable.MinimumWidth = 6
-        Me.Taxable.Width = 125
-        Me.Taxable.HeaderText = "Taxable"
-        Me.Taxable.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.Taxable.DefaultCellStyle = DataGridViewCellStyle38
-        '
-        'ItemID
-        '
-        Me.ItemID.Name = "ItemID"
-        Me.ItemID.Visible = False
-        Me.ItemID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.ItemID.MinimumWidth = 6
-        Me.ItemID.Width = 125
-        Me.ItemID.HeaderText = "ItemID"
-        Me.ItemID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.ItemID.DefaultCellStyle = DataGridViewCellStyle39
-        '
-        'FullPrice
-        '
-        Me.FullPrice.Name = "FullPrice"
-        Me.FullPrice.Visible = False
-        Me.FullPrice.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.FullPrice.MinimumWidth = 6
-        Me.FullPrice.Width = 125
-        Me.FullPrice.HeaderText = "FullPrice"
-        Me.FullPrice.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.FullPrice.DefaultCellStyle = DataGridViewCellStyle40
-        '
-        'Description
-        '
-        Me.Description.Name = "Description"
-        Me.Description.Visible = False
-        Me.Description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.Description.MinimumWidth = 6
-        Me.Description.Width = 125
-        Me.Description.HeaderText = "Description"
-        Me.Description.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.Description.DefaultCellStyle = DataGridViewCellStyle41
-        '
-        'Extended
-        '
-        Me.Extended.Name = "Extended"
-        Me.Extended.Visible = False
-        Me.Extended.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.Extended.MinimumWidth = 6
-        Me.Extended.Width = 125
-        Me.Extended.HeaderText = "Extended"
-        Me.Extended.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.Extended.DefaultCellStyle = DataGridViewCellStyle42
-        '
-        'DiscAmount
-        '
-        Me.DiscAmount.Name = "DiscAmount"
-        Me.DiscAmount.Visible = False
-        Me.DiscAmount.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.DiscAmount.MinimumWidth = 6
-        Me.DiscAmount.Width = 125
-        Me.DiscAmount.HeaderText = "DiscAmount"
-        Me.DiscAmount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.DiscAmount.DefaultCellStyle = DataGridViewCellStyle43
-        '
-        'OrderEntryID
-        '
-        Me.OrderEntryID.Name = "OrderEntryID"
-        Me.OrderEntryID.Visible = False
-        Me.OrderEntryID.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
-        Me.OrderEntryID.MinimumWidth = 6
-        Me.OrderEntryID.Width = 90
-        Me.OrderEntryID.HeaderText = "OrderEntryID"
-        Me.OrderEntryID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        Me.OrderEntryID.DefaultCellStyle = DataGridViewCellStyle44
-        '
-        'chkPickLoc
-        '
-        Me.chkPickLoc.Name = "chkPickLoc"
-        Me.chkPickLoc.Resizable = System.Windows.Forms.DataGridViewTriState.[True]
-        Me.chkPickLoc.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.chkPickLoc.MinimumWidth = 75
-        Me.chkPickLoc.Width = 100
-        Me.chkPickLoc.HeaderText = "UP-STORE"
-        Me.chkPickLoc.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        DataGridViewCellStyle45.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
-        DataGridViewCellStyle45.NullValue = False
-        Me.chkPickLoc.DefaultCellStyle = DataGridViewCellStyle45
-        '
-        'CustPrep
-        '
-        Me.CustPrep.Name = "CustPrep"
-        Me.CustPrep.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.CustPrep.MinimumWidth = 6
-        Me.CustPrep.Width = 105
-        Me.CustPrep.HeaderText = "PREPARED"
-        Me.CustPrep.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        DataGridViewCellStyle46.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        Me.CustPrep.DefaultCellStyle = DataGridViewCellStyle46
-        '
-        'LASTPURCHASEDPRICE
-        '
-        Me.LASTPURCHASEDPRICE.Name = "LASTPURCHASEDPRICE"
-        Me.LASTPURCHASEDPRICE.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
-        Me.LASTPURCHASEDPRICE.MinimumWidth = 6
-        Me.LASTPURCHASEDPRICE.Width = 180
-        Me.LASTPURCHASEDPRICE.HeaderText = "LAST PURCHASE PRICE"
-        Me.LASTPURCHASEDPRICE.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
-        DataGridViewCellStyle47.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
-        DataGridViewCellStyle47.Format = "C"
-        Me.LASTPURCHASEDPRICE.DefaultCellStyle = DataGridViewCellStyle47
-        Me.ItemCode.FillWeight = 100!
-        Me.ItemName.FillWeight = 100!
-        Me.QTY.FillWeight = 100!
-        Me.Price.FillWeight = 100!
-        Me.DISC.FillWeight = 100!
-        Me.TOTAL.FillWeight = 100!
-        Me.LessV.FillWeight = 100!
-        Me.VSales.FillWeight = 100!
-        Me.DiscP.FillWeight = 100!
-        Me.Cost.FillWeight = 100!
-        Me.Taxable.FillWeight = 100!
-        Me.ItemID.FillWeight = 100!
-        Me.FullPrice.FillWeight = 100!
-        Me.Description.FillWeight = 100!
-        Me.Extended.FillWeight = 100!
-        Me.DiscAmount.FillWeight = 100!
-        Me.OrderEntryID.FillWeight = 100!
-        Me.chkPickLoc.FillWeight = 100!
-        Me.CustPrep.FillWeight = 100!
-        Me.LASTPURCHASEDPRICE.FillWeight = 100!
         '
         'Label4
         '
@@ -2021,9 +1709,215 @@ Partial Class frmItemLookUp
         Me.GroupBox1.Location = New System.Drawing.Point(10, 0)
         Me.GroupBox1.Name = "GroupBox1"
         Me.GroupBox1.Padding = New System.Windows.Forms.Padding(3, 0, 3, 3)
-        Me.GroupBox1.Size = New System.Drawing.Size(1186, 11)
+        Me.GroupBox1.Size = New System.Drawing.Size(1168, 11)
         Me.GroupBox1.TabIndex = 20
         Me.GroupBox1.TabStop = False
+        '
+        'Price
+        '
+        Me.Price.Name = "Price"
+        Me.Price.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        Me.Price.MinimumWidth = 100
+        Me.Price.Width = 100
+        Me.Price.HeaderText = "PRICE"
+        Me.Price.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        SelectedPriceStyle.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        SelectedPriceStyle.Format = "C"
+        SelectedPriceStyle.NullValue = Nothing
+        Me.Price.DefaultCellStyle = SelectedPriceStyle
+        '
+        'Cost
+        '
+        Me.Cost.Name = "Cost"
+        Me.Cost.Visible = False
+        Me.Cost.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
+        Me.Cost.MinimumWidth = 6
+        Me.Cost.Width = 125
+        Me.Cost.HeaderText = "Cost"
+        Me.Cost.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.Cost.DefaultCellStyle = SelectedCostStyle
+        '
+        'Description
+        '
+        Me.Description.Name = "Description"
+        Me.Description.Visible = False
+        Me.Description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.NotSet
+        Me.Description.MinimumWidth = 6
+        Me.Description.Width = 125
+        Me.Description.HeaderText = "Description"
+        Me.Description.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.Description.DefaultCellStyle = SelectedDescriptionStyle
+        '
+        'ItemCode
+        '
+        Me.ItemCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        DataGridViewCellStyle19.Font = New System.Drawing.Font("Tahoma", 10.0!, System.Drawing.FontStyle.Bold)
+        Me.ItemCode.DefaultCellStyle = DataGridViewCellStyle19
+        Me.ItemCode.HeaderText = "ITEM CODE"
+        Me.ItemCode.MinimumWidth = 6
+        Me.ItemCode.Name = "ItemCode"
+        Me.ItemCode.ReadOnly = True
+        Me.ItemCode.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.ItemCode.Width = 110
+        '
+        'ItemName
+        '
+        Me.ItemName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill
+        Me.ItemName.HeaderText = "ITEM NAME"
+        Me.ItemName.MinimumWidth = 220
+        Me.ItemName.Name = "ItemName"
+        Me.ItemName.ReadOnly = True
+        Me.ItemName.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'QTY
+        '
+        Me.QTY.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        DataGridViewCellStyle20.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        DataGridViewCellStyle20.Format = "#,0.###############"
+        Me.QTY.DefaultCellStyle = DataGridViewCellStyle20
+        Me.QTY.HeaderText = "QUANTITY"
+        Me.QTY.MinimumWidth = 90
+        Me.QTY.Name = "QTY"
+        Me.QTY.Resizable = System.Windows.Forms.DataGridViewTriState.[True]
+        Me.QTY.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'DISC
+        '
+        Me.DISC.HeaderText = "DISC"
+        Me.DISC.MinimumWidth = 6
+        Me.DISC.Name = "DISC"
+        Me.DISC.ReadOnly = True
+        Me.DISC.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.DISC.Visible = False
+        Me.DISC.Width = 70
+        '
+        'TOTAL
+        '
+        Me.TOTAL.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.DisplayedCells
+        DataGridViewCellStyle21.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        DataGridViewCellStyle21.Format = "C"
+        DataGridViewCellStyle21.NullValue = Nothing
+        Me.TOTAL.DefaultCellStyle = DataGridViewCellStyle21
+        Me.TOTAL.HeaderText = "TOTAL PRICE"
+        Me.TOTAL.MinimumWidth = 120
+        Me.TOTAL.Name = "TOTAL"
+        Me.TOTAL.ReadOnly = True
+        Me.TOTAL.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        '
+        'LessV
+        '
+        Me.LessV.HeaderText = "Less VAT"
+        Me.LessV.MinimumWidth = 6
+        Me.LessV.Name = "LessV"
+        Me.LessV.ReadOnly = True
+        Me.LessV.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.LessV.Visible = False
+        Me.LessV.Width = 125
+        '
+        'VSales
+        '
+        Me.VSales.HeaderText = "VAT Sales"
+        Me.VSales.MinimumWidth = 6
+        Me.VSales.Name = "VSales"
+        Me.VSales.ReadOnly = True
+        Me.VSales.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.VSales.Visible = False
+        Me.VSales.Width = 125
+        '
+        'DiscP
+        '
+        Me.DiscP.HeaderText = "Disc Price"
+        Me.DiscP.MinimumWidth = 6
+        Me.DiscP.Name = "DiscP"
+        Me.DiscP.ReadOnly = True
+        Me.DiscP.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.DiscP.Visible = False
+        Me.DiscP.Width = 125
+        '
+        'Taxable
+        '
+        Me.Taxable.HeaderText = "Taxable"
+        Me.Taxable.MinimumWidth = 6
+        Me.Taxable.Name = "Taxable"
+        Me.Taxable.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.Taxable.Visible = False
+        Me.Taxable.Width = 125
+        '
+        'ItemID
+        '
+        Me.ItemID.HeaderText = "ItemID"
+        Me.ItemID.MinimumWidth = 6
+        Me.ItemID.Name = "ItemID"
+        Me.ItemID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.ItemID.Visible = False
+        Me.ItemID.Width = 125
+        '
+        'FullPrice
+        '
+        Me.FullPrice.HeaderText = "FullPrice"
+        Me.FullPrice.MinimumWidth = 6
+        Me.FullPrice.Name = "FullPrice"
+        Me.FullPrice.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.FullPrice.Visible = False
+        Me.FullPrice.Width = 125
+        '
+        'Extended
+        '
+        Me.Extended.HeaderText = "Extended"
+        Me.Extended.MinimumWidth = 6
+        Me.Extended.Name = "Extended"
+        Me.Extended.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.Extended.Visible = False
+        Me.Extended.Width = 125
+        '
+        'DiscAmount
+        '
+        Me.DiscAmount.HeaderText = "DiscAmount"
+        Me.DiscAmount.MinimumWidth = 6
+        Me.DiscAmount.Name = "DiscAmount"
+        Me.DiscAmount.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.DiscAmount.Visible = False
+        Me.DiscAmount.Width = 125
+        '
+        'OrderEntryID
+        '
+        Me.OrderEntryID.HeaderText = "OrderEntryID"
+        Me.OrderEntryID.MinimumWidth = 6
+        Me.OrderEntryID.Name = "OrderEntryID"
+        Me.OrderEntryID.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.OrderEntryID.Visible = False
+        Me.OrderEntryID.Width = 90
+        '
+        'chkPickLoc
+        '
+        Me.chkPickLoc.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        Me.chkPickLoc.HeaderText = "UP-STORE"
+        Me.chkPickLoc.MinimumWidth = 75
+        Me.chkPickLoc.Name = "chkPickLoc"
+        Me.chkPickLoc.Resizable = System.Windows.Forms.DataGridViewTriState.[True]
+        '
+        'CustPrep
+        '
+        Me.CustPrep.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        DataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        Me.CustPrep.DefaultCellStyle = DataGridViewCellStyle22
+        Me.CustPrep.HeaderText = "PREPARED"
+        Me.CustPrep.MinimumWidth = 6
+        Me.CustPrep.Name = "CustPrep"
+        Me.CustPrep.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.CustPrep.Width = 105
+        '
+        'LASTPURCHASEDPRICE
+        '
+        Me.LASTPURCHASEDPRICE.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.None
+        DataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight
+        DataGridViewCellStyle23.Format = "C"
+        Me.LASTPURCHASEDPRICE.DefaultCellStyle = DataGridViewCellStyle23
+        Me.LASTPURCHASEDPRICE.HeaderText = "LAST PURCHASE PRICE"
+        Me.LASTPURCHASEDPRICE.MinimumWidth = 6
+        Me.LASTPURCHASEDPRICE.Name = "LASTPURCHASEDPRICE"
+        Me.LASTPURCHASEDPRICE.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable
+        Me.LASTPURCHASEDPRICE.Width = 180
         '
         'Update_Timer
         '
@@ -2057,12 +1951,15 @@ Partial Class frmItemLookUp
         Me.panelButtons.PerformLayout()
         Me.panelTotal.ResumeLayout(False)
         Me.panelTotal.PerformLayout()
+        Me.grpWithholding.ResumeLayout(False)
+        Me.withholdingLayout.ResumeLayout(False)
         Me.GroupBox3.ResumeLayout(False)
         Me.GroupBox3.PerformLayout()
         Me.GroupBox2.ResumeLayout(False)
         Me.GroupBox2.PerformLayout()
         Me.GroupBox4.ResumeLayout(False)
         Me.GroupBox4.PerformLayout()
+        Me.panelTotalsContainer.ResumeLayout(False)
         Me.panelGrid.ResumeLayout(False)
         Me.panelItem.ResumeLayout(False)
         Me.picPanel.ResumeLayout(False)
@@ -2201,21 +2098,36 @@ Partial Class frmItemLookUp
     Friend WithEvents ItemCode As DataGridViewTextBoxColumn
     Friend WithEvents ItemName As DataGridViewTextBoxColumn
     Friend WithEvents QTY As DataGridViewTextBoxColumn
-    Friend WithEvents Price As DataGridViewTextBoxColumn
     Friend WithEvents DISC As DataGridViewTextBoxColumn
     Friend WithEvents TOTAL As DataGridViewTextBoxColumn
     Friend WithEvents LessV As DataGridViewTextBoxColumn
     Friend WithEvents VSales As DataGridViewTextBoxColumn
     Friend WithEvents DiscP As DataGridViewTextBoxColumn
-    Friend WithEvents Cost As DataGridViewTextBoxColumn
     Friend WithEvents Taxable As DataGridViewTextBoxColumn
     Friend WithEvents ItemID As DataGridViewTextBoxColumn
     Friend WithEvents FullPrice As DataGridViewTextBoxColumn
-    Friend WithEvents Description As DataGridViewTextBoxColumn
     Friend WithEvents Extended As DataGridViewTextBoxColumn
     Friend WithEvents DiscAmount As DataGridViewTextBoxColumn
     Friend WithEvents OrderEntryID As DataGridViewTextBoxColumn
     Friend WithEvents chkPickLoc As DataGridViewCheckBoxColumn
     Friend WithEvents CustPrep As DataGridViewTextBoxColumn
     Friend WithEvents LASTPURCHASEDPRICE As DataGridViewTextBoxColumn
+    Friend WithEvents ItemLookupCode As DataGridViewTextBoxColumn
+    Friend WithEvents AVAILABLE As DataGridViewTextBoxColumn
+    Friend WithEvents ParentQuantity As DataGridViewTextBoxColumn
+    Friend WithEvents TaxID As DataGridViewTextBoxColumn
+    Friend WithEvents SubDescription2 As DataGridViewTextBoxColumn
+    Friend WithEvents ID As DataGridViewTextBoxColumn
+    Friend WithEvents DESCRIPTION1 As DataGridViewTextBoxColumn
+    Friend WithEvents ExtendedDescription As DataGridViewTextBoxColumn
+    Friend WithEvents ItemType As DataGridViewTextBoxColumn
+    Friend WithEvents Inactive As DataGridViewCheckBoxColumn
+    Friend WithEvents ITEMDES As DataGridViewTextBoxColumn
+    Friend WithEvents SKULEVEL As DataGridViewTextBoxColumn
+    Friend WithEvents FULLDESC As DataGridViewTextBoxColumn
+    Friend WithEvents Quantity As DataGridViewTextBoxColumn
+    Friend WithEvents QuantityCommitted As DataGridViewTextBoxColumn
+    Friend WithEvents Price As DataGridViewTextBoxColumn
+    Friend WithEvents Cost As DataGridViewTextBoxColumn
+    Friend WithEvents Description As DataGridViewTextBoxColumn
 End Class

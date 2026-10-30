@@ -27,7 +27,7 @@ CREATE TABLE [dbo].[SOD_Item_Logs](
 	[QuantityORIS] [int] NOT NULL,
 	[LastQuantity] [int] NOT NULL,
 	[NewQuantity] [int] NOT NULL,
-	[LastCommitted] [int] NOT NULL,
+	[LastCommitted] [int] NULL,
 	[NewCommitted] [int] NOT NULL,
 	[Date] [datetime] NOT NULL
 )';

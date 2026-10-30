@@ -732,18 +732,24 @@ Public Class clsItemLookUp
 
     Public Shared Sub ApplyQuantityCommittedDifference(ByVal dbContext As ItemLookUpDataContext,
                                                        ByVal itemId As Integer,
-                                                       ByVal quantityDifference As Double)
+                                                       ByVal quantityDifference As Double,
+                                                       Optional ByVal requireAvailableStock As Boolean = False)
         If dbContext Is Nothing Then Throw New ArgumentNullException(NameOf(dbContext))
         If quantityDifference = 0R Then Exit Sub
 
         ' SQL performs the arithmetic while holding the row update lock. Concurrent
         ' users add or subtract their own difference instead of overwriting a value
         ' that another Work Order transaction has just committed.
+        ' A quotation has no existing reservation. Check its new reservation
+        ' against current stock in this same atomic update, after any lock wait.
+        Dim stockCondition As String = If(requireAvailableStock,
+            " AND (ItemType NOT IN (0, 3) OR {0} <= 0 OR Quantity - QuantityCommitted >= {0})",
+            String.Empty)
         Dim affectedRows As Integer = dbContext.ExecuteCommand(
             "UPDATE dbo.Item WITH (ROWLOCK) " &
             "SET QuantityCommitted = QuantityCommitted + {0} " &
             "WHERE ID = {1} AND ItemType <> 7 " &
-            "AND QuantityCommitted + {0} >= 0",
+            "AND QuantityCommitted + {0} >= 0" & stockCondition,
             quantityDifference,
             itemId)
 
@@ -753,7 +759,8 @@ Public Class clsItemLookUp
                          Where candidate.ID = itemId
                          Select New With {
                              candidate.ItemType,
-                             candidate.QuantityCommitted
+                             candidate.QuantityCommitted,
+                             candidate.Quantity
                          }).SingleOrDefault()
 
         If itemState Is Nothing Then
@@ -762,6 +769,16 @@ Public Class clsItemLookUp
         End If
 
         If itemState.ItemType = 7 Then Exit Sub
+
+        If requireAvailableStock AndAlso quantityDifference > 0 AndAlso
+           (itemState.ItemType = 0 OrElse itemState.ItemType = 3) AndAlso
+           itemState.Quantity - itemState.QuantityCommitted < quantityDifference Then
+            Throw New InvalidOperationException(
+                "Insufficient available quantity for item " & itemId &
+                " while converting the quotation. Available: " &
+                (itemState.Quantity - itemState.QuantityCommitted).ToString() &
+                ", requested: " & quantityDifference.ToString() & ".")
+        End If
 
         Throw New InvalidOperationException(
             "The committed-quantity adjustment for item " & itemId &

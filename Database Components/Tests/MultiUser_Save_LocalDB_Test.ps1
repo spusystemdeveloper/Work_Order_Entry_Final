@@ -20,9 +20,10 @@ function Sql([string]$text,$transaction=$null){$cmd=$connection.CreateCommand();
 function Scalar([string]$text){$cmd=$connection.CreateCommand();try{$cmd.CommandTimeout=10;$cmd.CommandText=$text;return $cmd.ExecuteScalar()}finally{$cmd.Dispose()}}
 function Check([bool]$ok,[string]$name){if(-not $ok){throw "FAILED: $name"};$script:checks++;Write-Output "Passed: $name"}
 function Wait-For([scriptblock]$condition,[string]$description,[int]$seconds=15){$end=[DateTime]::UtcNow.AddSeconds($seconds);while(-not (& $condition)){if([DateTime]::UtcNow -gt $end){throw "Timed out: $description"};Start-Sleep -Milliseconds 40}}
-function Start-Cashier([string]$case,[string]$who,[int]$order,[int]$item,[int]$entry,[double]$quantity,[string]$operation='Save',[object[]]$lines=$null){
+function Start-Cashier([string]$case,[string]$who,[int]$order,[int]$item,[int]$entry,[double]$quantity,[string]$operation='Save',[object[]]$lines=$null,[int[]]$withholding=$null){
     $stem=Join-Path $directory ($case+'-'+$who)
     $request=[pscustomobject]@{Server=$server;Database=$database;Assembly=$assembly;Actor=('MultiUser_'+$who+'_'+$suffix);OrderID=$order;ItemID=$item;EntryID=$entry;Quantity=$quantity;Operation=$operation;Lines=$lines;Comment=($case+'-'+$who);ReadyFile=($stem+'.ready');GoFile=($stem+'.go');ResultFile=($stem+'.result.json')}
+    if($null -ne $withholding){$request | Add-Member -NotePropertyName WalkInRates -NotePropertyValue @($withholding)}
     $requestFile=$stem+'.request.json';$request|ConvertTo-Json|Set-Content -LiteralPath $requestFile
     $workerArgs=@('-NoProfile','-STA','-ExecutionPolicy','Bypass','-File',('"'+$worker+'"'),'-RequestFile',('"'+$requestFile+'"'))
     $process=Start-Process -FilePath $powershell -ArgumentList $workerArgs -WindowStyle Hidden -PassThru -RedirectStandardOutput ($stem+'.stdout.log') -RedirectStandardError ($stem+'.stderr.log')
@@ -330,6 +331,70 @@ END;
     Check ((Scalar "SELECT COUNT(*) FROM dbo.[Order] WHERE ID=$failureID AND Closed=0 AND Total=1120 AND Tax=120 AND Comment=N'RecoverySave-B';") -eq 1 -and (Scalar "SELECT QuantityOnOrder FROM dbo.OrderEntry WHERE ID=$firstEntry;") -eq 4 -and (Scalar "SELECT QuantityOnOrder FROM dbo.OrderEntry WHERE ID=$secondEntry;") -eq 6) 'Recovery save commits both line quantities and matching total/tax once'
     Check ((Scalar "SELECT QuantityCommitted FROM dbo.Item WHERE ID=$firstItem;") -eq 4 -and (Scalar "SELECT QuantityCommitted FROM dbo.Item WHERE ID=$secondItem;") -eq 6 -and (Scalar "SELECT SUM(Quantity) FROM dbo.Item WHERE ID IN($firstItem,$secondItem);") -eq 200) 'Recovery applies each commitment difference once and leaves physical stock unchanged'
     Check ((Scalar "SELECT COUNT(*) FROM dbo.QueueingItems WHERE (id=$firstQueue AND QtyPre=4 AND Status='Prepared') OR (id=$secondQueue AND QtyPre=6 AND Status='Prepared');") -eq 2 -and (Scalar "SELECT COUNT(*) FROM dbo.SOD_WO_History WHERE OrderID=$failureID AND EventName='Item edited' AND Actor=N'MultiUser_B_$suffix';") -eq 2) 'Recovery persists both prepared lines and only the successful cashier item history'
+    # Save the selection through the real compiled transaction, preserving notes.
+    $walkItem=New-FixtureItem 100 1
+    $walk=New-FixtureOrder @($walkItem) @(1)
+    $walkID=$walk.OrderID;$walkEntry=$walk.Lines[0].EntryID
+    Sql "UPDATE dbo.[Order] SET ShippingNotes=N'Deliver to reception' WHERE ID=$walkID;"
+    $a=Start-Cashier 'walkin-rates' 'A' $walkID $walkItem $walkEntry 1 -withholding @(1,2)
+    Ready $a;Go $a;$null=Result $a
+    Check ((Scalar "SELECT CONVERT(nvarchar(max),ShippingNotes) FROM dbo.[Order] WHERE ID=$walkID;") -eq ("Deliver to reception"+[Environment]::NewLine+'[WO-WTAX:v1;RATES=1,2]')) 'Actual save preserves shipping notes and stores WALK-IN selections'
+    Check ((Scalar "SELECT Total FROM dbo.[Order] WHERE ID=$walkID;") -eq 112 -and (Scalar "SELECT Tax FROM dbo.[Order] WHERE ID=$walkID;") -eq 12 -and (Scalar "SELECT QuantityCommitted FROM dbo.Item WHERE ID=$walkItem;") -eq 1) 'Withholding metadata leaves actual totals and commitments unchanged'
+    $b=Start-Cashier 'walkin-off' 'B' $walkID $walkItem $walkEntry 1 -withholding @()
+    Ready $b;Go $b;$null=Result $b
+    Check ((Scalar "SELECT CONVERT(nvarchar(max),ShippingNotes) FROM dbo.[Order] WHERE ID=$walkID;") -eq ("Deliver to reception"+[Environment]::NewLine+'[WO-WTAX:v1;RATES=]')) 'Actual save retains an explicit all-rates-off selection'
+    Sql "CREATE TRIGGER dbo.TestWalkInFailure ON dbo.[Order] AFTER UPDATE AS BEGIN IF EXISTS(SELECT 1 FROM inserted i JOIN dbo.[Order] o ON o.ID=i.ID WHERE i.ID=$walkID AND CONVERT(nvarchar(max),o.ShippingNotes) LIKE '%RATES=15]%') THROW 51000,'Fixture shipping-note failure',1; END;"
+    $a=Start-Cashier 'walkin-rollback' 'A' $walkID $walkItem $walkEntry 1 -withholding @(15)
+    Ready $a;Go $a;$failed=Result $a -AllowError
+    Check ($failed.Status -eq 'Error' -and (Scalar "SELECT CONVERT(nvarchar(max),ShippingNotes) FROM dbo.[Order] WHERE ID=$walkID;") -eq ("Deliver to reception"+[Environment]::NewLine+'[WO-WTAX:v1;RATES=]')) 'Injected save failure rolls back WALK-IN metadata with the order transaction'
+    # Quote conversions must reserve only currently available inventory, even
+    # when a caller reaches the transaction after stale/incorrect UI validation.
+    $quoteItem=New-FixtureItem 10 2
+    $quote=New-FixtureOrder @($quoteItem) @(9)
+    $quoteID=$quote.OrderID
+    Sql "UPDATE dbo.[Order] SET Type=3 WHERE ID=$quoteID; DELETE dbo.QueueingItems WHERE QueueingID=$($quote.QueueID); DELETE dbo.Queueing WHERE ID=$($quote.QueueID);"
+    $quoteBefore=Fixture-State $quote
+    $a=Start-Cashier 'quote-shortage' 'A' $quoteID $quoteItem $quote.Lines[0].EntryID 9
+    Ready $a;Go $a;$rejected=Result $a -AllowError
+    Check ($rejected.Status -eq 'Error' -and $rejected.Message -like '*Insufficient available quantity*') 'Actual conversion transaction rejects a quantity above available stock'
+    Check ((Fixture-State $quote) -ceq $quoteBefore) 'Rejected conversion rolls back type, header, lines, queue, history and commitments exactly'
+    $b=Start-Cashier 'quote-valid' 'B' $quoteID $quoteItem $quote.Lines[0].EntryID 7.5
+    Ready $b;Go $b;$null=Result $b
+    Check ((Scalar "SELECT Type FROM dbo.[Order] WHERE ID=$quoteID;") -eq 2 -and (Scalar "SELECT QuantityCommitted FROM dbo.Item WHERE ID=$quoteItem;") -eq 9.5) 'Valid fractional conversion reserves its full new quantity once'
+    Check ((Scalar "SELECT Quantity FROM dbo.Item WHERE ID=$quoteItem;") -eq 10 -and (Scalar "SELECT QuantityOnOrder FROM dbo.OrderEntry WHERE ID=$($quote.Lines[0].EntryID);") -eq 7.5) 'Conversion preserves physical stock and saves the requested fractional quantity'
+
+    $duplicateItem=New-FixtureItem 6 0
+    $duplicate=New-FixtureOrder @($duplicateItem,$duplicateItem) @(4,4)
+    $duplicateID=$duplicate.OrderID
+    Sql "UPDATE dbo.[Order] SET Type=3 WHERE ID=$duplicateID; DELETE dbo.QueueingItems WHERE QueueingID=$($duplicate.QueueID); DELETE dbo.Queueing WHERE ID=$($duplicate.QueueID);"
+    $duplicateBefore=Fixture-State $duplicate
+    $a=Start-Cashier 'quote-duplicates' 'A' $duplicateID $duplicateItem $duplicate.Lines[0].EntryID 4 -lines $duplicate.Lines
+    Ready $a;Go $a;$rejected=Result $a -AllowError
+    Check ($rejected.Status -eq 'Error' -and $rejected.Message -like '*Insufficient available quantity*' -and (Fixture-State $duplicate) -ceq $duplicateBefore) 'Duplicate conversion lines cannot over-reserve; a later shortage rolls back the first adjustment'
+
+    $serviceItem=New-FixtureItem 0 0
+    Sql "UPDATE dbo.Item SET ItemType=7 WHERE ID=$serviceItem;"
+    $service=New-FixtureOrder @($serviceItem) @(100000)
+    $serviceID=$service.OrderID
+    Sql "UPDATE dbo.[Order] SET Type=3 WHERE ID=$serviceID; DELETE dbo.QueueingItems WHERE QueueingID=$($service.QueueID); DELETE dbo.Queueing WHERE ID=$($service.QueueID);"
+    $a=Start-Cashier 'quote-service' 'A' $serviceID $serviceItem $service.Lines[0].EntryID 100000
+    Ready $a;Go $a;$null=Result $a
+    Check ((Scalar "SELECT Type FROM dbo.[Order] WHERE ID=$serviceID;") -eq 2 -and (Scalar "SELECT QuantityCommitted FROM dbo.Item WHERE ID=$serviceItem;") -eq 0) 'Non-inventory quotation conversion retains its stock exemption'
+
+    $raceItem=New-FixtureItem 10 0
+    $quoteA=New-FixtureOrder @($raceItem) @(8);$quoteB=New-FixtureOrder @($raceItem) @(8)
+    Sql "UPDATE dbo.[Order] SET Type=3 WHERE ID IN($($quoteA.OrderID),$($quoteB.OrderID)); DELETE dbo.QueueingItems WHERE QueueingID IN($($quoteA.QueueID),$($quoteB.QueueID)); DELETE dbo.Queueing WHERE ID IN($($quoteA.QueueID),$($quoteB.QueueID));"
+    $a=Start-Cashier 'quote-race' 'A' $quoteA.OrderID $raceItem $quoteA.Lines[0].EntryID 8
+    $b=Start-Cashier 'quote-race' 'B' $quoteB.OrderID $raceItem $quoteB.Lines[0].EntryID 8
+    Ready $a;Ready $b
+    $null=Hold-Gate "SELECT ID FROM dbo.Item WITH(UPDLOCK,HOLDLOCK,ROWLOCK) WHERE ID=$raceItem;"
+    Go $a;Go $b
+    Wait-For {((Blocker $a) -gt 0) -and ((Blocker $b) -gt 0)} 'both quote conversions waiting on shared stock'
+    Release-Gate
+    $ra=Result $a -AllowError;$rb=Result $b -AllowError
+    Check (@($ra,$rb | Where-Object {$_.Status -eq 'Committed'}).Count -eq 1 -and @($ra,$rb | Where-Object {$_.Status -eq 'Error' -and $_.Message -like '*Insufficient available quantity*'}).Count -eq 1) 'Two overlapping conversions cannot both reserve the same available stock'
+    Check ((Scalar "SELECT QuantityCommitted FROM dbo.Item WHERE ID=$raceItem;") -eq 8 -and (Scalar "SELECT Quantity FROM dbo.Item WHERE ID=$raceItem;") -eq 10) 'Concurrent quote conversions reserve only the winner and preserve physical stock'
+    Check ((Scalar "SELECT COUNT(*) FROM dbo.[Order] WHERE ID IN($($quoteA.OrderID),$($quoteB.OrderID)) AND Type=2;") -eq 1 -and (Scalar "SELECT COUNT(*) FROM dbo.[Order] WHERE ID IN($($quoteA.OrderID),$($quoteB.OrderID)) AND Type=3;") -eq 1) 'Losing conversion remains a quotation after atomic stock rejection'
     Write-Output "PASS: $checks multi-user save checks; VersionedReads=$([bool]$VersionedReads); artifacts: $directory"
 } finally {
     Release-Gate

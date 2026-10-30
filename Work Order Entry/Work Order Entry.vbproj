@@ -261,6 +261,7 @@
     </Compile>
     <Compile Include="Forms\frmItemLookUp.Withholding.vb">
       <DependentUpon>frmItemLookUp.vb</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmLinqLevel.Designer.vb">
       <DependentUpon>frmLinqLevel.vb</DependentUpon>
@@ -304,9 +305,12 @@
     <Compile Include="Forms\frmPriceLevel.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SmallScreenLayout.vb" />
+    <Compile Include="Forms\SmallScreenLayout.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\frmSettings.Presentation.vb">
       <DependentUpon>frmSettings.vb</DependentUpon>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmSettings.Designer.vb">
       <DependentUpon>frmSettings.vb</DependentUpon>
@@ -383,6 +387,9 @@
     <EmbeddedResource Include="Forms\frmImportItems.resx">
       <DependentUpon>frmImportItems.vb</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmOrderHistory.resx">
+      <DependentUpon>frmOrderHistory.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmPrintType.resx">
       <DependentUpon>frmPrintType.vb</DependentUpon>
     </EmbeddedResource>
@@ -421,6 +428,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmWebsiteImport.resx">
       <DependentUpon>frmWebsiteImport.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\SmallScreenLayout.resx">
+      <DependentUpon>SmallScreenLayout.vb</DependentUpon>
+      <ManifestResourceName>WorkOrderEntry.SmallScreenLayout</ManifestResourceName>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\rprtOrder.rdlc">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

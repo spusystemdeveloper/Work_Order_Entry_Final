@@ -23,6 +23,17 @@ below require target verification; they are not automatic deployment instruction
 - **Remember the October 14, 2026 incident**: The old WO history IDENTITY was a compatibility bug introduced by our history addition interacting with RMS's legacy `@@IDENTITY` lookup. It did not change RMS's identity column or real transaction number; it caused child records to use the wrong returned number. Do not describe it as a confirmed standalone RMS bug or change/reseed RMS identity columns to fix it. Preserve history with sequence-backed numbering, test direct and nested trigger paths using `HistoryIdentity_LocalDB_Test.ps1`, and handle already mislinked sales with a separate guarded recovery. Do not claim all branch-specific custom triggers are safe based only on the packaged objects reviewed.
 - **HO incident reference and closure**: See [the transaction 23266 incident record](Database%20Components/Recovery/INCIDENT_2026-10-14_HO_PO_DB_23266.md). A live rollback rehearsal still requires the verified current-day copy-only/checksum backup. Do not treat synthetic test passes, a backup in progress or rehearsal output as evidence of a committed live repair; record actual commit and RMS verification before closing the incident.
 
+## October 24 HO order-ID maintenance
+
+The human explicitly authorized WO 18947 -> 18946 and confirmed HO clients
+closed. The assistant committed and SQL-verified that exact live mapping after
+a fresh copy-only/checksum backup, passing local fixture tests and guarded live
+rollback rehearsal. No reseed, stock or commitment repair occurred; identity
+remains 18947 and next automatic allocation 18948. RMS UI acceptance is pending.
+Read [the incident record](Database%20Components/Recovery/INCIDENT_2026-10-24_HO_WO_18947_TO_18946.md)
+before any follow-up. Do not rerun the mapping or reuse its exact guard constants
+for another order. The unrelated RMS settlement investigation stays paused.
+
 ## Order Processing Queueing Business Rules
 - **Queue Tile Stages**: Orders in `OrderProcessingQueueing` remain active on screen through all 4 color stages:
   1. `OldLace` (For Process / Pending)
