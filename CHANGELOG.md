@@ -4,6 +4,154 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### November 3: Davao transfer-in 0002601 recovery prepared
+
+- Prepared a single-line repair for 20 missing 11688BOX units. It uses the
+  native movement log and the existing Davao audit and integration triggers.
+- Default review performs no writes. Commit requires the reviewed row state,
+  trigger fingerprints and a verified copy-only backup. LocalDB passed 31 checks
+  covering posting, duplicate prevention and rollback. No live repair ran.
+
+### October 31: QC Puregold compatibility package for the selected V4 EXE
+
+- Re-created the copy-ready folder under `Deployment Packages/QC_BRANCH_V4_COPY_20261031`
+  after the earlier TestResults copy was no longer present. Verified all 121
+  copied source files and ZIP integrity again. Added an explicit instruction
+  that ReportParametersProbe is a developer tool and is not bundled.
+- Assembled `TestResults/QC_BRANCH_V4_COPY_20261031` and its ZIP with the reviewed
+  V4 EXE, complete Database Updater Release folder, QC fixes/rollbacks/evidence
+  and branch copy instructions. All 121 copied source files were hash-verified;
+  ZIP integrity passed. No application configs or credentials were bundled.
+  Existing branch configuration is retained; no live deployment was performed.
+- Inspected WORK_ORDER_ENTRY_4's Release/x86 EXE (SHA-256 D4572A7B...003CAA).
+  Normal search uses SOD_ViewItems by ordinal; QC's extra leading PG SKU shifts
+  item/cost/tax/ID fields. The standard print functions already match QC; the
+  earlier Documents-folder V4 decimal-function finding does not apply here.
+- Prepared QC_PUREGOLD_V4 scripts for view positions, QC store/RDC stock lookup
+  targets and optional quotation-import tracking. Scripts require the updater
+  transaction and reviewed definitions; definition rollbacks are supplied.
+  Existing calculations and permissions are preserved. No live changes applied.
+- Added a disposable LocalDB suite: 76 checks passed for layout/value preservation,
+  fractional availability, guards, permissions, repeats, rollbacks, import schema
+  and compiled V4 print/configuration reads. This is synthetic validation, not
+  QC restore acceptance, visible cashier workflow or native RMS posting.
+  Both required Release/x86 builds, 153 main units and clean-folder packaging
+  passed; five existing EXE configs were restored byte-for-byte.
+
+### October 30: duplicate drafts, picker selection and Excel import fixes
+
+- Closing with a recalled order no longer saves a draft, and an old draft holding
+  existing order lines is removed with a message instead of being recovered. This
+  prevents a duplicate order and double stock reservation. Unsaved edits to a
+  recalled order are not kept on close.
+- Customer and sales rep pickers now select the actual row, not a remembered one.
+- Excel quotation import reports missing items and uses this database's item ID.
+- The second review's findings are in SOURCE_CODE_REVIEW_FINDINGS.md. Findings 31-41
+  remain open. Validation is in UNIT_TEST_GUIDE.md.
+
+### October 30: testing on a restored copy of localhost DVO_STORE_DB
+
+- With the user's permission, tested the compiled application against a throwaway
+  copy using the real stored procedures, triggers and orders. DVO_STORE_DB was
+  verified unchanged; the copy and its copy-only backup were removed.
+- Real data corrected the recall fix: 62 open work orders store "CHARGE; reference"
+  with no release type. These failed recall before, and the first fix put the whole
+  text in remarks. WorkOrderComment now reads the payment and the reference.
+- 415 of 418 open work orders recalled correctly. The other three are local test
+  orders with CustomerID 0, so recall loads their lines but not their header. Real
+  saves require a customer, so this was left unchanged.
+- 22 of 23 checks passed; the remaining check is those three orders. No RMS POS,
+  quotation recall, import, print or live-store test was run.
+
+### October 30: maximum line quantity and order total
+
+- Each order line is limited to 999,999, checked on quantity entry and again at
+  save, for every item type and for quotations. This user-approved limit closes a
+  gap: non-inventory items and quotations had no upper quantity check.
+- Saving also rejects an order total the Order.Total money column cannot store. A
+  rejected order writes nothing. Stock exemptions for non-inventory items are unchanged.
+- Fixed ERROR 0041: the remembered quantity is now decimal, so editing a very large
+  quantity no longer overflows and a rejected edit restores fractions exactly.
+- Both Release/x86 builds, 151 unit tests, 240 paired quantity assertions plus 27
+  boundary checks and 121 approval-order checks passed. Store configurations were
+  preserved. No live-store or operator workflow test was run.
+
+### October 30: validation message wording
+
+- Revised validation wording in the order screen and login. Required-field,
+  quantity, price, repeated-item and prepared-quantity messages now use one clear
+  version each, and login shows one message for a wrong username or password.
+- The stock shortage message now names each item with its available and ordered
+  quantities. The too-many-items message is unchanged.
+- AppPrompt gives general messages one title, Work Order Entry, and puts a plain
+  sentence above unexpected errors. Technical detail and numbered error titles stay.
+- Fixed the invalid-price message showing the quantity value, the "Oder", "feature"
+  and "Quotaion" typos, and removed a debug popup showing a bare number.
+- Both Release/x86 builds, 149 unit tests, 63 multi-user checks in each read mode,
+  36 search, 121 approval-order and 35 first-account checks passed. The 240 paired
+  quantity assertions pass against an exact map of the approved wording, plus 19
+  boundary checks. Store configurations were preserved. No live-store or operator
+  workflow test was run.
+
+### October 30: remaining V8 review findings fixed
+
+- Approved stock changes: fractional releases no longer fail on float rounding,
+  and stock validation uses exact available quantities. Items with less than one
+  unit available can now be added. Real shortfalls are still rejected.
+- Saving stops when the quantity check fails or a price is unconfirmed. A saved
+  order always leaves the screen, even when its refresh fails.
+- Blank approval passwords are rejected. Settings and cancel passwords no longer
+  count as price approvals, and deleted lines no longer name an approver.
+- SQL read failures show an error instead of closing the application. Recall
+  search accepts `[`, `%` and `*`. Legacy reservations match by OrderID and item.
+  Website import adds shipping once per order.
+- Removed unused legacy order, commitment and approval methods.
+- Finding 16 (credentials) is unchanged. QtyPre remains a whole-number column.
+- Both Release/x86 builds, 145 unit tests, 63 multi-user checks in each read mode,
+  36 search checks, 240 paired quantity assertions plus 18 boundary checks, 80
+  preallocation, 99 order-tools, 125 price-level, 121 approval-order and 28 recall
+  formatting checks passed. The paired comparison intentionally
+  changes three error counters from 0 to 1. Store configurations were preserved. No
+  live-store, RMS POS or operator workflow test was run.
+
+### October 30: recall remarks, repeated-item queue rows and import checks
+
+- Recall keeps the full remarks when they contain "; ". A comment without all
+  three parts now loads as remarks instead of failing the recall.
+- A repeated item's order lines now pair with their queue rows in ID order. Recall
+  shows each line's own values, and edit, delete and add touch only that line's
+  row. Removing an item's last line still clears its rows. New orders mark only
+  the prepared line. No schema or stored-procedure change.
+- Missing website items are now listed, repeated missing Excel codes no longer
+  fail the check, and a failed check no longer reports the import as complete.
+- Limits: QueueingItems still has no order-line link. The queueing app's picker
+  and status updates still apply to every row of an item, and shortage acceptance
+  still rejects repeated items. Rows already damaged by the old code are not
+  repaired; a line with no row gets a new one on its next save.
+- Both Release/x86 builds, 138 unit tests, 60 multi-user checks in each read mode,
+  80 preallocation and 99 order-tools checks passed. Debug and Release configs were
+  preserved. No live-store, RMS POS or operator workflow test was run.
+
+### October 30: V8 focused code review documented
+
+- Recorded findings 11-26 in SOURCE_CODE_REVIEW_FINDINGS.md: six high, five
+  medium and five low priority. This was an audit only; no application code
+  changed and no finding has been fixed. No build or application workflow was
+  run for this documentation change.
+
+### October 30: apostrophes in item keyword search
+
+- Keyword search now doubles apostrophes through ItemSearchQuery.Build, matching
+  the existing barcode search. A keyword such as MEN'S no longer breaks the SQL
+  or ends the string literal. Query text without an apostrophe is unchanged, so
+  LIKE wildcards, TOP 500 and the all-keywords rule are preserved.
+- Removed the search-box apostrophe rejection from Enter and the Search button at
+  the user's request, so MEN'S now searches normally on every keyword path.
+- Both required Release/x86 builds, all 138 unit tests and 29 isolated search
+  checks passed, including the actual Enter and Search button handlers against an
+  apostrophe item. Store configurations were preserved; no live-store or operator
+  workflow test was run.
+
 ### October 29: authorized live Iloilo invoice-header cleanup
 
 - Deleted only SOD_InvoiceHeader ID 1 (SCHENKER) in live ILOILO_MAIN_WHSE_DB,

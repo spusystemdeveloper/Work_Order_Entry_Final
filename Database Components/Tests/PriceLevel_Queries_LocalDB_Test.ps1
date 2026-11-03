@@ -43,6 +43,7 @@ INSERT dbo.SOD_WO_Conf(PriceLevel) VALUES(N'NONE');
         @{Server=$server;Database=$owned;Actor=$actor;Assembly=$(if($variant -eq 'Before'){[IO.Path]::GetFullPath($BaselineAssembly)}else{$app});ResultFile=$resultPath} | ConvertTo-Json | Set-Content -LiteralPath $requestPath
         $worker=Join-Path $PSScriptRoot 'Fixtures\PriceLevel_Query_Worker.ps1'
         $process=Start-Process -FilePath "$env:WINDIR\SysWOW64\WindowsPowerShell\v1.0\powershell.exe" -ArgumentList @('-NoProfile','-STA','-ExecutionPolicy','Bypass','-File',('"'+$worker+'"'),'-RequestFile',('"'+$requestPath+'"')) -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $directory ($variant+'.out')) -RedirectStandardError (Join-Path $directory ($variant+'.err'))
+        $null=$process.Handle # ExitCode stays empty unless the handle is cached.
         if (!$process.WaitForExit(45000)) { $process.Kill(); throw 'Price fixture worker timed out' }
         if ($process.ExitCode -ne 0) { throw "Price fixture worker failed: $variant; see $directory" }
         $xml=[xml](Scalar $master "SELECT CONVERT(nvarchar(max),t.target_data) FROM sys.dm_xe_session_targets t JOIN sys.dm_xe_sessions s ON s.address=t.event_session_address WHERE s.name=N'$session'")
@@ -51,8 +52,9 @@ INSERT dbo.SOD_WO_Conf(PriceLevel) VALUES(N'NONE');
         $summary[$variant]=@($xml.RingBufferTarget.event).Count
         Sql $master "ALTER EVENT SESSION [$session] ON SERVER STATE=STOP; DROP EVENT SESSION [$session] ON SERVER;"
     }
-    $before=@(Get-Content (Join-Path $directory 'Before.json') -Raw | ConvertFrom-Json)
-    $after=@(Get-Content (Join-Path $directory 'After.json') -Raw | ConvertFrom-Json)
+    # Windows PowerShell 5.1 keeps a JSON array as one pipeline object; do not wrap it.
+    $before=Get-Content (Join-Path $directory 'Before.json') -Raw | ConvertFrom-Json
+    $after=Get-Content (Join-Path $directory 'After.json') -Raw | ConvertFrom-Json
     if ($before.Count -ne 125 -or $after.Count -ne 125) { throw 'Incomplete comparison' }
     for ($i=0;$i -lt $before.Count;$i++) {
         foreach ($property in @('Key','Rows','Lowest','Selected','SelectedColumn','PricePass','Pass','Allow','Approved')) {

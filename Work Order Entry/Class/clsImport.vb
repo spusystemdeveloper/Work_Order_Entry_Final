@@ -187,7 +187,7 @@ Public Class clsImport
                       .DiscP = 0,
                       .Cost = x("Cost"),
                       .Taxable = x("Taxable"),
-                      .ItemID = x("ID"),
+                      .ItemID = i.ID,
                       .FullPrice = x("FullPrice"),
                       .Description = i.Description,
                       .ExtendedDescription = i.ExtendedDescription,
@@ -195,9 +195,19 @@ Public Class clsImport
                       .DiscAmount = 0,
                       .Comment = checkIfNull(x("Comment"))}).ToList()
 
+        importedItems.Clear()
+        importedItems_.Clear()
+        importedItemsNotFound.Clear()
         importedItemCode.Clear()
         For Each x In Order
             importedItemCode.Add(x.ItemLookupCode)
+            importedItems.Add(x.ItemLookupCode)
+        Next
+
+        ' The join above omits codes missing from this database.
+        For Each row As DataRow In ImportData("Contents").Rows
+            Dim code As String = Convert.ToString(row("ItemLookupCode"))
+            If code <> String.Empty Then importedItems_.Add(code)
         Next
 
         Return Order
@@ -268,15 +278,18 @@ Public Class clsImport
                    .Date = x("OrderPlaced").ToString}).FirstOrDefault
 
 
-        Dim r As DataRow = ImportDataCSV.NewRow
-        r("OrderID") = Convert.ToInt32(orderNumber)
-        r("ItemLookupCode") = My.Settings.ImportDefaultShipping
-        r("QuantityOrdered") = Convert.ToInt32(1)
-        r("Price") = Convert.ToDouble(s.Shipping)
-        r("OrderPlaced") = s.Date
-        r("CustomerName") = s.CustomerName
-        r("Shipping") = Convert.ToDouble(s.Shipping)
-        ImportDataCSV.Rows.Add(r)
+        ' The table stays loaded between imports, so add shipping only once per order.
+        If Not ImportFileRules.OrderHasItem(ImportDataCSV, orderNumber, My.Settings.ImportDefaultShipping) Then
+            Dim r As DataRow = ImportDataCSV.NewRow
+            r("OrderID") = Convert.ToInt32(orderNumber)
+            r("ItemLookupCode") = My.Settings.ImportDefaultShipping
+            r("QuantityOrdered") = Convert.ToInt32(1)
+            r("Price") = Convert.ToDouble(s.Shipping)
+            r("OrderPlaced") = s.Date
+            r("CustomerName") = s.CustomerName
+            r("Shipping") = Convert.ToDouble(s.Shipping)
+            ImportDataCSV.Rows.Add(r)
+        End If
 
 
         Dim res = (From x In ImportDataCSV.AsEnumerable
@@ -335,13 +348,12 @@ Public Class clsImport
         Try
 
             importedItemsNotFound.Clear()
-            Dim Difference = importedItems_.Except(importedItems).ToArray()
-
-
-            For Each x As String In Difference
-                Dim desc = (From z In ImportData("Contents").AsEnumerable() Where z("ItemLookupCode").Equals(x) Select z("Fulldesc")).SingleOrDefault
-                importedItemsNotFound.Add(x & " - " & desc)
-            Next
+            Dim contents As DataTable = Nothing
+            If ImportData IsNot Nothing AndAlso ImportData.Contains("Contents") Then
+                contents = ImportData("Contents")
+            End If
+            importedItemsNotFound.AddRange(
+                ImportFileRules.FindMissingItems(importedItems_, importedItems, contents))
 
 
             If importedItemsNotFound.Count > 0 Then
@@ -374,8 +386,11 @@ Public Class clsImport
             End If
 
         Catch ex As Exception
-            AppPrompt.Show(ex.Message)
-            Return 0
+            ' A failed check must not report the import as complete.
+            AppPrompt.Show("The import could not be fully checked. Compare the order with the source before saving." &
+                           vbCrLf & vbCrLf & ex.Message,
+                           "Import", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Return 1
         End Try
 
     End Function

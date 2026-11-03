@@ -582,6 +582,9 @@ Public Class clsItemLookUp
 
     Public Shared Function ConfPass(ByVal spass As String) As Integer
 
+        ' SQL ignores trailing spaces, so spaces would also match an empty password.
+        If String.IsNullOrWhiteSpace(spass) Then Return 0
+
         Try
 
             Using dbx = GetDB()
@@ -656,12 +659,12 @@ Public Class clsItemLookUp
     End Function
 
 
-    Public Shared Function getItemQty(ByVal itemid As String) As Integer
+    Public Shared Function getItemQty(ByVal itemid As String) As Double
 
         Try
 
             Using dbx = GetDB()
-                Dim available = 0
+                Dim available As Double = 0
                 Dim qty = (From a In dbx.Items
                            Where a.ItemLookupCode.Equals(itemid)
                            Select New With {.Available = a.Quantity - a.QuantityCommitted})
@@ -680,56 +683,6 @@ Public Class clsItemLookUp
 
     End Function
 
-    Public Shared Function getItemQtyCommitted(ByVal itemid As String) As Integer
-
-        Try
-
-            Using dbx = GetDB()
-                Dim QuantityCommitted = 0
-                Dim qty = (From a In dbx.Items
-                           Where a.ItemLookupCode.Equals(itemid)
-                           Select New With {.Available = a.QuantityCommitted})
-                For Each x In qty
-                    QuantityCommitted = x.Available
-                Next
-
-                Return QuantityCommitted
-            End Using
-        Catch ex As Exception
-            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0014", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ErrorCount = ErrorCount + 1
-            Return Nothing
-        End Try
-
-    End Function
-
-    Public Shared Sub setQuantityCommitted(ByVal itemid As Integer, ByVal qtyCommitted As Double)
-
-        Try
-
-            Using dbItem = GetDB()
-                ApplyQuantityCommittedDifference(dbItem, itemid, qtyCommitted)
-            End Using
-
-
-        Catch ex As Exception
-            ErrorCount = ErrorCount + 1
-            Throw New InvalidOperationException("Unable to update committed quantity for item " & itemid & ".", ex)
-        End Try
-    End Sub
-
-    Public Shared Sub SetQuantityCommittedToQoute(ByVal itemId As Integer, ByVal qtyCommitted As Double)
-        Try
-            Using dbItem = GetDB()
-                ApplyQuantityCommittedDifference(dbItem, itemId, qtyCommitted)
-            End Using
-
-        Catch ex As Exception
-            ErrorCount += 1
-            Throw New InvalidOperationException("Unable to commit quotation quantity for item " & itemId & ".", ex)
-        End Try
-    End Sub
-
     Public Shared Sub ApplyQuantityCommittedDifference(ByVal dbContext As ItemLookUpDataContext,
                                                        ByVal itemId As Integer,
                                                        ByVal quantityDifference As Double,
@@ -743,15 +696,18 @@ Public Class clsItemLookUp
         ' A quotation has no existing reservation. Check its new reservation
         ' against current stock in this same atomic update, after any lock wait.
         Dim stockCondition As String = If(requireAvailableStock,
-            " AND (ItemType NOT IN (0, 3) OR {0} <= 0 OR Quantity - QuantityCommitted >= {0})",
+            " AND (ItemType NOT IN (0, 3) OR {0} <= 0 OR Quantity - QuantityCommitted >= {0} - {2})",
             String.Empty)
+        ' A result within rounding tolerance of zero is stored as exactly zero.
         Dim affectedRows As Integer = dbContext.ExecuteCommand(
             "UPDATE dbo.Item WITH (ROWLOCK) " &
-            "SET QuantityCommitted = QuantityCommitted + {0} " &
+            "SET QuantityCommitted = CASE WHEN ABS(QuantityCommitted + {0}) <= {2} THEN 0 " &
+            "ELSE QuantityCommitted + {0} END " &
             "WHERE ID = {1} AND ItemType <> 7 " &
-            "AND QuantityCommitted + {0} >= 0" & stockCondition,
+            "AND QuantityCommitted + {0} >= -{2}" & stockCondition,
             quantityDifference,
-            itemId)
+            itemId,
+            OrderCommitmentRules.QuantityTolerance)
 
         If affectedRows = 1 Then Exit Sub
 
@@ -772,7 +728,7 @@ Public Class clsItemLookUp
 
         If requireAvailableStock AndAlso quantityDifference > 0 AndAlso
            (itemState.ItemType = 0 OrElse itemState.ItemType = 3) AndAlso
-           itemState.Quantity - itemState.QuantityCommitted < quantityDifference Then
+           OrderCommitmentRules.IsNegativeQuantity(itemState.Quantity - itemState.QuantityCommitted - quantityDifference) Then
             Throw New InvalidOperationException(
                 "Insufficient available quantity for item " & itemId &
                 " while converting the quotation. Available: " &

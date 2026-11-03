@@ -119,12 +119,12 @@ Public Class frmLogin
             End If
 
             If Not clsUser.verifyUsername(txtUsername.Text) Then
-                AppPrompt.Show("Username not Registered!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Incorrect username or password.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
             End If
 
             If txtPassword.Text <> clsUser.getUsernamePassword(txtUsername.Text) Then
-                AppPrompt.Show("Please Check your Credentials!!!!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Incorrect username or password.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
             End If
 

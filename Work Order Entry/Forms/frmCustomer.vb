@@ -7,6 +7,7 @@
     Private Sub frmCustomer_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Try
             Me.gridCustomer.DataSource = clsCustomer.SearchCustomer(txtCompany.Text)
+            iRowCust = 0
             gridCustomerWidth()
             txtCompany.Focus()
 
@@ -137,6 +138,7 @@
         Try
             If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
                 Me.gridCustomer.DataSource = clsCustomer.SearchCustomer(txtCompany.Text)
+                iRowCust = 0
                 gridCustomerWidth()
                 gridCustomer.Focus()
             ElseIf e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Escape) Then
@@ -154,7 +156,7 @@
     Private Sub cmdOk_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdOk.Click
         Try
 
-            GetCustomerInfo(iRowCust)
+            If gridCustomer.CurrentRow IsNot Nothing Then GetCustomerInfo(gridCustomer.CurrentRow.Index)
         Catch ex As Exception
             AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
@@ -166,7 +168,7 @@
     Private Sub gridCustomer_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles gridCustomer.CellDoubleClick
         'comment
         Try
-            GetCustomerInfo(iRowCust)
+            If e.RowIndex >= 0 Then GetCustomerInfo(e.RowIndex)
         Catch ex As Exception
             AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1

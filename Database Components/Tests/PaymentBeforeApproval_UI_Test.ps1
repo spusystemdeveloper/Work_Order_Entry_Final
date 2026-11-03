@@ -27,9 +27,9 @@ try{
     $module.GetField('bAllow',$static).SetValue($null,$false)
     $module.GetField('ispriceApproved',$static).SetValue($null,0)
     foreach($recall in @(0,1)){foreach($case in @(
-        @{Quote=$false;Payment='';Price=[decimal]75;Caption='Message!'},
-        @{Quote=$false;Payment='';Price='?';Caption='Message!'},
-        @{Quote=$false;Payment='   ';Price=[decimal]75;Caption='Message!'},
+        @{Quote=$false;Payment='';Price=[decimal]75;Caption='Work Order Entry'},
+        @{Quote=$false;Payment='';Price='?';Caption='Work Order Entry'},
+        @{Quote=$false;Payment='   ';Price=[decimal]75;Caption='Work Order Entry'},
         @{Quote=$false;Payment='CASH';Price='?';Caption='Price Confirmation Required'},
         @{Quote=$false;Payment='CHARGE';Price='?';Caption='Price Confirmation Required'},
         @{Quote=$true;Payment='';Price='?';Caption='Price Confirmation Required'}
@@ -55,7 +55,7 @@ try{
                     try{
                         Check ($prompt.Text -ceq $case.Caption) 'Validation prompt order changed'
                         $message=$prompt.GetType().GetProperty('txtMessage',$flags).GetValue($prompt,$null).Text
-                        if($case.Caption -eq 'Message!'){Check ($message -ceq 'Please select a Payment Method') 'Payment warning changed'}else{Check ($message.StartsWith('The price for item SYNTHETIC-SKU has not been confirmed.')) 'Price confirmation changed'}
+                        if($case.Caption -eq 'Work Order Entry'){Check ($message -ceq 'Please select a payment method.') 'Payment warning changed'}else{Check ($message.StartsWith('The price for item SYNTHETIC-SKU has not been confirmed.')) 'Price confirmation changed'}
                         Check (@([Windows.Forms.Application]::OpenForms | Where-Object {$_.GetType().FullName -eq 'WorkOrderEntry.frmPassword'}).Count -eq 0) 'Password opened before mandatory validation'
                     }catch{$script:failure=$_}
                     $prompt.GetType().GetProperty('btnFirst',$flags).GetValue($prompt,$null).PerformClick()

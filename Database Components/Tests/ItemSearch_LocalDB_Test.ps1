@@ -25,6 +25,79 @@ public class ItemSearchProbe {
  [DllImport("user32.dll")] static extern bool IsWindowEnabled(IntPtr handle);
  static int checks;
  static void Check(bool ok,string name){if(!ok)throw new Exception(name);checks++;}
+ // Drives the actual Enter and Search button handlers with the real generated SQL.
+ static void SearchBy(Form f,MethodInfo action,object[] arguments,string typed,string[] unexpected,BindingFlags instanceFlags){
+  var box=(TextBox)f.GetType().GetProperty("txtSearch",instanceFlags).GetValue(f,null);
+  var tree=(TreeView)f.GetType().GetProperty("TreeView1",instanceFlags).GetValue(f,null);
+  tree.Nodes.Clear();box.Text=typed;
+  using(var timer=new Timer{Interval=25}){
+   timer.Tick+=(s,e)=>{foreach(Form open in Application.OpenForms){
+    if(open==f)continue;
+    if(open.Text=="Item search"){open.Location=new Point(-30000,-30000);continue;}
+    unexpected[0]=open.Text;open.Close();
+   }};
+   timer.Start();action.Invoke(f,arguments);timer.Stop();
+  }
+ }
+ static void CheckApostropheSearch(Form f,Assembly a,Type m,BindingFlags instanceFlags){
+  var flags=BindingFlags.Public|BindingFlags.Static;
+  var query=a.GetType("WorkOrderEntry.ItemSearchQuery",true).GetMethod("Build",flags);
+  var load=m.GetMethods(flags);MethodInfo loadData=null;foreach(var candidate in load)if(candidate.Name=="load_data"&&candidate.GetParameters().Length==1)loadData=candidate;
+  var rows=(DataTable)loadData.Invoke(null,new object[]{query.Invoke(null,new object[]{"MEN'S"})});
+  Check(rows.Rows.Count==1 && (string)rows.Rows[0]["ItemLookupCode"]=="MENS1","Generated SQL finds an apostrophe description");
+  rows=(DataTable)loadData.Invoke(null,new object[]{query.Invoke(null,new object[]{"MEN'S,SHIRT"})});
+  Check(rows.Rows.Count==1,"Apostrophe keyword combines with another keyword");
+  rows=(DataTable)loadData.Invoke(null,new object[]{query.Invoke(null,new object[]{"x'; DROP TABLE dbo.SearchFixture; --"})});
+  Check(rows.Rows.Count==0,"Quoted text stays a search value");
+  rows=(DataTable)loadData.Invoke(null,new object[]{"SELECT ID FROM dbo.SearchFixture"});
+  Check(rows.Rows.Count==5,"Fixture table survives a quoted search");
+  var grid=(DataGridView)f.GetType().GetProperty("gridItem",instanceFlags).GetValue(f,null);
+  var unexpected=new string[1];
+  SearchBy(f,f.GetType().GetMethod("txtSearch_KeyPress",instanceFlags),new object[]{null,new KeyPressEventArgs((char)Keys.Enter)},"MEN'S",unexpected,instanceFlags);
+  Check(unexpected[0]==null,"Enter shows no message for an apostrophe: "+unexpected[0]);
+  Check(grid.RowCount==1,"Enter finds the apostrophe item");
+  SearchBy(f,f.GetType().GetMethod("cmdSearch_Click",instanceFlags),new object[]{null,EventArgs.Empty},"MEN'S",unexpected,instanceFlags);
+  Check(unexpected[0]==null,"Search button shows no message for an apostrophe: "+unexpected[0]);
+  Check(grid.RowCount==1,"Search button finds the apostrophe item");
+ }
+ static int WithDialogsClosed(Form f,Action action){
+  int closed=0;
+  using(var timer=new Timer{Interval=25}){
+   timer.Tick+=(s,e)=>{var open=new System.Collections.ArrayList(Application.OpenForms);
+    foreach(Form dialog in open){if(dialog==f)continue;closed++;dialog.Close();}};
+   timer.Start();action();timer.Stop();
+  }
+  return closed;
+ }
+ static void CheckFailedQueryKeepsSession(Form f,Type m){
+  var flags=BindingFlags.Public|BindingFlags.Static;MethodInfo loadData=null;
+  foreach(var candidate in m.GetMethods(flags))if(candidate.Name=="load_data"&&candidate.GetParameters().Length==1)loadData=candidate;
+  DataTable rows=null;
+  int dialogs=WithDialogsClosed(f,()=>{rows=(DataTable)loadData.Invoke(null,new object[]{"SELECT * FROM dbo.MissingFixtureTable"});});
+  Check(dialogs>=1,"A failed query still tells the user");
+  Check(rows!=null&&rows.Rows.Count==0,"A failed query returns an empty result");
+  Check(!f.IsDisposed,"A failed query leaves the order form open");
+ }
+ static void CheckBlankApprovalRejected(Assembly a){
+  var confirm=a.GetType("WorkOrderEntry.clsItemLookUp",true).GetMethod("ConfPass",BindingFlags.Public|BindingFlags.Static);
+  // No SOD_WO_Conf table exists here, so reaching SQL would show an error dialog.
+  Check((int)confirm.Invoke(null,new object[]{""})==0,"A blank approval password is rejected before SQL");
+  Check((int)confirm.Invoke(null,new object[]{"   "})==0,"An all-spaces approval password is rejected before SQL");
+ }
+ static void CheckFormClearsAfterCommittedSave(Form f,Assembly a,Type m,BindingFlags instanceFlags){
+  var flags=BindingFlags.Public|BindingFlags.Static;
+  var grid=(DataGridView)f.GetType().GetProperty("gridSelectItem",instanceFlags).GetValue(f,null);
+  var label=f.GetType().GetProperty("lblOrderNo",instanceFlags).GetValue(f,null);
+  var text=label.GetType().GetProperty("Text");
+  grid.AllowUserToAddRows=false;grid.Rows.Clear();grid.Rows.Add();text.SetValue(label,"Work Order #: 5",null);
+  var dbField=m.GetField("db",flags);var working=dbField.GetValue(null);
+  var broken=Activator.CreateInstance(a.GetType("WorkOrderEntry.ItemLookUpDataContext",true),new object[]{"Server=(localdb)\\Missing;"});
+  ((IDisposable)broken).Dispose();dbField.SetValue(null,broken);
+  try{WithDialogsClosed(f,()=>f.GetType().GetMethod("ClearFormAfterCommittedSave",instanceFlags).Invoke(f,null));}
+  finally{dbField.SetValue(null,working);}
+  Check(grid.Rows.Count==0,"A saved order leaves the screen when the refresh fails");
+  Check((string)text.GetValue(label,null)=="Order #: ","A saved order number is cleared when the refresh fails");
+ }
  public static string Run(string app,string server,string database){
   Check(server.StartsWith("(localdb)\\SODWO_Search_") && database.StartsWith("SODWO_Search_"),"Only owned fixture endpoints");
   var a=Assembly.LoadFrom(app);var m=a.GetType("WorkOrderEntry.ModConnectDB",true);var flags=BindingFlags.Public|BindingFlags.Static;
@@ -42,6 +115,10 @@ public class ItemSearchProbe {
   using(var f=(Form)Activator.CreateInstance(a.GetType("WorkOrderEntry.frmItemLookUp",true))){
    f.WindowState=FormWindowState.Normal;f.StartPosition=FormStartPosition.Manual;f.Location=new Point(-30000,-30000);
    var owner=f.Handle;var instanceFlags=BindingFlags.NonPublic|BindingFlags.Instance;
+   CheckApostropheSearch(f,a,m,instanceFlags);
+   CheckFailedQueryKeepsSession(f,m);
+   CheckBlankApprovalRejected(a);
+   CheckFormClearsAfterCommittedSave(f,a,m,instanceFlags);
    int ticks=0;bool locked=false;bool closePrevented=false;bool positionSafe=true;
    using(var timer=new Timer{Interval=25}){
     timer.Tick+=(s,e)=>{
@@ -83,8 +160,10 @@ try{
 CREATE TABLE dbo.SearchFixture(ID int PRIMARY KEY,ItemLookupCode varchar(25),FullDesc nvarchar(200),Inactive bit,Price decimal(19,4),Quantity float,QuantityCommitted float);
 INSERT dbo.SearchFixture VALUES(1,'55157RMS','55157RMS | BOOK PAPER',0,178.25,10.5,2.25),
 (2,'55157CSE','55157CSE | PAPER CASE',0,890,0,0),(3,'OTHER','OTHER | UNRELATED',0,1,5,1),
-(4,'55157OLD','55157OLD | INACTIVE PAPER',1,1,5,1);
+(4,'55157OLD','55157OLD | INACTIVE PAPER',1,1,5,1),(5,'MENS1','MENS1 | MEN''S SHIRT',0,250,4,0);
 '@;$null=$cmd.ExecuteNonQuery()}finally{$cmd.Dispose()}
+    $cmd=$connection.CreateCommand()
+    try{$cmd.CommandText='CREATE VIEW dbo.SOD_VIEWITEMSWO AS SELECT * FROM dbo.SearchFixture;';$null=$cmd.ExecuteNonQuery()}finally{$cmd.Dispose()}
     $source=Join-Path $directory 'Probe.cs';$dll=Join-Path $directory 'Probe.dll'
     [IO.File]::WriteAllText($source,$code)
     & "$env:WINDIR\Microsoft.NET\Framework\v4.0.30319\csc.exe" /nologo /target:library /platform:x86 /r:System.Data.dll /r:System.Drawing.dll /r:System.Windows.Forms.dll ("/out:"+$dll) $source

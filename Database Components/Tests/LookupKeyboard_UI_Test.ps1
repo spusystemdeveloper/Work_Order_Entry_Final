@@ -11,6 +11,7 @@ $exe = Join-Path $dir 'LookupKeyboardProbe.exe'
 if ($LASTEXITCODE -ne 0) { throw 'Probe compilation failed' }
 $mode = if ($ExpectLegacyFailure) { 'Legacy' } else { 'Fixed' }
 $process = Start-Process -FilePath $exe -ArgumentList $mode -WindowStyle Hidden -PassThru -RedirectStandardOutput (Join-Path $dir 'result.txt') -RedirectStandardError (Join-Path $dir 'error.txt')
+$null = $process.Handle # ExitCode stays empty unless the handle is cached.
 if (-not $process.WaitForExit(15000)) { $process.Kill(); throw 'Lookup keyboard probe timed out' }
 Get-Content -LiteralPath (Join-Path $dir 'result.txt')
 if ((Get-FileHash -LiteralPath ($app + '.config')).Hash -ne $configHash) { throw 'Store configuration changed' }

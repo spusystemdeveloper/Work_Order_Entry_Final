@@ -1,0 +1,27 @@
+
+
+CREATE VIEW [dbo].[SOD_ViewItems] AS
+SELECT 
+SubDescription1 As 'PG SKU',
+    ItemLookupCode,
+    CONCAT(Description, ExtendedDescription) AS DESCRIPTION, 
+    Price, 
+    Cost, 
+    CASE 
+        WHEN QuantityCommitted < 0 THEN Quantity 
+        WHEN Quantity < 0 THEN 0 
+        ELSE Quantity - QuantityCommitted 
+    END AS AVAILABLE, 
+    ParentQuantity, 
+    TaxID, 
+    SubDescription2, 
+    Price AS [PRICE 1], 
+    ID, 
+    Description AS DESCRIPTION1, 
+    ExtendedDescription, 
+    ItemType, 
+    Inactive, 
+    '-' AS ITEMDES, 
+    SubDescription2 AS SKULEVEL,
+    CONCAT(ItemLookupCode, ' | ', Description, ExtendedDescription, ' | ', SubDescription1) AS FULLDESC
+FROM dbo.Item;

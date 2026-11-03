@@ -1,5 +1,180 @@
 ﻿# Work Order Entry unit tests
 
+## November 3: Davao transfer-in 0002601 recovery
+
+Run [DVO_PO_0002601_LocalDB_Test.ps1](Database%20Components/Tests/DVO_PO_0002601_LocalDB_Test.ps1).
+It uses a disposable LocalDB database at compatibility level 100, synthetic rows,
+and the seven captured Davao inventory trigger definitions. It rebinds the target
+and row versions for the fixture and exercises the same backup and posting logic.
+All 31 checks passed, including read-only review, rollback after forced failures,
+and duplicate rejection. Both Release/x86 solution builds and all 153 shared
+unit tests passed. Downstream integration processing was outside the fixture test.
+See the [recovery guide](Database%20Components/Recovery/DVO_PO_0002601_11688BOX.md).
+
+## October 31: QC Puregold selected V4 compatibility
+
+The copy-ready folder is `Deployment Packages/QC_BRANCH_V4_COPY_20261031`, with a sibling
+ZIP. It includes the reviewed V4 EXE, complete updater Release files and the QC
+fix package. All 121 copied source files match their source hashes and ZIP CRC
+verification passed. No configs or credentials are supplied; retain QC's existing
+configuration. This assembly-only step did not rebuild the EXE, rerun the earlier
+integration suites or apply SQL. Follow the included `START_HERE.txt` for testing
+and deployment prerequisites.
+
+The package and deployment/rollback instructions are in
+`Database Components/Deployment/QC_PUREGOLD_V4/README.md`. The selected EXE is
+the Release/x86 build under `C:\Users\ADMIN\source\repos\WORK_ORDER_ENTRY_4`,
+identified by full hash in that package. The older Documents-folder reference
+has different print mappings and must not determine this deployment's fixes.
+
+Run `Database Components/Tests/QC_Puregold_V4_LocalDB_Test.ps1` on Windows.
+It requires LocalDB 170, x86 Windows PowerShell, the selected EXE and matching
+source DBML. It creates uniquely owned fixture databases at compatibility 130,
+then drops them and removes its instance; it never connects to QC or modifies
+the installed app's configuration. Packaged `.sql.txt` baselines are fixture
+inputs only; do not import their raw definitions into a store.
+
+76 checks passed: reproducing PG SKU's ordinal shift; preserving existing view
+values and fractional/negative availability rules; V4 code/cost/tax/ID positions;
+object identity/permissions; changed-definition, transaction and target guards;
+repeats and rollbacks; QC store/RDC lookups; optional import table/schema rejection;
+and compiled V4 reads of original print functions and nine-field configuration.
+Evidence: `TestResults/QC-V4-LatestTest.log` and `TestResults/QC_V4_168dc4b764e2`.
+Both required Release/x86 builds, all 153 main units and the clean-folder
+packaging suite also passed. Five existing EXE configs were restored byte-for-byte.
+No live SQL changes, restored QC workflow test, physical printing or native RMS
+settlement were performed. V4 retains its pre-existing save limitations.
+
+## October 30: findings 27-30 on a restored copy
+
+A hidden-form probe reproduced each defect on a throwaway restored copy, then 15
+checks passed after the fixes: no draft from a recalled order, old drafts removed,
+new-order drafts still saved and recovered, highlighted and moved picker rows for
+customers, highlighted row for sales reps, missing items reported, the database item
+ID used, and a clean file still reporting complete. Evidence:
+TestResults/Findings27to30-Validation-20261030. The probe is not in the repository
+suite. Not tested: Enter-key selection on a real restored-data picker, and a real
+branch export file; the import used a synthetic workbook structure.
+
+Both Release/x86 solutions, 153 units, LookupKeyboard_UI_Test.ps1 and
+EmptyLookup_UI_Test.ps1 passed; both scripts now cache the process handle so ExitCode
+is readable. LookupDesign_UI_Test.ps1 passed its Customer and Sales Rep checks, then
+stopped at its older main-form button width of 111. The action column was later
+widened, and this change did not touch that layout, so the test needs its own update.
+
+## October 30: restored-copy test of localhost DVO_STORE_DB
+
+Separately authorized. A copy-only backup was restored as a GUID-named SODCOPY_
+database; a hidden-form probe ran the compiled Debug EXE against it through the
+in-memory endpoint, then the copy and backup were removed and DVO_STORE_DB checksums
+matched. It used the real insert procedures, triggers, item view and open orders.
+
+Passed: 415 of 418 open work orders recalled, including all 62 two-part comments;
+saving a real order; remarks with a separator; adding and deleting a repeated line;
+one queue row per line; new orders; fractional cancels ending at exactly zero; the
+999,999 rejection; the named shortage message; keyword and apostrophe search. The
+three failures are CustomerID 0 local test orders. Log:
+TestResults/RealCopy-Validation-20261030. WorkOrderCommentTests now has 7 cases.
+
+The hidden form is not an operator test. Not covered: visible screens, Load, printing,
+quotation recall, imports, the queueing app, credit limits needing DVO_MAA_WHSE_DB
+(not on this PC), and RMS POS settlement.
+
+## October 30: maximum line quantity and order total
+
+Two QuantityToleranceTests cases cover the inclusive 999,999 limit and the money
+column limit (151 units). QuantityValidation_LocalDB_Compare.ps1 formatted mode (27
+checks) uses a type-7 item through the actual SaveOrder and quantity-cell handlers:
+over-limit quantity, over-limit total, starting an edit on a huge value without an
+overflow, and a typed over-limit value restoring exactly 2.5. Logs:
+TestResults/QuantityLimit-Validation-20261030. Not tested: a real typed entry on the
+live grid, and imported files above the limit. Orders already above 999,999 must be
+corrected before they can be saved again. Manual acceptance: repeat the reported
+SVC00017 entry on a test store and confirm the limit message appears.
+
+## October 30: validation message wording
+
+AppPromptTextTests (4 cases, 149 units total) cover the standard title and the plain
+sentence above unexpected errors. QuantityValidation_LocalDB_Compare.ps1 translates
+each baseline prompt through an exact wording map, so any unlisted change still
+fails; only the stock heading is matched by prefix, because it adds item detail.
+Formatted mode checks that detail, including exact fractional amounts (19 checks).
+PaymentBeforeApproval_UI_Test.ps1 now expects the new title and payment wording.
+
+Logs: TestResults/MessageWording-Validation-20261030. Evidence: QuantityValidation-6d879d7b,
+MultiUser-f60cbdf1, MultiUser-95753f17. Not tested: message layout and fit on a real
+screen, especially long stock lists. Manual acceptance: trigger a stock shortage on
+several items and read the wrong-password and repeated-item prompts.
+
+## October 30: remaining V8 review findings
+
+QuantityToleranceTests, RecallSearchFilterTests and one more ImportFileRulesTests
+case bring the suite to 145 units.
+
+MultiUser_Save_LocalDB_Test.ps1 (63 per mode) adds a reproduced float remainder
+that cancels to exactly zero and a real fractional shortfall that rolls back.
+ItemSearch_LocalDB_Test.ps1 (36) adds a failed query keeping the form open, blank
+approval passwords rejected before SQL, and a saved order clearing when refresh
+fails. QuantityValidation_LocalDB_Compare.ps1 needs a baseline with selected-grid
+columns: use TestResults/V8Readability-20261027/Before. Its 240 paired assertions
+stay strict except three approved counters (UnconfirmedPriceEarlyReturn and both
+CaughtException cases), which must be 0 before and 1 after. Formatted mode now also
+checks fractional shortages, float remainders and legacy rows by OrderID (18 checks).
+
+PriceLevel_Queries_LocalDB_Test.ps1 passed its 125 paired cases (PriceLevelQueries-27a42fef)
+after two runner fixes that weaken no assertion: it now caches the process handle so
+ExitCode is readable, and no longer wraps a JSON array under Windows PowerShell 5.1.
+PaymentBeforeApproval (121), RecallFormatting (28) and ReleaseTypePrompt (123 with
+queueing on) also passed.
+
+Logs: TestResults/RemainingFindings-Validation-20261030. Evidence: MultiUser-b927b485,
+MultiUser-91ef074e, ItemSearch-a5246397, QuantityValidation-2f302693,
+Preallocation-bc924fa4. Not tested: the Settings and approval dialogs with real
+store passwords, a real SQL outage, RMS POS, live stores or physical fractional
+stock. Manual acceptance: on a test store, cancel fractional orders, add an item
+with under one unit available, approve a below-minimum price and check the logged
+approver, and search Recall for `[`.
+
+## October 30: recall remarks, repeated-item queue rows and import checks
+
+WorkOrderCommentTests (5) cover remarks containing "; ", empty remarks, short and
+missing comments. QueueLineMatcherTests (4) cover ID-order pairing and uneven
+counts. Four ImportFileRulesTests cover missing website items, repeated codes,
+complete imports and a missing description column. Total: 138 units.
+
+MultiUser_Save_LocalDB_Test.ps1 adds eight checks (60 per read mode) using the
+compiled save and LoadQueueByEntry: delete one repeated line, partial and full
+preparation, a new repeated line through a synthetic one-row-per-line procedure,
+commitments, removing an item's last line and per-line recall values. The fixture
+now also creates SOD_WO_Conf and sets a cashier full name, because deleted lines
+write a price log. The worker accepts DeletedEntries and a ReadQueue operation.
+
+October 30 validation: both Release/x86 solutions, 138 units, 60 multi-user checks
+per mode (MultiUser-4f31f464, MultiUser-b70b9d0a), 80 preallocation checks
+(Preallocation-bf0a9d59) and 99 OrderTools checks passed; configs were preserved.
+Logs: TestResults/QueueCommentImport-Validation-20261030. Not tested: the recall
+screen, the import screens, the real branch procedures, the queueing app with
+repeated items, live stores or RMS POS. Manual acceptance: on a test store, recall
+and save remarks containing "; "; edit and delete repeated lines and check the
+queue screen; import a website order and an Excel file with a missing item.
+
+## October 30: apostrophes in item keyword search
+
+ItemSearchQueryTests (6 cases) check that query text without an apostrophe is
+unchanged and that apostrophes stay inside the literal. The search-box apostrophe
+rejection has been removed from Enter and the Search button.
+
+ItemSearch_LocalDB_Test.ps1 now has 29 checks against an owned fixture. Eight new
+checks execute ItemSearchQuery.Build's SQL against an apostrophe item, confirm a
+quoted value stays a search value, and invoke the actual Enter and Search button
+handlers, failing on any dialog. The form is never shown; F2, double-click and a
+real operator search are not exercised.
+
+October 30 validation: both required Release/x86 solutions, 138 units and 29 search
+checks passed; store configurations were preserved. Logs:
+TestResults/ApostropheSearch-Validation-20261030. LocalDB artifacts:
+TestResults/ItemSearch-ae0b2ca6. No live-store or operator workflow test was run.
+
 ## October 28: reusable Portable username and printing migrations
 
 October 29 live Iloilo header cleanup was separately authorized. Before deleting

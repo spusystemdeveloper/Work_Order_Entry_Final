@@ -147,7 +147,7 @@ Public Class frmRecall
     End Sub
 
     Private Sub ApplyRecallFilter()
-        Dim filterText As String = txtSearch.Text.Replace("'", "''").Trim()
+        Dim filterText As String = ShortageAlertList.EscapeSearch(txtSearch.Text.Trim())
 
         If String.IsNullOrEmpty(filterText) Then
             recallData.RemoveFilter()

@@ -64,6 +64,25 @@ Public Class clsWorkOrderDraft
         End Using
     End Function
 
+    ' A draft has no order number, so saving one built from an existing order
+    ' would insert a duplicate. Older versions saved these drafts on close.
+    Public Shared Function IsDraftOfExistingOrder(ByVal registerID As String, ByVal userName As String) As Boolean
+        If Not EnsureTables() Then Return False
+
+        Dim registerKey As String = ResolveRegisterID(registerID)
+        If registerKey = String.Empty Then Return False
+        Dim userKey As String = ResolveUserName(userName)
+        If userKey = String.Empty Then Return False
+
+        Using db = GetDB()
+            Return (From h In db.SOD_WO_DraftHeaders
+                    Where h.RegisterID = registerKey AndAlso h.UserName = userKey
+                    From d In h.SOD_WO_DraftDetails
+                    Where d.OrderEntryID > 0
+                    Select d.DraftDetailID).Any()
+        End Using
+    End Function
+
     Public Shared Function GetDraftSummary(ByVal registerID As String, ByVal userName As String) As String
         If Not EnsureTables() Then Return "Draft recovery is not installed"
 

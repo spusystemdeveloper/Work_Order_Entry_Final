@@ -37,6 +37,33 @@ Public NotInheritable Class RecallReadData
             ToDictionary(Function(group) group.Key, Function(group) group.First())
     End Function
 
+    ' Keyed by order line, so each line of a repeated item shows its own queue row.
+    Public Shared Function LoadQueueByEntry(context As ItemLookUpDataContext, orderID As Integer) As Dictionary(Of Integer, RecallQueueDetail)
+        Dim entries = (From entry In context.OrderEntries
+                       Where entry.OrderID = orderID
+                       Select entry.ID, entry.ItemID).ToList()
+        Dim rows = (From detail In context.QueueingItems
+                    Join header In context.Queueings On detail.QueueingID Equals header.id
+                    Where header.OrderID = orderID AndAlso detail.ItemID.HasValue
+                    Select detail.id, detail.ItemID, detail.QtyPre, detail.Status, detail.Picker, detail.PickLoc).ToList()
+        Dim matches = QueueLineMatcher.Match(
+            entries.Select(Function(entry) New KeyValuePair(Of Integer, Integer)(entry.ID, entry.ItemID)),
+            rows.Select(Function(row) New KeyValuePair(Of Long, Integer)(row.id, row.ItemID.Value)))
+        Dim rowsByID = rows.ToDictionary(Function(row) row.id)
+
+        Dim result As New Dictionary(Of Integer, RecallQueueDetail)
+        For Each match In matches
+            Dim row = rowsByID(match.Value)
+            result(match.Key) = New RecallQueueDetail With {
+                .ItemID = row.ItemID.Value,
+                .Prepared = row.QtyPre,
+                .Status = row.Status,
+                .Picker = row.Picker,
+                .PickLoc = row.PickLoc}
+        Next
+        Return result
+    End Function
+
     Public Shared Function LoadLastPrices(context As ItemLookUpDataContext, customerID As Integer,
                                           itemCodes As IEnumerable(Of String)) As Dictionary(Of String, Decimal)
         Dim result As New Dictionary(Of String, Decimal)(StringComparer.Ordinal)
@@ -109,6 +136,7 @@ Public Class RecallQueueDetail
     Public Property Prepared As Integer?
     Public Property Status As String
     Public Property Picker As String
+    Public Property PickLoc As String
 End Class
 
 Public Class RecallLastPrice

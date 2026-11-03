@@ -20,10 +20,11 @@ function Sql([string]$text,$transaction=$null){$cmd=$connection.CreateCommand();
 function Scalar([string]$text){$cmd=$connection.CreateCommand();try{$cmd.CommandTimeout=10;$cmd.CommandText=$text;return $cmd.ExecuteScalar()}finally{$cmd.Dispose()}}
 function Check([bool]$ok,[string]$name){if(-not $ok){throw "FAILED: $name"};$script:checks++;Write-Output "Passed: $name"}
 function Wait-For([scriptblock]$condition,[string]$description,[int]$seconds=15){$end=[DateTime]::UtcNow.AddSeconds($seconds);while(-not (& $condition)){if([DateTime]::UtcNow -gt $end){throw "Timed out: $description"};Start-Sleep -Milliseconds 40}}
-function Start-Cashier([string]$case,[string]$who,[int]$order,[int]$item,[int]$entry,[double]$quantity,[string]$operation='Save',[object[]]$lines=$null,[int[]]$withholding=$null){
+function Start-Cashier([string]$case,[string]$who,[int]$order,[int]$item,[int]$entry,[double]$quantity,[string]$operation='Save',[object[]]$lines=$null,[int[]]$withholding=$null,[int[]]$deleted=$null){
     $stem=Join-Path $directory ($case+'-'+$who)
     $request=[pscustomobject]@{Server=$server;Database=$database;Assembly=$assembly;Actor=('MultiUser_'+$who+'_'+$suffix);OrderID=$order;ItemID=$item;EntryID=$entry;Quantity=$quantity;Operation=$operation;Lines=$lines;Comment=($case+'-'+$who);ReadyFile=($stem+'.ready');GoFile=($stem+'.go');ResultFile=($stem+'.result.json')}
     if($null -ne $withholding){$request | Add-Member -NotePropertyName WalkInRates -NotePropertyValue @($withholding)}
+    if($null -ne $deleted){$request | Add-Member -NotePropertyName DeletedEntries -NotePropertyValue @($deleted)}
     $requestFile=$stem+'.request.json';$request|ConvertTo-Json|Set-Content -LiteralPath $requestFile
     $workerArgs=@('-NoProfile','-STA','-ExecutionPolicy','Bypass','-File',('"'+$worker+'"'),'-RequestFile',('"'+$requestFile+'"'))
     $process=Start-Process -FilePath $powershell -ArgumentList $workerArgs -WindowStyle Hidden -PassThru -RedirectStandardOutput ($stem+'.stdout.log') -RedirectStandardError ($stem+'.stderr.log')
@@ -95,7 +96,7 @@ try {
     $connection=[Data.SqlClient.SqlConnection]::new($connectionString);$connection.Open()
     # Exact mapped columns/types, with synthetic defaults only. No store data.
     [xml]$mapping=Get-Content (Join-Path $repo 'Work Order Entry\Linq\ItemLookUp.dbml')
-    $tables=@('dbo.[Order]','dbo.OrderEntry','dbo.Item','dbo.Customer','dbo.Queueing','dbo.QueueingItems','dbo.SOD_WO_LOGS')
+    $tables=@('dbo.[Order]','dbo.OrderEntry','dbo.Item','dbo.Customer','dbo.Queueing','dbo.QueueingItems','dbo.SOD_WO_LOGS','dbo.SOD_WO_Conf')
     foreach($table in $mapping.Database.Table){
         if($tables -notcontains [string]$table.Name){continue}
         $definitions=@()
@@ -371,6 +372,68 @@ END;
     $a=Start-Cashier 'quote-duplicates' 'A' $duplicateID $duplicateItem $duplicate.Lines[0].EntryID 4 -lines $duplicate.Lines
     Ready $a;Go $a;$rejected=Result $a -AllowError
     Check ($rejected.Status -eq 'Error' -and $rejected.Message -like '*Insufficient available quantity*' -and (Fixture-State $duplicate) -ceq $duplicateBefore) 'Duplicate conversion lines cannot over-reserve; a later shortage rolls back the first adjustment'
+
+    # A repeated item's lines keep separate queue rows through edit, delete and add.
+    # The procedure mirrors the deployed one-row-per-line contract; synthetic only.
+    Sql @'
+CREATE PROCEDURE dbo.SOD_sp_InsertQouteEntry @mCost money,@iOrderID bigint,@iItemID int,@mFullPrice money,@mPrice money,
+ @fQuantityOnOrder float,@iSalesRepID int,@iTaxable int,@vDescription varchar(100),@vComment varchar(100),@QtyPrep int,@Type int AS
+BEGIN
+ SET NOCOUNT ON;
+ DECLARE @iQueueID bigint;
+ INSERT dbo.OrderEntry(OrderID,ItemID,QuantityOnOrder,Price,FullPrice,Cost,Taxable,Description)
+  VALUES(@iOrderID,@iItemID,@fQuantityOnOrder,@mPrice,@mFullPrice,@mCost,@iTaxable,@vDescription);
+ SELECT @iQueueID=id FROM dbo.Queueing WHERE OrderID=@iOrderID;
+ INSERT dbo.QueueingItems(QueueingID,ItemID,QtyPre,Picker,Status,PickLoc) VALUES(@iQueueID,@iItemID,@QtyPrep,N'','-',@vComment);
+END;
+'@
+    $repeatItem=New-FixtureItem 100 9
+    $repeat=New-FixtureOrder @($repeatItem,$repeatItem,$repeatItem) @(2,3,4)
+    $repeatQueue=@($repeat.Lines|ForEach-Object {$_.QueueItemID})
+    Sql ("UPDATE dbo.QueueingItems SET Picker=N'PICKER-A' WHERE id="+$repeatQueue[0]+"; UPDATE dbo.QueueingItems SET Picker=N'PICKER-C' WHERE id="+$repeatQueue[2]+";")
+    $repeatLines=@(
+        [pscustomobject]@{ItemID=$repeatItem;EntryID=$repeat.Lines[0].EntryID;Quantity=2;PreparedQuantity=1},
+        [pscustomobject]@{ItemID=$repeatItem;EntryID=$repeat.Lines[2].EntryID;Quantity=4;PreparedQuantity=4},
+        [pscustomobject]@{ItemID=$repeatItem;EntryID=0;Quantity=5;PreparedQuantity=5})
+    $a=Start-Cashier 'repeat-queue' 'A' $repeat.OrderID $repeatItem $repeat.Lines[0].EntryID 2 -lines $repeatLines -deleted @($repeat.Lines[1].EntryID)
+    Ready $a;Go $a;$null=Result $a
+    Check ((Scalar ("SELECT COUNT(*) FROM dbo.QueueingItems WHERE id="+$repeatQueue[1]+";")) -eq 0 -and (Scalar ("SELECT COUNT(*) FROM dbo.QueueingItems WHERE QueueingID="+$repeat.QueueID+";")) -eq 3) 'Deleting one repeated line removes only its own queue row'
+    Check ((Scalar ("SELECT COUNT(*) FROM dbo.QueueingItems WHERE id="+$repeatQueue[0]+" AND QtyPre=1 AND Status='Pending' AND Picker=N'PICKER-A';")) -eq 1) 'A partly prepared repeated line updates only its own row'
+    Check ((Scalar ("SELECT COUNT(*) FROM dbo.QueueingItems WHERE id="+$repeatQueue[2]+" AND QtyPre=4 AND Status='Prepared' AND Picker=N'CUST';")) -eq 1) 'A fully prepared repeated line marks only its own row'
+    Check ((Scalar ("SELECT COUNT(*) FROM dbo.QueueingItems WHERE QueueingID="+$repeat.QueueID+" AND id>"+$repeatQueue[2]+" AND QtyPre=5 AND Status='Prepared' AND Picker=N'CUST';")) -eq 1) 'A newly added repeated line uses the row its insert created'
+    Check ((Scalar "SELECT QuantityCommitted FROM dbo.Item WHERE ID=$repeatItem;") -eq 11 -and (Scalar ("SELECT COUNT(*) FROM dbo.OrderEntry WHERE OrderID="+$repeat.OrderID+";")) -eq 3) 'Repeated-line queue changes leave commitments and lines correct'
+
+    $readItem=New-FixtureItem 100 5
+    $readOrder=New-FixtureOrder @($readItem,$readItem) @(2,3)
+    Sql ("UPDATE dbo.QueueingItems SET QtyPre=3,Picker=N'PICKER-B',PickLoc='UP-STORE' WHERE id="+$readOrder.Lines[1].QueueItemID+";")
+    $a=Start-Cashier 'repeat-read' 'A' $readOrder.OrderID $readItem $readOrder.Lines[0].EntryID 2 'ReadQueue'
+    Ready $a;Go $a;$read=Result $a
+    $firstRead=@($read.Queue|Where-Object {$_.EntryID -eq $readOrder.Lines[0].EntryID})
+    $secondRead=@($read.Queue|Where-Object {$_.EntryID -eq $readOrder.Lines[1].EntryID})
+    Check ($firstRead.Count -eq 1 -and $firstRead[0].Prepared -eq 0 -and $firstRead[0].Picker -eq 'PICKER' -and $firstRead[0].PickLoc -eq 'STORE') 'Recall reads the first repeated line from its own queue row'
+    Check ($secondRead.Count -eq 1 -and $secondRead[0].Prepared -eq 3 -and $secondRead[0].Picker -eq 'PICKER-B' -and $secondRead[0].PickLoc -eq 'UP-STORE') 'Recall reads the second repeated line from its own queue row'
+
+    $lastItem=New-FixtureItem 100 2;$keptItem=New-FixtureItem 100 1
+    $last=New-FixtureOrder @($lastItem,$lastItem,$keptItem) @(1,1,1)
+    $keptLine=@([pscustomobject]@{ItemID=$keptItem;EntryID=$last.Lines[2].EntryID;Quantity=1;PreparedQuantity=0})
+    $a=Start-Cashier 'repeat-last' 'A' $last.OrderID $keptItem $last.Lines[2].EntryID 1 -lines $keptLine -deleted @($last.Lines[0].EntryID,$last.Lines[1].EntryID)
+    Ready $a;Go $a;$null=Result $a
+    Check ((Scalar ("SELECT COUNT(*) FROM dbo.QueueingItems WHERE QueueingID="+$last.QueueID+" AND ItemID=$lastItem;")) -eq 0 -and (Scalar ("SELECT COUNT(*) FROM dbo.QueueingItems WHERE QueueingID="+$last.QueueID+" AND ItemID=$keptItem;")) -eq 1) 'Removing every line of an item clears its queue rows and keeps other items'
+
+    # Float rounding must not block a valid release, but a real shortfall still must.
+    $fractionItem=New-FixtureItem 10 0
+    $fraction=New-FixtureOrder @($fractionItem) @(0.1)
+    Sql "UPDATE dbo.Item SET QuantityCommitted=CONVERT(float,0.7)+CONVERT(float,0.1)-CONVERT(float,0.7) WHERE ID=$fractionItem;"
+    Check ((Scalar "SELECT CASE WHEN QuantityCommitted-CONVERT(float,0.1)<0 THEN 1 ELSE 0 END FROM dbo.Item WHERE ID=$fractionItem;") -eq 1) 'Fixture reproduces the below-zero float release'
+    $a=Start-Cashier 'fraction-cancel' 'A' $fraction.OrderID $fractionItem $fraction.Lines[0].EntryID 0.1 'Cancel'
+    Ready $a;Go $a;$null=Result $a
+    Check ((Scalar "SELECT QuantityCommitted FROM dbo.Item WHERE ID=$fractionItem;") -eq 0 -and (Scalar ("SELECT CONVERT(int,Closed) FROM dbo.[Order] WHERE ID="+$fraction.OrderID+";")) -eq 1) 'Cancelling a fractional order with a float remainder closes it and stores exactly zero'
+    $shortItem=New-FixtureItem 10 0.05
+    $short=New-FixtureOrder @($shortItem) @(0.1)
+    $shortBefore=Fixture-State $short
+    $a=Start-Cashier 'fraction-short' 'A' $short.OrderID $shortItem $short.Lines[0].EntryID 0.1 'Cancel'
+    Ready $a;Go $a;$rejected=Result $a -AllowError
+    Check ($rejected.Status -eq 'Error' -and $rejected.Message -like '*negative*' -and (Fixture-State $short) -ceq $shortBefore) 'A real fractional shortfall is still rejected and rolled back'
 
     $serviceItem=New-FixtureItem 0 0
     Sql "UPDATE dbo.Item SET ItemType=7 WHERE ID=$serviceItem;"

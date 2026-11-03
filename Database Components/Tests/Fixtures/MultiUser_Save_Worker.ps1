@@ -20,7 +20,7 @@ try {
        $request.Database -notmatch '^SODWO_Multi_[a-f0-9]{8}$' -or
        $request.Actor -notmatch '^MultiUser_[AB]_[a-f0-9]{8}$') {throw 'Only the owned synthetic LocalDB target is permitted.'}
     $operation=if($request.PSObject.Properties['Operation']){[string]$request.Operation}else{'Save'}
-    if($operation -notin @('Save','Cancel','Settle')){throw 'Unknown fixture operation.'}
+    if($operation -notin @('Save','Cancel','Settle','ReadQueue')){throw 'Unknown fixture operation.'}
     Add-Type -AssemblyName System.Data,System.Data.Linq,System.Windows.Forms,System.Drawing
     $assembly=[Reflection.Assembly]::LoadFrom($request.Assembly)
     $module=$assembly.GetType('WorkOrderEntry.ModConnectDB',$true)
@@ -46,6 +46,7 @@ try {
     $module.GetField('ispriceApproved',$publicStatic).SetValue($null,0)
     [WorkOrderEntry.frmItemLookUp]::usrUsername=$request.Actor
     [WorkOrderEntry.frmItemLookUp]::usrRegister='FIXTURE'
+    [WorkOrderEntry.frmItemLookUp]::usrFullname='Fixture Cashier'
     [Threading.Thread]::CurrentThread.CurrentCulture=[Globalization.CultureInfo]::GetCultureInfo('en-US')
     $form=[WorkOrderEntry.frmItemLookUp]::new()
     $instanceFlags=[Reflection.BindingFlags]'Instance,Public,NonPublic'
@@ -84,6 +85,10 @@ try {
     $grid.Rows[$row].Cells['Taxable'].Value=1
     $totalQuantity += [decimal]$line.Quantity
     }
+    if($request.PSObject.Properties['DeletedEntries']){
+        $deletedEntries=$form.GetType().GetField('delitems',$instanceFlags).GetValue($form)
+        foreach($deletedEntry in $request.DeletedEntries){$deletedEntries.Add([int]$deletedEntry)}
+    }
     $vat=$form.GetType().GetProperty('txtVat',$instanceFlags).GetValue($form)
     $total=$form.GetType().GetProperty('txtTotal',$instanceFlags).GetValue($form)
     $vat.Text=($totalQuantity*12).ToString()
@@ -101,7 +106,15 @@ try {
     # application lock, snapshot check, line/stock/queue/tax/history and commit.
     $null=Assert-FixtureEndpoint
     $transactionNumber=$null
+    $queueRead=$null
     switch($operation){
+        'ReadQueue' {
+            $context=[WorkOrderEntry.ItemLookUpDataContext]::new($connectionString)
+            try {
+                $details=[WorkOrderEntry.RecallReadData]::LoadQueueByEntry($context,[int]$request.OrderID)
+                $queueRead=@($details.GetEnumerator()|ForEach-Object {[pscustomobject]@{EntryID=$_.Key;Prepared=$_.Value.Prepared;Picker=$_.Value.Picker;PickLoc=$_.Value.PickLoc}})
+            }finally{$context.Dispose()}
+        }
         'Save' {
             $method=$form.GetType().GetMethod('SaveExistingOrderChanges',$instanceFlags)
             $null=$method.Invoke($form,@([int]$request.OrderID,[string]$request.Comment))
@@ -148,7 +161,7 @@ SELECT @number;
             }finally{$context.Dispose()}
         }
     }
-    Publish-Result ([pscustomobject]@{Status='Committed';Actor=$request.Actor;Operation=$operation;TransactionNumber=$transactionNumber})
+    Publish-Result ([pscustomobject]@{Status='Committed';Actor=$request.Actor;Operation=$operation;TransactionNumber=$transactionNumber;Queue=$queueRead})
 } catch {
     $errorObject=$_.Exception
     while($null -ne $errorObject.InnerException){$errorObject=$errorObject.InnerException}

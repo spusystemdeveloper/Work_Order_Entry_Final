@@ -3,8 +3,27 @@ Imports System.Windows.Forms
 
 ' Presentation adapter: callers retain their original arguments and result checks.
 Public NotInheritable Class AppPrompt
+    Public Const StandardCaption As String = "Work Order Entry"
+    Private Const UnexpectedErrorIntro As String = "Something went wrong. Please try again or contact support."
+
     Private Sub New()
     End Sub
+
+    ' Unexpected errors start with "FROM"; keep that detail for support below a plain sentence.
+    Public Shared Function FriendlyText(text As String) As String
+        If text Is Nothing OrElse Not text.StartsWith("FROM ", StringComparison.Ordinal) Then Return text
+        Return UnexpectedErrorIntro & vbCrLf & vbCrLf & text
+    End Function
+
+    ' Numbered error captions and purpose-specific titles are left unchanged.
+    Public Shared Function FriendlyCaption(caption As String) As String
+        Select Case caption
+            Case "Message!", "Message !", "Message", "Warning", "Validation Warning"
+                Return StandardCaption
+            Case Else
+                Return caption
+        End Select
+    End Function
 
     Public Shared Function Show(text As String, Optional caption As String = "",
                                 Optional buttons As MessageBoxButtons = MessageBoxButtons.OK,
@@ -17,6 +36,8 @@ Public NotInheritable Class AppPrompt
                                 Optional buttons As MessageBoxButtons = MessageBoxButtons.OK,
                                 Optional icon As MessageBoxIcon = MessageBoxIcon.None,
                                 Optional defaultButton As MessageBoxDefaultButton = MessageBoxDefaultButton.Button1) As DialogResult
+        text = FriendlyText(text)
+        caption = FriendlyCaption(caption)
         Try
             Dim dispatcher As Control = TryCast(owner, Control)
             If dispatcher Is Nothing Then

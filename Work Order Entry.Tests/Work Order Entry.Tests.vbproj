@@ -65,6 +65,12 @@
     <Compile Include="SeniorCitizenTagTests.vb" />
     <Compile Include="TaxCalculationTests.vb" />
     <Compile Include="CustomerWithholdingSuggestionsTests.vb" />
+    <Compile Include="ItemSearchQueryTests.vb" />
+    <Compile Include="AppPromptTextTests.vb" />
+    <Compile Include="QuantityToleranceTests.vb" />
+    <Compile Include="QueueLineMatcherTests.vb" />
+    <Compile Include="RecallSearchFilterTests.vb" />
+    <Compile Include="WorkOrderCommentTests.vb" />
     <Compile Include="QueueOrderAgeRulesTests.vb" />
     <Compile Include="ErrorLoggerTests.vb" />
     <Compile Include="OrderEditGuardTests.vb" />

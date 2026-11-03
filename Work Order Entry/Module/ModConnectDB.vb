@@ -59,6 +59,7 @@ Module ModConnectDB
 
     Public WoRecallType As String = 0
     Public ispriceApproved As Integer = 0
+    Public approvalPassword As String = String.Empty
 
     Public dbs As String
     Public dbn As String
@@ -186,9 +187,9 @@ Module ModConnectDB
             sql_dt = dt
             Return dt
         Catch ex As Exception
+            ' Keep the session open: an order may be in progress on screen.
             AppPrompt.Show(ex.Message + " Please Check Database !")
-            Application.Exit()
-            Return Nothing
+            Return New DataTable()
         End Try
     End Function
 

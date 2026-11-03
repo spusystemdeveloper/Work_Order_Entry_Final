@@ -23,7 +23,7 @@ Public Class frmItemLookUp
     Dim dQty As Double
     Dim iItemType As Integer
     Dim iErrCnt As Integer
-    Dim curQty As Integer
+    Dim curQty As Double
     Dim sfilterTxt As String
     Dim curPrice As Double
     Dim bFlag As Boolean = True
@@ -89,10 +89,6 @@ Public Class frmItemLookUp
 
                 If txtSearch.Text = String.Empty Then
                     AppPrompt.Show("Search cannot be empty !", "Message !", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-                ElseIf txtSearch.Text.Contains("'") Then
-
-                    AppPrompt.Show("Searching ' or Apostrophe is not Allowed !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-
                 Else
 
 
@@ -195,11 +191,7 @@ Public Class frmItemLookUp
                 Exit Sub
             End If
 
-            Dim SearchStrArr() As String = Split(sfilterTxt, ",")
-            Dim FilterString As String = ""
-            FilterString = String.Join("%' AND [FULLDESC] Like '%", SearchStrArr)
-            Dim FilterStr = "SELECT TOP 500 * FROM SOD_VIEWITEMSWO  WHERE Inactive = 0 AND FULLDESC Like '%" & FilterString & "%'"
-            'Dim FilterStr = "SELECT ITEMLOOKUPCODE AS ITEMCODE,DESCRIPTION AS 'ITEM NAME',PRICE AS 'ITEM PRICE',COST,AVAILABLE,ParentQuantity,SKULEVEL FROM SOD_VIEWITEMS  WHERE Inactive = 0 AND FULLDESC Like '%" & FilterString & "%'"
+            Dim FilterStr = ItemSearchQuery.Build(sfilterTxt)
 
             'itemData.Filter = FilterStr
             BindGridItemSource(LoadItemSearchData(FilterStr))
@@ -696,7 +688,7 @@ Public Class frmItemLookUp
             End If
 
             If iCusID = 0 Then
-                AppPrompt.MsgBox("Please select customer first!", vbExclamation, "Message")
+                AppPrompt.MsgBox("Please select a customer first.", vbExclamation, "Message")
                 frmCustomer.Show()
             Else
                 SelectPrice()
@@ -714,7 +706,7 @@ Public Class frmItemLookUp
         Try
 
             Dim iReturnValue As Integer
-            Dim availVal As Integer
+            Dim availVal As Double
             'Dim iStoreID As Integer
 
             sItemCode = gridItem.Item(0, gridItem.CurrentRow.Index).Value
@@ -732,7 +724,7 @@ Public Class frmItemLookUp
                 'comment
                 availVal = clsItemLookUp.getItemQty(sItemCode)
 
-                If availVal < 1 And chkWorkOrder.Checked = True Then
+                If availVal <= 0 And chkWorkOrder.Checked = True Then
                     iReturnValue = AppPrompt.MsgBox("This item is out of stock.", vbExclamation, "Message!")
                 Else
                     Try
@@ -834,7 +826,7 @@ Public Class frmItemLookUp
 
     Public Sub SaveOrderHandler()
         Try
-            Using LoadingOverlay.Show(Me, "Saving order...")
+            ' The "Saving order..." overlay starts in ValidateAndSave, after the prompts.
             If activeRecallOrderID > 0 AndAlso recalledSnapshot Is Nothing Then
                 Throw New OrderEditConflictException()
             End If
@@ -861,7 +853,6 @@ Public Class frmItemLookUp
                     Exit Sub
                 End If
             End If
-            End Using
         Catch ex As OrderEditConflictException
             ShowOrderConflict(ex)
         Catch ex As Exception
@@ -886,6 +877,8 @@ Public Class frmItemLookUp
             If gridSelectItem.RowCount <= 0 Then Return OrderSaveOutcome.ValidationFailed
 
             iErrCnt = 0
+            If Not OrderIsWithinLimits() Then Return OrderSaveOutcome.ValidationFailed
+
             Dim isWorkOrder As Boolean = chkWorkOrder.Checked
             Dim isQuote As Boolean = chkQuote.Checked
             Dim isQtoWo As Boolean = chkBoxQtoWo.Checked
@@ -904,7 +897,7 @@ Public Class frmItemLookUp
                         Dim qtyValue As Object = row.Cells(2).Value
                         If qtyValue IsNot Nothing AndAlso IsNumeric(qtyValue) Then
                             If Convert.ToDecimal(qtyValue) <= 0 Then
-                                AppPrompt.Show("Quantity must be greater than zero. Please correct the item before proceeding.", "Validation Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                                AppPrompt.Show("Quantity must be greater than zero.", "Validation Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                                 gridSelectItem.CurrentCell = row.Cells(2)
                                 gridSelectItem.BeginEdit(True)
                                 Return OrderSaveOutcome.ValidationFailed
@@ -936,6 +929,28 @@ Public Class frmItemLookUp
             Return OrderSaveOutcome.Failed
         End Try
     End Function
+    ' Imported or recalled lines reach this point without passing the quantity cell check.
+    Private Function OrderIsWithinLimits() As Boolean
+        Dim orderTotal As Double = 0R
+        For Each row As DataGridViewRow In gridSelectItem.Rows
+            If row.IsNewRow Then Continue For
+            If Not IsNumeric(row.Cells(2).Value) Then Continue For
+            Dim quantity As Double = ReadRequestedQuantity(row.Cells(2).Value)
+            If OrderCommitmentRules.ExceedsMaximumQuantity(quantity) Then
+                AppPrompt.Show(OrderCommitmentRules.MaximumQuantityMessage, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                gridSelectItem.CurrentCell = row.Cells(2)
+                Return False
+            End If
+            If IsNumeric(row.Cells(3).Value) Then orderTotal += quantity * Convert.ToDouble(row.Cells(3).Value)
+        Next
+
+        If OrderCommitmentRules.ExceedsMaximumTotal(orderTotal) Then
+            AppPrompt.Show(OrderCommitmentRules.MaximumTotalMessage, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Return False
+        End If
+        Return True
+    End Function
+
     Private Sub RefreshItemList()
         Cursor.Current = Cursors.WaitCursor
 
@@ -1007,6 +1022,14 @@ Public Class frmItemLookUp
 
     Private Sub RecoverDraftIfAvailable()
         If clsWorkOrderDraft.HasDraft(usrRegister, usrUsername) Then
+            If clsWorkOrderDraft.IsDraftOfExistingOrder(usrRegister, usrUsername) Then
+                clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
+                AppPrompt.Show("An unsaved draft of an existing order was removed because saving it would create a duplicate order." & vbCrLf & vbCrLf &
+                               "The order itself is safe. Recall it to continue working on it.",
+                               "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                Exit Sub
+            End If
+
             Dim msg As String = "Recover unsaved draft?" & vbCrLf & clsWorkOrderDraft.GetDraftSummary(usrRegister, usrUsername)
             If AppPrompt.Show(msg, "Draft Found", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
                 BeginDraftRestore()
@@ -1049,19 +1072,19 @@ Public Class frmItemLookUp
         Try
             ' 1. Input Validation
             If String.IsNullOrWhiteSpace(Me.txtSales.Text) Then
-                AppPrompt.Show("Please select a Sales Representative", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Please select a sales representative.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 frmSalesRep.Show()
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf String.IsNullOrWhiteSpace(Me.cboPayment.Text) AndAlso getEntryType() = 2 Then
-                AppPrompt.Show("Please select a Payment Method", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Please select a payment method.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 cboPayment.Focus()
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf String.IsNullOrWhiteSpace(Me.txtCustomer.Text) Then
-                AppPrompt.Show("Please select a Customer", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Please select a customer.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 frmCustomer.Show()
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf gridSelectItem.Rows.Count = 0 Then
-                AppPrompt.Show("Please select Item to order", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Please add at least one item.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Return OrderSaveOutcome.ValidationFailed
             End If
 
@@ -1075,10 +1098,9 @@ Public Class frmItemLookUp
 
             If duplicateItems.Any() AndAlso Not StoreProcessingSettings.AllowDuplicateItemEntry Then
                 Dim res As DialogResult = AppPrompt.Show(
-                "There are Same Items in one Entry! Please Sum up the Qty Order!" & vbCrLf & vbCrLf &
+                "These items are listed more than once. Please combine the quantities into one line." & vbCrLf & vbCrLf &
                 "Duplicate Code(s): " & String.Join(", ", duplicateItems) & vbCrLf & vbCrLf &
-                "This might cause an issue in the future." & vbCrLf & vbCrLf &
-                "Do you wish to continue ?",
+                "Do you want to continue anyway?",
                 "Message!",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Exclamation)
@@ -1236,7 +1258,7 @@ Public Class frmItemLookUp
                                 End If
 
                                 If ispriceApproved = 1 AndAlso dPrice < GetApprovedMinPrice(itemObj) Then
-                                    AddPriceLog(dbSave, iOrderID, iItemID, dFullPrice, dPrice, frmPassword.txtPass.Text, "Inserted")
+                                    AddPriceLog(dbSave, iOrderID, iItemID, dFullPrice, dPrice, approvalPassword, "Inserted")
                                 End If
 
                                 If getEntryType() = 2 AndAlso itemObj.ItemType <> 7 Then
@@ -1297,13 +1319,13 @@ Public Class frmItemLookUp
                 frmPrintWo.ShowDialog()
             End If
 
-            RefreshDetails(True)
-            clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
+            ClearFormAfterCommittedSave()
             Return OrderSaveOutcome.Saved
 
         Catch ex As Exception
             ShowSaveFailure(ex, committed, "MESSAGE : ERROR 0015")
             ErrorCount += 1
+            If committed Then ClearFormAfterCommittedSave()
             Return If(committed, OrderSaveOutcome.Saved, OrderSaveOutcome.Failed)
         Finally
             Cursor.Current = Cursors.Default
@@ -1336,7 +1358,7 @@ Public Class frmItemLookUp
             Dim current As Double
             If Not projectedCommitments.TryGetValue(itemID, current) Then current = item.QuantityCommitted
             Dim projected As Double = current + difference
-            If projected < 0R Then
+            If OrderCommitmentRules.IsNegativeQuantity(projected) Then
                 Throw New InvalidOperationException(
                     "The committed-quantity adjustment for item " & itemID &
                     " would make QuantityCommitted negative. Current value: " &
@@ -1348,23 +1370,6 @@ Public Class frmItemLookUp
         Next
     End Sub
 
-    'comment
-    Public Sub setQtyCommittedQuotetoWo()
-
-        Dim iRow As Integer
-        Dim iItemID As Integer
-        Dim dQuantityOnOrder As Double
-
-        For iRow = 0 To gridSelectItem.Rows.Count - 1
-
-            Dim sItem = (From i In db.Items Where i.ID.Equals(iItemID) Select i.QuantityCommitted).FirstOrDefault
-
-            iItemID = gridSelectItem.Item(11, iRow).Value
-            dQuantityOnOrder = gridSelectItem.Item(2, iRow).Value
-            clsItemLookUp.SetQuantityCommittedToQoute(iItemID, dQuantityOnOrder)
-        Next
-        Exit Sub
-    End Sub
     Private Sub checkCustomerGroupWo(ByVal custid As Integer, ByVal custOrderId As Integer, ByVal type As String)
         Try
             If Not clsCustomer.getGroupID(custOrderId) = custOrderId Then
@@ -1401,16 +1406,16 @@ Public Class frmItemLookUp
             Dim iReturnValue As Integer
 
             If Me.txtSales.Text = "" And getEntryType() = 2 Then
-                AppPrompt.MsgBox("Please select sales representative", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select a sales representative.", vbExclamation, "Message!")
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf Me.txtCustomer.Text = "" And getEntryType() = 2 Then
-                AppPrompt.MsgBox("Please select customer", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select a customer.", vbExclamation, "Message!")
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf Me.cboPayment.Text = "" And getEntryType() = 2 Then
-                AppPrompt.MsgBox("Please select Payment Type", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select a payment method.", vbExclamation, "Message!")
                 Return OrderSaveOutcome.ValidationFailed
             ElseIf gridSelectItem.Rows.Count = 0 Then
-                AppPrompt.MsgBox("Please select item to order", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please add at least one item.", vbExclamation, "Message!")
                 Return OrderSaveOutcome.ValidationFailed
             End If
 
@@ -1420,7 +1425,7 @@ Public Class frmItemLookUp
                         If y <> x AndAlso gridSelectItem.Rows(x).Cells(0).Value.ToString = gridSelectItem.Rows(y).Cells(0).Value.ToString Then
 
                             Dim res As Integer
-                            res = AppPrompt.MsgBox("There is a same Item in one Entry! Please Sum up the Qty Order!" & vbCrLf & vbCrLf & "This might cause an issue in the feature." & vbCrLf & vbCrLf & "Do you wish to continue ?", MsgBoxStyle.YesNo + MsgBoxStyle.Exclamation, "Message!")
+                            res = AppPrompt.MsgBox("This item is listed more than once. Please combine the quantities into one line." & vbCrLf & vbCrLf & "Do you want to continue anyway?", MsgBoxStyle.YesNo + MsgBoxStyle.Exclamation, "Message!")
                             If res = MsgBoxResult.Yes Then
                                 GoTo Proceed
                             ElseIf res = MsgBoxResult.No Then
@@ -1466,8 +1471,7 @@ Proceed:
                     'frmPrintWo.ShowDialog()
                 End If
 
-                RefreshDetails(True)
-                clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
+                ClearFormAfterCommittedSave()
                 Return OrderSaveOutcome.Saved
 
             End If
@@ -1475,14 +1479,35 @@ Proceed:
             Return OrderSaveOutcome.Cancelled
         Catch ex As OrderEditConflictException
             ShowOrderConflict(ex)
+            If committed Then ClearFormAfterCommittedSave()
             Return If(committed, OrderSaveOutcome.Saved, OrderSaveOutcome.Conflict)
         Catch ex As Exception
             ShowSaveFailure(ex, committed, "MESSAGE : ERROR 0017")
             ErrorCount = ErrorCount + 1
+            If committed Then ClearFormAfterCommittedSave()
             Return If(committed, OrderSaveOutcome.Saved, OrderSaveOutcome.Failed)
         End Try
 
     End Function
+
+    ' A saved order must leave the screen even if a follow-up step fails. Otherwise
+    ' a second Save would insert it again. RefreshDetails handles its own errors, so
+    ' check the grid afterwards rather than relying on an exception.
+    Private Sub ClearFormAfterCommittedSave()
+        Try
+            RefreshDetails(True)
+            clsWorkOrderDraft.DeleteDraft(usrRegister, usrUsername)
+        Catch ex As Exception
+            ErrorCount += 1
+            ErrorLogger.LogError(ex, "Clearing the form after a committed save")
+        Finally
+            If gridSelectItem.Rows.Count > 0 Then
+                gridSelectItem.Rows.Clear()
+                lblOrderNo.Text = "Order #: "
+                recalledSnapshot = Nothing
+            End If
+        End Try
+    End Sub
 
     Private Sub ShowSaveFailure(ex As Exception, committed As Boolean, errorTitle As String)
         If committed Then
@@ -1574,6 +1599,21 @@ Proceed:
                     Dim itemMap = dbSave.Items.Where(Function(item) itemIDs.Contains(item.ID)).
                         ToDictionary(Function(item) item.ID)
 
+                    ' Pair lines with queue rows before anything changes, so a repeated
+                    ' item's lines each update or remove only their own row.
+                    Dim queueRowsByID As New Dictionary(Of Long, QueueingItem)
+                    Dim queueRowByEntry As New Dictionary(Of Integer, Long)
+                    If targetOrderType = 2 AndAlso useQueueing Then
+                        queueRowsByID = (From queueItem In dbSave.QueueingItems
+                                         Join header In dbSave.Queueings
+                                             On queueItem.QueueingID Equals header.id
+                                         Where header.OrderID = orderID AndAlso queueItem.ItemID.HasValue
+                                         Select queueItem).ToDictionary(Function(row) row.id)
+                        queueRowByEntry = QueueLineMatcher.Match(
+                            entryMap.Values.Select(Function(entry) New KeyValuePair(Of Integer, Integer)(entry.ID, entry.ItemID)),
+                            queueRowsByID.Values.Select(Function(row) New KeyValuePair(Of Long, Integer)(row.id, row.ItemID.Value)))
+                    End If
+
                     For rowIndex As Integer = 0 To gridSelectItem.Rows.Count - 1
                         Dim itemID As Integer = Convert.ToInt32(gridSelectItem.Item(11, rowIndex).Value)
                         Dim orderEntryID As Integer = Convert.ToInt32(gridSelectItem.Item(16, rowIndex).Value)
@@ -1628,15 +1668,28 @@ Proceed:
 
                         If ispriceApproved = 1 AndAlso price < GetApprovedMinPrice(item) Then
                             AddPriceLog(dbSave, orderID, itemID, fullPrice, price,
-                                        frmPassword.txtPass.Text,
+                                        approvalPassword,
                                         If(entryAlreadyExisted, "Updated", "Inserted"))
                         End If
 
                         If targetOrderType = 2 AndAlso useQueueing Then
-                            Dim queueItem = (From candidate In dbSave.QueueingItems
+                            Dim queueItem As QueueingItem = Nothing
+                            If entryAlreadyExisted Then
+                                Dim queueRowID As Long
+                                If queueRowByEntry.TryGetValue(orderEntryID, queueRowID) Then
+                                    queueItem = queueRowsByID(queueRowID)
+                                End If
+                            Else
+                                ' The insert procedure has just added this line's row.
+                                queueItem = (From candidate In dbSave.QueueingItems
                                              Where candidate.QueueingID = queueHeader.id AndAlso
                                                    candidate.ItemID = itemID
+                                             Order By candidate.id Descending
                                              Select candidate).FirstOrDefault()
+                                If queueItem IsNot Nothing AndAlso queueRowsByID.ContainsKey(queueItem.id) Then
+                                    queueItem = Nothing
+                                End If
+                            End If
 
                             If queueItem Is Nothing Then
                                 queueItem = New QueueingItem With {
@@ -1687,13 +1740,16 @@ Proceed:
                         End If
 
                         If targetOrderType = 2 AndAlso useQueueing Then
-                            Dim deletedQueueItems = (From queueItem In dbSave.QueueingItems
-                                                     Join header In dbSave.Queueings
-                                                         On queueItem.QueueingID Equals header.id
-                                                     Where header.OrderID = orderID AndAlso
-                                                           queueItem.ItemID = deletedEntry.ItemID
-                                                     Select queueItem).ToList()
-                            dbSave.QueueingItems.DeleteAllOnSubmit(deletedQueueItems)
+                            Dim deletedEntryItemID As Integer = deletedEntry.ItemID
+                            Dim itemStaysOnOrder As Boolean = gridSelectItem.Rows.Cast(Of DataGridViewRow)().
+                                Any(Function(row) Convert.ToInt32(row.Cells(11).Value) = deletedEntryItemID)
+                            Dim deletedQueueRowID As Long
+                            If Not itemStaysOnOrder Then
+                                dbSave.QueueingItems.DeleteAllOnSubmit(
+                                    queueRowsByID.Values.Where(Function(row) row.ItemID = deletedEntryItemID).ToList())
+                            ElseIf queueRowByEntry.TryGetValue(deletedEntryID, deletedQueueRowID) Then
+                                dbSave.QueueingItems.DeleteOnSubmit(queueRowsByID(deletedQueueRowID))
+                            End If
                         End If
 
                         dbSave.OrderEntries.DeleteOnSubmit(deletedEntry)
@@ -2339,6 +2395,12 @@ Proceed:
             txtAvailable.Text = available.ToString()
             ' Check after loading this customer's balance, even if the amount
             ' is identical to the previous customer's available credit.
+            ' Recall and customer selection call this more than once for the
+            ' same customer; only a different customer re-arms the warning.
+            If creditWarnedCustomerID <> iCusID Then
+                creditWarned = False
+                creditWarnedCustomerID = iCusID
+            End If
             WarnIfCreditLimitExceeded()
 
             ' Handle price level mapping
@@ -2576,9 +2638,6 @@ Proceed:
 
             If txtSearch.Text = String.Empty Then
                 AppPrompt.Show("Search cannot be empty !", "Message !", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
-            ElseIf txtSearch.Text.Contains("'") Then
-
-                AppPrompt.Show("Searching ' or Apostrophe is not Allowed !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             Else
                 FilterText()
                 txtSearch.Text = String.Empty
@@ -2641,6 +2700,8 @@ Proceed:
             iPrice = 0
             iSalesID = 0
             iCusID = 0
+            creditWarned = False
+            creditWarnedCustomerID = 0
             sAcctNum = ""
             sTitle = ""
             bTaxExcempt = False
@@ -2677,6 +2738,7 @@ Proceed:
             chkWebsite.Checked = False
             txtRemarks.ReadOnly = False
             ispriceApproved = 0
+            approvalPassword = String.Empty
 
             If reloaditem = True Then
                 loadData()
@@ -2813,7 +2875,7 @@ Proceed:
             If gridSelectItem.RowCount <> 0 Then
 
                 If IsNumeric(gridSelectItem(2, gridSelectItem.CurrentRow.Index).Value) = False Then
-                    AppPrompt.MsgBox("The string '" & gridSelectItem(2, gridSelectItem.CurrentRow.Index).Value & "' is not a valid quantity.", vbExclamation, "Work/Sales Oder Entry")
+                    AppPrompt.MsgBox("Quantity """ & gridSelectItem(2, gridSelectItem.CurrentRow.Index).Value & """ is not a number. Please enter a number.", vbExclamation, "Work Order Entry")
                     gridSelectItem.Item(2, gridSelectItem.CurrentRow.Index).Value = 1
                     iErrCnt = iErrCnt + 1
                 Else
@@ -2821,7 +2883,7 @@ Proceed:
                 End If
 
                 If Val(gridSelectItem(2, gridSelectItem.CurrentRow.Index).Value) < 0 Then
-                    AppPrompt.MsgBox("An invalid quantity was detected.", vbCritical, "Work/Sales Order Entry")
+                    AppPrompt.MsgBox("Quantity must be greater than zero.", vbCritical, "Work Order Entry")
                     gridSelectItem.Item(2, gridSelectItem.CurrentRow.Index).Value = 1
                     iErrCnt = iErrCnt + 1
                 Else
@@ -2829,7 +2891,7 @@ Proceed:
                 End If
 
                 If IsNumeric(gridSelectItem(3, gridSelectItem.CurrentRow.Index).Value) = False Then
-                    AppPrompt.MsgBox("The string '" & gridSelectItem(2, gridSelectItem.CurrentRow.Index).Value & "' is not a valid currency.", vbExclamation, "Work/Sales Oder Entry")
+                    AppPrompt.MsgBox("Price """ & gridSelectItem(3, gridSelectItem.CurrentRow.Index).Value & """ is not valid. Please enter a number.", vbExclamation, "Work Order Entry")
                     gridSelectItem(3, gridSelectItem.CurrentRow.Index).Value = dPrice
                     iErrCnt = iErrCnt + 1
                 Else
@@ -2852,9 +2914,8 @@ Proceed:
 
                         dNetAvailable = clsItemLookUp.getItemQty(sLineItemCode)
 
-                        AppPrompt.MsgBox(dNetAvailable)
                         If Val(gridSelectItem(2, n).Value) > dNetAvailable Then
-                            AppPrompt.MsgBox("Insufficient Quantity!", vbExclamation, "Message")
+                            AppPrompt.MsgBox("Not enough stock for this quantity.", vbExclamation, "Message")
                             gridSelectItem(2, n).Value = 0
 
                         End If
@@ -2864,7 +2925,7 @@ Proceed:
 err_flag:
 
                     If iCurRow <> -1 Then
-                        iReturnValue = AppPrompt.MsgBox("Insufficient quantity to fulfill the request.", vbExclamation, "Work/Sales Order Entry")
+                        iReturnValue = AppPrompt.MsgBox("Not enough stock for this quantity.", vbExclamation, "Work Order Entry")
                         gridSelectItem.Rows.Remove(gridSelectItem.CurrentRow)
                     End If
 
@@ -2911,6 +2972,7 @@ err_flag:
 
             Dim sPrevItemCode As String = String.Empty
             Dim sMsg As String = ""
+            Dim stockShortages As New Dictionary(Of String, String)(StringComparer.OrdinalIgnoreCase)
             Dim dCommittedQty As Double
             Dim dAvailable, dNetAvailable As Double
             Dim sCurIndex As Integer
@@ -2938,22 +3000,23 @@ err_flag:
 
                 If IsNumeric(gridSelectItem(2, i).Value) = False Then
                     gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-                    sMsg = "The string '" & gridSelectItem(2, i).Value & "' is not a valid quantity."
+                    sMsg = "Quantity """ & gridSelectItem(2, i).Value & """ is not a number. Please enter a number."
                     iErrCnt = iErrCnt + 1
                 End If
 
                 If ReadRequestedQuantity(gridSelectItem(2, i).Value) <= 0 Then
                     gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
-                    sMsg = "An invalid quantity was detected."
+                    sMsg = "Quantity must be greater than zero."
                     iErrCnt = iErrCnt + 1
                 End If
 
                 If IsNumeric(gridSelectItem(3, i).Value) = False Then
                     gridSelectItem.Rows(i).Cells(3).Style.ForeColor = Color.Red
                     If gridSelectItem(3, i).Value = "-" Then
-                        Return AppPrompt.Show("Please Check the Price for the Item : " & vbCrLf & vbCrLf & gridSelectItem(1, i).Value, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                        iErrCnt = iErrCnt + 1
+                        Return AppPrompt.Show("Please set a price for this item:" & vbCrLf & vbCrLf & gridSelectItem(1, i).Value, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
                     End If
-                    sMsg = "The number '" & gridSelectItem(3, i).Value & "' is not a valid amount."
+                    sMsg = "Price """ & gridSelectItem(3, i).Value & """ is not valid. Please enter a number."
                     iErrCnt = iErrCnt + 1
                 End If
 
@@ -2990,12 +3053,16 @@ err_flag:
 
                     dAvailable = dNetAvailable - dCommittedQty
 
-                    If dAvailable < 0 Then
+                    If OrderCommitmentRules.IsNegativeQuantity(dAvailable) Then
                         gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Red
                         gridSelectItem.Rows(i).Cells(2).Style.SelectionForeColor = Color.Red
                         iErrCnt = iErrCnt + 1
 
-                        sMsg = "Please Check The Latest Available Quantity." & vbCrLf & vbCrLf & "The Available Quantity Of The Item(s) Has Been Changed/Updated Prior To Saving."
+                        ' One entry per item, because repeated lines share the same totals.
+                        stockShortages(sPrevItemCode) = gridSelectItem(1, i).Value & " - available " &
+                            dNetAvailable.ToString("0.###") & ", ordered " & dCommittedQty.ToString("0.###")
+                        sMsg = "Not enough stock for:" & vbCrLf & vbCrLf & String.Join(vbCrLf, stockShortages.Values) & vbCrLf & vbCrLf &
+                            "Available quantities may have changed. Please correct the quantities shown in red."
                         needsCatalogReload = True
                     Else
                         gridSelectItem.Rows(i).Cells(2).Style.ForeColor = Color.Black
@@ -3022,6 +3089,8 @@ err_flag:
         Catch ex As Exception
             AppPrompt.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, If(includeRecalledReservation, "MESSAGE : ERROR 0042", "MESSAGE : ERROR 0040"), MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
+            ' An unfinished stock check must stop the save.
+            iErrCnt = iErrCnt + 1
             Return Nothing
         End Try
 
@@ -3267,6 +3336,16 @@ err_flag:
                 '    gridSelectItem.Item(e.ColumnIndex, e.RowIndex).Value = 0
                 'End If
                 Dim rawValue As Object = gridSelectItem.Item(e.ColumnIndex, e.RowIndex).Value
+                Dim typedQty As Double
+                If rawValue IsNot Nothing AndAlso Double.TryParse(rawValue.ToString(), typedQty) AndAlso
+                   OrderCommitmentRules.ExceedsMaximumQuantity(typedQty) Then
+                    AppPrompt.Show(OrderCommitmentRules.MaximumQuantityMessage, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    gridSelectItem.Item(e.ColumnIndex, e.RowIndex).Value =
+                        If(curQty > 0R AndAlso Not OrderCommitmentRules.ExceedsMaximumQuantity(curQty), curQty, 1R)
+                    UpdateAmt()
+                    Return
+                End If
+
                 Dim qty As Decimal = 0D
 
                 ' Only parse if there is a value
@@ -3286,7 +3365,7 @@ err_flag:
 
                         If qtyValue IsNot Nothing AndAlso IsNumeric(qtyValue) Then
                             If Convert.ToDecimal(qtyValue) = 0 Then
-                                AppPrompt.Show("Quantity cannot be zero. Please correct the item before proceeding.", "Validation Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                                AppPrompt.Show("Quantity must be greater than zero.", "Validation Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                                 gridSelectItem.CurrentCell = row.Cells(2)
                                 gridSelectItem.BeginEdit(True)
                                 row.Cells(2).Value = 1
@@ -3307,7 +3386,7 @@ err_flag:
 
                     If iErrCnt > 0 Then
 
-                        AppPrompt.MsgBox("Insufficient quantity to fulfill the request!", MsgBoxStyle.Exclamation, "Message")
+                        AppPrompt.MsgBox("Not enough stock for this quantity.", MsgBoxStyle.Exclamation, "Message")
                         gridSelectItem.CurrentCell.Value = curQty
                         gridSelectItem.CurrentCell.Style.ForeColor = Color.Black
                         gridSelectItem.CurrentCell.Style.SelectionForeColor = Color.Black
@@ -3320,7 +3399,7 @@ err_flag:
                     iErrCnt = 0
                     ValidateAllQtyForQoute()
                     If iErrCnt > 0 Then
-                        AppPrompt.MsgBox("Insufficient quantity to fulfill the request!", MsgBoxStyle.Exclamation, "Message")
+                        AppPrompt.MsgBox("Not enough stock for this quantity.", MsgBoxStyle.Exclamation, "Message")
                         'gridSelectItem.CurrentCell.Value = curQty
                         gridSelectItem.CurrentCell.Style.ForeColor = Color.Black
                         gridSelectItem.CurrentCell.Style.SelectionForeColor = Color.Black
@@ -3410,7 +3489,7 @@ err_flag:
                 Dim preparedQty As Integer = Convert.ToInt32(gridSelectItem.Item(18, e.RowIndex).Value)
 
                 If preparedQty > orderedQty Then
-                    AppPrompt.Show("Qty Prepared cannot be greater than the Ordered Qty", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                    AppPrompt.Show("Prepared quantity cannot be more than the ordered quantity.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                     gridSelectItem.Item(18, e.RowIndex).Value = 0
                 End If
             End If
@@ -3531,9 +3610,10 @@ err_flag:
 
                 If x.Type = 2 Then
 
-                    sType = Split(x.Comment, "; ")(0)
-                    ReleaseType = Split(x.Comment, "; ")(1)
-                    sComment = Split(x.Comment, "; ")(2)
+                    Dim savedComment = WorkOrderComment.Parse(x.Comment)
+                    sType = savedComment.Payment
+                    ReleaseType = savedComment.ReleaseType
+                    sComment = savedComment.Remarks
 
                     If ReleaseType = "Pick-up" Then
                         rbtnPickup.Checked = True
@@ -3602,7 +3682,7 @@ err_flag:
             If recalledOrderUsesQueueing Then
                 Try
                     Using queueDb = GetDB()
-                        queueDetails = RecallReadData.LoadQueue(queueDb, orderid)
+                        queueDetails = RecallReadData.LoadQueueByEntry(queueDb, orderid)
                     End Using
                 Catch
                     ' Retain the existing zero/blank defaults when queue information cannot be read.
@@ -3634,7 +3714,10 @@ err_flag:
                     newTimeRecord.Cells(DiscAmount.Index).Value = n.DiscAmount
                     newTimeRecord.Cells(OrderEntryID.Index).Value = n.ID
                     newTimeRecord.Cells(LASTPURCHASEDPRICE.Index).Value = RecallReadData.LastPriceOrZero(lastPrices, CStr(n.ItemLookUpcode))
-                    If n.PickLoc = "UP-STORE" Then
+                    Dim qi As RecallQueueDetail = Nothing
+                    queueDetails.TryGetValue(CInt(n.ID), qi)
+                    Dim recalledPickLoc = If(qi IsNot Nothing, qi.PickLoc, n.PickLoc)
+                    If recalledPickLoc = "UP-STORE" Then
                         newTimeRecord.Cells(chkPickLoc.Index).Value = True
                     Else
                         newTimeRecord.Cells(chkPickLoc.Index).Value = False
@@ -3649,8 +3732,7 @@ err_flag:
                         vqty = 0
                     Else
 
-                        Dim qi As RecallQueueDetail = Nothing
-                        If queueDetails.TryGetValue(CInt(iItemID), qi) AndAlso qi.Prepared.HasValue Then
+                        If qi IsNot Nothing AndAlso qi.Prepared.HasValue Then
                             vqty = qi.Prepared.Value
                             qStatus = If(qi.Status, "")
                             qPicker = If(qi.Picker, "")
@@ -3820,7 +3902,9 @@ err_flag:
 
             Cursor.Current = Cursors.Default
 
-            ShowImportComplete()
+            If clsImport.checkIfItemCodeExist() = 0 Then
+                ShowImportComplete()
+            End If
 
         Catch ex As Exception
 
@@ -3845,10 +3929,10 @@ err_flag:
             gridSelectItem.AllowUserToAddRows = True
 
             If Me.txtSales.Text = "" Then
-                AppPrompt.MsgBox("Please select sales representative", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select a sales representative.", vbExclamation, "Message!")
                 Exit Sub
             ElseIf Me.txtCustomer.Text = "" Then
-                AppPrompt.MsgBox("Please select customer", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select a customer.", vbExclamation, "Message!")
                 Exit Sub
             End If
 
@@ -3950,10 +4034,10 @@ err_flag:
 
 
             If Me.txtSales.Text = "" Then
-                AppPrompt.MsgBox("Please select sales representative", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select a sales representative.", vbExclamation, "Message!")
                 Exit Sub
             ElseIf Me.txtCustomer.Text = "" Then
-                AppPrompt.MsgBox("Please select customer", vbExclamation, "Message!")
+                AppPrompt.MsgBox("Please select a customer.", vbExclamation, "Message!")
                 Exit Sub
             End If
 
@@ -4108,25 +4192,6 @@ err_flag:
     End Function
 
 
-    Public Sub SetItemAvailable(ByVal Itemcode As String, ByVal Available As Integer)
-
-        Try
-            Dim result As DataRow() = clsItemLookUp.dt1.Select("ItemCode = '" & Itemcode & "' ")
-
-            If result.Count > 0 Then
-                result.First.SetField(Of Integer)("Available", Available)
-                clsItemLookUp.dt3.AcceptChanges()
-            End If
-
-        Catch ex As Exception
-            '   MessageBox.Show("FROM : frmItemlookUp Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0057", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ErrorCount = ErrorCount + 1
-        End Try
-
-
-    End Sub
-
-
     Private Sub Button1_Click_1(ByVal sender As System.Object, ByVal e As System.EventArgs)
         frmPrintWo.ShowDialog()
     End Sub
@@ -4162,7 +4227,7 @@ err_flag:
                 Exit Sub
             End If
 
-            Dim x = AppPrompt.MsgBox("Do you really want to make a Sales Quotation?" & vbCrLf & vbCrLf & "Please be reminded that creating a Sales Quotaion will not be Committed to the System", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
+            Dim x = AppPrompt.MsgBox("Do you really want to make a Sales Quotation?" & vbCrLf & vbCrLf & "Please be reminded that creating a Sales Quotation will not be Committed to the System", MsgBoxStyle.YesNo + MsgBoxStyle.Question, "Message!")
             If x = MsgBoxResult.Yes Then
                 ApplyQuotationUiState()
                 chkBoxQtoWo.Checked = False
@@ -4197,6 +4262,9 @@ err_flag:
         End If
 
         If isRestoringDraft Then Exit Sub
+
+        ' A recalled order is already saved. A draft of it would become a duplicate.
+        If activeRecallOrderID > 0 Then Exit Sub
 
         Try
             clsWorkOrderDraft.SaveDraft(Me)
@@ -4628,11 +4696,11 @@ inputCust:
             If isItemCode(searchStr) = True Then
 
                 If iCusID = 0 Then
-                    AppPrompt.MsgBox("Please select customer first!", vbExclamation, "Message")
+                    AppPrompt.MsgBox("Please select a customer first.", vbExclamation, "Message")
                 Else
                     Dim availVal = clsItemLookUp.getItemQty(gridItem.Item(0, gridItem.CurrentCell.RowIndex).Value)
 
-                    If availVal < 1 Then
+                    If availVal <= 0 Then
                         AppPrompt.MsgBox("This item is out of stock.", vbExclamation, "Message!")
                         Exit Sub
                     Else
@@ -4958,9 +5026,18 @@ inputCust:
         WarnIfCreditLimitExceeded()
     End Sub
 
-    Private Sub WarnIfCreditLimitExceeded()
-        If Not IsHandleCreated OrElse creditWarningOpen OrElse
-           Not String.Equals(cboPayment.Text.Trim(), "CHARGE", StringComparison.OrdinalIgnoreCase) Then Return
+    ' True once the warning was shown for this customer's order, so later
+    ' price/quantity changes (including re-confirming every item price) do not
+    ' repeat it. Cleared when payment is not CHARGE or a customer is loaded.
+    Private creditWarned As Boolean
+    Private creditWarnedCustomerID As Integer
+
+    Private Sub WarnIfCreditLimitExceeded(Optional ignorePreviousWarning As Boolean = False)
+        If Not IsHandleCreated OrElse creditWarningOpen Then Return
+        If Not String.Equals(cboPayment.Text.Trim(), "CHARGE", StringComparison.OrdinalIgnoreCase) Then
+            creditWarned = False
+            Return
+        End If
 
         ' Do not compare a newly selected customer with the previous balance.
         Dim balanceCustomerID As Integer
@@ -4970,8 +5047,10 @@ inputCust:
         Dim total As Decimal
         Dim available As Decimal
         If Not Decimal.TryParse(txtTotal.Text, total) OrElse
-           Not Decimal.TryParse(txtAvailable.Text, available) OrElse total <= available Then Return
+           Not Decimal.TryParse(txtAvailable.Text, available) Then Return
+        If total <= available OrElse (creditWarned AndAlso Not ignorePreviousWarning) Then Return
 
+        creditWarned = True
         creditWarningOpen = True
         Try
             AppPrompt.Show("Exceeded available credit limit.", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning)
@@ -5032,7 +5111,7 @@ inputCust:
     Private Function ValidateAndSave() As Boolean
         ' Work Orders need a payment method before asking for price approval.
         If getEntryType() = 2 AndAlso String.IsNullOrWhiteSpace(cboPayment.Text) Then
-            AppPrompt.Show("Please select a Payment Method", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            AppPrompt.Show("Please select a payment method.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             cboPayment.Focus()
             Return False
         End If
@@ -5108,7 +5187,13 @@ inputCust:
             Next
         End If
 
-        Return SaveOrder() = OrderSaveOutcome.Saved
+        ' Always remind at save time, even if already warned while editing.
+        ' Shown before the overlay so the prompt is not covered by it.
+        If gridSelectItem.RowCount > 0 Then WarnIfCreditLimitExceeded(True)
+
+        Using LoadingOverlay.Show(Me, "Saving order...")
+            Return SaveOrder() = OrderSaveOutcome.Saved
+        End Using
     End Function
 
     Private Function ResolvePriceLevelIndex() As Integer
@@ -5219,35 +5304,6 @@ inputCust:
                     "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
-    Public Shared Function ConfPass(ByVal spass As String) As Integer
-
-        Try
-
-            Dim conf = (From c In db.SOD_WO_Confs Where c.Password.Equals(spass) Or c.Password2.Equals(spass) Or c.Password3.Equals(spass)).Count
-
-            Return conf
-        Catch ex As Exception
-            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ErrorCount = ErrorCount + 1
-            Return Nothing
-        End Try
-
-
-    End Function
-
-
-    Public Sub InsertPriceLogs(orderId As Integer, itemId As Integer, mFullPrice As String, mUpdatedPrice As String, inputPass As String, sStatus As String)
-        Try
-            Using dbLog = GetDB()
-                AddPriceLog(dbLog, orderId, itemId, mFullPrice, mUpdatedPrice, inputPass, sStatus)
-                dbLog.SubmitChanges()
-            End Using
-
-        Catch ex As Exception
-            Throw New InvalidOperationException("Unable to save the price approval log.", ex)
-        End Try
-    End Sub
-
     Private Sub AddPriceLog(ByVal dbLog As ItemLookUpDataContext,
                             ByVal orderId As Integer,
                             ByVal itemId As Integer,
@@ -5261,7 +5317,8 @@ inputCust:
                                              Where customer.ID = iCusID
                                              Select customer.PriceLevel).FirstOrDefault()
 
-        If cfg IsNot Nothing Then
+        ' Deleted lines have no password, and VB treats a null password as empty.
+        If cfg IsNot Nothing AndAlso Not String.IsNullOrEmpty(inputPass) Then
             If cfg.Password = inputPass Then
                 approver = "Administrator"
             ElseIf cfg.Password2 = inputPass Then
@@ -5444,15 +5501,17 @@ inputCust:
     Private Sub MarkQueueItemPrepared(ByVal dbx As ItemLookUpDataContext,
                                       ByVal orderID As Integer,
                                       ByVal itemID As Integer)
-        Dim queueItems = (From queue In dbx.Queueings
-                          Join queueItem In dbx.QueueingItems On queue.id Equals queueItem.QueueingID
-                          Where queue.OrderID = orderID AndAlso queueItem.ItemID = itemID
-                          Select queueItem).ToList()
+        ' Called right after the line's insert, so the newest row belongs to that line.
+        Dim preparedRow = (From queue In dbx.Queueings
+                           Join queueItem In dbx.QueueingItems On queue.id Equals queueItem.QueueingID
+                           Where queue.OrderID = orderID AndAlso queueItem.ItemID = itemID
+                           Order By queueItem.id Descending
+                           Select queueItem).FirstOrDefault()
 
-        For Each queueItem In queueItems
-            queueItem.Picker = "CUST"
-            queueItem.Status = "Prepared"
-        Next
+        If preparedRow IsNot Nothing Then
+            preparedRow.Picker = "CUST"
+            preparedRow.Status = "Prepared"
+        End If
     End Sub
 
     Private Sub EnsureRecallQueueHeader(ByVal dbx As ItemLookUpDataContext,
@@ -5493,7 +5552,7 @@ inputCust:
         If Not StoreProcessingSettings.EnableSetTaxButton Then Exit Sub
 
         If iCusID <= 0 OrElse txtCustomer.Text.Trim() = String.Empty Then
-            AppPrompt.MsgBox("Please select customer first!", vbExclamation, "Message")
+            AppPrompt.MsgBox("Please select a customer first.", vbExclamation, "Message")
             Exit Sub
         End If
 

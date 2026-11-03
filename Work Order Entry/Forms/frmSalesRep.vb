@@ -7,6 +7,7 @@
     Private Sub frmSalesRep_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
         gridSalesRep.DataSource = clsSalesRep.SearchSalesRep(txtSales.Text)
+        iRowSales = 0
         gridCustomerWidth()
 
     End Sub
@@ -30,6 +31,7 @@
         If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
             gridSalesRep.Focus()
             Me.gridSalesRep.DataSource = clsSalesRep.SearchSalesRep(txtSales.Text)
+            iRowSales = 0
             gridCustomerWidth()
         ElseIf e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Escape) Then
             Me.Dispose()
@@ -49,7 +51,7 @@
 
     Private Sub cmdOk_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdOk.Click
 
-        GetSalesRepInfo(iRowSales)
+        If gridSalesRep.CurrentRow IsNot Nothing Then GetSalesRepInfo(gridSalesRep.CurrentRow.Index)
 
     End Sub
 
@@ -71,7 +73,7 @@
 
     Private Sub gridSalesRep_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles gridSalesRep.DoubleClick
 
-        GetSalesRepInfo(iRowSales)
+        If gridSalesRep.CurrentRow IsNot Nothing Then GetSalesRepInfo(gridSalesRep.CurrentRow.Index)
 
     End Sub
 
