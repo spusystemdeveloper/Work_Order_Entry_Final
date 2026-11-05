@@ -1,5 +1,33 @@
 ﻿# Work Order Entry unit tests
 
+## Consignment Work Order 1029 preflight
+
+Run [the preflight](Database%20Components/Recovery/Inspect_CONSIGNMENT_WO_1029_to_30.sql)
+as a complete batch in SSMS with the branch `CONSIGNMENT_DB` selected. Collect all
+result grids. A `NULL` reference count means that the table or column is absent
+or inaccessible. Matches on import references need interpretation before any
+renumber. The item-log query can scan a large table.
+The reused-range columns report the count and first local ID between 31 and
+1028. They omit imported-quote source numbers and include local quote IDs.
+The first result grid lists the nonzero reused-range counts.
+
+The batch completed against two local copies at compatibility level 100. Both
+copies lacked IDs 1029 and 30. The database guard rejected `master`. The branch
+operator supplied the full preflight results for the reviewed mapping.
+
+The [renumber script](Database%20Components/Recovery/Renumber_CONSIGNMENT_WO_1029_to_30.sql)
+passed 19 disposable LocalDB checks at compatibility level 100 with synthetic
+rows and triggers that fail if fired during the mapping. The fixture substitutes
+its own server, database, trigger fingerprints and backup date; it uses a real
+copy-only checksum backup. Checks cover target, maintenance and backup guards,
+rollback, held and orphan references, linked rows, inventory, trigger state,
+repeat rejection, rollback after reseeding and actual next automatic ID 31.
+The fixture includes movement 130 and checks exact archive scope, unchanged
+duplicate-detection fields, and rollback of the archive and link changes.
+Both Release/x86 builds and all 153 shared unit tests passed during validation
+of the original renumber. The reseed revision changes only the standalone SQL
+and its instructions. Branch execution is pending.
+
 ## November 3: Davao transfer-in 0002601 recovery
 
 Run [DVO_PO_0002601_LocalDB_Test.ps1](Database%20Components/Tests/DVO_PO_0002601_LocalDB_Test.ps1).

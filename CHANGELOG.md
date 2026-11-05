@@ -4,6 +4,25 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### November 4 — Consignment Work Order 1029 renumber
+
+- Prepared a standalone SSMS recovery for branch `CONSIGNMENT_DB`, mapping Work
+  Order 1029 to 30 with its five lines, queue links and 17 history events. It
+  preserves imported-quote source references and reseeds the Order identity to
+  30 on commit so the next automatically assigned ID is 31.
+- The script checks the branch target, backup, reference counts and exact
+  write-table trigger definitions. It defaults to a rollback rehearsal. Passed
+  19 disposable database checks, including rollback after reseeding and
+  archiving the seven reviewed orphan quote links. Preserves transfer-in
+  movement 130 and the import fields used for duplicate detection.
+
+### November 4 — Consignment Work Order 1029 preflight
+
+- Added an SSMS inspection script for the requested `CONSIGNMENT_DB` Work Order
+  mapping from 1029 to 30. It inventories matching references, triggers and
+  foreign keys. It also reports reference counts across IDs 31 through 1028
+  to identify collisions before reseeding.
+
 ### November 3: Davao transfer-in 0002601 recovery prepared
 
 - Prepared a single-line repair for 20 missing 11688BOX units. It uses the

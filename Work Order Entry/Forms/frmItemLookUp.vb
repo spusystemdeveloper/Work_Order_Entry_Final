@@ -357,7 +357,9 @@ Public Class frmItemLookUp
             .ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft
             ' COLUMN WIDTHS
             .Columns(0).Width = 120
-            .Columns(1).MinimumWidth = 320
+            ' Small enough that Code, Price, Avail, SOH and Qty Com all fit at 1366 wide
+            ' without a horizontal scrollbar; Item Name still takes all spare width.
+            .Columns(1).MinimumWidth = 200
             .Columns(2).Width = 108
             .Columns(3).Width = 100
             .Columns(4).Width = 96
