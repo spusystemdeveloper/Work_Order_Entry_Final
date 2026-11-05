@@ -1,4 +1,4 @@
-Imports System.IO
+﻿Imports System.IO
 Public Class frmUploader
 
     Dim sErrMsg As String = String.Empty
@@ -113,7 +113,8 @@ Public Class frmUploader
                     End If
                     '#End For Qty
 
-                    If bQuote And bCust And bDate And bQty Then
+                    ' A missing item is an error too, so the line is not added to the order.
+                    If bQuote And bCust And bDate And bItem And bQty Then
 
                         bTaxExcempt = clsImportQuotation.GetCustomerProperties(fields(2), "TaxExempt")
                         sItemCode = fields(5)
@@ -131,10 +132,10 @@ Public Class frmUploader
 
                             newTimeRecord.Cells(.ItemCode.Index).Value = fields(5)
                             newTimeRecord.Cells(.ItemName.Index).Value = clsImportQuotation.GetItemProperties(fields(5), "Description")
-                            newTimeRecord.Cells(.QTY.Index).Value = CInt(fields(7))
+                            newTimeRecord.Cells(.QTY.Index).Value = CDbl(fields(7))
                             newTimeRecord.Cells(.Price.Index).Value = CDbl(fields(8))
                             newTimeRecord.Cells(.DISC.Index).Value = 0
-                            newTimeRecord.Cells(.TOTAL.Index).Value = CInt(fields(7)) * CDbl(fields(8))
+                            newTimeRecord.Cells(.TOTAL.Index).Value = CDbl(fields(7)) * CDbl(fields(8))
                             newTimeRecord.Cells(.LessV.Index).Value = dTSales
                             newTimeRecord.Cells(.VSales.Index).Value = dVSales
                             newTimeRecord.Cells(.DiscP.Index).Value = dDisc

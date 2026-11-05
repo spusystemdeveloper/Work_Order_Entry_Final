@@ -1694,12 +1694,21 @@ Proceed:
                             End If
 
                             If queueItem Is Nothing Then
+                                ' Same defaults as SOD_sp_InsertQouteEntry. A NULL Status is hidden
+                                ' by the queueing app's "not Closed" filter.
                                 queueItem = New QueueingItem With {
                                     .QueueingID = queueHeader.id,
-                                    .ItemID = itemID
+                                    .ItemID = itemID,
+                                    .Picker = "",
+                                    .Status = "-"
                                 }
                                 dbSave.QueueingItems.InsertOnSubmit(queueItem)
                             End If
+
+                            ' Repair a row left with a blank status or picker, so a saved edit
+                            ' makes the order appear in the queueing app.
+                            If queueItem.Status Is Nothing Then queueItem.Status = "-"
+                            If queueItem.Picker Is Nothing Then queueItem.Picker = ""
 
                             queueItem.PickLoc = pickLocation
                             If shortageByEntry.ContainsKey(orderEntryID) Then
@@ -5063,6 +5072,17 @@ inputCust:
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
         Try
+            ' Logging out clears the whole screen, so do not lose an order silently.
+            If gridSelectItem.Rows.Cast(Of DataGridViewRow)().Any(Function(r) Not r.IsNewRow) Then
+                If AppPrompt.Show(Me,
+                        "The current order has items on screen. Logging out will discard it." & vbCrLf & vbCrLf &
+                        "Do you want to log out anyway?",
+                        "Log Out",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning,
+                        MessageBoxDefaultButton.Button2) <> DialogResult.Yes Then Exit Sub
+            End If
+
             RefreshDetails(True)
 
             Me.ToolStripStatusLabel3.Text = "Register : "

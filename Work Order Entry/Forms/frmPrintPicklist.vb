@@ -20,6 +20,7 @@ Public Class frmPrintPicklist
             rptviewer.Clear()
             ItemOrderedList.Clear()
 
+            Dim preparedByEntry = clsPickList.getQtyPrepByEntry(wo)
             For Each x In clsPickList.getPickList(wo)
 
                 Dim item As clsPickList = New clsPickList
@@ -36,7 +37,7 @@ Public Class frmPrintPicklist
                 item.picker = ""
                 item.wokrOrder = x.OrderID
                 item.qtyOrder = x.QtyOrder
-                item.qtyPrep = clsPickList.getQtyPrep(x.ItemID, x.OrderID)
+                item.qtyPrep = If(preparedByEntry.ContainsKey(x.EntryID), preparedByEntry(x.EntryID), 0)
                 item.printDate = DateTime.Now.ToString("dd/MM/yyyy")
                 item.printTime = DateTime.Now.ToString("HH:mm:ss tt")
                 'item.branch = (From a In db.Configurations Select a.StoreCity).SingleOrDefault

@@ -319,6 +319,8 @@
     End Sub
     Private Sub gridLevel_CellClick(sender As System.Object, e As System.Windows.Forms.DataGridViewCellEventArgs) Handles gridLevel.CellClick
         ' CallIndex()
+        ' A click on a column header (RowIndex -1) must not insert or apply anything.
+        If e.RowIndex < 0 Then Exit Sub
         insertItem()
         If e.RowIndex <> -1 Then
             ' Assuming the price is in the second column (index 1)

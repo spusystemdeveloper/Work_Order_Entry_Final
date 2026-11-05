@@ -25,6 +25,7 @@
                        Select New With {
                            .Description = c.Description.ToString() & c.ExtendedDescription.ToString(),
                            .Itemcode = c.ItemLookupCode,
+                           .EntryID = b.ID,
                            .ItemID = c.ID,
                            .OrderID = a.ID,
                            .QtyOrder = b.QuantityOnOrder,
@@ -71,19 +72,44 @@
     End Function
 
 
-    Public Shared Function getQtyPrep(ByVal itemID As Integer, ByVal orderID As Integer) As Integer
+    ' Prepared quantity per order line. Each line of a repeated item gets its own
+    ' queue row instead of the first row for the item.
+    Public Shared Function getQtyPrepByEntry(ByVal orderID As Integer) As Dictionary(Of Integer, Integer)
 
         Try
             Using dbx = GetDB()
-                Dim vqty = (From a In dbx.QueueingItems _
-                                 Join b In dbx.Queueings On a.QueueingID Equals b.id Where a.ItemID.Equals(itemID) And b.OrderID.Equals(orderID) _
-                                 Select a.QtyPre).ToList()(0)
-
-                Return vqty
+                Dim entries = (From entry In dbx.OrderEntries
+                               Where entry.OrderID = orderID
+                               Select entry.ID, entry.ItemID).ToList()
+                Dim rows = (From detail In dbx.QueueingItems
+                            Join header In dbx.Queueings On detail.QueueingID Equals header.id
+                            Where header.OrderID = orderID AndAlso detail.ItemID.HasValue
+                            Select detail.id, detail.ItemID, detail.QtyPre).ToList()
+                Return PreparedByEntry(
+                    entries.Select(Function(entry) New KeyValuePair(Of Integer, Integer)(entry.ID, entry.ItemID)),
+                    rows.Select(Function(row) New KeyValuePair(Of Long, Integer)(row.id, row.ItemID.Value)),
+                    rows.ToDictionary(Function(row) row.id, Function(row) row.QtyPre))
             End Using
         Catch ex As Exception
-            Return 0
+            ' Keep the pick list printable; a line without a queue row shows 0.
+            Return New Dictionary(Of Integer, Integer)
         End Try
+
+    End Function
+
+    ' Pairs each order line with its own queue row and returns that row's prepared
+    ' quantity. Lines without a row, or with a blank quantity, are 0.
+    Public Shared Function PreparedByEntry(ByVal entries As IEnumerable(Of KeyValuePair(Of Integer, Integer)),
+                                           ByVal queueRows As IEnumerable(Of KeyValuePair(Of Long, Integer)),
+                                           ByVal preparedByRow As IDictionary(Of Long, Integer?)) As Dictionary(Of Integer, Integer)
+
+        Dim result As New Dictionary(Of Integer, Integer)
+        For Each match In QueueLineMatcher.Match(entries, queueRows)
+            Dim prepared As Integer? = Nothing
+            preparedByRow.TryGetValue(match.Value, prepared)
+            result(match.Key) = If(prepared, 0)
+        Next
+        Return result
 
     End Function
 

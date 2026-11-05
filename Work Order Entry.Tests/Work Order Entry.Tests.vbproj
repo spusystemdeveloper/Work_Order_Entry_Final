@@ -69,6 +69,7 @@
     <Compile Include="AppPromptTextTests.vb" />
     <Compile Include="QuantityToleranceTests.vb" />
     <Compile Include="QueueLineMatcherTests.vb" />
+    <Compile Include="PickListPreparedTests.vb" />
     <Compile Include="RecallSearchFilterTests.vb" />
     <Compile Include="WorkOrderCommentTests.vb" />
     <Compile Include="QueueOrderAgeRulesTests.vb" />
