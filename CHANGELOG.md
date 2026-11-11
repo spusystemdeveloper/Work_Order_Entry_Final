@@ -4,6 +4,17 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### November 11 — Synchronize recalled order header taxability
+
+- Recalled saves now update `Order.Taxable` in the existing save transaction,
+  following the packaged insert rule (`Tax > 0`). Previously the VAT amount could
+  change while the header flag retained its old value. Item and customer
+  exemption rules are unchanged; no live records are repaired automatically.
+- Extended the actual-save LocalDB fixture to cover stale false-to-true flags,
+  customer-exempt zero VAT, returning to taxable, caller-provided line flags and
+  unchanged stock across repeated saves. Existing rollback and stale-edit checks
+  also cover the header update.
+
 ### November 4 — Consignment Work Order 1029 renumber
 
 - Prepared a standalone SSMS recovery for branch `CONSIGNMENT_DB`, mapping Work

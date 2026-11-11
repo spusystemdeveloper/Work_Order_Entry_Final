@@ -1564,6 +1564,7 @@ Proceed:
                     orderRecord.CustomerID = iCusID
                     orderRecord.SalesRepID = iSalesID
                     orderRecord.Tax = Decimal.Parse(txtVat.Text)
+                    orderRecord.Taxable = orderRecord.Tax > 0D
                     orderRecord.Total = Decimal.Parse(txtTotal.Text)
                     orderRecord.Comment = orderComment
                     orderRecord.ShippingNotes = ShippingNotesWithWithholding(orderRecord.ShippingNotes)

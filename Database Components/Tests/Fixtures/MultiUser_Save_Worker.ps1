@@ -42,7 +42,8 @@ try {
     foreach($name in @('db','dbnew','dbInitial')){$module.GetField($name,$publicStatic).SetValue($null,[WorkOrderEntry.ItemLookUpDataContext]::new($connectionString))}
     $module.GetField('iCusID',$publicStatic).SetValue($null,1)
     $module.GetField('iSalesID',$publicStatic).SetValue($null,1)
-    $module.GetField('bTaxExcempt',$publicStatic).SetValue($null,$false)
+    $taxExempt=[bool]$request.TaxExempt
+    $module.GetField('bTaxExcempt',$publicStatic).SetValue($null,$taxExempt)
     $module.GetField('ispriceApproved',$publicStatic).SetValue($null,0)
     [WorkOrderEntry.frmItemLookUp]::usrUsername=$request.Actor
     [WorkOrderEntry.frmItemLookUp]::usrRegister='FIXTURE'
@@ -82,7 +83,7 @@ try {
     $grid.Item(16,$row).Value=[int]$line.EntryID
     $grid.Item(17,$row).Value=$false
     $grid.Item(18,$row).Value=[int]$line.PreparedQuantity
-    $grid.Rows[$row].Cells['Taxable'].Value=1
+    $grid.Rows[$row].Cells['Taxable'].Value=if($line.PSObject.Properties['Taxable']){[int]$line.Taxable}else{1}
     $totalQuantity += [decimal]$line.Quantity
     }
     if($request.PSObject.Properties['DeletedEntries']){
@@ -91,7 +92,7 @@ try {
     }
     $vat=$form.GetType().GetProperty('txtVat',$instanceFlags).GetValue($form)
     $total=$form.GetType().GetProperty('txtTotal',$instanceFlags).GetValue($form)
-    $vat.Text=($totalQuantity*12).ToString()
+    $vat.Text=if($taxExempt){"0"}else{($totalQuantity*12).ToString()}
     $total.Text=($totalQuantity*112).ToString()
     $context=[WorkOrderEntry.ItemLookUpDataContext]::new($connectionString)
     try{$snapshot=[WorkOrderEntry.OrderEditGuard]::Capture($context,[int]$request.OrderID)}finally{$context.Dispose()}

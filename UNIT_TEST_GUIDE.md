@@ -1,4 +1,22 @@
-﻿# Work Order Entry unit tests
+# Work Order Entry unit tests
+
+## Recalled header Taxable flag (November 11)
+
+After a Debug/x86 build, run
+`Database Components/Tests/MultiUser_Save_LocalDB_Test.ps1` normally and with
+`-VersionedReads`. The owned fixture invokes the compiled recalled-save method
+and verifies positive VAT repairs a stale false header, customer exemption sets
+zero VAT/false header, returning to taxable restores the flag, line taxability
+is preserved independently, and repeated tax changes leave stock unchanged.
+The existing late-failure test compares the complete header after rollback.
+These are disposable database tests, not live RMS/store saves. Preserve the
+installation's Debug EXE configuration byte-for-byte around builds and tests.
+
+Verified November 11: both solutions built Release/x86; all 158 unit tests
+passed. All 71 save checks passed in each locking mode (default and
+versioned reads), including all eight header-taxability regression checks.
+Existing Debug/Release configurations were restored and verified byte-for-byte.
+No live database save or repair was performed.
 
 ## Consignment Work Order 1029 preflight
 

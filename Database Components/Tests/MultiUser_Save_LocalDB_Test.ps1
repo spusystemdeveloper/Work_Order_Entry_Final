@@ -20,9 +20,9 @@ function Sql([string]$text,$transaction=$null){$cmd=$connection.CreateCommand();
 function Scalar([string]$text){$cmd=$connection.CreateCommand();try{$cmd.CommandTimeout=10;$cmd.CommandText=$text;return $cmd.ExecuteScalar()}finally{$cmd.Dispose()}}
 function Check([bool]$ok,[string]$name){if(-not $ok){throw "FAILED: $name"};$script:checks++;Write-Output "Passed: $name"}
 function Wait-For([scriptblock]$condition,[string]$description,[int]$seconds=15){$end=[DateTime]::UtcNow.AddSeconds($seconds);while(-not (& $condition)){if([DateTime]::UtcNow -gt $end){throw "Timed out: $description"};Start-Sleep -Milliseconds 40}}
-function Start-Cashier([string]$case,[string]$who,[int]$order,[int]$item,[int]$entry,[double]$quantity,[string]$operation='Save',[object[]]$lines=$null,[int[]]$withholding=$null,[int[]]$deleted=$null){
+function Start-Cashier([string]$case,[string]$who,[int]$order,[int]$item,[int]$entry,[double]$quantity,[string]$operation='Save',[object[]]$lines=$null,[int[]]$withholding=$null,[int[]]$deleted=$null,[switch]$taxExempt){
     $stem=Join-Path $directory ($case+'-'+$who)
-    $request=[pscustomobject]@{Server=$server;Database=$database;Assembly=$assembly;Actor=('MultiUser_'+$who+'_'+$suffix);OrderID=$order;ItemID=$item;EntryID=$entry;Quantity=$quantity;Operation=$operation;Lines=$lines;Comment=($case+'-'+$who);ReadyFile=($stem+'.ready');GoFile=($stem+'.go');ResultFile=($stem+'.result.json')}
+    $request=[pscustomobject]@{Server=$server;Database=$database;Assembly=$assembly;Actor=('MultiUser_'+$who+'_'+$suffix);OrderID=$order;ItemID=$item;EntryID=$entry;Quantity=$quantity;Operation=$operation;TaxExempt=[bool]$taxExempt;Lines=$lines;Comment=($case+'-'+$who);ReadyFile=($stem+'.ready');GoFile=($stem+'.go');ResultFile=($stem+'.result.json')}
     if($null -ne $withholding){$request | Add-Member -NotePropertyName WalkInRates -NotePropertyValue @($withholding)}
     if($null -ne $deleted){$request | Add-Member -NotePropertyName DeletedEntries -NotePropertyValue @($deleted)}
     $requestFile=$stem+'.request.json';$request|ConvertTo-Json|Set-Content -LiteralPath $requestFile
@@ -458,6 +458,30 @@ END;
     Check (@($ra,$rb | Where-Object {$_.Status -eq 'Committed'}).Count -eq 1 -and @($ra,$rb | Where-Object {$_.Status -eq 'Error' -and $_.Message -like '*Insufficient available quantity*'}).Count -eq 1) 'Two overlapping conversions cannot both reserve the same available stock'
     Check ((Scalar "SELECT QuantityCommitted FROM dbo.Item WHERE ID=$raceItem;") -eq 8 -and (Scalar "SELECT Quantity FROM dbo.Item WHERE ID=$raceItem;") -eq 10) 'Concurrent quote conversions reserve only the winner and preserve physical stock'
     Check ((Scalar "SELECT COUNT(*) FROM dbo.[Order] WHERE ID IN($($quoteA.OrderID),$($quoteB.OrderID)) AND Type=2;") -eq 1 -and (Scalar "SELECT COUNT(*) FROM dbo.[Order] WHERE ID IN($($quoteA.OrderID),$($quoteB.OrderID)) AND Type=3;") -eq 1) 'Losing conversion remains a quotation after atomic stock rejection'
+    # Taxable is a header bit; keep it synchronized with VAT on actual recalled saves.
+    # Customer/line exemption behavior still follows the existing save rules.
+    $taxItem=New-FixtureItem 100 1
+    $taxOrder=New-FixtureOrder @($taxItem) @(1)
+    $taxID=$taxOrder.OrderID;$taxEntry=$taxOrder.Lines[0].EntryID
+    Check ((Scalar "SELECT CONVERT(int,Taxable) FROM dbo.[Order] WHERE ID=$taxID;") -eq 0) 'Tax regression starts with the reproduced stale zero header flag'
+    $a=Start-Cashier 'tax-positive' 'A' $taxID $taxItem $taxEntry 1
+    Ready $a;Go $a;$null=Result $a
+    Check ((Scalar "SELECT COUNT(*) FROM dbo.[Order] WHERE ID=$taxID AND Taxable=1 AND Tax=12 AND Total=112;") -eq 1) 'Positive VAT recall save repairs a stale zero header flag'
+    Check ((Scalar "SELECT Taxable FROM dbo.OrderEntry WHERE ID=$taxEntry;") -eq 1) 'Taxable item remains taxable after header synchronization'
+    Sql 'UPDATE dbo.Customer SET TaxExempt=1 WHERE ID=1;'
+    $a=Start-Cashier 'tax-exempt' 'A' $taxID $taxItem $taxEntry 1 -taxExempt
+    Ready $a;Go $a;$null=Result $a
+    Check ((Scalar "SELECT COUNT(*) FROM dbo.[Order] WHERE ID=$taxID AND Taxable=0 AND Tax=0 AND Total=112;") -eq 1) 'Customer-exempt recall save clears a previously true header flag with zero VAT'
+    Check ((Scalar "SELECT Taxable FROM dbo.OrderEntry WHERE ID=$taxEntry;") -eq 0) 'Customer exemption continues to clear line taxability'
+    Sql 'UPDATE dbo.Customer SET TaxExempt=0 WHERE ID=1;'
+    $a=Start-Cashier 'tax-restored' 'A' $taxID $taxItem $taxEntry 1
+    Ready $a;Go $a;$null=Result $a
+    Check ((Scalar "SELECT COUNT(*) FROM dbo.[Order] WHERE ID=$taxID AND Taxable=1 AND Tax=12 AND Total=112;") -eq 1 -and (Scalar "SELECT Taxable FROM dbo.OrderEntry WHERE ID=$taxEntry;") -eq 1) 'Returning to taxable restores the header and taxable line on a later recall save'
+    $taxLines=@([pscustomobject]@{ItemID=$taxItem;EntryID=$taxEntry;Quantity=1;PreparedQuantity=0;Taxable=0})
+    $a=Start-Cashier 'tax-line-preserved' 'A' $taxID $taxItem $taxEntry 1 -lines $taxLines
+    Ready $a;Go $a;$null=Result $a
+    Check ((Scalar "SELECT COUNT(*) FROM dbo.[Order] WHERE ID=$taxID AND Taxable=1 AND Tax=12;") -eq 1 -and (Scalar "SELECT Taxable FROM dbo.OrderEntry WHERE ID=$taxEntry;") -eq 0) 'Header synchronization does not overwrite the caller-provided line taxability'
+    Check ((Scalar "SELECT QuantityCommitted FROM dbo.Item WHERE ID=$taxItem;") -eq 1 -and (Scalar "SELECT Quantity FROM dbo.Item WHERE ID=$taxItem;") -eq 100) 'Repeated tax transitions preserve commitments and physical stock'
     Write-Output "PASS: $checks multi-user save checks; VersionedReads=$([bool]$VersionedReads); artifacts: $directory"
 } finally {
     Release-Gate
