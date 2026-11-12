@@ -1,3 +1,13 @@
+## Current layout — November 6, 2026
+
+This updater now handles Work Order SQL only. CIU executable updates and the embedded PDC/SOA SQL updater were removed at the user's request. Older combined packages are superseded; do not distribute them as the current updater.
+
+Project SQL is separate:
+- CIU/PDC: PDC_Monitoring-master/PDC_Monitoring-master/Database/Reviewed_SQL_2016 (8 reviewed modules plus table prerequisites and checks).
+- SOA: SOA_V7_asof_28AUG2025_with checkall/Database/Reviewed_SQL_2016 (10 reviewed modules, checks and reference-only cancelled-CM example).
+
+These are organized copies of the reviewed SQL1.4 baseline, not automatic deployment or a claim that every later source change has a new SQL migration. Existing source/migration folders were not overwritten. Read each folder's README and SOURCE_HASHES.json. Manual module scripts start in preview; review branch business rules/dependencies and take a verified backup before applying anything. The static SOA CM example must not overwrite a different branch view. No live database was updated during this reorganization.
+
 # Work Order Database Updater
 
 Start with [the step-by-step user guide](USER_GUIDE.md), or click

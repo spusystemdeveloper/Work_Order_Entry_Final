@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -33,36 +33,67 @@ namespace WorkOrderDatabaseUpdater
 
         public UpdaterForm()
         {
-            Text = "Work Order Database Updater"; Width = 1180; Height = 820; MinimumSize = new Size(960, 680);
+            Text = "Work Order Database Updater"; Width = 1060; Height = 760; MinimumSize = new Size(720, 520);
+            var area = Screen.PrimaryScreen.WorkingArea; Size = new Size(Math.Min(Width, area.Width - 24), Math.Min(Height, area.Height - 24));
+            AutoScaleMode = AutoScaleMode.Dpi; BackColor = Color.FromArgb(245, 247, 250);
             StartPosition = FormStartPosition.CenterScreen; Font = new Font("Segoe UI", 9);
             authentication.Items.AddRange(new object[] { "Windows login", "SQL login" }); authentication.SelectedIndex = 0;
             profile.Items.AddRange(new object[] { "GSC", "DVO", "Portable", "ILOILO" }); profile.SelectedIndex = 0;
-            var layout = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 6, Padding = new Padding(12) };
+            var shell = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2, Padding = new Padding(14) };
+            shell.RowStyles.Add(new RowStyle(SizeType.Absolute, 90)); shell.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
+            var banner = new Panel { Dock = DockStyle.Fill, BackColor = Color.FromArgb(25,48,78), Padding = new Padding(14) };
+            var bannerText = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 2 };
+            bannerText.RowStyles.Add(new RowStyle(SizeType.Absolute,30)); bannerText.RowStyles.Add(new RowStyle(SizeType.Percent,100));
+            bannerText.Controls.Add(new Label { Text = "Work Order Database Updater", Dock = DockStyle.Fill, Margin = new Padding(0), Font = new Font("Segoe UI",18,FontStyle.Bold), ForeColor = Color.White },0,0);
+            bannerText.Controls.Add(new Label { Text = "Select SQL changes, inspect the plan, then review and apply.", Dock = DockStyle.Fill, Margin = new Padding(0), ForeColor = Color.FromArgb(213,226,243) },0,1); banner.Controls.Add(bannerText);
+            shell.Controls.Add(banner,0,0);
+            var tabs = new TabControl { Dock = DockStyle.Fill, Name = "UpdateWorkspace", Padding = new Point(16,8) };
+            var sqlPage = new TabPage("Work Order SQL") { BackColor = BackColor, AutoScroll = true, Padding = new Padding(8) };
+            tabs.TabPages.Add(sqlPage); shell.Controls.Add(tabs,0,1); Controls.Add(shell);
+            var layout = new TableLayoutPanel { Dock = DockStyle.Top, Height = 500, ColumnCount = 1, RowCount = 5 };
             layout.RowStyles.Add(new RowStyle(SizeType.AutoSize)); layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            layout.RowStyles.Add(new RowStyle(SizeType.AutoSize)); layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-            layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 100)); layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            layout.Controls.Add(new Label { Text = "Select database changes, inspect the SQL, then review and apply. Windows administrator access is not required.",
-                AutoSize = true, Padding = new Padding(0, 0, 0, 8) }, 0, 0);
+            layout.RowStyles.Add(new RowStyle(SizeType.Percent,100)); layout.RowStyles.Add(new RowStyle(SizeType.Absolute,76)); layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+            layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent,100));
+            sqlPage.Controls.Add(layout);
+            var connectionGroup = new GroupBox { Text = "1. Connect and check target", Dock = DockStyle.Fill, AutoSize = true, Padding = new Padding(10) };
             AddField(connections, "Server", server); AddField(connections, "Database", database);
             AddField(connections, "Authentication", authentication); AddField(connections, "User", user); AddField(connections, "Password", password);
-            connections.Controls.Add(check); layout.Controls.Add(connections, 0, 1);
-            AddField(actions, "Branch profile", profile);
-            var reload = new Button { Text = "Reload package", AutoSize = true };
-            var choose = new Button { Text = "Choose package folder...", AutoSize = true };
-            var add = new Button { Text = "Add SQL script...", AutoSize = true };
+            check.Text = "Check connection"; check.Margin = new Padding(4,6,4,6); connections.Controls.Add(check); connectionGroup.Controls.Add(connections); layout.Controls.Add(connectionGroup,0,0);
+            AddField(actions, "Profile", profile);
+            var reload = new Button { Text = "Reload", AutoSize = true };
+            var choose = new Button { Text = "SQL package folder...", AutoSize = true };
+            var add = new Button { Text = "Add script...", AutoSize = true };
             var clear = new Button { Text = "Clear selection", AutoSize = true };
-            var help = new Button { Text = "Help / instructions...", AutoSize = true };
-            actions.Controls.AddRange(new Control[] { reload, choose, add, clear, apply, help }); layout.Controls.Add(actions, 0, 2);
-            var split = new SplitContainer { Dock = DockStyle.Fill, Orientation = Orientation.Horizontal, SplitterDistance = 250 };
-            split.Panel1.Controls.Add(grid); split.Panel2.Controls.Add(preview); layout.Controls.Add(split, 0, 3);
-            layout.Controls.Add(messages, 0, 4); layout.Controls.Add(target, 0, 5); Controls.Add(layout);
+            var help = new Button { Text = "Help", AutoSize = true };
+            apply.Text = "Review selected updates..."; apply.BackColor = Color.FromArgb(25,92,170); apply.ForeColor = Color.White; apply.FlatStyle = FlatStyle.Flat;
+            actions.WrapContents = true; actions.Padding = new Padding(0,4,0,4);
+            actions.Controls.AddRange(new Control[] { reload, choose, add, clear, apply, help }); layout.Controls.Add(actions,0,1);
+            var split = new SplitContainer { Dock = DockStyle.Fill, Size = new Size(650,350), Orientation = Orientation.Horizontal, SplitterDistance = 190, Panel1MinSize = 70, Panel2MinSize = 70, SplitterWidth = 7 };
+            var scriptsGroup = new GroupBox { Text = "2. Select updates · Nothing is applied until you review", Dock = DockStyle.Fill, Padding = new Padding(6) };
+            var previewGroup = new GroupBox { Text = "SQL preview · Select a row to inspect its definition", Dock = DockStyle.Fill, Padding = new Padding(6) };
+            scriptsGroup.Controls.Add(grid); previewGroup.Controls.Add(preview); split.Panel1.Controls.Add(scriptsGroup); split.Panel2.Controls.Add(previewGroup); layout.Controls.Add(split,0,2);
+            messages.BackColor = Color.White; messages.BorderStyle = BorderStyle.FixedSingle; messages.Margin = new Padding(0,7,0,4); layout.Controls.Add(messages,0,3);
+            target.ForeColor = Color.FromArgb(45,67,91); target.Padding = new Padding(0,4,0,0); target.MaximumSize = new Size(950,0); layout.Controls.Add(target,0,4);
+            grid.BorderStyle = BorderStyle.None; grid.EnableHeadersVisualStyles = false; grid.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(231,237,245); grid.ColumnHeadersDefaultCellStyle.ForeColor = Color.FromArgb(25,48,78); grid.ColumnHeadersHeight = 30;
+            grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(247,249,252); grid.DefaultCellStyle.SelectionBackColor = Color.FromArgb(221,235,252); grid.DefaultCellStyle.SelectionForeColor = Color.Black;
+            Action resizeSqlLayout = () => {
+                int width = Math.Max(320,sqlPage.ClientSize.Width - 28);
+                connections.MaximumSize = new Size(width-28,0); actions.MaximumSize = new Size(width,0);
+                connectionGroup.MaximumSize = new Size(width,0); target.MaximumSize = new Size(width,0);
+                layout.Height = Math.Max(500,sqlPage.ClientSize.Height - 16);
+            };
+            sqlPage.SizeChanged += (s,e) => resizeSqlLayout();
+            Shown += (s,e) => resizeSqlLayout();
+
             grid.Columns.Add(new DataGridViewCheckBoxColumn { Name = "Selected", HeaderText = "Apply", Width = 45 });
             grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Script", HeaderText = "Script (runs in this order)", ReadOnly = true, Width = 280 });
             grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Category", HeaderText = "Type", ReadOnly = true, Width = 130 });
             grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Recorded", HeaderText = "Deployment record", ReadOnly = true, Width = 160 });
             grid.Columns.Add(new DataGridViewTextBoxColumn { Name = "Notes", HeaderText = "Review notes", ReadOnly = true, AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
             foreach (DataGridViewColumn column in grid.Columns) column.SortMode = DataGridViewColumnSortMode.NotSortable;
-            grid.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
+            grid.DefaultCellStyle.WrapMode = DataGridViewTriState.False;
+            grid.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None; grid.RowTemplate.Height = 28;
+            grid.ColumnHeadersDefaultCellStyle.WrapMode = DataGridViewTriState.False;
             grid.CurrentCellDirtyStateChanged += (s, e) => { if (grid.IsCurrentCellDirty) grid.CommitEdit(DataGridViewDataErrorContexts.Commit); };
             grid.CellValueChanged += (s, e) => RefreshApply();
             grid.SelectionChanged += (s, e) => ShowSql();
@@ -100,8 +131,9 @@ namespace WorkOrderDatabaseUpdater
         }
         private static void AddField(FlowLayoutPanel panel, string caption, Control control)
         {
-            panel.Controls.Add(new Label { Text = caption, AutoSize = true, Margin = new Padding(4, 7, 3, 0) });
-            panel.Controls.Add(control);
+            var field = new FlowLayoutPanel { AutoSize = true, WrapContents = false, Margin = new Padding(0,3,10,3) };
+            field.Controls.Add(new Label { Text = caption, AutoSize = true, Margin = new Padding(0,6,5,0) });
+            control.Margin = new Padding(0,3,0,3); field.Controls.Add(control); panel.Controls.Add(field);
         }
         private void AddRow(UpdateScript script)
         {
@@ -109,6 +141,7 @@ namespace WorkOrderDatabaseUpdater
                 throw new InvalidOperationException("This script is already listed.");
             int row = grid.Rows.Add(false, Path.GetFileName(script.Path), script.Category, "Not checked", script.Notes);
             grid.Rows[row].Tag = script;
+            grid.Rows[row].Cells[4].ToolTipText = script.Notes;
         }
         private void LoadPackage()
         {
@@ -127,12 +160,12 @@ namespace WorkOrderDatabaseUpdater
         {
             if (grid.CurrentRow == null || grid.CurrentRow.Tag == null) return;
             var script = (UpdateScript)grid.CurrentRow.Tag;
-            preview.Text = "-- " + script.Id + "\r\n-- SHA256: " + script.Hash + "\r\n" + script.Sql;
+            preview.Text = "-- " + script.Id + "\r\n-- " + script.Notes + "\r\n-- SHA256: " + script.Hash + "\r\n" + script.Sql;
         }
         private string GetConnection() { return UpdateRunner.ConnectionString(server.Text, database.Text, user.Text, password.Text, authentication.SelectedIndex == 0); }
         private List<UpdateScript> Selection() { return grid.Rows.Cast<DataGridViewRow>().Where(r => Equals(r.Cells[0].Value, true)).Select(r => (UpdateScript)r.Tag).ToList(); }
         private void InvalidateTarget() { verifiedConnection = null; target.Text = "Target not checked. Check again after changing connection or package."; RefreshApply(); }
-        private void RefreshApply() { apply.Enabled = !busy && verifiedConnection != null && Selection().Count > 0; }
+        private void RefreshApply() { apply.Enabled = !busy && verifiedConnection != null && Selection().Count > 0; apply.BackColor = apply.Enabled ? Color.FromArgb(25,92,170) : Color.FromArgb(225,230,237); apply.ForeColor = apply.Enabled ? Color.White : Color.FromArgb(100,110,125); }
         private void SetBusy(bool value)
         {
             busy = value; connections.Enabled = actions.Enabled = grid.Enabled = !value;
