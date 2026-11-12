@@ -2032,6 +2032,8 @@ Proceed:
     Private Sub frmItemLookUp_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
         'comment:
+        ' Style the status bar first; the login dialog below is shown during Load.
+        ApplyStatusBarStyle()
         Timer1.Interval = 1000
         Timer1.Start()
         txtBarcode.Enabled = False
@@ -2153,7 +2155,7 @@ Proceed:
             'txtSearch.Focus()
             lblStatItemCount.Text = gridItem.RowCount & " item" & IIf(gridItem.RowCount > 1, "s", "")
 
-            ToolStripStatusLabel1.Text = "STATUS "
+            ToolStripStatusLabel1.Text = String.Empty
 
             ' Update_Timer.Start()
             Cursor.Current = Cursors.Default
