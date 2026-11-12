@@ -2396,3 +2396,23 @@ LocalDB requires local registry/socket access. No store database is modified.
 The same suite now includes ten checks for the separate saved reseed script,
 bringing the total to 36: committed links, unchanged repeats, preserved data,
 actual next allocation 18871 and rejection after later activity.
+
+### November 5 — CIU executable updater integration
+
+- Added an independent "Update CIU executable..." header action with embedded current CIU and shared verified backup/update/restore engine. SQL connection is not needed; button disabled during SQL operations. Existing SQL catalog/core/transaction code and Work Order business rules unchanged.
+- CIU distribution compiles sanitized generated connection defaults; source/branch configs are preserved. No runtime config or credentials are packaged. Existing filename/shortcuts/registry remain unchanged.
+- Both Release/x86 solution builds passed. All158 shared unit tests,101 disposable LocalDB SQL-updater checks and clean-folder dependency/report rendering passed. Integrated executable update repeated39 file/hash/backup/restore/config checks plus real first-run UI action and header-button/busy guard. Existing Debug configuration restored byte-for-byte. No live database or deployed CIU changes. Branch UI/business workflow and actual deployment remain pending.
+Updater integration evidence: Database Updater/CIU_Integration_Validation.log and TestResults/CIUUpdaterIntegration. Reusable executable test sources are in the PDC repository CIU_Updater/tests. Run CIU_Updater/Build.ps1, sync with Integrate-WorkOrderUpdater.ps1, build the host, and repeat those file/UI tests plus DatabaseUpdater_LocalDB_Test.ps1 and Packaging_CleanFolder_Test.ps1. No live target is required.
+
+## November 5 — Updated interface (package 2026.11.05.2)
+
+The window is now RMS Branch Updater. Choose Database updates for the existing SQL review workflow, or CIU application for executable updates. On the CIU tab click Choose CIU and update, then select the branch executable in the dialog. No SQL login is needed for this action. Connection fields wrap together on smaller screens; scroll the SQL page when necessary. Review notes are shown in SQL preview and tooltips. Disabled actions stay unavailable until existing checks pass. Backup/restore, branch settings and SQL transactions are unchanged.
+
+Validation: final host39 executable checks plus real UI action/navigation/busy guards passed. 800x600/1000x720 screens and640x400 CIU dialog visually checked. Both solution builds,158 shared tests,101 disposable updater checks and clean-folder package/render checks passed; final styling/catalog render passed. Debug config retained exactly. Evidence: Database Updater/CIU_UI_Validation.log and TestResults/CIUUpdaterUiRevision. No live DB or deployed CIU changes.
+
+### November 6 — Separate project SQL; retire combined updater integration
+
+- Removed CIU executable and PDC/SOA SQL tabs, code/resource references and generated embedded payloads from Work Order Database Updater. Kept Work Order SQL catalog, check/review/transaction logic and improved small-screen UI. Standalone tools in their own projects are retained; automatic reintegration helper scripts are retired.
+- Organized 8 PDC/CIU and10 SOA reviewed modules under each project's Database/Reviewed_SQL_2016 with manifests, source hashes and usage guidance. All29 copied files are byte-identical to reviewed originals; all18 module scripts retain preview/replacement guards. Static SOA cancellation SQL is reference-only to avoid replacing branch-specific logic accidentally. This is organization, not a change to accounting or posting rules.
+- No live database or add-in configuration changes. Compiled-removal test confirms no integrated payload/code/actions remain. Required solution/unit/disposable-updater/packaging checks are recorded in Database Updater/SQL_Separation_Validation.log; copied script hashes checked independently.
+Use checks/WorkOrderSqlOnlyTests.cs in the SOA workspace for final resource/type/tab and800x600 rendering checks. Old combined integration tests describe a retired feature and are not the current updater test path.

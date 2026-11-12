@@ -6,6 +6,11 @@ for retained RMS incident knowledge and [UNIT_TEST_GUIDE.md](UNIT_TEST_GUIDE.md)
 for validation details. Tool-specific instruction files should reference these
 rules instead of maintaining competing copies.
 
+See [WORKSPACE_FOLDERS.md](WORKSPACE_FOLDERS.md) for this desktop project's
+connected folders, current V3 source location and their roles. Consult the related folder when the task
+needs its RMS installation, reconciliation, system documentation or withholding
+tax context.
+
 ## Scope and working process
 
 - Preserve existing Work Order business rules unless the human explicitly asks

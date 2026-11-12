@@ -4,6 +4,23 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### November 12 — V3 source location in the workspace map
+
+- Recorded `C:\Users\ADMIN\source\repos\WORK_ORDER_ENTRY_3` as the current V3
+  source location, replacing the earlier Documents location for future V3 work.
+  Updated the README and AGENTS references to the map.
+- Verified all six listed paths exist and checked the documentation links.
+  Documentation-only change; no source files or desktop folder attachments changed.
+
+### November 11 — Connected workspace folder map
+
+- Added `WORKSPACE_FOLDERS.md` listing the five folders connected to this desktop
+  project and their roles: main Work Order source, Recon, installed RMS Store
+  Operations, RMS_SYSTEMDOCS and BIR-WITHHOLDINGTAX. Linked the map from README
+  and AGENTS so contributors can find related context.
+- Verified all five local paths and the documentation links. Documentation-only
+  change; application behavior, build dependencies and database settings are unchanged.
+
 ### November 11 — Synchronize recalled order header taxability
 
 - Recalled saves now update `Order.Taxable` in the existing save transaction,
@@ -2874,3 +2891,21 @@ All notable changes to the **Work Order Entry** application are documented in th
   - Added `QueueOrderAgeRules.vb` with clean toggle `EnableOrderAgeAlerts` (can be switched off anytime or configured in `App.config`).
   - Added periodic age recalculation (`RefreshOrderAges`) on each `chk_Panels` timer tick in `frmMain.vb`.
   - Added 10 unit tests in `QueueOrderAgeRulesTests.vb` covering priority level calculation, time formatting, badge text, and color resolution (Total suite: 39 tests passed).
+
+### November 5 — CIU executable updater integration
+
+- Added an independent "Update CIU executable..." header action with embedded current CIU and shared verified backup/update/restore engine. SQL connection is not needed; button disabled during SQL operations. Existing SQL catalog/core/transaction code and Work Order business rules unchanged.
+- CIU distribution compiles sanitized generated connection defaults; source/branch configs are preserved. No runtime config or credentials are packaged. Existing filename/shortcuts/registry remain unchanged.
+- Both Release/x86 solution builds passed. All158 shared unit tests,101 disposable LocalDB SQL-updater checks and clean-folder dependency/report rendering passed. Integrated executable update repeated39 file/hash/backup/restore/config checks plus real first-run UI action and header-button/busy guard. Existing Debug configuration restored byte-for-byte. No live database or deployed CIU changes. Branch UI/business workflow and actual deployment remain pending.
+
+## November 5 — Updated interface (package 2026.11.05.2)
+
+The window is now RMS Branch Updater. Choose Database updates for the existing SQL review workflow, or CIU application for executable updates. On the CIU tab click Choose CIU and update, then select the branch executable in the dialog. No SQL login is needed for this action. Connection fields wrap together on smaller screens; scroll the SQL page when necessary. Review notes are shown in SQL preview and tooltips. Disabled actions stay unavailable until existing checks pass. Backup/restore, branch settings and SQL transactions are unchanged.
+
+Validation: final host39 executable checks plus real UI action/navigation/busy guards passed. 800x600/1000x720 screens and640x400 CIU dialog visually checked. Both solution builds,158 shared tests,101 disposable updater checks and clean-folder package/render checks passed; final styling/catalog render passed. Debug config retained exactly. Evidence: Database Updater/CIU_UI_Validation.log and TestResults/CIUUpdaterUiRevision. No live DB or deployed CIU changes.
+
+### November 6 — Separate project SQL; retire combined updater integration
+
+- Removed CIU executable and PDC/SOA SQL tabs, code/resource references and generated embedded payloads from Work Order Database Updater. Kept Work Order SQL catalog, check/review/transaction logic and improved small-screen UI. Standalone tools in their own projects are retained; automatic reintegration helper scripts are retired.
+- Organized 8 PDC/CIU and10 SOA reviewed modules under each project's Database/Reviewed_SQL_2016 with manifests, source hashes and usage guidance. All29 copied files are byte-identical to reviewed originals; all18 module scripts retain preview/replacement guards. Static SOA cancellation SQL is reference-only to avoid replacing branch-specific logic accidentally. This is organization, not a change to accounting or posting rules.
+- No live database or add-in configuration changes. Compiled-removal test confirms no integrated payload/code/actions remain. Required solution/unit/disposable-updater/packaging checks are recorded in Database Updater/SQL_Separation_Validation.log; copied script hashes checked independently.

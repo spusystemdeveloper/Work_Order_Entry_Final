@@ -11,6 +11,9 @@ rules, safe SQL changes, branch configuration, required tests and deployment.
 other tools should explicitly include AGENTS.md in their working context.
 These documents support human review; they do not enforce GitHub permissions or CI.
 
+See [Connected project folders](WORKSPACE_FOLDERS.md) for the local workspace
+folder map, the current V3 source location and how the folders relate to this repository.
+
 ## Application deployment and printing
 
 Install **Microsoft ReportViewer 2010 Redistributable** once on each user PC and
