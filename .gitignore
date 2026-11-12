@@ -364,3 +364,8 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Built updater EXE and release/archive packages (rebuild from source)
+Database Updater/*.exe
+Database Updater/*.zip
+Database Updater/Archive/
