@@ -4,6 +4,139 @@ All notable changes to the **Work Order Entry** application are documented in th
 
 ## [Unreleased] - 2026-10-17
 
+### November 24 — Malabon 2% services W/Tax markers (live data, no code change)
+
+- Malabon V4 Work Order 9828 (`SBD_MNL_RDC_DB`, customer 68 SATURN, 1% and 2%
+  enabled) showed WTax 1%_Charge 34.38 instead of 2% 68.75. Cause: item
+  `SI4691-SVC` SERVICE CHARGE had empty `Item.Notes`, so V4 treated it as GOODS.
+  Customer flags and captions were correct.
+- SQL Agent job `ITEM_SYNC` on `WIN-DVBMD8VT1L7` copies whole Item rows, Notes
+  included, from `SBD_MNL_MAIN_DB` every minute for items updated in MAIN that
+  day. It does not cover `MLB_STORE_DB`, `SOD-MNL_CITISTORE_DB`, `SOD-MNL_NBS_DB`
+  or `SBD_MNL_DR_DB`.
+- With the user's authorization, added `[WTAX:SERVICES]` to `Item.Notes` for
+  `SI4691-SVC`, `SI2378-SVC` (INSTALLATION CHARGE) and `10785PCS` (SERVICES
+  DELIVERY FEE) in 12 databases: MAIN, GIC, OFFICE_SUPPLY, PREMIUM_STOCK,
+  BAD_STOCKS_GIC, BAD_STOCKS, BULACAN, RDC, SOD-MALABON_METRO_STORE, MLB_STORE,
+  SOD-MNL_CITISTORE and SOD-MNL_NBS. One transaction, 36 rows, all previously
+  NULL. Only Notes changed (LastUpdated kept, so ITEM_SYNC did not recopy rows);
+  the Item trigger `tr_ItemValueLog` logs only Cost/Price and was unaffected.
+  `SBD_MNL_DR_DB` excluded at the user's request; `SBD_MNL_TEST_DB` untouched.
+- Rehearsal (rolled back) and commit both changed 36 of 36; fresh-connection
+  check confirmed 3 marked per target, 0 in DR/TEST, and WO 9828's line now
+  SERVICES (2% of 3,437.50 = 68.75). No full backup was taken, because the
+  change only filled empty values; an undo script restores NULL.
+- Left unmarked: `SVC00125` IP LSM SUPPORT, pending accounting's choice between
+  SERVICES and EWT15. Still to check by hand: WO 9828 on screen and printed in V4.
+
+### November 18 — remaining V8 review findings 31-41
+
+- Found that 32, 33, 37, 38 and the repeated-item part of 36 were already fixed on
+  November 5 (cfffa1f). SOURCE_CODE_REVIEW_FINDINGS.md now shows each finding's status.
+- **31 Drafts:** a saved draft now keeps 2.5 instead of recovering as 0.
+  `Ensure_Work_Order_Draft_Tables.sql` converts `SOD_WO_DraftDetail.Qty` from int to
+  float, keeping existing values; new installs create it as float. The app reads the
+  draft lines with explicit SQL, so drafts keep working at a store that has not run
+  the updater yet (there 2.5 is still stored as 2, as before the column changes).
+- **34 Quotation uploads:** the quotation numbers loaded by the CSV uploader are
+  written to `SOD_ImportedQuote` inside the same save transaction as the order, so
+  the existing "already uploaded" check now works. Uploading the same quotation
+  twice into one unsaved order is rejected. Branches without the optional table
+  save as before.
+- **35 Upload log:** the log folder comes from the optional `ImportLogFolder` app
+  setting (default: the original `\\192.168.1.2\sc_import_file\Logs`). If it cannot
+  be reached the log is saved on the PC under `%LOCALAPPDATA%\WorkOrderEntry\ImportLogs`
+  with a message. The old Abort/Retry/Ignore prompt is gone: Retry could add the
+  rows twice and Abort closed the main screen.
+- **36 Pick list:** the ordered quantity is a Double, so 2.5 prints as 2.5 and the
+  balance column subtracts exactly.
+- **39 Recall:** an order whose customer or sales rep row is missing now loads with
+  a blank customer instead of keeping the previous order's customer, tax status and
+  price level. Recalling an order that is no longer open clears the screen.
+- **40 Users:** editing a user rejects a username already used by another account
+  (case-insensitive, as at login). The Show Password option is hidden and the query
+  that listed passwords removed.
+- **41:** Ungroup accepts only an order number listed in the selected group. Price
+  approval checks read current item prices instead of the copy cached since login.
+  Website order lines saved with Taxable 0 were left unchanged at the user's request.
+- Added `Database Components/Tests/OpenFindings_LocalDB_Test.ps1` and
+  `OpenFindingsProbe.cs`, plus `OrderGroupRulesTests` (4 unit tests).
+  See UNIT_TEST_GUIDE.md for results.
+
+### November 16 — QC `MERRYMART_DB` V4 compatibility alignment
+
+- Audited live `WIN-FAK44Q929IV` (`115.147.28.122`): `PUREGOLD_DB` had the
+  October 31 V4 compatibility updates applied (`SOD_ViewItems` with `PG SKU` at
+  column 18, `SOD_fntbl_CheckQty` pointing to `QC_STORE_DB` / `QC_RDC_DB`, and
+  `SOD_ImportedQuote`), while `MERRYMART_DB` still had leading `MERRYMART SKU`
+  at column 1 in `SOD_ViewItems`, `GSC_*` store lookups in `SOD_fntbl_CheckQty`,
+  and no `SOD_ImportedQuote`. Neither database has V7.1/V8 objects (`SOD_ViewItemsWO`,
+  `Pass2Username`/`Pass3Username`, `SOD_WO_History`, `SOD_fntbl_WoDetails.Address`),
+  so live QC Consignment uses `Work Order Entry_V4.exe` (`WORK_ORDER_ENTRY_4`).
+- Added guarded `Database Components/Deployment/QC_MERRYMART_V4` scripts
+  (`01_SOD_ViewItems.sql`, `02_SOD_fntbl_CheckQty.sql`,
+  `03_Optional_QuotationImport.sql`, and `Rollback_01`/`Rollback_02`), verified
+  on a disposable LocalDB fixture (`COMPATIBILITY_LEVEL = 100`, object ID and
+  permission preservation, idempotency, and `QC_STORE_DB`/`QC_RDC_DB` stock lookup).
+- With explicit user authorization, took and verified a full copy-only checksum
+  backup on `WIN-FAK44Q929IV` (`backup_set_id = 39831`, `RESTORE VERIFYONLY WITH CHECKSUM`),
+  applied all three scripts atomically inside one transaction on live `MERRYMART_DB`,
+  and verified updated view columns (`1..18` with `MERRYMART SKU` at column 18,
+  `69,383` rows, `ExtendedDescription` converted to `nvarchar(max)`), live
+  `SOD_fntbl_CheckQty('51972PCS')` output, and `SOD_ImportedQuote` (`5` columns).
+  Application source, configs, and `PUREGOLD_DB` were unchanged; live
+  `Work Order Entry_V4.exe` UI/workflow test on `MERRYMART_DB` remains manual.
+
+### November 14 — HO Work Order 19057 -> 19056 renumber & identity reseed
+
+- Audited `HO_PO_DB` on `172.16.4.50` (`WIN-2847UGJBAV4`) for the `19055 -> 19057`
+  Work Order ID gap; confirmed `19056` left no header, line, queue, approval,
+  history, log, or posted RMS records and open Work Order `19057` (`CustomerID`
+  203, total `3,612,280.20`) was consistent.
+- Added [Renumber_HO_WO_19057_to_19056.sql](Database%20Components/Recovery/Renumber_HO_WO_19057_to_19056.sql),
+  [Verify_HO_WO_19056.sql](Database%20Components/Recovery/Verify_HO_WO_19056.sql),
+  and [HO_Renumber19057_LocalDB_Test.ps1](Database%20Components/Tests/HO_Renumber19057_LocalDB_Test.ps1)
+  (43 disposable LocalDB checks passed at compatibility level 100 before live
+  execution).
+- Following a verified copy-only checksum backup (`backup_set_id = 5977`) and a
+  guarded `@Commit = 0` rollback rehearsal, executed `@Commit = 1` with user
+  authorization and clients closed, mapping Work Order `19057 -> 19056` and
+  reseeding `dbo.[Order]` identity to `19056` (next automatic allocation `19057`).
+  Post-commit verification confirmed header, line `62152`, queue `46074`,
+  approval `388`, 6 history rows, 2 item-log rows, unchanged `Item` `59626`
+  quantities (`6000` / `6000`), and all 13 triggers enabled. Recorded details in
+  [INCIDENT_2026-11-14_HO_WO_19057_TO_19056.md](Database%20Components/Recovery/INCIDENT_2026-11-14_HO_WO_19057_TO_19056.md)
+  and updated [Database Components/Recovery/README.md](Database%20Components/Recovery/README.md).
+- Both `Work Order Entry.sln` and `OrderProcessingQueueing.sln` built in
+  `Release|x86` after NuGet package restore, and all 158 unit tests passed in
+  `./Run-UnitTests.ps1`; existing Debug/Release/Queueing EXE configs were
+  verified preserved byte-for-byte. Application source, business logic, and
+  RMS POS execution are unchanged; HO client reopen / recall UI check remains
+  pending.
+
+### November 13 — Documentation review corrections
+
+- README now states the current 158 unit tests and their November 11 result in
+  place of the October 14 count of 101.
+- Moved the November 5–6 updater entries from the end of this file into date
+  order and repaired their missing spaces. Removed the duplicated changelog
+  text from UNIT_TEST_GUIDE, which still described the retired CIU tab, and
+  replaced it with the current SQL-only updater test path.
+- Documented the Ready-for-invoicing badge in ORDER_TOOLS_GUIDE and clarified
+  the folder-map wording. No SQL changed.
+- The Ready-for-invoicing badge now reuses the status bar's single font instead
+  of creating a new font on every 15-second poll. Appearance is unchanged.
+
+### November 12 — Status bar restyle and Ready-for-invoicing badge
+
+- The bottom status bar uses one font (Tahoma 9.5 bold), thin dividers and even
+  padding. The constant **STATUS** caption was removed; its item remains as the
+  spacer. Status texts and click handlers are otherwise unchanged.
+- **Ready for invoicing** now shows as a badge: blue normally, green while newly
+  ready groups are waiting. When the check fails, the existing **Ready status
+  unavailable - retrying** text shows in orange without the badge background.
+  Appearance only; polling, eligibility and acknowledgement rules are unchanged.
+
 ### November 12 — V3 source location in the workspace map
 
 - Recorded `C:\Users\ADMIN\source\repos\WORK_ORDER_ENTRY_3` as the current V3
@@ -31,6 +164,24 @@ All notable changes to the **Work Order Entry** application are documented in th
   customer-exempt zero VAT, returning to taxable, caller-provided line flags and
   unchanged stock across repeated saves. Existing rollback and stale-edit checks
   also cover the header update.
+
+### November 6 — Separate project SQL; retire combined updater integration
+
+- Removed CIU executable and PDC/SOA SQL tabs, code/resource references and generated embedded payloads from Work Order Database Updater. Kept Work Order SQL catalog, check/review/transaction logic and improved small-screen UI. Standalone tools in their own projects are retained; automatic reintegration helper scripts are retired.
+- Organized 8 PDC/CIU and 10 SOA reviewed modules under each project's Database/Reviewed_SQL_2016 with manifests, source hashes and usage guidance. All 29 copied files are byte-identical to reviewed originals; all 18 module scripts retain preview/replacement guards. Static SOA cancellation SQL is reference-only to avoid replacing branch-specific logic accidentally. This is organization, not a change to accounting or posting rules.
+- No live database or add-in configuration changes. Compiled-removal test confirms no integrated payload/code/actions remain. Required solution/unit/disposable-updater/packaging checks are recorded in Database Updater/SQL_Separation_Validation.log; copied script hashes checked independently.
+
+### November 5 — Updated updater interface (package 2026.11.05.2; superseded November 6)
+
+The window is now RMS Branch Updater. Choose Database updates for the existing SQL review workflow, or CIU application for executable updates. On the CIU tab click Choose CIU and update, then select the branch executable in the dialog. No SQL login is needed for this action. Connection fields wrap together on smaller screens; scroll the SQL page when necessary. Review notes are shown in SQL preview and tooltips. Disabled actions stay unavailable until existing checks pass. Backup/restore, branch settings and SQL transactions are unchanged.
+
+Validation: final host 39 executable checks plus real UI action/navigation/busy guards passed. 800x600/1000x720 screens and 640x400 CIU dialog visually checked. Both solution builds, 158 shared tests, 101 disposable updater checks and clean-folder package/render checks passed; final styling/catalog render passed. Debug config retained exactly. Evidence: Database Updater/CIU_UI_Validation.log and TestResults/CIUUpdaterUiRevision. No live DB or deployed CIU changes.
+
+### November 5 — CIU executable updater integration (superseded November 6)
+
+- Added an independent "Update CIU executable..." header action with embedded current CIU and shared verified backup/update/restore engine. SQL connection is not needed; button disabled during SQL operations. Existing SQL catalog/core/transaction code and Work Order business rules unchanged.
+- CIU distribution compiles sanitized generated connection defaults; source/branch configs are preserved. No runtime config or credentials are packaged. Existing filename/shortcuts/registry remain unchanged.
+- Both Release/x86 solution builds passed. All 158 shared unit tests, 101 disposable LocalDB SQL-updater checks and clean-folder dependency/report rendering passed. Integrated executable update repeated 39 file/hash/backup/restore/config checks plus real first-run UI action and header-button/busy guard. Existing Debug configuration restored byte-for-byte. No live database or deployed CIU changes. Branch UI/business workflow and actual deployment remain pending.
 
 ### November 4 — Consignment Work Order 1029 renumber
 
@@ -2891,21 +3042,3 @@ All notable changes to the **Work Order Entry** application are documented in th
   - Added `QueueOrderAgeRules.vb` with clean toggle `EnableOrderAgeAlerts` (can be switched off anytime or configured in `App.config`).
   - Added periodic age recalculation (`RefreshOrderAges`) on each `chk_Panels` timer tick in `frmMain.vb`.
   - Added 10 unit tests in `QueueOrderAgeRulesTests.vb` covering priority level calculation, time formatting, badge text, and color resolution (Total suite: 39 tests passed).
-
-### November 5 — CIU executable updater integration
-
-- Added an independent "Update CIU executable..." header action with embedded current CIU and shared verified backup/update/restore engine. SQL connection is not needed; button disabled during SQL operations. Existing SQL catalog/core/transaction code and Work Order business rules unchanged.
-- CIU distribution compiles sanitized generated connection defaults; source/branch configs are preserved. No runtime config or credentials are packaged. Existing filename/shortcuts/registry remain unchanged.
-- Both Release/x86 solution builds passed. All158 shared unit tests,101 disposable LocalDB SQL-updater checks and clean-folder dependency/report rendering passed. Integrated executable update repeated39 file/hash/backup/restore/config checks plus real first-run UI action and header-button/busy guard. Existing Debug configuration restored byte-for-byte. No live database or deployed CIU changes. Branch UI/business workflow and actual deployment remain pending.
-
-## November 5 — Updated interface (package 2026.11.05.2)
-
-The window is now RMS Branch Updater. Choose Database updates for the existing SQL review workflow, or CIU application for executable updates. On the CIU tab click Choose CIU and update, then select the branch executable in the dialog. No SQL login is needed for this action. Connection fields wrap together on smaller screens; scroll the SQL page when necessary. Review notes are shown in SQL preview and tooltips. Disabled actions stay unavailable until existing checks pass. Backup/restore, branch settings and SQL transactions are unchanged.
-
-Validation: final host39 executable checks plus real UI action/navigation/busy guards passed. 800x600/1000x720 screens and640x400 CIU dialog visually checked. Both solution builds,158 shared tests,101 disposable updater checks and clean-folder package/render checks passed; final styling/catalog render passed. Debug config retained exactly. Evidence: Database Updater/CIU_UI_Validation.log and TestResults/CIUUpdaterUiRevision. No live DB or deployed CIU changes.
-
-### November 6 — Separate project SQL; retire combined updater integration
-
-- Removed CIU executable and PDC/SOA SQL tabs, code/resource references and generated embedded payloads from Work Order Database Updater. Kept Work Order SQL catalog, check/review/transaction logic and improved small-screen UI. Standalone tools in their own projects are retained; automatic reintegration helper scripts are retired.
-- Organized 8 PDC/CIU and10 SOA reviewed modules under each project's Database/Reviewed_SQL_2016 with manifests, source hashes and usage guidance. All29 copied files are byte-identical to reviewed originals; all18 module scripts retain preview/replacement guards. Static SOA cancellation SQL is reference-only to avoid replacing branch-specific logic accidentally. This is organization, not a change to accounting or posting rules.
-- No live database or add-in configuration changes. Compiled-removal test confirms no integrated payload/code/actions remain. Required solution/unit/disposable-updater/packaging checks are recorded in Database Updater/SQL_Separation_Validation.log; copied script hashes checked independently.
