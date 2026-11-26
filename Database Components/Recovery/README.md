@@ -24,6 +24,14 @@ values. The rehearsal lists the seven links and rolls back the archive as well.
 
 ## Head Office recovery scripts
 
+For the November 14 HO request (**WO 19057 to 19056** with identity reseeded to
+`19056` so the next normal allocation is `19057`), see
+[the November 14 incident record](INCIDENT_2026-11-14_HO_WO_19057_TO_19056.md). That
+authorized mapping was committed and verified via
+[Verify_HO_WO_19056.sql](Verify_HO_WO_19056.sql); do not rerun
+[Renumber_HO_WO_19057_to_19056.sql](Renumber_HO_WO_19057_to_19056.sql) or reuse its
+order-specific guard constants.
+
 For the separate October 16 request to move **WO 18882 to 18879** and make the
 next Order allocation **18880**, use
 [the new one-order recovery guide](RENUMBER_HO_18882_TO_18879.md). Its standalone
