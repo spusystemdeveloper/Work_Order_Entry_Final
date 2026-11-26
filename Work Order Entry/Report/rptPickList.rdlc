@@ -50,7 +50,7 @@
         </Field>
         <Field Name="qtyOrder">
           <DataField>qtyOrder</DataField>
-          <rd:TypeName>System.Int32</rd:TypeName>
+          <rd:TypeName>System.Double</rd:TypeName>
         </Field>
         <Field Name="qtyPrep">
           <DataField>qtyPrep</DataField>
@@ -975,7 +975,7 @@
                         <Paragraph>
                           <TextRuns>
                             <TextRun>
-                              <Value>=CInt(Fields!qtyOrder.Value) - CInt(Fields!qtyPrep.Value)</Value>
+                              <Value>=Round(CDbl(Fields!qtyOrder.Value) - CDbl(Fields!qtyPrep.Value), 4)</Value>
                               <Style>
                                 <FontFamily>Centruy Gothic</FontFamily>
                                 <FontSize>8pt</FontSize>

@@ -127,6 +127,7 @@
     <Compile Include="Class\OrderPriceApprovalRules.vb" />
     <Compile Include="Class\CustomerWithholdingSuggestions.vb" />
     <Compile Include="Class\ItemSearchQuery.vb" />
+    <Compile Include="Class\OrderGroupRules.vb" />
     <Compile Include="Class\QueueLineMatcher.vb" />
     <Compile Include="Class\WorkOrderComment.vb" />
     <Compile Include="Class\WorkOrderWithholdingReference.vb" />
@@ -263,6 +264,10 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\frmItemLookUp.Withholding.vb">
+      <DependentUpon>frmItemLookUp.vb</DependentUpon>
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmItemLookUp.ImportedQuotes.vb">
       <DependentUpon>frmItemLookUp.vb</DependentUpon>
       <SubType>Form</SubType>
     </Compile>

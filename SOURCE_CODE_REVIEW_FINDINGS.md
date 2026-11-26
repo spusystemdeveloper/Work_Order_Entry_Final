@@ -514,27 +514,43 @@ Proven. Item ID 24 was loaded as 70856 from the file.
 **Remediation:** Fixed October 30. The ID comes from the matched Item row.
 importOrder still matches customer and sales rep by the file's numeric IDs.
 
-### Open findings
+### Findings 31-41
 
-- **31, Medium:** Draft Qty is an int column, so 2.5 recovers as 0. Proven. A fix
-  needs a schema change at each store.
-- **32, Medium:** frmUploader's gate omits bItem, so a missing item is added with
-  no error counted, and the later save fails.
-- **33, Medium:** frmUploader uses CInt, rounding 2.5 to 2.
-- **34, Medium:** InsertQuotationLog has no callers, so the duplicate upload check
-  cannot trigger.
-- **35, Medium:** The upload log path is fixed to a shared address, and retrying
-  after a failure can add rows twice.
-- **36, Medium:** clsPickList stores quantities as Integer, and getQtyPrep returns
-  the first row of a repeated item.
-- **37, Medium:** Logout discards the current order with no warning or draft.
-- **38, Low:** Clicking a price-level column header can insert the item.
-- **39, Low:** Recall of an order with no customer keeps the previous header.
-- **40, Low:** Editing a user can create a duplicate username, which blocks that
-  login, and frmUser can display passwords.
-- **41, Low:** Ungrouping accepts any order number, some price checks use the
-  cached global context, and website lines are saved with Taxable 0 (business
-  review needed).
+Status as of November 18. 32, 33, 37, 38 and the repeated-item part of 36 were
+fixed on November 5 (commit cfffa1f); this list was not updated at the time.
+The rest were fixed on November 18. The website Taxable item in 41 was left
+unchanged at the user's request.
+Validation is in UNIT_TEST_GUIDE.md ("November 18: findings 31-41").
+
+- **31, Medium, fixed Nov 18:** Draft Qty was an int column and the draft code
+  parsed it as a whole number, so 2.5 recovered as 0. Drafts now save and restore
+  the exact quantity. `Ensure_Work_Order_Draft_Tables.sql` converts the column to
+  float (existing values kept). Until a store runs it, drafts still work there but
+  2.5 is stored as 2.
+- **32, Medium, fixed Nov 5:** frmUploader's gate omitted bItem.
+- **33, Medium, fixed Nov 5:** frmUploader used CInt, rounding 2.5 to 2.
+- **34, Medium, fixed Nov 18:** Uploaded quotation numbers are now recorded in
+  SOD_ImportedQuote by the save transaction that commits those lines, so the
+  duplicate upload check works. Uploading the same quotation twice into one
+  unsaved order is also rejected.
+- **35, Medium, fixed Nov 18:** The log folder is the optional `ImportLogFolder`
+  app setting (default: the original shared folder). If it cannot be reached the
+  log is saved on the PC. A log failure no longer offers Retry, which could add
+  the rows twice, or Abort, which closed the main screen.
+- **36, Medium, fixed Nov 5 and Nov 18:** Repeated items fixed Nov 5. The ordered
+  quantity is now a Double, so 2.5 prints as 2.5 and the balance column too.
+- **37, Medium, fixed Nov 5:** Logout asks before discarding an order on screen.
+- **38, Low, fixed Nov 5:** A price-level column header click no longer inserts.
+- **39, Low, fixed Nov 18:** Recall uses outer joins, so an order whose customer
+  or sales rep row is missing loads with a blank customer instead of keeping the
+  previous order's header. An order that is no longer open clears the screen.
+- **40, Low, fixed Nov 18:** Edit rejects a username used by another account
+  (case-insensitive, as at login). The Show Password option is hidden and the
+  password listing query removed.
+- **41, Low, fixed Nov 18:** Ungroup accepts only an order listed in the
+  selected group. Price approval checks read current item prices instead of the
+  copy cached since login. Website order lines saved with Taxable 0: closed
+  without change at the user's request on Nov 18.
 
 ## Suggested remediation order
 

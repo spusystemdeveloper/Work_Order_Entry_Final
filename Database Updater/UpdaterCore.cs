@@ -133,7 +133,9 @@ namespace WorkOrderDatabaseUpdater
                             ? "Optional item-log index only; trigger and business rows are unchanged. Requires a maintenance window and restore test. Stops on incompatible references or ambiguous latest timestamps."
                             : name == "Improve_RMS_VoucherLookup"
                                 ? "Optional RMS voucher lookup index only; reduces Item scans that conflicted with Work Order saves in the Davao restore test. No tender IDs, triggers or business rows changed. Test each branch restore and deploy in a maintenance window."
-                                : "Optional; existing tables are preserved. Review prerequisites in the SQL.", true));
+                                : name == "Ensure_Work_Order_Draft_Tables"
+                                    ? "Creates missing draft-recovery tables. On an existing install, converts SOD_WO_DraftDetail.Qty from int to float so drafts keep 2.5; existing values and rows are kept."
+                                    : "Optional; existing tables are preserved. Review prerequisites in the SQL.", true));
             string deployment = System.IO.Path.GetFullPath(System.IO.Path.Combine(components, "Deployment"));
             string driver = profile == "Portable" ? "Deploy_PORTABLE_REQUIRED_OBJECTS.sql" : profile == "ILOILO" ? "Deploy_ILOILO_MAIN_WHSE_DB.sql" : "Deploy_" + profile + "_STORE_DB.sql";
             foreach (string line in File.ReadAllLines(System.IO.Path.Combine(deployment, driver)))

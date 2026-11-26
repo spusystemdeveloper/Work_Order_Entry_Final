@@ -3,6 +3,8 @@
   Read-only source export: DVO_STORE_DB
   Object: [dbo].[SOD_WO_DraftDetail]
   Creates the table only when it is missing. Existing schemas are validated separately and are not altered automatically.
+  2026-11-18: Qty is float (was int in the export) so drafts keep 2.5. Existing tables are
+  converted by Migrations/Ensure_Work_Order_Draft_Tables.sql.
 */
 SET ANSI_NULLS ON;
 GO
@@ -25,7 +27,7 @@ CREATE TABLE [dbo].[SOD_WO_DraftDetail](
 	[LineNo] [int] NOT NULL,
 	[ItemCode] [nvarchar](50) COLLATE SQL_Latin1_General_CP1_CI_AS NOT NULL,
 	[ItemName] [nvarchar](500) COLLATE SQL_Latin1_General_CP1_CI_AS NULL,
-	[Qty] [int] NULL,
+	[Qty] [float] NULL,
 	[Price] [money] NULL,
 	[Disc] [money] NULL,
 	[TotalPrice] [money] NULL,

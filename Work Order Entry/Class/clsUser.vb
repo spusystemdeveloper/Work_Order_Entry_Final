@@ -54,24 +54,6 @@
             Return dbx.SOD_WO_Users.Any()
         End Using
     End Function
-    Public Shared Function viewUserWithPass() As Object
-
-        Try
-
-            Using dbx = GetDB()
-                Dim usr = (From u In dbx.SOD_WO_Users
-                           Select u.UserID, u.UserFullName, u.UserName, u.UserRegister, u.UserPass).ToList
-
-                Return usr
-            End Using
-
-        Catch ex As Exception
-            AppPrompt.Show(ex.Message)
-            Return Nothing
-        End Try
-
-
-    End Function
 
     Public Shared Sub addUsers(ByVal name As String, ByVal username As String, ByVal pass As String, ByVal register As Integer)
 
@@ -157,6 +139,17 @@
                 Return True
 
             End If
+        End Using
+
+    End Function
+
+    ' True when a different account already uses this username. SQL Server's
+    ' case-insensitive collation decides the match, as it does at login.
+    Public Shared Function IsUsernameUsedByAnotherUser(ByVal username As String, ByVal userID As Integer) As Boolean
+
+        Using dbx = GetDB()
+            Return (From u In dbx.SOD_WO_Users
+                    Where u.UserName = username AndAlso u.UserID <> userID).Any()
         End Using
 
     End Function

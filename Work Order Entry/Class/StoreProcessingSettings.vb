@@ -11,6 +11,16 @@ Public NotInheritable Class StoreProcessingSettings
         End Get
     End Property
 
+    ' Folder for the CSV quotation uploader's text log. Optional; when the key is
+    ' missing the original shared folder is used.
+    Public Shared ReadOnly Property ImportLogFolder As String
+        Get
+            Dim value As String = ConfigurationManager.AppSettings("ImportLogFolder")
+            If String.IsNullOrWhiteSpace(value) Then Return "\\192.168.1.2\sc_import_file\Logs"
+            Return value.Trim()
+        End Get
+    End Property
+
     Public Shared ReadOnly Property ExpectedDatabaseName As String
         Get
             Dim value As String =

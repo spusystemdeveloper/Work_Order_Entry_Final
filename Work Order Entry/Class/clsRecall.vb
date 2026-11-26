@@ -161,12 +161,23 @@ Public Class clsRecall
 
         Try
             Using dbx = GetDB()
+                ' Outer joins: an order whose customer or sales rep row is missing (for
+                ' example CustomerID 0) still returns its header, with blank customer or
+                ' rep values, so the previous order's header is not left on screen.
                 Dim quote = (From a In dbx.Orders
-                             Join c In dbx.Customers On a.CustomerID Equals c.ID
-                             Join e In dbx.SalesReps On a.SalesRepID Equals e.ID
+                             Group Join c In dbx.Customers On a.CustomerID Equals c.ID Into customers = Group
+                             From c In customers.DefaultIfEmpty()
+                             Group Join e In dbx.SalesReps On a.SalesRepID Equals e.ID Into reps = Group
+                             From e In reps.DefaultIfEmpty()
                              Where a.Closed = 0 And a.ID = orderid
-                             Select New With {c.Company, c.AccountNumber, c.PriceLevel, c.Employee, c.Title, .CustID = c.ID, c.CustomText5, c.TaxExempt,
-    a.SalesRepID, .SaleRepName = e.Name, a.Comment, a.Type, a.DefaultTaxChangeReasonCodeID}).ToList
+                             Select New With {c.Company, c.AccountNumber,
+                                              .PriceLevel = CType(c.PriceLevel, Short?),
+                                              .Employee = CType(c.Employee, Boolean?),
+                                              c.Title,
+                                              .CustID = CType(c.ID, Integer?),
+                                              c.CustomText5,
+                                              .TaxExempt = CType(c.TaxExempt, Boolean?),
+                                              a.SalesRepID, .SaleRepName = e.Name, a.Comment, a.Type, a.DefaultTaxChangeReasonCodeID}).ToList
                 Return quote
             End Using
         Catch ex As Exception

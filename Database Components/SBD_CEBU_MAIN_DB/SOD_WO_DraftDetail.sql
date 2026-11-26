@@ -15,7 +15,7 @@ BEGIN
         [LineNo] [int] NOT NULL,
         [ItemCode] [nvarchar](50) NOT NULL,
         [ItemName] [nvarchar](500) NULL,
-        [Qty] [int] NULL,
+        [Qty] [float] NULL,
         [Price] [money] NULL,
         [Disc] [money] NULL,
         [TotalPrice] [money] NULL,

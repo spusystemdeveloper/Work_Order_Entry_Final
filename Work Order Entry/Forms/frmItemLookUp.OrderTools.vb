@@ -46,7 +46,8 @@ Partial Public Class frmItemLookUp
         Await PollShortageAlertsAsync()
     End Sub
 
-    Private statusBarFont As Font
+    ' Created once and shared; the badge is restyled on every 15-second poll.
+    Private ReadOnly statusBarFont As New Font("Tahoma", 9.5F, FontStyle.Bold)
 
     ' The default status bar renderer ignores a label's BackColor, which the
     ' "ready for invoicing" badge needs.
@@ -66,7 +67,6 @@ Partial Public Class frmItemLookUp
     ' One plain look for every status item: same font, thin dividers, even padding.
     ' Only appearance changes; texts and click handlers are untouched.
     Private Sub ApplyStatusBarStyle()
-        If statusBarFont Is Nothing Then statusBarFont = New Font("Tahoma", 9.5F, FontStyle.Bold)
         Dim textColor As Color = Color.FromArgb(20, 20, 20)
         BottomStrip.BackColor = Color.FromArgb(244, 246, 249)
         If Not TypeOf BottomStrip.Renderer Is StatusBarRenderer Then BottomStrip.Renderer = New StatusBarRenderer()
@@ -96,7 +96,7 @@ Partial Public Class frmItemLookUp
     ' "Ready for invoicing" as a small badge: blue normally, green when new orders are ready.
     Private Sub StyleReadyBadge(hasNew As Boolean)
         If readyStatus Is Nothing Then Return
-        readyStatus.Font = New Font("Tahoma", 9.5F, FontStyle.Bold)
+        readyStatus.Font = statusBarFont
         readyStatus.LinkBehavior = LinkBehavior.NeverUnderline
         readyStatus.LinkColor = Color.White
         readyStatus.ActiveLinkColor = Color.White

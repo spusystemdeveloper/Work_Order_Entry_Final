@@ -1283,6 +1283,8 @@ Public Class frmItemLookUp
 
                         Next chunkIndex
 
+                        RecordImportedQuotations(dbSave, createdOrderIDs(0))
+
                         ' Commit all headers, lines, logs, and queue items as a single unit
                         dbSave.SubmitChanges()
                         saveTransaction.Commit()
@@ -1503,6 +1505,7 @@ Proceed:
             ErrorCount += 1
             ErrorLogger.LogError(ex, "Clearing the form after a committed save")
         Finally
+            ClearPendingImportedQuotes()
             If gridSelectItem.Rows.Count > 0 Then
                 gridSelectItem.Rows.Clear()
                 lblOrderNo.Text = "Order #: "
@@ -1774,6 +1777,8 @@ Proceed:
                             RemoveQueueProcessingItems(dbSave, orderID)
                         End If
                     End If
+
+                    RecordImportedQuotations(dbSave, orderID)
 
                     dbSave.SubmitChanges()
                     For Each request In shortageRequests
@@ -2682,6 +2687,7 @@ Proceed:
     Public Sub RefreshDetails(ByVal reloaditem As Boolean)
 
         ResetShortageReductions()
+        ClearPendingImportedQuotes()
         recalledSnapshot = Nothing
         activeRecallOrderID = 0
         walkInRates = Nothing
@@ -3583,6 +3589,7 @@ err_flag:
     Public Sub RecallQuote(ByVal orderid As Integer)
 
         ResetShortageReductions()
+        ClearPendingImportedQuotes()
         recalledSnapshot = Nothing
         activeRecallOrderID = orderid
         delitems.Clear()
@@ -3603,24 +3610,39 @@ err_flag:
                 manualTaxExemptionReasonID = TryResolveManualTaxExemptionReasonID(reasonDb)
             End Using
 
-            For Each x In clsRecall.RecallOrder(orderid)
-                sAcctNum = x.AccountNumber
-                iPrice = x.PriceLevel
+            Dim recalledHeaders = clsRecall.RecallOrder(orderid)
+            If recalledHeaders Is Nothing OrElse recalledHeaders.Count = 0 Then
+                ' Do not leave the previous order's customer and lines on screen.
+                RefreshDetails(False)
+                AppPrompt.Show("Order " & orderid & " is no longer open and cannot be recalled.",
+                               "Recall", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                Exit Sub
+            End If
+
+            For Each x In recalledHeaders
+                ' Customer values are blank when the order's customer row is missing.
+                Dim hasCustomer As Boolean = x.CustID IsNot Nothing
+                sAcctNum = If(x.AccountNumber, "")
+                iPrice = If(x.PriceLevel, 0S)
                 txtPriceLevel.Text = PriceLevelTextFromIndex(iPrice)
-                bEmployee = x.Employee
-                sTitle = x.Title
+                bEmployee = If(x.Employee, False)
+                sTitle = If(x.Title, "")
                 bTaxExcempt =
-                    x.TaxExempt OrElse
+                    If(x.TaxExempt, False) OrElse
                     (manualTaxExemptionReasonID.HasValue AndAlso
                      x.DefaultTaxChangeReasonCodeID = manualTaxExemptionReasonID.Value)
-                iCusID = x.CustID
+                iCusID = If(x.CustID, 0)
                 LoadWalkInWithholding(orderid)
-                txtCustomer.Text = x.Company
-                txtType.Text = x.CustomText5
-                GetCustomerPriceLevel()
+                txtCustomer.Text = If(x.Company, "")
+                txtType.Text = If(x.CustomText5, "")
+                If hasCustomer Then
+                    GetCustomerPriceLevel()
+                Else
+                    txtCustomerId.Text = ""
+                End If
 
                 iSalesID = x.SalesRepID
-                txtSales.Text = x.SaleRepName
+                txtSales.Text = If(x.SaleRepName, "")
 
                 If x.Type = 2 Then
 
@@ -5144,6 +5166,8 @@ inputCust:
         Dim needsPassword As Boolean = False
         Dim rowsNeedingOverride As New List(Of DataGridViewRow)
 
+        ' Read current prices, not the copies cached by the shared context since login.
+        Using priceDb = NewPriceCheckContext()
         For Each row As DataGridViewRow In gridSelectItem.Rows
             If row.IsNewRow Then Continue For
 
@@ -5168,7 +5192,7 @@ inputCust:
                 Return False
             End If
 
-            Dim item = (From a In db.Items
+            Dim item = (From a In priceDb.Items
                         Where a.ItemLookupCode.Equals(itemCode)
                         Select a).FirstOrDefault()
 
@@ -5184,8 +5208,8 @@ inputCust:
                 Dim lastPart = lblOrderNo.Text.Split(" "c).Last().Trim()
                 If Not Integer.TryParse(lastPart, orderID) Then WoRecallType = 0
                 ' Preserve the legacy treatment of this row if the label is invalid.
-                Dim orderEntry = (From o In db.OrderEntries
-                                  Join i In db.Items On i.ID Equals o.ItemID
+                Dim orderEntry = (From o In priceDb.OrderEntries
+                                  Join i In priceDb.Items On i.ID Equals o.ItemID
                                   Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
                                   Select o).FirstOrDefault()
                 If orderEntry IsNot Nothing Then savedPrice = orderEntry.Price
@@ -5198,6 +5222,7 @@ inputCust:
                 rowsNeedingOverride.Add(row)
             End If
         Next
+        End Using
 
         ' Step 2: Ask for password if needed
         If needsPassword AndAlso Not bAllow Then
@@ -5290,27 +5315,30 @@ inputCust:
             Dim itemCode As String = row.Cells(0).Value?.ToString()
             If String.IsNullOrWhiteSpace(itemCode) Then Exit Sub
 
-            ' --- Step 2: Fetch item details ---
-            Dim item = (From a In db.Items
-                        Where a.ItemLookupCode = itemCode
-                        Select a).FirstOrDefault()
-
-            If item Is Nothing Then Exit Sub
-
-            Dim minPrice As Decimal = GetApprovedMinPrice(item)
-            txtPrice.Text = minPrice.ToString("N2")
-
+            ' --- Step 2: Fetch current item details (not the shared cached copy) ---
+            Dim minPrice As Decimal
             Dim savedPrice As Decimal? = Nothing
-            If type = 1 Then
-                Dim orderID As Integer
-                Dim lastPart = lblOrderNo.Text.Split(" "c).Last().Trim()
-                If Not Integer.TryParse(lastPart, orderID) Then Exit Sub
-                Dim orderEntry = (From o In db.OrderEntries
-                                  Join i In db.Items On i.ID Equals o.ItemID
-                                  Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
-                                  Select o).FirstOrDefault()
-                If orderEntry IsNot Nothing Then savedPrice = orderEntry.Price
-            End If
+            Using priceDb = NewPriceCheckContext()
+                Dim item = (From a In priceDb.Items
+                            Where a.ItemLookupCode = itemCode
+                            Select a).FirstOrDefault()
+
+                If item Is Nothing Then Exit Sub
+
+                minPrice = GetApprovedMinPrice(item)
+                txtPrice.Text = minPrice.ToString("N2")
+
+                If type = 1 Then
+                    Dim orderID As Integer
+                    Dim lastPart = lblOrderNo.Text.Split(" "c).Last().Trim()
+                    If Not Integer.TryParse(lastPart, orderID) Then Exit Sub
+                    Dim orderEntry = (From o In priceDb.OrderEntries
+                                      Join i In priceDb.Items On i.ID Equals o.ItemID
+                                      Where i.ItemLookupCode = itemCode AndAlso o.OrderID = orderID
+                                      Select o).FirstOrDefault()
+                    If orderEntry IsNot Nothing Then savedPrice = orderEntry.Price
+                End If
+            End Using
             Dim highlight = OrderPriceApprovalRules.RequiresOverride(currentPrice, minPrice, type, savedPrice)
 
             ' --- Step 5: Apply coloring ---
@@ -5383,29 +5411,41 @@ inputCust:
 
 
     Public Function IsPriceBelowAllowed(itemCode As Integer, currentPrice As Decimal) As Boolean
-        Dim item = (From a In db.Items
-                    Where a.ID.Equals(itemCode)
-                    Select a).FirstOrDefault()
+        Using priceDb = NewPriceCheckContext()
+            Dim item = (From a In priceDb.Items
+                        Where a.ID.Equals(itemCode)
+                        Select a).FirstOrDefault()
 
-        If item Is Nothing Then
-            Return False
-        End If
+            If item Is Nothing Then
+                Return False
+            End If
 
-        Return currentPrice < GetApprovedMinPrice(item)
+            Return currentPrice < GetApprovedMinPrice(item)
+        End Using
 
     End Function
 
     Private Sub SetApprovedPriceText(ByVal itemCode As String)
         If String.IsNullOrWhiteSpace(itemCode) Then Exit Sub
 
-        Dim item = (From a In db.Items
-                    Where a.ItemLookupCode = itemCode
-                    Select a).FirstOrDefault()
+        Using priceDb = NewPriceCheckContext()
+            Dim item = (From a In priceDb.Items
+                        Where a.ItemLookupCode = itemCode
+                        Select a).FirstOrDefault()
 
-        If item Is Nothing Then Exit Sub
+            If item Is Nothing Then Exit Sub
 
-        txtPrice.Text = GetApprovedMinPrice(item).ToString("N2")
+            txtPrice.Text = GetApprovedMinPrice(item).ToString("N2")
+        End Using
     End Sub
+
+    ' Price approval checks must see prices changed after login. The shared db
+    ' context keeps the first copy of each item it loaded until the screen resets.
+    Private Shared Function NewPriceCheckContext() As ItemLookUpDataContext
+        Dim context = GetDB()
+        context.ObjectTrackingEnabled = False
+        Return context
+    End Function
 
     Public Sub ApplyCustomerTaxStatusToRows()
         If gridSelectItem.Rows.Count = 0 Then Exit Sub

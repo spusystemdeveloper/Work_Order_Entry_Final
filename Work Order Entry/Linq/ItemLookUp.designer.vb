@@ -12216,7 +12216,7 @@ Partial Public Class SOD_WO_DraftDetail
 	
 	Private _ItemName As String
 	
-	Private _Qty As System.Nullable(Of Integer)
+	Private _Qty As System.Nullable(Of Double)
 	
 	Private _Price As System.Nullable(Of Decimal)
 	
@@ -12283,7 +12283,7 @@ Partial Public Class SOD_WO_DraftDetail
     End Sub
     Partial Private Sub OnItemNameChanged()
     End Sub
-    Partial Private Sub OnQtyChanging(value As System.Nullable(Of Integer))
+    Partial Private Sub OnQtyChanging(value As System.Nullable(Of Double))
     End Sub
     Partial Private Sub OnQtyChanged()
     End Sub
@@ -12453,8 +12453,8 @@ Partial Public Class SOD_WO_DraftDetail
 		End Set
 	End Property
 	
-	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_Qty", DbType:="Int")>  _
-	Public Property Qty() As System.Nullable(Of Integer)
+	<Global.System.Data.Linq.Mapping.ColumnAttribute(Storage:="_Qty", DbType:="Float")>  _
+	Public Property Qty() As System.Nullable(Of Double)
 		Get
 			Return Me._Qty
 		End Get

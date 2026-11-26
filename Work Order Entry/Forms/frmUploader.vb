@@ -5,6 +5,8 @@ Public Class frmUploader
     Dim sSucMsg As String = String.Empty
     Dim sComp As String = String.Empty
     Private sArrayQuote() As clsImportQuotation
+    ' Quotation numbers of the rows added to the order by this upload.
+    Private ReadOnly importedQuotes As New List(Of ImportedQuoteReference)
 
     Private Sub cmdClose_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdClose.Click
         Me.Close()
@@ -20,8 +22,9 @@ Public Class frmUploader
             Using LoadingOverlay.Show(Me, "Importing items...")
                 VerifyImportFile()
             End Using
-            If SaveLogToTxt() = False Then Exit Sub
 
+            ' The rows are already added, so switch to Finish before writing the log.
+            ' A log failure must not let Import run again and add the rows twice.
             cmdImport.Text = "&Finish"
             cmdReport.Enabled = True
 
@@ -29,11 +32,15 @@ Public Class frmUploader
                 cmdImport.Enabled = False
                 bSuccessImport = False
                 frmItemLookUp.gridSelectItem.Rows.Clear()
+                frmItemLookUp.ClearPendingImportedQuotes()
                 frmItemLookUp.UpdateAmt()                
             Else
                 cmdImport.Enabled = True
                 bSuccessImport = True
+                frmItemLookUp.AddPendingImportedQuotes(importedQuotes)
             End If
+
+            SaveLogToTxt()
 
         End If
 
@@ -67,6 +74,10 @@ Public Class frmUploader
                     If Integer.TryParse(fields(0), Nothing) Then 'Check if column(A) is integer
                         If clsImportQuotation.CheckQuotationLog(fields(0), iSalesID) = True Then 'Check if quotation already exist
                             sErrMsg = sErrMsg & clsImportQuotation.PopulateError(Me.gridInfo, iRowNo, 1, fields(0), "Quotation No already exist/uploaded.")
+                            bQuote = False
+                        ElseIf frmItemLookUp.IsQuotationPendingImport(CInt(fields(0)), iSalesID) Then
+                            ' Uploaded earlier into this unsaved order.
+                            sErrMsg = sErrMsg & clsImportQuotation.PopulateError(Me.gridInfo, iRowNo, 1, fields(0), "Quotation No is already on this order.")
                             bQuote = False
                         Else
                             bQuote = True
@@ -156,6 +167,9 @@ Public Class frmUploader
 
                         End With
 
+                        Dim quoteReference As New ImportedQuoteReference(CInt(fields(0)), iSalesID)
+                        If Not importedQuotes.Contains(quoteReference) Then importedQuotes.Add(quoteReference)
+
                         sSucMsg = sSucMsg & "--> Row " & iRowNo & " (Verified)" & vbNewLine
                         With gridInfo.Rows.Item(gridInfo.Rows.Add())
                             .Cells(0).Value = iRowNo
@@ -226,36 +240,48 @@ Public Class frmUploader
 
 
     End Sub
-    Private Function SaveLogToTxt() As Boolean
+    ' Writes the upload log to the ImportLogFolder setting (default: the original
+    ' shared folder). If that folder cannot be reached, the log is saved on this PC.
+    ' Logging never affects the rows already added to the order.
+    Private Sub SaveLogToTxt()
+        Dim sFilename As String = Path.GetFileNameWithoutExtension(lblFile.Text) & ".txt"
+        Dim sharedFolder As String = StoreProcessingSettings.ImportLogFolder
+        Dim localFolder As String = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "WorkOrderEntry", "ImportLogs")
+
         Try
-            Dim sFilename As String = Path.GetFileNameWithoutExtension(lblFile.Text)
-            Dim sPathway As String = "\\192.168.1.2\sc_import_file\Logs\"
-            Dim sFilePath As String = sPathway & sFilename & ".txt"
-
-            Using sw As StreamWriter = File.AppendText(sFilePath)
-                sw.WriteLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"))
-                sw.WriteLine("#Error")
-                sw.WriteLine(IIf(Len(sErrMsg) > 0, sErrMsg, "--> None"))
-                sw.WriteLine("#Successful")
-                sw.WriteLine(IIf(Len(sSucMsg) > 0, sSucMsg, "--> None"))
-                sw.WriteLine(vbNewLine & "------------------------------------------------------------------------------")
-            End Using
-
-            Return True
+            WriteLog(Path.Combine(sharedFolder, sFilename))
+            Return
         Catch ex As Exception
-
-            Dim result As Integer = AppPrompt.Show(ex.ToString, "Work/Sales Order Entry", MessageBoxButtons.AbortRetryIgnore, MessageBoxIcon.Error)
-            If result = DialogResult.Abort Then
-                Me.Close()
-                frmItemLookUp.Close()
-            ElseIf result = DialogResult.Retry Then
-                SaveLogToTxt()
-            ElseIf result = DialogResult.Ignore Then
-                Me.Close()
-            End If
-            Return False
+            ErrorLogger.LogError(ex, "Writing the import log to " & sharedFolder)
         End Try
-    End Function
+
+        Try
+            Directory.CreateDirectory(localFolder)
+            Dim localPath As String = Path.Combine(localFolder, sFilename)
+            WriteLog(localPath)
+            AppPrompt.Show("The import log folder could not be reached:" & vbNewLine & sharedFolder & vbNewLine & vbNewLine &
+                           "The log was saved on this PC instead:" & vbNewLine & localPath & vbNewLine & vbNewLine &
+                           "The imported items are not affected.",
+                           "Import Log", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch ex As Exception
+            ErrorLogger.LogError(ex, "Writing the import log to " & localFolder)
+            AppPrompt.Show("The import log could not be saved. The imported items are not affected.",
+                           "Import Log", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        End Try
+    End Sub
+
+    Private Sub WriteLog(ByVal sFilePath As String)
+        Using sw As StreamWriter = File.AppendText(sFilePath)
+            sw.WriteLine(DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"))
+            sw.WriteLine("#Error")
+            sw.WriteLine(IIf(Len(sErrMsg) > 0, sErrMsg, "--> None"))
+            sw.WriteLine("#Successful")
+            sw.WriteLine(IIf(Len(sSucMsg) > 0, sSucMsg, "--> None"))
+            sw.WriteLine(vbNewLine & "------------------------------------------------------------------------------")
+        End Using
+    End Sub
 
     Private Sub ImportToWorkOrder()
 

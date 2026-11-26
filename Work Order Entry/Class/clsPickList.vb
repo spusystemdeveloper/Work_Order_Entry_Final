@@ -4,7 +4,8 @@
     Public Property itemDesc As String = ""
     Public Property picker As String = ""
     Public Property wokrOrder As String = ""
-    Public Property qtyOrder As Integer = 0
+    ' Ordered quantities can be fractional (for example 2.5), so keep a Double.
+    Public Property qtyOrder As Double = 0
     Public Property qtyPrep As Integer = 0
     Public Property printDate As String = ""
     Public Property printTime As String = ""

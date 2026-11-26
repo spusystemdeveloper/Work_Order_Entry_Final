@@ -90,12 +90,12 @@ For stores missing the item-code lookup index, see
 database optimization preserves the application rules and is not automatically
 included in the branch deployment drivers.
 
-The test project contains 101 database-free unit tests for price levels,
+The test project contains 158 database-free unit tests covering areas such as price levels,
 print-template selection, import-file routing, branch validation,
 senior-citizen tags, VAT, tax exemption, non-taxable pricing, queue order-age
 rules, error logging, edit-conflict validation, ready notifications, and customer
 acceptance of warehouse shortages and loading-overlay scope handling.
-All 101 passed on October 14, 2026.
+All 158 passed on November 11, 2026 (see UNIT_TEST_GUIDE.md for the latest results).
 
 Run the unit tests from the repository root with:
 

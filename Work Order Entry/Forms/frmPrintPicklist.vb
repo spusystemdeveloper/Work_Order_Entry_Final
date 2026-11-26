@@ -36,7 +36,7 @@ Public Class frmPrintPicklist
                 item.itemCode = x.Itemcode
                 item.picker = ""
                 item.wokrOrder = x.OrderID
-                item.qtyOrder = x.QtyOrder
+                item.qtyOrder = Math.Round(x.QtyOrder, 4)
                 item.qtyPrep = If(preparedByEntry.ContainsKey(x.EntryID), preparedByEntry(x.EntryID), 0)
                 item.printDate = DateTime.Now.ToString("dd/MM/yyyy")
                 item.printTime = DateTime.Now.ToString("HH:mm:ss tt")

@@ -178,18 +178,27 @@
 
         End Try
 
-        Dim orderid = MyInputBox("Enter Work Order to Ungroup")
-
-        If orderid = "" Then
+        If Not OrderGroupRules.IsGroup(orders) Then
+            AppPrompt.Show("Nothing to Ungroup!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             Exit Sub
         End If
 
-        If orders.Contains("/") Then
-            clsCustomer.updateQueuing(orderid, orderid)
-            gridCustOrder.DataSource = clsCustomer.loadCustomerOpenWo(custIDWo, custWoID)
-        Else
-            AppPrompt.Show("Nothing to Un1group!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+        Dim typedOrder = MyInputBox("Enter Work Order to Ungroup")
+
+        If typedOrder = "" Then
+            Exit Sub
         End If
+
+        ' Only an order listed in the selected group may be ungrouped.
+        Dim orderid As Integer
+        If Not OrderGroupRules.TryFindOrderInGroup(orders, typedOrder, orderid) Then
+            AppPrompt.Show("Work Order " & typedOrder.Trim() & " is not in the selected group (" & orders & ").",
+                           "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            Exit Sub
+        End If
+
+        clsCustomer.updateQueuing(orderid.ToString(), orderid.ToString())
+        gridCustOrder.DataSource = clsCustomer.loadCustomerOpenWo(custIDWo, custWoID)
 
     End Sub
 End Class

@@ -1,11 +1,15 @@
 ﻿Public Class frmUser
 
     Private Sub frmUser_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        ' Passwords are never listed on screen, so the old Show Password option is hidden.
+        chkBox.Checked = False
+        chkBox.Visible = False
         gridUser.DataSource = clsUser.viewUser()
     End Sub
 
     Private Sub btnAdd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnAdd.Click
 
+        txtUsr.Text = txtUsr.Text.Trim()
         Dim exist = clsUser.verifyUsername(txtUsr.Text)
 
         If exist = False Then
@@ -26,11 +30,22 @@
     End Sub
 
     Private Sub btnEdit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnEdit.Click
-      
+
+            Dim userID As Integer
+            If Not Integer.TryParse(txtID.Text, userID) Then
+                AppPrompt.Show("Please Select a User !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                Exit Sub
+            End If
+
+            txtUsr.Text = txtUsr.Text.Trim()
+
             If txtFn.Text = String.Empty Or txtUsr.Text = String.Empty Or txtPass.Text = String.Empty Or txtRegister.Text = String.Empty Then
                 AppPrompt.Show("Please Fillup all the Field!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+            ElseIf clsUser.IsUsernameUsedByAnotherUser(txtUsr.Text, userID) Then
+                ' Two accounts with one username would block that login.
+                AppPrompt.Show("Username Already Taken!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             Else
-                clsUser.updateUser(Convert.ToInt64(txtID.Text), txtFn.Text, txtUsr.Text, txtPass.Text, txtRegister.Text)
+                clsUser.updateUser(userID, txtFn.Text, txtUsr.Text, txtPass.Text, txtRegister.Text)
                 gridUser.DataSource = clsUser.viewUser()
                 clearFields()
             End If
@@ -84,10 +99,6 @@
     End Sub
 
     Private Sub chkBox_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles chkBox.CheckedChanged
-        If chkBox.Checked = True Then
-            gridUser.DataSource = clsUser.viewUserWithPass()
-        Else
-            gridUser.DataSource = clsUser.viewUser()
-        End If
+        gridUser.DataSource = clsUser.viewUser()
     End Sub
 End Class

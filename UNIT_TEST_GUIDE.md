@@ -1,5 +1,42 @@
 # Work Order Entry unit tests
 
+## November 18: findings 31-41
+
+`OrderGroupRulesTests` (4) cover the ungroup order check. After a Release/x86
+build, run `Database Components/Tests/OpenFindings_LocalDB_Test.ps1` (x86
+Windows PowerShell). It builds a disposable LocalDB database from the app's LINQ
+mapping plus the real draft migration, then drives the compiled code on a hidden
+form (never Load/Show). It checks 36 items:
+
+- Drafts on an old int Qty column: still found, saved twice, recovered and deleted
+  (2.5 stored as 2 there). Both copies of `Ensure_Work_Order_Draft_Tables.sql`
+  convert Qty to float, repeat safely and keep values; then 2.5 and 4 round-trip.
+- Uploaded quotations: remembered per sales rep, recorded once by a committed save
+  transaction, not recorded by a rolled-back one, skipped without the optional
+  table, forgotten when the screen is cleared; `CheckQuotationLog` then finds them.
+- Recall: unchanged header values for a normal order; a header for CustomerID 0 /
+  SalesRepID 0; nothing for a closed order; the previous customer, rep and tax flag
+  cleared on screen.
+- Usernames: another account's name rejected regardless of case; own name allowed;
+  the password listing query removed.
+- Price approval reads a price changed after the shared context loaded the item.
+
+Verified November 18: both solutions built Release/x86; 162 unit tests passed;
+OpenFindings 36 checks (OpenFindings-bc83ebcf); MultiUser_Save_LocalDB_Test.ps1
+71 checks in each mode (MultiUser-dced0b9f, MultiUser-cb109d3e); ItemSearch 36
+(ItemSearch-ad7d1c46); OrderTools smoke test 99; DatabaseUpdater 101
+(DatabaseUpdater-02608e61). The Debug EXE config was unchanged; the build
+rewrote the Release and test-folder copies, which were restored byte-for-byte.
+
+The one prompt during the no-customer recall comes from the fixture: recall's
+existing final credit lookup needs `SOD_fn_GetCreditLimit`, which the fixture
+lacks. Not tested: the visible screens, a real CSV upload and its log folder,
+printing the pick list, the Users screen, the ungroup dialog, a restored store
+copy, or the live updater run. Manual acceptance on a test store: save a draft
+with 2.5 and reopen; upload one CSV quotation, save, then upload it again
+(expect "already exist/uploaded"); print a pick list with 2.5; recall an order
+after another customer's order; rename a user to an existing name.
+
 ## Recalled header Taxable flag (November 11)
 
 After a Debug/x86 build, run
@@ -2397,22 +2434,16 @@ The same suite now includes ten checks for the separate saved reseed script,
 bringing the total to 36: committed links, unchanged repeats, preserved data,
 actual next allocation 18871 and rejection after later activity.
 
-### November 5 — CIU executable updater integration
+## Work Order Database Updater (SQL only)
 
-- Added an independent "Update CIU executable..." header action with embedded current CIU and shared verified backup/update/restore engine. SQL connection is not needed; button disabled during SQL operations. Existing SQL catalog/core/transaction code and Work Order business rules unchanged.
-- CIU distribution compiles sanitized generated connection defaults; source/branch configs are preserved. No runtime config or credentials are packaged. Existing filename/shortcuts/registry remain unchanged.
-- Both Release/x86 solution builds passed. All158 shared unit tests,101 disposable LocalDB SQL-updater checks and clean-folder dependency/report rendering passed. Integrated executable update repeated39 file/hash/backup/restore/config checks plus real first-run UI action and header-button/busy guard. Existing Debug configuration restored byte-for-byte. No live database or deployed CIU changes. Branch UI/business workflow and actual deployment remain pending.
-Updater integration evidence: Database Updater/CIU_Integration_Validation.log and TestResults/CIUUpdaterIntegration. Reusable executable test sources are in the PDC repository CIU_Updater/tests. Run CIU_Updater/Build.ps1, sync with Integrate-WorkOrderUpdater.ps1, build the host, and repeat those file/UI tests plus DatabaseUpdater_LocalDB_Test.ps1 and Packaging_CleanFolder_Test.ps1. No live target is required.
+Since November 6 the updater handles Work Order SQL only; the CIU executable
+and PDC/SOA SQL tabs were removed. After a Release/x86 build, run
+`Database Components/Tests/DatabaseUpdater_LocalDB_Test.ps1` and
+`Database Components/Tests/Packaging_CleanFolder_Test.ps1`. Use
+`checks/WorkOrderSqlOnlyTests.cs` in the SOA workspace for the final
+resource/type/tab and 800x600 rendering checks. The separation results are
+recorded in `Database Updater/SQL_Separation_Validation.log`.
 
-## November 5 — Updated interface (package 2026.11.05.2)
-
-The window is now RMS Branch Updater. Choose Database updates for the existing SQL review workflow, or CIU application for executable updates. On the CIU tab click Choose CIU and update, then select the branch executable in the dialog. No SQL login is needed for this action. Connection fields wrap together on smaller screens; scroll the SQL page when necessary. Review notes are shown in SQL preview and tooltips. Disabled actions stay unavailable until existing checks pass. Backup/restore, branch settings and SQL transactions are unchanged.
-
-Validation: final host39 executable checks plus real UI action/navigation/busy guards passed. 800x600/1000x720 screens and640x400 CIU dialog visually checked. Both solution builds,158 shared tests,101 disposable updater checks and clean-folder package/render checks passed; final styling/catalog render passed. Debug config retained exactly. Evidence: Database Updater/CIU_UI_Validation.log and TestResults/CIUUpdaterUiRevision. No live DB or deployed CIU changes.
-
-### November 6 — Separate project SQL; retire combined updater integration
-
-- Removed CIU executable and PDC/SOA SQL tabs, code/resource references and generated embedded payloads from Work Order Database Updater. Kept Work Order SQL catalog, check/review/transaction logic and improved small-screen UI. Standalone tools in their own projects are retained; automatic reintegration helper scripts are retired.
-- Organized 8 PDC/CIU and10 SOA reviewed modules under each project's Database/Reviewed_SQL_2016 with manifests, source hashes and usage guidance. All29 copied files are byte-identical to reviewed originals; all18 module scripts retain preview/replacement guards. Static SOA cancellation SQL is reference-only to avoid replacing branch-specific logic accidentally. This is organization, not a change to accounting or posting rules.
-- No live database or add-in configuration changes. Compiled-removal test confirms no integrated payload/code/actions remain. Required solution/unit/disposable-updater/packaging checks are recorded in Database Updater/SQL_Separation_Validation.log; copied script hashes checked independently.
-Use checks/WorkOrderSqlOnlyTests.cs in the SOA workspace for final resource/type/tab and800x600 rendering checks. Old combined integration tests describe a retired feature and are not the current updater test path.
+The older CIU integration tests (`CIU_Updater/tests` in the PDC repository and
+`Integrate-WorkOrderUpdater.ps1`) describe the retired combined updater and are
+not the current updater test path. See CHANGELOG.md for the November 5–6 history.
