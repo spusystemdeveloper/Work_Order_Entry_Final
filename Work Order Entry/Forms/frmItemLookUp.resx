@@ -118,23 +118,12 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <metadata name="ofdImport.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>30, 16</value>
+    <value>175, 17</value>
   </metadata>
   <metadata name="BottomStrip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>146, 19</value>
+    <value>283, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-  <data name="btnTax.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        R0lGODlhEAAQAIUAAAAAAP///zt5yTp5yTp5yDt5yE6L00+L006K0k+K0k+L0k6L0mKc3WOc3WKc3GOc
-        3HCo4/z8/Pv7+/f39/T09PDw8O7u7ujo6MjIyKGhoZycnJaWlo+Pj4eHh39/f3d3d3Fxcf///wAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQBAAAhACwAAAAAEAAQ
-        AAAIgwBDCBxIsKDBgR8+YEh40OCHhgcfEsxAsaLFDxYzaIggoaPHjh88RtCwYQKEkyghWPhgoeWEDRwo
-        MHDQ4MGDmRc+XNhJgUMHCgcSKDiAwMCCnDsvUOjggQIBAQOiCiiAlKeHDxQqaN2q9cNWCh9AiB1LNixZ
-        iCEkokW4VmDChWrbEgwIADs=
-</value>
-  </data>
   <data name="Button2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABGdBTUEAALGPC/xhBQAAAklJREFUOE+d
@@ -148,6 +137,17 @@
         58ezeORsVIEzteMk0iAloN5uoWgXsHwzU7tSTsNqBebla9yau8TVaRMlrw0Uj2XS42hQgZw7Y8REj2FZ
         QT461RaeuK0MbXVz0ZaP3npYiTj+ifYD6B8cwti924KhalQZ13ZInbO4KE8Qspqz6XO0KR+J2roXHB7w
         aKcg/i4Zdd5iXD5JvfGUDFXDTQqwLcFXP2zsgDeuAcTif7IH/AIV8TLjizjk/gAAAABJRU5ErkJggg==
+</value>
+  </data>
+  <data name="btnTax.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        R0lGODlhEAAQAIUAAAAAAP///zt5yTp5yTp5yDt5yE6L00+L006K0k+K0k+L0k6L0mKc3WOc3WKc3GOc
+        3HCo4/z8/Pv7+/f39/T09PDw8O7u7ujo6MjIyKGhoZycnJaWlo+Pj4eHh39/f3d3d3Fxcf///wAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEBAAAh+QQBAAAhACwAAAAAEAAQ
+        AAAIgwBDCBxIsKDBgR8+YEh40OCHhgcfEsxAsaLFDxYzaIggoaPHjh88RtCwYQKEkyghWPhgoeWEDRwo
+        MHDQ4MGDmRc+XNhJgUMHCgcSKDiAwMCCnDsvUOjggQIBAQOiCiiAlKeHDxQqaN2q9cNWCh9AiB1LNixZ
+        iCEkokW4VmDChWrbEgwIADs=
 </value>
   </data>
   <data name="cmdOpenWO.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
@@ -342,6 +342,9 @@
         ETJmkFhRducKEjMIlGDRNgCLEgQEGGjBt69fvgYEJIjw4IThw4gfREiAgIFjGpAjQ3bMAEFAADs=
 </value>
   </data>
+  <metadata name="withholdingToolTip.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
   <data name="cmdSSales.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         R0lGODlhEAAQAIYAAAAAAP///zJRtCc/jIiVv292jXV7j2qOxzJxxDqB3j18zkdhg63L7H2Kl/r6+vj4
@@ -396,9 +399,6 @@
   <metadata name="QTY.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="Price.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <metadata name="DISC.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -414,9 +414,6 @@
   <metadata name="DiscP.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
-  <metadata name="Cost.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
   <metadata name="Taxable.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
@@ -424,9 +421,6 @@
     <value>True</value>
   </metadata>
   <metadata name="FullPrice.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="Description.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <metadata name="Extended.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
@@ -448,13 +442,13 @@
     <value>True</value>
   </metadata>
   <metadata name="Update_Timer.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>267, 19</value>
+    <value>401, 17</value>
   </metadata>
   <metadata name="Check_errors.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>390, 21</value>
+    <value>529, 17</value>
   </metadata>
   <metadata name="Timer1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>512, 21</value>
+    <value>651, 17</value>
   </metadata>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>45</value>

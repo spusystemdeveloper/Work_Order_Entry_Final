@@ -150,7 +150,7 @@
                 dbx.SubmitChanges()
 
             Catch ex As Exception
-                MsgBox("Error on saving quotation!" & vbNewLine & ex.ToString, vbExclamation, "Message")
+                AppPrompt.MsgBox("Error on saving quotation!" & vbNewLine & ex.ToString, vbExclamation, "Message")
             End Try
         End Using
 

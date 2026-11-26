@@ -22,7 +22,7 @@ Public Class clsItemLookUp
                 Return item
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -53,7 +53,7 @@ Public Class clsItemLookUp
                 Return item
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -121,7 +121,7 @@ Public Class clsItemLookUp
             dTotalVSales = dTotalVSales + dVSales
             dTotalSales = dTotalTSales + dTotalVSales
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -147,7 +147,7 @@ Public Class clsItemLookUp
 
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -169,7 +169,7 @@ Public Class clsItemLookUp
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -194,7 +194,7 @@ Public Class clsItemLookUp
                 Return gridVal.CurrentRow.Index - 1
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -378,82 +378,69 @@ Public Class clsItemLookUp
 
     'End Sub
     Public Shared Sub LoadLevel(ByVal iLevel As Integer, ByVal sCode As String, ByVal iType As Integer)
+        LoadLevelRange(iLevel, iLevel, sCode, iType)
+    End Sub
 
+    Public Shared Sub LoadLevels(ByVal maxLevel As Integer, ByVal sCode As String, ByVal iType As Integer)
+        LoadLevelRange(0, maxLevel, sCode, iType)
+    End Sub
+
+    Private Shared Sub LoadLevelRange(firstLevel As Integer, lastLevel As Integer, sCode As String, iType As Integer)
+        If lastLevel < firstLevel Then Return
         Try
-            Dim sPriceType As String
-            Dim dPrice As Double
-            Dim dPriceMask As Double
-
-
-            dPrice = 0
-            sPriceType = ""
-
+            ' Per invocation only: reopening or password approval reads fresh data.
             Using dbx = GetDB()
                 Dim mask = (From c In dbx.SOD_WO_Confs Select c.PriceLevel).FirstOrDefault
+                Dim query = (From L In dbx.SOD_fntbl_PriceLevel(sCode) Select L).ToList
+                For iLevel = firstLevel To lastLevel
+                    Dim sPriceType As String = ""
+                    Dim dPrice As Double = 0
+                    Dim dPriceMask As Double = 0
+                    For Each Level In query
 
-                Dim query = (From L In dbx.SOD_fntbl_PriceLevel(sCode)
-                             Select L).ToList
+                        If iLevel = 0 Then
+                            sPriceType = "PRICE (RETAIL)"
+                            dPrice = Level.Price
+                        ElseIf iLevel = 1 Then
+                            sPriceType = "PRICE A (WHOLESALE)"
+                            dPrice = Level.PriceA
+                        ElseIf iLevel = 2 Then
+                            sPriceType = "PRICE B (D1)"
+                            dPrice = Level.PriceB
+                        ElseIf iLevel = 3 Then
+                            sPriceType = "PRICE C (D2)"
+                            dPrice = Level.PriceC
+                        End If
 
 
-                For Each Level In query
+                        If mask = "PRICE (RETAIL)" Then
+                            dPriceMask = Level.Price
+                        ElseIf mask = "PRICE A (WHOLESALE)" Then
+                            dPriceMask = Level.PriceA
+                        ElseIf mask = "PRICE B (D1)" Then
+                            dPriceMask = Level.PriceB
+                        ElseIf mask = "PRICE C (D2)" Then
+                            dPriceMask = Level.PriceC
+                        ElseIf mask = "NONE" Then
+                            'dPriceMask = Level.PriceC
+                        End If
 
-                    If iLevel = 0 Then
-                        sPriceType = "PRICE (RETAIL)"
-                        dPrice = Level.Price
-                    ElseIf iLevel = 1 Then
-                        sPriceType = "PRICE A (WHOLESALE)"
-                        dPrice = Level.PriceA
-                    ElseIf iLevel = 2 Then
-                        sPriceType = "PRICE B (D1)"
-                        dPrice = Level.PriceB
-                    ElseIf iLevel = 3 Then
-                        sPriceType = "PRICE C (D2)"
-                        dPrice = Level.PriceC
+                        dLowest = dPriceMask
+
+                    Next
+                    If bLevelFlag = False Then
+                        If iType = 0 Then
+                            frmPriceLevel.DisplayPrice(sPriceType, dPrice)
+                        Else
+                            frmLinqLevel.DisplayPrice(sPriceType, dPrice)
+                        End If
                     End If
-
-
-                    If mask = "PRICE (RETAIL)" Then
-                        dPriceMask = Level.Price
-                    ElseIf mask = "PRICE A (WHOLESALE)" Then
-                        dPriceMask = Level.PriceA
-                    ElseIf mask = "PRICE B (D1)" Then
-                        dPriceMask = Level.PriceB
-                    ElseIf mask = "PRICE C (D2)" Then
-                        dPriceMask = Level.PriceC
-                    ElseIf mask = "NONE" Then
-                        'dPriceMask = Level.PriceC
-                    End If
-
-                    dLowest = dPriceMask
-
                 Next
             End Using
-
-            Dim sLevel As String
-
-            For Each n In clsItemLookUp.LoadSettings
-                sLevel = n.PriceLevel
-            Next
-
-            'If sPriceType = sLevel Then
-            '    bLevelFlag = True
-            'End If
-
-            If bLevelFlag = False Then
-                If iType = 0 Then
-                    frmPriceLevel.DisplayPrice(sPriceType, dPrice)
-                Else
-                    frmLinqLevel.DisplayPrice(sPriceType, dPrice)
-                End If
-            End If
-
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
-
-
-
     End Sub
 
 
@@ -476,7 +463,7 @@ Public Class clsItemLookUp
 
             Return dPriceC
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0008", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0008", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -501,12 +488,12 @@ Public Class clsItemLookUp
                 Try
                     dbx.SubmitChanges()
                 Catch ex As Exception
-                    MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
+                    AppPrompt.MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
                 End Try
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -527,12 +514,12 @@ Public Class clsItemLookUp
                 Try
                     dbx.SubmitChanges()
                 Catch ex As Exception
-                    MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
+                    AppPrompt.MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
                 End Try
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -554,12 +541,12 @@ Public Class clsItemLookUp
                 Try
                     dbx.SubmitChanges()
                 Catch ex As Exception
-                    MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
+                    AppPrompt.MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
                 End Try
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -582,18 +569,21 @@ Public Class clsItemLookUp
                 Try
                     dbx.SubmitChanges()
                 Catch ex As Exception
-                    MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
+                    AppPrompt.MsgBox("Error on Saving settings!" & vbNewLine & ex.ToString, vbExclamation, "Message")
                 End Try
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
     End Sub
 
     Public Shared Function ConfPass(ByVal spass As String) As Integer
+
+        ' SQL ignores trailing spaces, so spaces would also match an empty password.
+        If String.IsNullOrWhiteSpace(spass) Then Return 0
 
         Try
 
@@ -603,7 +593,7 @@ Public Class clsItemLookUp
                 Return conf
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -622,7 +612,7 @@ Public Class clsItemLookUp
                 Return conf
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -643,7 +633,7 @@ Public Class clsItemLookUp
                 Return sType
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0012", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0012", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -661,7 +651,7 @@ Public Class clsItemLookUp
                 Return isAllow
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0013", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0013", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -669,12 +659,12 @@ Public Class clsItemLookUp
     End Function
 
 
-    Public Shared Function getItemQty(ByVal itemid As String) As Integer
+    Public Shared Function getItemQty(ByVal itemid As String) As Double
 
         Try
 
             Using dbx = GetDB()
-                Dim available = 0
+                Dim available As Double = 0
                 Dim qty = (From a In dbx.Items
                            Where a.ItemLookupCode.Equals(itemid)
                            Select New With {.Available = a.Quantity - a.QuantityCommitted})
@@ -685,80 +675,39 @@ Public Class clsItemLookUp
                 Return available
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0014", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0014", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
 
 
     End Function
-
-    Public Shared Function getItemQtyCommitted(ByVal itemid As String) As Integer
-
-        Try
-
-            Using dbx = GetDB()
-                Dim QuantityCommitted = 0
-                Dim qty = (From a In dbx.Items
-                           Where a.ItemLookupCode.Equals(itemid)
-                           Select New With {.Available = a.QuantityCommitted})
-                For Each x In qty
-                    QuantityCommitted = x.Available
-                Next
-
-                Return QuantityCommitted
-            End Using
-        Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0014", MessageBoxButtons.OK, MessageBoxIcon.Error)
-            ErrorCount = ErrorCount + 1
-            Return Nothing
-        End Try
-
-    End Function
-
-    Public Shared Sub setQuantityCommitted(ByVal itemid As Integer, ByVal qtyCommitted As Double)
-
-        Try
-
-            Using dbItem = GetDB()
-                ApplyQuantityCommittedDifference(dbItem, itemid, qtyCommitted)
-            End Using
-
-
-        Catch ex As Exception
-            ErrorCount = ErrorCount + 1
-            Throw New InvalidOperationException("Unable to update committed quantity for item " & itemid & ".", ex)
-        End Try
-    End Sub
-
-    Public Shared Sub SetQuantityCommittedToQoute(ByVal itemId As Integer, ByVal qtyCommitted As Double)
-        Try
-            Using dbItem = GetDB()
-                ApplyQuantityCommittedDifference(dbItem, itemId, qtyCommitted)
-            End Using
-
-        Catch ex As Exception
-            ErrorCount += 1
-            Throw New InvalidOperationException("Unable to commit quotation quantity for item " & itemId & ".", ex)
-        End Try
-    End Sub
 
     Public Shared Sub ApplyQuantityCommittedDifference(ByVal dbContext As ItemLookUpDataContext,
                                                        ByVal itemId As Integer,
-                                                       ByVal quantityDifference As Double)
+                                                       ByVal quantityDifference As Double,
+                                                       Optional ByVal requireAvailableStock As Boolean = False)
         If dbContext Is Nothing Then Throw New ArgumentNullException(NameOf(dbContext))
         If quantityDifference = 0R Then Exit Sub
 
         ' SQL performs the arithmetic while holding the row update lock. Concurrent
         ' users add or subtract their own difference instead of overwriting a value
         ' that another Work Order transaction has just committed.
+        ' A quotation has no existing reservation. Check its new reservation
+        ' against current stock in this same atomic update, after any lock wait.
+        Dim stockCondition As String = If(requireAvailableStock,
+            " AND (ItemType NOT IN (0, 3) OR {0} <= 0 OR Quantity - QuantityCommitted >= {0} - {2})",
+            String.Empty)
+        ' A result within rounding tolerance of zero is stored as exactly zero.
         Dim affectedRows As Integer = dbContext.ExecuteCommand(
             "UPDATE dbo.Item WITH (ROWLOCK) " &
-            "SET QuantityCommitted = QuantityCommitted + {0} " &
+            "SET QuantityCommitted = CASE WHEN ABS(QuantityCommitted + {0}) <= {2} THEN 0 " &
+            "ELSE QuantityCommitted + {0} END " &
             "WHERE ID = {1} AND ItemType <> 7 " &
-            "AND QuantityCommitted + {0} >= 0",
+            "AND QuantityCommitted + {0} >= -{2}" & stockCondition,
             quantityDifference,
-            itemId)
+            itemId,
+            OrderCommitmentRules.QuantityTolerance)
 
         If affectedRows = 1 Then Exit Sub
 
@@ -766,7 +715,8 @@ Public Class clsItemLookUp
                          Where candidate.ID = itemId
                          Select New With {
                              candidate.ItemType,
-                             candidate.QuantityCommitted
+                             candidate.QuantityCommitted,
+                             candidate.Quantity
                          }).SingleOrDefault()
 
         If itemState Is Nothing Then
@@ -775,6 +725,16 @@ Public Class clsItemLookUp
         End If
 
         If itemState.ItemType = 7 Then Exit Sub
+
+        If requireAvailableStock AndAlso quantityDifference > 0 AndAlso
+           (itemState.ItemType = 0 OrElse itemState.ItemType = 3) AndAlso
+           OrderCommitmentRules.IsNegativeQuantity(itemState.Quantity - itemState.QuantityCommitted - quantityDifference) Then
+            Throw New InvalidOperationException(
+                "Insufficient available quantity for item " & itemId &
+                " while converting the quotation. Available: " &
+                (itemState.Quantity - itemState.QuantityCommitted).ToString() &
+                ", requested: " & quantityDifference.ToString() & ".")
+        End If
 
         Throw New InvalidOperationException(
             "The committed-quantity adjustment for item " & itemId &
@@ -987,7 +947,7 @@ Public Class clsItemLookUp
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0018", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0018", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -1038,7 +998,7 @@ Public Class clsItemLookUp
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0019", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0019", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
 
         End Try
@@ -1111,7 +1071,7 @@ Public Class clsItemLookUp
 
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show(ex.Message, "Message!", MessageBoxButtons.OK, MessageBoxIcon.Error)
 
         End Try
 
@@ -1156,7 +1116,7 @@ Public Class clsItemLookUp
                   "where id = (select top 1 id from OrderEntry where orderid = " & orderid & " order by id desc)")
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0021", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsItemLookUp Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0021", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 

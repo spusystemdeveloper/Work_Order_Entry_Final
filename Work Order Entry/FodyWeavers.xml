@@ -1,6 +1,6 @@
 <Weavers xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="FodyWeavers.xsd">
-  <!-- ReportViewer needs physical DLLs in the application folder, including for
-       its expression-processing AppDomain. Keep those DLLs in the output package;
-       other dependencies remain embedded as before. -->
+  <!-- ReportViewer 2010 is an installed prerequisite, loaded from Windows' GAC,
+       including by its expression-processing AppDomain. Do not embed it;
+       other dependencies remain embedded for EXE-only application updates. -->
   <Costura ExcludeAssemblies="Microsoft.ReportViewer.*" />
 </Weavers>

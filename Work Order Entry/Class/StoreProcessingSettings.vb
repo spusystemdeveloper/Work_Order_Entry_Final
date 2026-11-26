@@ -11,6 +11,16 @@ Public NotInheritable Class StoreProcessingSettings
         End Get
     End Property
 
+    ' Folder for the CSV quotation uploader's text log. Optional; when the key is
+    ' missing the original shared folder is used.
+    Public Shared ReadOnly Property ImportLogFolder As String
+        Get
+            Dim value As String = ConfigurationManager.AppSettings("ImportLogFolder")
+            If String.IsNullOrWhiteSpace(value) Then Return "\\192.168.1.2\sc_import_file\Logs"
+            Return value.Trim()
+        End Get
+    End Property
+
     Public Shared ReadOnly Property ExpectedDatabaseName As String
         Get
             Dim value As String =
@@ -78,6 +88,26 @@ Public NotInheritable Class StoreProcessingSettings
             Return QueueingEnabled AndAlso ReadBoolean("EnableReadyOrderNotifications", True)
         End Get
     End Property
+
+    Public Shared ReadOnly Property ShowOrderActions As Boolean
+        Get
+            Return ReadBoolean("ShowOrderActions", True)
+        End Get
+    End Property
+
+    Public Shared ReadOnly Property ShowOrderNotifications As Boolean
+        Get
+            Return ReadBoolean("ShowOrderNotifications", True)
+        End Get
+    End Property
+
+    Public Shared Sub SaveOrderToolsVisibility(showActions As Boolean, showNotifications As Boolean)
+        Dim configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None)
+        SetBoolean(configuration, "ShowOrderActions", showActions)
+        SetBoolean(configuration, "ShowOrderNotifications", showNotifications)
+        configuration.Save(ConfigurationSaveMode.Modified)
+        ConfigurationManager.RefreshSection("appSettings")
+    End Sub
 
     Public Shared ReadOnly Property EnableShortageNotifications As Boolean
         Get
@@ -205,14 +235,7 @@ Public NotInheritable Class StoreProcessingSettings
                                   ByVal configuration As System.Configuration.Configuration,
                                   ByVal key As String,
                                   ByVal value As Boolean)
-        Dim setting = configuration.AppSettings.Settings(key)
-        Dim textValue As String = value.ToString().ToLowerInvariant()
-
-        If setting Is Nothing Then
-            configuration.AppSettings.Settings.Add(key, textValue)
-        Else
-            setting.Value = textValue
-        End If
+        SetString(configuration, key, value.ToString().ToLowerInvariant())
     End Sub
 
     Private Shared Function ReadBoolean(ByVal key As String,

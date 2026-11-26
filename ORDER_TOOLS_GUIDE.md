@@ -39,7 +39,8 @@ successful check establishes a baseline; later additions show **newly ready -
 open**. Click the status link or For Invoice to open the invoicing list. A newly
 ready group is selected automatically, but printing/invoicing still requires
 the cashier's normal action. Opening the list acknowledges the notification.
-The count refreshes when the dialog closes.
+The count refreshes when the dialog closes. In the status bar the count shows
+as a badge: blue normally, green while newly ready groups are waiting.
 
 Eligibility matches the existing invoicing list: prepared groups joined to an
 open RMS order, with that order created within the past 60 days. A group that

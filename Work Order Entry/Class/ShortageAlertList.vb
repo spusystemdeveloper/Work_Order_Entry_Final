@@ -51,7 +51,7 @@ Public NotInheritable Class ShortageAlertList
         View.RowFilter = String.Join(" AND ", conditions)
     End Sub
 
-    Private Shared Function EscapeSearch(value As String) As String
+    Public Shared Function EscapeSearch(value As String) As String
         Dim escaped As New StringBuilder()
         For Each character In value
             Select Case character

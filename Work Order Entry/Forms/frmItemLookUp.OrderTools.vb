@@ -1,4 +1,4 @@
-Imports System.Threading.Tasks
+﻿Imports System.Threading.Tasks
 
 Partial Public Class frmItemLookUp
     Private recalledSnapshot As OrderEditSnapshot
@@ -12,10 +12,15 @@ Partial Public Class frmItemLookUp
     Private orderToolsClosing As Boolean
     Private readyConnectionString As String
     Private readyPollFailureLogged As Boolean
+    Private orderActionsMenu As ToolStripDropDownButton
 
     Private Async Sub InitializeOrderTools(sender As Object, e As EventArgs) Handles MyBase.Shown
+        ApplyStatusBarStyle()
         If String.IsNullOrWhiteSpace(usrUsername) Then Return
-        Dim actions As New ToolStripDropDownButton("Order actions")
+        Dim actions As New ToolStripDropDownButton("Order actions") With {
+            .Visible = StoreProcessingSettings.ShowOrderActions
+        }
+        orderActionsMenu = actions
         actions.DropDownItems.Add("History...", Nothing,
             Sub(s, args)
                 Using history As New frmOrderHistory(activeRecallOrderID)
@@ -36,24 +41,102 @@ Partial Public Class frmItemLookUp
         readyTimer = New Windows.Forms.Timer With {.Interval = 15000}
         AddHandler readyTimer.Tick, AddressOf ReadyTimerTick
         readyTimer.Start()
+        ApplyStatusBarStyle()
         Await PollReadyOrdersAsync()
         Await PollShortageAlertsAsync()
     End Sub
 
+    ' Created once and shared; the badge is restyled on every 15-second poll.
+    Private ReadOnly statusBarFont As New Font("Tahoma", 9.5F, FontStyle.Bold)
+
+    ' The default status bar renderer ignores a label's BackColor, which the
+    ' "ready for invoicing" badge needs.
+    Private NotInheritable Class StatusBarRenderer
+        Inherits ToolStripSystemRenderer
+
+        Protected Overrides Sub OnRenderLabelBackground(e As ToolStripItemRenderEventArgs)
+            MyBase.OnRenderLabelBackground(e)
+            Dim color As Color = e.Item.BackColor
+            If color = Drawing.Color.Empty OrElse color = Drawing.Color.Transparent Then Return
+            Using brush As New SolidBrush(color)
+                e.Graphics.FillRectangle(brush, New Rectangle(Point.Empty, e.Item.Size))
+            End Using
+        End Sub
+    End Class
+
+    ' One plain look for every status item: same font, thin dividers, even padding.
+    ' Only appearance changes; texts and click handlers are untouched.
+    Private Sub ApplyStatusBarStyle()
+        Dim textColor As Color = Color.FromArgb(20, 20, 20)
+        BottomStrip.BackColor = Color.FromArgb(244, 246, 249)
+        If Not TypeOf BottomStrip.Renderer Is StatusBarRenderer Then BottomStrip.Renderer = New StatusBarRenderer()
+        BottomStrip.Font = statusBarFont
+        ' The old constant "STATUS" caption carried no information; keep the item as the spacer.
+        ToolStripStatusLabel1.Text = String.Empty
+
+        Dim divided As ToolStripItem() = {statDb, ToolStripStatusLabel3, ToolStripStatusLabel2,
+                                          lblOrderNo, lblStatItemSelected, lblStatItemCount}
+        For Each item As ToolStripItem In BottomStrip.Items
+            item.Font = statusBarFont
+            If item IsNot shortageStatus Then item.ForeColor = textColor
+            Dim label = TryCast(item, ToolStripStatusLabel)
+            If label Is Nothing OrElse label Is readyStatus Then Continue For
+            label.BorderSides = ToolStripStatusLabelBorderSides.None
+            label.Padding = New Padding(8, 0, 8, 0)
+        Next
+        For Each item As ToolStripItem In divided
+            Dim label = TryCast(item, ToolStripStatusLabel)
+            If label Is Nothing Then Continue For
+            label.BorderSides = ToolStripStatusLabelBorderSides.Left
+            label.BorderStyle = Border3DStyle.Etched
+        Next
+        If readyStatus IsNot Nothing Then StyleReadyBadge(pendingReadyGroups.Count > 0)
+    End Sub
+
+    ' "Ready for invoicing" as a small badge: blue normally, green when new orders are ready.
+    Private Sub StyleReadyBadge(hasNew As Boolean)
+        If readyStatus Is Nothing Then Return
+        readyStatus.Font = statusBarFont
+        readyStatus.LinkBehavior = LinkBehavior.NeverUnderline
+        readyStatus.LinkColor = Color.White
+        readyStatus.ActiveLinkColor = Color.White
+        readyStatus.VisitedLinkColor = Color.White
+        readyStatus.BackColor = If(hasNew, Color.FromArgb(22, 128, 70), Color.FromArgb(38, 99, 158))
+        readyStatus.Padding = New Padding(8, 0, 8, 0)
+        readyStatus.Margin = New Padding(6, 3, 6, 2)
+    End Sub
+
+    Private Sub ApplyOrderToolsVisibility()
+        If orderActionsMenu IsNot Nothing Then
+            orderActionsMenu.Visible = StoreProcessingSettings.ShowOrderActions
+        End If
+        If readyStatus IsNot Nothing Then
+            readyStatus.Visible = StoreProcessingSettings.ShowOrderNotifications AndAlso
+                StoreProcessingSettings.ShowForInvoiceButton AndAlso
+                StoreProcessingSettings.EnableReadyOrderNotifications AndAlso
+                Not String.IsNullOrEmpty(readyStatus.Text)
+        End If
+        If shortageAlertStatus IsNot Nothing Then
+            shortageAlertStatus.Visible = StoreProcessingSettings.ShowOrderNotifications AndAlso
+                StoreProcessingSettings.EnableShortageNotifications AndAlso
+                (shortageAlertFailureLogged OrElse currentShortageAlerts.Count > 0)
+        End If
+    End Sub
+
     Private Sub ReloadCurrentOrder(sender As Object, e As EventArgs)
         If activeRecallOrderID <= 0 Then
-            MessageBox.Show(Me, "Recall an order before reloading it.", "Reload order",
+            AppPrompt.Show(Me, "Recall an order before reloading it.", "Reload order",
                             MessageBoxButtons.OK, MessageBoxIcon.Information)
             Return
         End If
-        If MessageBox.Show(Me, "Reload the latest saved order? Unsaved changes on this screen will be discarded.",
+        If AppPrompt.Show(Me, "Reload the latest saved order? Unsaved changes on this screen will be discarded.",
                            "Reload order", MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
             RecallQuote(activeRecallOrderID)
         End If
     End Sub
 
     Private Sub ShowOrderConflict(ex As OrderEditConflictException)
-        MessageBox.Show(Me, ex.Message, "Order changed", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        AppPrompt.Show(Me, ex.Message, "Order changed", MessageBoxButtons.OK, MessageBoxIcon.Warning)
     End Sub
 
     Private Async Sub ReadyTimerTick(sender As Object, e As EventArgs)
@@ -93,8 +176,9 @@ Partial Public Class frmItemLookUp
             If orderToolsClosing OrElse IsDisposed Then Return
             readyStatus.Text = "Ready status unavailable - retrying"
             readyStatus.IsLink = False
+            readyStatus.BackColor = Color.Empty
             readyStatus.ForeColor = Color.DarkOrange
-            readyStatus.Visible = True
+            readyStatus.Visible = StoreProcessingSettings.ShowOrderNotifications
             cmdForInvoice.Text = "For Invoice"
             ' Keep the successful baseline when a poll fails. Log once until recovery.
             If Not readyPollFailureLogged Then
@@ -112,8 +196,10 @@ Partial Public Class frmItemLookUp
             pendingReadyGroups.Count & " newly ready - open",
             "Ready for invoicing: " & currentReadyGroups.Count & " - open")
         readyStatus.IsLink = True
-        readyStatus.LinkColor = If(pendingReadyGroups.Count > 0, Color.DarkGreen, Color.DarkBlue)
-        readyStatus.Visible = True
+        StyleReadyBadge(pendingReadyGroups.Count > 0)
+        readyStatus.Visible = StoreProcessingSettings.ShowOrderNotifications AndAlso
+            StoreProcessingSettings.ShowForInvoiceButton AndAlso
+            StoreProcessingSettings.EnableReadyOrderNotifications
     End Sub
 
     Private Async Sub ShowReadyOrders()
@@ -132,7 +218,7 @@ Partial Public Class frmItemLookUp
             Await PollReadyOrdersAsync()
         Catch ex As Exception
             If Not orderToolsClosing AndAlso Not IsDisposed Then
-                MessageBox.Show(Me, ex.Message, "For invoicing", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                AppPrompt.Show(Me, ex.Message, "For invoicing", MessageBoxButtons.OK, MessageBoxIcon.Warning)
             End If
         End Try
     End Sub

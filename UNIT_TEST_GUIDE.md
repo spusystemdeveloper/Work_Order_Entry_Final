@@ -1,9 +1,2117 @@
 # Work Order Entry unit tests
 
+## November 18: findings 31-41
+
+`OrderGroupRulesTests` (4) cover the ungroup order check. After a Release/x86
+build, run `Database Components/Tests/OpenFindings_LocalDB_Test.ps1` (x86
+Windows PowerShell). It builds a disposable LocalDB database from the app's LINQ
+mapping plus the real draft migration, then drives the compiled code on a hidden
+form (never Load/Show). It checks 36 items:
+
+- Drafts on an old int Qty column: still found, saved twice, recovered and deleted
+  (2.5 stored as 2 there). Both copies of `Ensure_Work_Order_Draft_Tables.sql`
+  convert Qty to float, repeat safely and keep values; then 2.5 and 4 round-trip.
+- Uploaded quotations: remembered per sales rep, recorded once by a committed save
+  transaction, not recorded by a rolled-back one, skipped without the optional
+  table, forgotten when the screen is cleared; `CheckQuotationLog` then finds them.
+- Recall: unchanged header values for a normal order; a header for CustomerID 0 /
+  SalesRepID 0; nothing for a closed order; the previous customer, rep and tax flag
+  cleared on screen.
+- Usernames: another account's name rejected regardless of case; own name allowed;
+  the password listing query removed.
+- Price approval reads a price changed after the shared context loaded the item.
+
+Verified November 18: both solutions built Release/x86; 162 unit tests passed;
+OpenFindings 36 checks (OpenFindings-bc83ebcf); MultiUser_Save_LocalDB_Test.ps1
+71 checks in each mode (MultiUser-dced0b9f, MultiUser-cb109d3e); ItemSearch 36
+(ItemSearch-ad7d1c46); OrderTools smoke test 99; DatabaseUpdater 101
+(DatabaseUpdater-02608e61). The Debug EXE config was unchanged; the build
+rewrote the Release and test-folder copies, which were restored byte-for-byte.
+
+The one prompt during the no-customer recall comes from the fixture: recall's
+existing final credit lookup needs `SOD_fn_GetCreditLimit`, which the fixture
+lacks. Not tested: the visible screens, a real CSV upload and its log folder,
+printing the pick list, the Users screen, the ungroup dialog, a restored store
+copy, or the live updater run. Manual acceptance on a test store: save a draft
+with 2.5 and reopen; upload one CSV quotation, save, then upload it again
+(expect "already exist/uploaded"); print a pick list with 2.5; recall an order
+after another customer's order; rename a user to an existing name.
+
+## Recalled header Taxable flag (November 11)
+
+After a Debug/x86 build, run
+`Database Components/Tests/MultiUser_Save_LocalDB_Test.ps1` normally and with
+`-VersionedReads`. The owned fixture invokes the compiled recalled-save method
+and verifies positive VAT repairs a stale false header, customer exemption sets
+zero VAT/false header, returning to taxable restores the flag, line taxability
+is preserved independently, and repeated tax changes leave stock unchanged.
+The existing late-failure test compares the complete header after rollback.
+These are disposable database tests, not live RMS/store saves. Preserve the
+installation's Debug EXE configuration byte-for-byte around builds and tests.
+
+Verified November 11: both solutions built Release/x86; all 158 unit tests
+passed. All 71 save checks passed in each locking mode (default and
+versioned reads), including all eight header-taxability regression checks.
+Existing Debug/Release configurations were restored and verified byte-for-byte.
+No live database save or repair was performed.
+
+## Consignment Work Order 1029 preflight
+
+Run [the preflight](Database%20Components/Recovery/Inspect_CONSIGNMENT_WO_1029_to_30.sql)
+as a complete batch in SSMS with the branch `CONSIGNMENT_DB` selected. Collect all
+result grids. A `NULL` reference count means that the table or column is absent
+or inaccessible. Matches on import references need interpretation before any
+renumber. The item-log query can scan a large table.
+The reused-range columns report the count and first local ID between 31 and
+1028. They omit imported-quote source numbers and include local quote IDs.
+The first result grid lists the nonzero reused-range counts.
+
+The batch completed against two local copies at compatibility level 100. Both
+copies lacked IDs 1029 and 30. The database guard rejected `master`. The branch
+operator supplied the full preflight results for the reviewed mapping.
+
+The [renumber script](Database%20Components/Recovery/Renumber_CONSIGNMENT_WO_1029_to_30.sql)
+passed 19 disposable LocalDB checks at compatibility level 100 with synthetic
+rows and triggers that fail if fired during the mapping. The fixture substitutes
+its own server, database, trigger fingerprints and backup date; it uses a real
+copy-only checksum backup. Checks cover target, maintenance and backup guards,
+rollback, held and orphan references, linked rows, inventory, trigger state,
+repeat rejection, rollback after reseeding and actual next automatic ID 31.
+The fixture includes movement 130 and checks exact archive scope, unchanged
+duplicate-detection fields, and rollback of the archive and link changes.
+Both Release/x86 builds and all 153 shared unit tests passed during validation
+of the original renumber. The reseed revision changes only the standalone SQL
+and its instructions. Branch execution is pending.
+
+## November 3: Davao transfer-in 0002601 recovery
+
+Run [DVO_PO_0002601_LocalDB_Test.ps1](Database%20Components/Tests/DVO_PO_0002601_LocalDB_Test.ps1).
+It uses a disposable LocalDB database at compatibility level 100, synthetic rows,
+and the seven captured Davao inventory trigger definitions. It rebinds the target
+and row versions for the fixture and exercises the same backup and posting logic.
+All 31 checks passed, including read-only review, rollback after forced failures,
+and duplicate rejection. Both Release/x86 solution builds and all 153 shared
+unit tests passed. Downstream integration processing was outside the fixture test.
+See the [recovery guide](Database%20Components/Recovery/DVO_PO_0002601_11688BOX.md).
+
+## October 31: QC Puregold selected V4 compatibility
+
+The copy-ready folder is `Deployment Packages/QC_BRANCH_V4_COPY_20261031`, with a sibling
+ZIP. It includes the reviewed V4 EXE, complete updater Release files and the QC
+fix package. All 121 copied source files match their source hashes and ZIP CRC
+verification passed. No configs or credentials are supplied; retain QC's existing
+configuration. This assembly-only step did not rebuild the EXE, rerun the earlier
+integration suites or apply SQL. Follow the included `START_HERE.txt` for testing
+and deployment prerequisites.
+
+The package and deployment/rollback instructions are in
+`Database Components/Deployment/QC_PUREGOLD_V4/README.md`. The selected EXE is
+the Release/x86 build under `C:\Users\ADMIN\source\repos\WORK_ORDER_ENTRY_4`,
+identified by full hash in that package. The older Documents-folder reference
+has different print mappings and must not determine this deployment's fixes.
+
+Run `Database Components/Tests/QC_Puregold_V4_LocalDB_Test.ps1` on Windows.
+It requires LocalDB 170, x86 Windows PowerShell, the selected EXE and matching
+source DBML. It creates uniquely owned fixture databases at compatibility 130,
+then drops them and removes its instance; it never connects to QC or modifies
+the installed app's configuration. Packaged `.sql.txt` baselines are fixture
+inputs only; do not import their raw definitions into a store.
+
+76 checks passed: reproducing PG SKU's ordinal shift; preserving existing view
+values and fractional/negative availability rules; V4 code/cost/tax/ID positions;
+object identity/permissions; changed-definition, transaction and target guards;
+repeats and rollbacks; QC store/RDC lookups; optional import table/schema rejection;
+and compiled V4 reads of original print functions and nine-field configuration.
+Evidence: `TestResults/QC-V4-LatestTest.log` and `TestResults/QC_V4_168dc4b764e2`.
+Both required Release/x86 builds, all 153 main units and the clean-folder
+packaging suite also passed. Five existing EXE configs were restored byte-for-byte.
+No live SQL changes, restored QC workflow test, physical printing or native RMS
+settlement were performed. V4 retains its pre-existing save limitations.
+
+## October 30: findings 27-30 on a restored copy
+
+A hidden-form probe reproduced each defect on a throwaway restored copy, then 15
+checks passed after the fixes: no draft from a recalled order, old drafts removed,
+new-order drafts still saved and recovered, highlighted and moved picker rows for
+customers, highlighted row for sales reps, missing items reported, the database item
+ID used, and a clean file still reporting complete. Evidence:
+TestResults/Findings27to30-Validation-20261030. The probe is not in the repository
+suite. Not tested: Enter-key selection on a real restored-data picker, and a real
+branch export file; the import used a synthetic workbook structure.
+
+Both Release/x86 solutions, 153 units, LookupKeyboard_UI_Test.ps1 and
+EmptyLookup_UI_Test.ps1 passed; both scripts now cache the process handle so ExitCode
+is readable. LookupDesign_UI_Test.ps1 passed its Customer and Sales Rep checks, then
+stopped at its older main-form button width of 111. The action column was later
+widened, and this change did not touch that layout, so the test needs its own update.
+
+## October 30: restored-copy test of localhost DVO_STORE_DB
+
+Separately authorized. A copy-only backup was restored as a GUID-named SODCOPY_
+database; a hidden-form probe ran the compiled Debug EXE against it through the
+in-memory endpoint, then the copy and backup were removed and DVO_STORE_DB checksums
+matched. It used the real insert procedures, triggers, item view and open orders.
+
+Passed: 415 of 418 open work orders recalled, including all 62 two-part comments;
+saving a real order; remarks with a separator; adding and deleting a repeated line;
+one queue row per line; new orders; fractional cancels ending at exactly zero; the
+999,999 rejection; the named shortage message; keyword and apostrophe search. The
+three failures are CustomerID 0 local test orders. Log:
+TestResults/RealCopy-Validation-20261030. WorkOrderCommentTests now has 7 cases.
+
+The hidden form is not an operator test. Not covered: visible screens, Load, printing,
+quotation recall, imports, the queueing app, credit limits needing DVO_MAA_WHSE_DB
+(not on this PC), and RMS POS settlement.
+
+## October 30: maximum line quantity and order total
+
+Two QuantityToleranceTests cases cover the inclusive 999,999 limit and the money
+column limit (151 units). QuantityValidation_LocalDB_Compare.ps1 formatted mode (27
+checks) uses a type-7 item through the actual SaveOrder and quantity-cell handlers:
+over-limit quantity, over-limit total, starting an edit on a huge value without an
+overflow, and a typed over-limit value restoring exactly 2.5. Logs:
+TestResults/QuantityLimit-Validation-20261030. Not tested: a real typed entry on the
+live grid, and imported files above the limit. Orders already above 999,999 must be
+corrected before they can be saved again. Manual acceptance: repeat the reported
+SVC00017 entry on a test store and confirm the limit message appears.
+
+## October 30: validation message wording
+
+AppPromptTextTests (4 cases, 149 units total) cover the standard title and the plain
+sentence above unexpected errors. QuantityValidation_LocalDB_Compare.ps1 translates
+each baseline prompt through an exact wording map, so any unlisted change still
+fails; only the stock heading is matched by prefix, because it adds item detail.
+Formatted mode checks that detail, including exact fractional amounts (19 checks).
+PaymentBeforeApproval_UI_Test.ps1 now expects the new title and payment wording.
+
+Logs: TestResults/MessageWording-Validation-20261030. Evidence: QuantityValidation-6d879d7b,
+MultiUser-f60cbdf1, MultiUser-95753f17. Not tested: message layout and fit on a real
+screen, especially long stock lists. Manual acceptance: trigger a stock shortage on
+several items and read the wrong-password and repeated-item prompts.
+
+## October 30: remaining V8 review findings
+
+QuantityToleranceTests, RecallSearchFilterTests and one more ImportFileRulesTests
+case bring the suite to 145 units.
+
+MultiUser_Save_LocalDB_Test.ps1 (63 per mode) adds a reproduced float remainder
+that cancels to exactly zero and a real fractional shortfall that rolls back.
+ItemSearch_LocalDB_Test.ps1 (36) adds a failed query keeping the form open, blank
+approval passwords rejected before SQL, and a saved order clearing when refresh
+fails. QuantityValidation_LocalDB_Compare.ps1 needs a baseline with selected-grid
+columns: use TestResults/V8Readability-20261027/Before. Its 240 paired assertions
+stay strict except three approved counters (UnconfirmedPriceEarlyReturn and both
+CaughtException cases), which must be 0 before and 1 after. Formatted mode now also
+checks fractional shortages, float remainders and legacy rows by OrderID (18 checks).
+
+PriceLevel_Queries_LocalDB_Test.ps1 passed its 125 paired cases (PriceLevelQueries-27a42fef)
+after two runner fixes that weaken no assertion: it now caches the process handle so
+ExitCode is readable, and no longer wraps a JSON array under Windows PowerShell 5.1.
+PaymentBeforeApproval (121), RecallFormatting (28) and ReleaseTypePrompt (123 with
+queueing on) also passed.
+
+Logs: TestResults/RemainingFindings-Validation-20261030. Evidence: MultiUser-b927b485,
+MultiUser-91ef074e, ItemSearch-a5246397, QuantityValidation-2f302693,
+Preallocation-bc924fa4. Not tested: the Settings and approval dialogs with real
+store passwords, a real SQL outage, RMS POS, live stores or physical fractional
+stock. Manual acceptance: on a test store, cancel fractional orders, add an item
+with under one unit available, approve a below-minimum price and check the logged
+approver, and search Recall for `[`.
+
+## October 30: recall remarks, repeated-item queue rows and import checks
+
+WorkOrderCommentTests (5) cover remarks containing "; ", empty remarks, short and
+missing comments. QueueLineMatcherTests (4) cover ID-order pairing and uneven
+counts. Four ImportFileRulesTests cover missing website items, repeated codes,
+complete imports and a missing description column. Total: 138 units.
+
+MultiUser_Save_LocalDB_Test.ps1 adds eight checks (60 per read mode) using the
+compiled save and LoadQueueByEntry: delete one repeated line, partial and full
+preparation, a new repeated line through a synthetic one-row-per-line procedure,
+commitments, removing an item's last line and per-line recall values. The fixture
+now also creates SOD_WO_Conf and sets a cashier full name, because deleted lines
+write a price log. The worker accepts DeletedEntries and a ReadQueue operation.
+
+October 30 validation: both Release/x86 solutions, 138 units, 60 multi-user checks
+per mode (MultiUser-4f31f464, MultiUser-b70b9d0a), 80 preallocation checks
+(Preallocation-bf0a9d59) and 99 OrderTools checks passed; configs were preserved.
+Logs: TestResults/QueueCommentImport-Validation-20261030. Not tested: the recall
+screen, the import screens, the real branch procedures, the queueing app with
+repeated items, live stores or RMS POS. Manual acceptance: on a test store, recall
+and save remarks containing "; "; edit and delete repeated lines and check the
+queue screen; import a website order and an Excel file with a missing item.
+
+## October 30: apostrophes in item keyword search
+
+ItemSearchQueryTests (6 cases) check that query text without an apostrophe is
+unchanged and that apostrophes stay inside the literal. The search-box apostrophe
+rejection has been removed from Enter and the Search button.
+
+ItemSearch_LocalDB_Test.ps1 now has 29 checks against an owned fixture. Eight new
+checks execute ItemSearchQuery.Build's SQL against an apostrophe item, confirm a
+quoted value stays a search value, and invoke the actual Enter and Search button
+handlers, failing on any dialog. The form is never shown; F2, double-click and a
+real operator search are not exercised.
+
+October 30 validation: both required Release/x86 solutions, 138 units and 29 search
+checks passed; store configurations were preserved. Logs:
+TestResults/ApostropheSearch-Validation-20261030. LocalDB artifacts:
+TestResults/ItemSearch-ae0b2ca6. No live-store or operator workflow test was run.
+
+## October 28: reusable Portable username and printing migrations
+
+October 29 live Iloilo header cleanup was separately authorized. Before deleting
+SCHENKER header ID 1, an owned LocalDB fixture verified the exact ID-based delete,
+unchanged survivors, Walk-In ID 227 retention, rollback restoration and commit.
+After verified table-level export and live target/reference/trigger guards, only
+ID 1 was committed as deleted. All retained headers and transaction 9850's
+financial records were checked unchanged; the custom report returns one Walk-In
+row and no duplicate CustID groups remain. Evidence:
+TestResults/IloiloHeaderCleanup-6420007f. This data repair did not rebuild apps,
+execute RMS POS or confirm the native Invoice Manager preview.
+
+October 29 authorized local Malabon import: CustomText1 width 50 was checked
+after ALTER with existing values/rowversions unchanged. The customer transaction
+verified matching payment terms, mapped Sales Rep references, unchanged existing
+customer/Sales Rep rows, generated local IDs, and final count 118 with zero
+duplicate accounts. Twelve customers and two required related reps were added;
+all three source databases were read-only. Evidence and pre-change backups:
+TestResults/MalabonCustomerField-bfe77f07 and
+TestResults/MalabonCustomerImport-8fa54da3. This data/schema-only operation did
+not rebuild applications, reconcile balances or test RMS POS workflows.
+
+Local register setup verification: user-authorized Register 1 (Consignment Local)
+was inserted into previously empty localhost CONSIGNMENT_DB.Register using its
+Configuration.StoreID 100. Transaction checks verified the target, empty table,
+single configuration row, absence of insert triggers and exact inserted row.
+Receipt/device defaults remain unconfigured; no RMS POS/device test was run.
+Evidence: TestResults/ConsignmentRegister-4819541e. No source build was needed.
+
+Local customer import verification (separate from automated tests): the authorized
+QC PUREGOLD_DB/MERRYMART_DB copy into localhost CONSIGNMENT_DB skipped 65 existing
+accounts and inserted 41, yielding 106 customers and no duplicate accounts.
+Transaction checks verified unchanged existing rows and equivalent payment terms.
+Stored balances were copied as customer master fields; linked financial history
+and captions were not migrated. Orders remained empty; QC was SELECT-only.
+Evidence and local backup: TestResults/QCCustomerImport-6fd1fe19. This data-only
+operation required no application rebuild and is not a financial reconciliation.
+
+V8 first-user setup: after Debug build, run
+`Database Components/Tests/FirstAccount_LocalDB_Test.ps1`. The x86 probe
+creates/drops only SOD_FirstAccount_<GUID> on LocalDB, replacing endpoint fields
+and contexts only inside the fixture process. It calls actual Login to display
+the setup and answer its synthetic prompts; the production form Load and normal
+register-validation path are not invoked. It verifies cancellation, empty/
+mismatched passwords, masked fields, chosen register, existing-password lookup,
+existing-user rejection, missing-schema failure and concurrent creation. No
+real user credentials, registry writes, store config changes or live connection.
+Passed 35 checks (TestResults/FirstAccount-5e7ff429), including the actual
+existing-account wrong-password path. Both Release/x86 solutions and 119 unit
+tests passed. See FIRST_ACCOUNT_SETUP.md for user instructions.
+
+The Portable username fix is now Add_WorkOrder_Username_Columns.sql, reusable
+across compatible store database names. The focused test retains its filename
+ConsignmentUsernameColumns_LocalDB_Test.ps1 but uses Portable_Custom_Store on a
+new owned LocalDB instance. It covers missing table/view rejection, system DB
+guard, unchanged settings, repeat/partial schemas and rollback. Updater tests
+also execute it through UpdateRunner on a GUID-named fixture and verify
+deployment records and rollback with a later failing script. The old targeted
+SQL remains for compatibility; select the generic catalog entry instead.
+Passed 11 focused checks, 98 updater checks (DatabaseUpdater-5e6d7f05), both
+Release/x86 solutions, Debug/Release updater builds and 119 unit tests. Debug
+application configuration was preserved around builds/tests.
+
+Printing Address migration is now Add_WorkOrder_Print_Address.sql for compatible
+store database names. The original CONSIGNMENT-specific file is retained for
+compatibility but is no longer in the Portable catalog. Other branch function
+definitions are deliberately rejected for review, including changed branch
+text and differences inside string literals. Run
+`Database Components/Tests/ConsignmentPrintAddress_LocalDB_Test.ps1`.
+Fifteen checks passed against an owned LocalDB instance (Portable_Print_Store). They compare every
+existing output value and validate exempt/fractional totals, nullable address,
+repeat/rollback behavior, target/transaction guards and customization rejection.
+The Portable updater lists Add_WorkOrder_Print_Address.sql; select
+it explicitly after backup/restore testing. This adds a function result column,
+not a Customer table column. Existing restored/local/live data is untouched.
+Reusable printing update validation: 101 updater checks passed
+(TestResults/DatabaseUpdater-ada1d39d), including generic catalog visibility and
+built package hashes. Both Release/x86 solutions, Debug/Release updater builds
+and 119 unit tests passed; Debug EXE configuration preserved byte-for-byte.
+The read-only localhost CONSIGNMENT definition matched the reviewed baseline.
+Both Release/x86 solutions, Debug/Release updater builds, 119 unit tests and
+91 updater checks passed (TestResults/DatabaseUpdater-de48df1b). This verifies
+function output and packaging; it is not an interactive print acceptance test
+against the restored database, where this migration has not been applied.
+
+After backup/restore testing, select Add_WorkOrder_Username_Columns.sql from
+Portable for a compatible store target, review and apply. It does not run
+automatically. The HO_PO migration is not a substitute. Fixture files have
+unique paths and the owned database is dropped before its instance is deleted.
+
+## October 27: quotation-conversion stock checks
+
+Shared quantity validation reads numeric values with Convert.ToDouble, matching
+saving. Keep the legacy fallback for invalid values; the normal before/after
+24-case matrix still passes unchanged. The added --formatted probe mode uses
+the incident's 71,202 physical / 2,692 committed amounts in an owned fixture,
+checking numeric/text 100000, valid 60000, duplicate 40000 lines, 1000.5, and the
+actual convertToWorkOrder -> SaveOrder path. The shortage is blocked before any
+order writes. Existing local WO 23337 is read-only evidence, not a test fixture.
+
+Run QuantityValidation_LocalDB_Compare.ps1 as documented below; it now runs the
+six formatted cases after the paired comparison. Passed 240 paired assertions
+plus 12 new checks. Evidence: TestResults/QuantityValidation-4f8669e4.
+
+The existing ApplyQuantityCommittedDifference method has an optional
+requireAvailableStock flag (default False). Only SaveExistingOrderChanges for
+original Type 3 / target Type 2 enables it. Its atomic UPDATE checks current
+available stock for item types 0/3 while incrementing commitments under the same
+lock; UI preflight alone is insufficient after concurrent changes. Other
+commitment operations retain the existing query behavior and type-7 exemption.
+
+Run MultiUser_Save_LocalDB_Test.ps1 normally and with -VersionedReads. New cases
+invoke the actual compiled transaction and verify complete rollback of a
+shortage, valid fractional conversion, duplicate-line rollback, type-7
+conversion and two overlapping quote conversions competing for ten units.
+Exactly one eight-unit conversion commits; the loser remains a quotation and
+stock remains ten. Passed 52 checks in each mode (RMS settlement simulated).
+PreallocationValidation_LocalDB_Test.ps1 passed all 80 existing checks, including
+default three-argument commitment calls. Both required Release builds and 119
+units passed. Artifacts: MultiUser-6892624d, MultiUser-cfa32456,
+Preallocation-9018bf60. No live or restored-store writes; app configs preserved.
+
+## October 27: queue-aware release confirmations
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\ReleaseTypePrompt_UI_Test.ps1'
+```
+
+This compiles an x86 UI probe and runs queue-off/queue-on in separate processes
+using the probe's own EXE config. It switches the actual Pick-up/Delivery radios
+with 1 and 6 real selected-grid rows, captures and answers confirmation dialogs,
+and checks the original queued messages plus the plain non-queued confirmations.
+Both CheckedChanged events fire during these switches; the unchecked event must
+not prompt. Do not replace this test with a direct call to releaseType, because
+that missed the original duplicate-event defect.
+The prepared reminder is shown only for queued Pick-up after Yes. Tests also
+check No/empty-order/already-selected paths, queue-column visibility and unchanged release,
+quantity, price, prepared and legacy delivery location behavior. No production
+form Load, SQL, config/registry updates or saved orders. The normal application
+configuration hash is checked before/after. Passed 129 queue-off and 123 queue-on
+assertions; both Release/x86 solutions and 119 unit tests also passed.
+
+## October 27: shared V8 quantity validation
+
+ValidateAllQty() and ValidateAllQtyForQoute() keep their existing callers and
+return DialogResult through ValidateQuantities(includeRecalledReservation).
+The private flag enables only the original recalled-reservation lookup for Work
+Orders. Quotations do not add it. Duplicate aggregation, lookup caches, numeric
+conversions, exemptions by item type, catalog reload, totals, prompts and error
+counters retain their before-change behavior; this refactor fixes no unrelated
+validation/error-handling policy.
+
+For a paired compiled comparison, save a working before-change Debug EXE, then
+build the candidate and run:
+
+```powershell
+& '.\Database Components\Tests\QuantityValidation_LocalDB_Compare.ps1' `
+  -BaselineAssembly '<absolute-path-to-before-change-V8-EXE>'
+```
+
+The x86 probe creates/drops only its own SOD_QtyValidation_<GUID> LocalDB
+fixture and overrides connection fields only inside its test process. It calls
+both real validators without loading the application or invoking Save. Timer-
+closed test prompts are recorded and compared. All 240 assertions compare
+return values, counters, exact prompts, row values/colors, catalog reloads and
+totals across 24 cases: new/recalled orders, closed orders, legacy SOD_WO
+reservations, quotation reservation exclusion, duplicate codes, type 3/type 7,
+fractional/invalid quantities, invalid/unconfirmed prices, exemption, existing
+error counts, empty grids and caught-error captions. Each variant also passes
+27 endpoint/case/data-preservation checks. The runner supports Windows
+PowerShell 5.1's JSON-array behavior without relaxing case-count assertions.
+
+The immediate before-change Designer was already missing selected-grid
+columns. User approved a limited repair of the attachment and the three Price,
+Cost and Description columns plus their colliding lookup names. The paired
+baseline was TestResults/V8Readability-20261027/Before/Work Order Entry_V8.exe;
+its two validator bodies match the immediate before-change source. Artifacts:
+TestResults/QuantityValidation-d17c7b8c and V8QuantityValidation-20261027/Before.
+Other UI edits and checkbox Boolean defaults are preserved.
+
+Required Release builds and all 119 unit tests passed. Multi-user fixtures
+passed 43 default-locking and 43 versioned-read checks (RMS settlement is a
+simulation), with 28 checkbox, 50 readability and 1,344 small-screen checks.
+No live connection or writes to the user's restored GSC database. Actual store
+workflow and physical printing were not tested; existing EXE configs preserved.
+
+## October 27: V8 readability cleanup
+
+The main form removes only complete commented-out procedures and extracts the
+existing GridColumnWidth statements into ConfigureItemGridSizing,
+ConfigureItemGridColumns and ApplyItemGridReadability. The print form now builds
+17 parameters through CreateReportParameters and adds its data source once.
+No save/recall SQL, pricing, tax, report layout or checkbox type changes.
+
+After both Release/x86 solution builds and Run-UnitTests.ps1, run the existing
+RecallFormatting_UI_Test.ps1, ItemGridReadability_UI_Test.ps1,
+SmallScreenLayout_UI_Test.ps1 and Packaging_CleanFolder_Test.ps1. Preserve all
+store EXE configs around builds/tests. Compare GridFormatting_UI_Compare.ps1
+against a same-source before-change Debug EXE. On this host its Start-Process
+wrapper misreported the exit status despite valid helper results; running the
+same compiled GridFormattingProbe directly for Before/After and applying every
+original assertion passed all 208 checks across 16 cases, including pixels.
+Do not bypass a real helper failure or change comparison assertions.
+
+Current artifacts are under TestResults/V8Readability-20261027: before-change
+source/Debug EXE, compiled ReportParametersProbe (120 checks for ordinary,
+website and quotation names/values under en-US and fil-PH), GridCompare and
+Reports. The existing PrintedWithholding_LocalDB_Test.ps1 passed 73 checks.
+All V8 assertions in PrintedWithholding_Pdf_Test.py passed (284 checks), using
+Reports as the V8 render directory; V4 was outside this cleanup. The stock
+script's final summary mentions both versions, so interpret that invocation as
+V8-only. Normal unit count is 119; checkbox 28, readability 50, small-screen
+1,344. Fixture writes occur only in owned disposable LocalDB databases. The
+native print workflow and physical printer alignment remain manual acceptance.
+
+## October 27: default GOODS and retired REVIEW marker
+
+Unmarked/blank Item.Notes now defaults to GOODS. This produces a 1% suggestion
+only when that customer/order has 1% enabled. Existing [WTAX:REVIEW] tokens are
+ignored, not deleted from the database. Explicit SERVICES/EWT15/GIFT_CERT markers
+remain authoritative; unknown/conflicting markers are not silently guessed.
+5%, VAT exemption, existing subtotal allocation/rounding and stored totals remain
+unchanged. No SQL updates. Build validation: 119 unit tests per main project;
+142 actual item/UI/recall/reprint checks per V4/V7.1/V8 on owned local fixtures.
+
+
+V4 WALK-IN selections: build the active V4 project Release/x86 with its EXE
+configs preserved, then run ItemWithholding_LocalDB_Test.ps1 against that EXE
+and V4RecallTaxable_LocalDB_Test.ps1 with -ApplicationPath pointing at the same
+candidate. The shared item probe exercises the actual V4 picker, Cancel, marker
+retention, recall loader, named-customer fallback, explicit all-off, closed-order
+reprint and report rendering (138 checks). The V4 probe stages ShippingNotes as
+the form does and uses the unchanged mapped GSC-compatible header/line update
+methods (24 checks), verifying unrelated notes and unchanged tax/stock values.
+Run PrintedWithholding_LocalDB_Test.ps1 (73 checks). A clean-folder copy of V4
+also passes the item probe without private DLLs/config. These are disposable
+LocalDB fixtures; native RMS settlement is simulated. V4 keeps legacy save
+boundaries; the separate 43-check MultiUser suite in both read modes validates
+V8, not V4 concurrency guarantees. Both required solutions, 117 main units and
+Packaging_CleanFolder_Test.ps1 also passed. No live SQL is executed.
+
+V8 WALK-IN selections (October 26): the unit suite covers ShippingNotes marker
+round trips, unrelated text preservation, replacing a selection, explicit
+all-off versus absent markers and rejecting unsupported rates. Run
+ItemWithholding_LocalDB_Test.ps1 against the V8 Release EXE for the real picker,
+Cancel, saved/recalled rates, normal/closed-order reprints, named-customer
+fallback, explicit all-off despite a subsequently enabled customer flag and
+unchanged shared customer settings. The probe creates a private LocalDB fixture
+and renders the actual report; it never loads the production main form.
+Run PrintedWithholding_LocalDB_Test.ps1, Packaging_CleanFolder_Test.ps1 and both
+required Release/x86 solution builds. Preserve Debug/Release EXE configs around
+builds. MultiUser_Save_LocalDB_Test.ps1, normally and with -VersionedReads, now
+also exercises the actual save of selected/all-off markers, existing-note
+preservation, unchanged totals/commitments and injected transaction rollback.
+Results: 117 units, 138 item/picker checks, 73 print checks, packaging and 43
+transaction checks per read mode passed. Closed-order settlement is simulated;
+actual RMS POS retention and physical printing remain manual acceptance checks.
+The runtime Set W/Tax button copies the neighboring Set Tax button's icon and
+visual properties; inspect it beside Set Tax/Logout at the store's display scale.
+
+V8 credit warning: run `Database Components/Tests/CreditWarning_LocalDB_Test.ps1`
+after the Release/x86 build. Requires Windows, LocalDB and the Framework x86 C#
+compiler. It creates/drops an owned fixture, points only the test process at it,
+and invokes the compiled total/payment events and customer-credit loader without
+showing/loading the production form. The test dismisses real warning dialogs.
+Twenty-five checks cover CHARGE selected after items, customer changes (including
+equal balances), total changes, stale/invalid balances, other payment types,
+equal/sufficient credit and unchanged total, Save availability and customer limits.
+It does not test a production save or RMS POS; no SQL deployment is required.
+Run both required Release/x86 solution builds and Run-UnitTests.ps1, preserving
+existing application EXE configs. October 26: both builds, 114 units and 25 credit
+checks passed locally.
+
+HO WO 18947 -> 18946 recovery validation: run
+`Database Components/Tests/HO_Renumber18947_LocalDB_Test.ps1` only on Windows
+with LocalDB. It creates/drops its own instance/database and a real copy-only
+checksum fixture backup. Forty-two checks cover backup/maintenance/target
+rejection, injected rollback failures, snapshots, inventory, foreign/unknown
+references, trigger state, commit/repeat guards and actual legacy @@IDENTITY
+18948 without reseeding. It does not execute against live. The separate October
+24 incident record documents the independently authorized live backup, rehearsal,
+commit and SELECT verification; that is separate from these synthetic tests.
+
+
+Current 5% suggestion rule (October 24): customer enable/caption checks remain;
+VAT-applicable references use the entire existing VAT-exclusive subtotal, with
+no item VAT5 requirement. Income markers continue to govern 1%, 2%, 15%.
+Run both Release builds, V4 build, Run-UnitTests, ItemWithholding_LocalDB_Test
+per version and the rendered report suite. Unit cases cover unmarked and legacy
+VAT5-tagged items, unchanged income classes, signed/half-cent rounding and VAT
+exempt exclusion. Fixtures test customer-only enable/disable, independent screen
+and reprint values and unchanged saved totals. Local disposable fixtures only.
+Validated: 114 units; 123 item checks and 73 report checks per version; 568 PDF
+checks and packaging. Existing EXE configs preserved; physical printing manual.
+
+
+Current half-sheet print layout (October 24; with close-set colons and aligned amounts) supersedes the older payment-at-top
+layout notes below. Run ItemWithholding_LocalDB_Test.ps1 per compiled V4/V8 EXE,
+then PrintedWithholding_LocalDB_Test.ps1 per EXE with its pre-change report as
+-BaselineReport, followed by PrintedWithholding_Pdf_Test.py on the common output
+folder containing V4Render and V8Render. The report probe asserts unchanged
+item expressions/parameters, exact fixture amounts, regular individual WTax,
+bold summary/payment, aligned left/right totals colon positions and right edges of all rate/total/payment amounts, one-row signatures and six-item half-sheet fit. Long
+wrapped descriptions and 60-line orders may paginate; every line must remain.
+Blank canvas is trimmed; no change to preview/direct-print paper settings.
+Use the required builds, unit suite and Packaging_CleanFolder_Test.ps1. Existing
+Debug/Release EXE configs must be preserved around builds/tests. Current result:
+112 units; 121 item fixture checks and 73 report checks per version; 568 PDF
+checks; packaging passed. These use owned disposable LocalDB only, not RMS POS
+or real printer output. Inspect actual localhost previews and physical paper.
+
+
+The item VAT columns and Amount Due layout were reverted at the user's request.
+Run the item fixture per version, PrintedWithholding_LocalDB_Test.ps1 and
+PrintedWithholding_Pdf_Test.py to verify original report elements and no-rate /
+quotation positions, one left withholding column, payment amount at its top,
+hidden zero rows, fonts and signature spacing. VAT-column-only PDF tests were
+removed with the reverted layout. Required builds/unit tests and packaging stay
+applicable; no live database or physical printing is used.
+
+For main-screen zero withholding filtering, run both withholding UI suites and
+ItemWithholding_LocalDB_Test.ps1 for V4/V8 after rebuilding. Verify zero and
+rounded-zero labels hide, nonzero labels pack left and return after quantity or
+marker changes, sole 15% starts in column zero, and VAT/totals remain unchanged.
+The basis/review-warning panel retains its existing visibility rules.
+
+Printed zero filtering: ItemWithholding_LocalDB_Test.ps1 additionally verifies
+rounded-zero and no-matching-base cases hide payment, no enabled rates hide
+payment, and review-only warnings remain visible. The main UI also hides zero
+amount labels. PrintedWithholdingProbe.cs exercises actual no-rate output;
+PrintedWithholding_Pdf_Test.py checks nonzero rows only and no printed zero rows.
+
+For single-column printed payments, run ItemWithholding_LocalDB_Test.ps1 for
+V4 and V8. It checks CASH/CHARGE/DEBIT/CREDIT net amounts, zero/no enabled rates,
+item-specific amounts and unchanged stored totals. PrintedWithholdingProbe.cs
+and PrintedWithholding_Pdf_Test.py also assert the heading is absent, amounts
+are on separate lines, font matches Sub Total and signatures remain clear.
+Use owned LocalDB fixtures only; inspect rendered PDFs after template changes.
+
+The focused helper cleanup retains two direct price-confirmation unit cases:
+missing/placeholder values require confirmation, and numeric prices including
+zero are confirmed. The old counting/navigation helpers were test-only callers,
+not the form's navigation implementation. For settings cleanup, use a temporary
+mapped configuration to verify adding/updating lowercase Boolean values and
+preserving unrelated settings; never save test values to the store EXE config.
+Run both Release solutions, the V4 Release project, unit tests, item-marker
+fixtures for each version and EXE-only packaging after this cleanup.
+
+For the duplicate Settings resource build regression, build the main project in
+Debug/x86 and the solution in Release/x86. SmallScreenLayout.resx must retain its
+explicit WorkOrderEntry.SmallScreenLayout manifest name: its dependent VB source
+contains multiple partial form classes, so inferred naming collides with Settings.
+Preserve existing EXE configurations around these builds and unit tests.
+
+## Item-marker withholding references (current V4/V8 behavior)
+
+See ITEM_WITHHOLDING_REFERENCE.md for the marker contract and calculation.
+Customer eligibility stays unchanged; marker-specific bases replace applying
+every enabled percentage to the entire subtotal. No Davao RMS XML receipt edits.
+
+Run `Database Components/Tests/ItemWithholding_LocalDB_Test.ps1` separately for
+each compiled EXE, with `-ApplicationPath` and `-OutputDirectory`. Requires
+LocalDB, installed ReportViewer 2010 and Framework x86 csc. The C# probe creates
+and drops a GUID-named owned LocalDB fixture, exercises the actual compiled
+display/helper and unchanged embedded reports, and creates only an offscreen
+footer host (never production form Load). 73 checks passed per version: mixed
+goods/services, independent VAT5/EWT15, gifts, review exclusions, fresh marker
+reads, current customer eligibility, actual/exempt VAT, stale header flags,
+closed settled-line reprints, packing and paper settings. No physical printing
+or RMS POS is executed. Configuration hashes must remain unchanged.
+
+Existing WithholdingSuggestions_LocalDB_UI_Test.ps1 (55) and its V4 counterpart
+(57) now seed explicit item markers and retain their totals/exemption/layout
+assertions. PrintedWithholdingProbe.cs seeds GOODS+VAT5 and EWT15 lines; its
+62 checks each and 160 PDF checks verify zero for nonmatching enabled rates,
+while retaining CASH/CHARGE/neutral formatting, fonts and original total layout.
+The six new unit cases bring the main unit suite to 112. Run existing V4 guard,
+duplicate-customer, empty-result and recall-tax fixtures, PrintLayout_UI_Test.ps1
+(91), and Packaging_CleanFolder_Test.ps1. No save-coordinator code changed here.
+
+The owned-fixture samples and test evidence are in TestResults/ItemWithholding-
+20261023. A separate SELECT-only check of existing localhost settled WO 23309
+verified both compiled helpers returned 1%_Charge 7.95 from current item markers.
+The Davao receipt-folder hash snapshot must match after these tests; do not
+change its diagnostic XML or pending RMS-template investigation incidentally.
+
+## Davao RMS XML receipt withholding reference
+
+Run `python "Database Components/Tests/DavaoReceiptWithholding_Test.py"`.
+Seven offline contract tests evaluate the added XML's actual conditions and
+arithmetic using synthetic inputs: enabled/invalid rates and captions, sole
+15%, no customer, quotes, actual VAT-exclusive base, exemptions, zero/signed
+amounts, midpoint rounding and large amounts. A sales-receipt regression uses
+the user's 178.00 total and 19.07 VAT and verifies both source filenames match.
+A canonical hash preserves every
+original receipt element when the new section/call are removed. The original
+Sub Total font is reused; added currency variables use native vbCurrency.
+
+This is not the RMS receipt compiler, physical printing or live-store evidence.
+Use the localhost RMS preview checklist in Receipts/Davao_Receipts/README.md,
+including long/multi-page work orders and signature/page-break inspection.
+The existing Packaging_CleanFolder_Test.ps1 validates the separate addin's
+ReportViewer package, not this RMS XML engine. No SQL updates are needed.
+
+## V4 recalled-order Taxable flags
+
+Run `Database Components/Tests/V4RecallTaxable_LocalDB_Test.ps1` with
+`-ApplicationPath` pointing to the compiled V4 EXE (defaults to V4 EXE-Only).
+Requires installed ReportViewer 2010, x86 Windows PowerShell and LocalDB.
+It creates/drops a GUID-named database on `(localdb)\MSSQLLocalDB` and writes
+only synthetic customer/order/item/queue records. Its minimal tables follow the
+active V4 DBML, including rowversion. It replaces all application contexts with
+the guarded fixture endpoint before invoking any application SQL; never run
+production form Load or point this test at an existing store database.
+
+The prior EXE reproduces a stale header Taxable flag despite positive VAT.
+The fixed EXE passes 19 checks using actual compiled clsRecall.UpdateOrder and
+UpdateOrderEntry methods plus the existing UI UpdateAmt calculation: positive
+VAT flags, customer exemption transitions, unchanged totals/stock/commitments,
+active queue state, repeated saves, quotations and the original zero-VAT header
+rule. This does not add V8 transaction protections to V4 or test actual RMS.
+Application config hashes must remain unchanged.
+
+Also run existing V4 guard, duplicate-customer, withholding and empty-result
+tests, both production Release/x86 builds, and Run-UnitTests.ps1. The required
+MultiUser_Save_LocalDB_Test.ps1 normal and -VersionedReads checks exercise V8's
+save coordinator separately; they are not evidence of V4 or actual POS behavior.
+Manual localhost acceptance: recall/save a taxable order and an exempt order;
+verify stored header/line Taxable flags, VAT and total. No SQL deployment needed.
+
+## Printed withholding reference (V4 and V8)
+
+Save each pre-change rprtOrder.rdlc before editing. Build V4 and both production
+solutions Release/x86 and run the main unit suite with Debug/Release configs
+preserved. Run `Database Components/Tests/PrintedWithholding_LocalDB_Test.ps1`
+separately for each compiled EXE with `-ApplicationPath`, `-BaselineReport` and
+`-OutputDirectory`. Its C# probe creates/drops an owned, GUID-named LocalDB
+database; only synthetic fixture data is written. It calls the actual compiled
+reference helper and renders the actual embedded template with installed
+ReportViewer 2010. Production preview Load is never invoked because V4's Load
+physically prints. No printer or RMS is used.
+
+Each version now passes 62 checks: heading/bold amount fonts matching effective
+Sub Total size (V4 8 point; V8 10 point) and the 0.85-inch reference area, plus
+saved-order customer/type, exact rates/rounding,
+tax-exempt/zero/signed bases, missing/duplicate/unrelated captions, missing orders,
+optional lookup failure, stored totals, unchanged pre-existing RDLC elements,
+PDF/TIFF rendering, preview settings and retained printable EMF page counts for
+normal, quotation, no-rate and multi-page reports. Samples include sole 15%, all
+rates, empty lines and large amounts. Compare printable pages using the existing
+print extension's >408-byte EMF rule; raw PDF/TIFF may contain legacy blank pages.
+The original print-extension code and that filter remain unchanged.
+
+With pdfplumber available, run
+`python Database Components/Tests/PrintedWithholding_Pdf_Test.py <output-root>`
+where the root contains `V4Render` and `V8Render` output directories. All 160
+comparisons passed: exact enabled amounts, unchanged total text, reference clear
+of signatures, complete large reference amounts, and identical word positions/pages for hidden references and
+quotations. Visible references can cause normal RDLC reflow; those comparisons
+preserve existing text/values rather than requiring identical positions.
+V4's very large totals retain their existing line wrapping; character-level
+comparison verifies the full original amounts. Render sample PDFs with
+pdftoppm and visually inspect the new section, including large reference values.
+
+Also run Packaging_CleanFolder_Test.ps1 (passed with installed ReportViewer
+2010), PrintLayout_UI_Test.ps1 (91 passed), main unit tests (106 passed), and
+the existing V4 save/customer/withholding/empty-result suites (54/28/57/33 passed).
+These local fixtures do not certify live-store data or physical printer output.
+
+Payment-label cases read the actual saved order's Comment prefix: CASH uses
+`WTax N%` and CHARGE uses `WTax N%_Charge`. The fixture checks mixed case/spacing,
+opposite payment words in remarks, current saved-payment changes on reprint,
+sole enabled rates, and null/card payment fallbacks preserving neutral labels.
+CHARGE renders one rate per line and the reference textbox grows so long labels
+and large amounts remain complete. Earlier 14-point validation retained complete
+amounts; the latest font matching uses each template's actual Sub Total size.
+The PDF suite now checks the rendered point size and bold font in each case.
+The earlier fixed-height version
+was confirmed to clip a CHARGE large amount; the PDF comparison now detects this.
+Check printable page counts for both CASH and CHARGE, including multi-page
+samples. Rate arithmetic, stored totals and quote/no-rate layouts remain checked.
+
+## Main action column readability
+
+For Invoice uses the same 9-point Tahoma font as neighboring regular actions.
+The action column is now 144 pixels wide (141 inside its padding), extending
+into the former grid-side gap. Content-panel right padding is one pixel and
+the button-column left padding is zero, so grid usable widths remain unchanged.
+Its existing
+branch visibility and click handler are unchanged. SmallScreenLayout_UI_Test
+now checks text-plus-icon fit and matching font size at 1024, 1366 and 1600
+widths, normal/simulated 125% scaling, and main-form bounds at 1600x900.
+All 1344 scoped layout checks passed, including thin-separator checks against
+both grids at each width and scale. Withholding tests use content widths
+1212/1766 after this 18-pixel action-column increase; all 55 passed. Both main
+Release builds, Debug, 106 unit and 28 checkbox checks passed; configs retained.
+
+Dialog-fitting cases retain their existing 728-pixel test working-area height.
+An exploratory taller dialog case hit the Settings scroll-edge assertion; no
+Settings behavior was changed or certified at that additional height. The
+1600x900 acceptance in this change is scoped to the main form's controls.
+Actual monitor/DPI readability remains a manual acceptance check.
+
+## Imported V4 basic save guards
+
+`Database Components/Tests/V4EmptySearchResults_UI_Test.ps1 -ApplicationPath
+<absolute-V4-EXE-path>` tests actual V4 grid Paint handlers and empty-selection
+handlers without SQL or production-form Load. Its 33 checks cover unbound versus
+bound-empty states, text in the grid body, unchanged row data, empty-to-populated
+and populated-to-empty transitions, empty Customer/Sales Rep/item selection,
+existing Esc handlers in both lookup text boxes and grids, closed SQL connections
+and unchanged configs. The original compiled V4 reproduces an empty Sales Rep
+ArgumentOutOfRangeException. The item no-match modal and filter-restoration code
+are deliberately unchanged; this fixture does not invoke that modal SQL flow.
+
+After removing V4's empty LoadLevel MessageBox, manually verify item/price
+selection has no blank dialog and retains pricing, approval and Cancel behavior.
+The automated V4 guard/customer/withholding fixtures do not certify that full
+legacy GSC price-selection flow.
+
+V4's optional withholding strip is checked separately with
+`Database Components/Tests/V4WithholdingSuggestions_LocalDB_UI_Test.ps1
+-ApplicationPath <absolute-V4-EXE-path>`. The test uses its own disposable
+LocalDB database, replaces endpoints only inside its test process, and never
+loads the production form or runs a save/print. Its 57 checks cover captions,
+all enabled-rate combinations packing left, cached rates, customer changes,
+existing taxable/tax-exempt UpdateAmt results, quote/reset hiding, large values,
+and actual docked-footer bounds at 1366/1600 widths. The fixture detaches only
+V4's legacy quotation confirmation handler to avoid a modal prompt; the new
+display handler remains attached. This is not an actual GSC/RMS workflow test.
+
+Build the active `Work Order Entry V4/Work Order Entry_4/Work Order Entry`
+project as Release/x86. Run `Database Components/Tests/V4SaveGuards_UI_Test.ps1`
+with `-ApplicationPath` for an isolated candidate or let it use V4's Release
+output. It tests compiled selection/header/row gates and compiled save/lookup
+call ordering without application startup or SQL. It does not claim V4 saves
+are atomic or exercise GSC's actual stored procedures. See the separate
+`Work Order Entry V4/V4_GSC_VALIDATION_UPDATE.md` for manual localhost acceptance.
+All 54 V4 checks passed. Use an older-GSC-compatible test restore for full
+workflow acceptance: the current localhost GSC search function has one argument,
+whereas this V4 target intentionally retains its older three-argument mapping.
+
+Run `Database Components/Tests/V4DuplicateCustomer_LocalDB_UI_Test.ps1`
+with `-ApplicationPath` to check the actual V4 search and selection handlers
+against two same-name synthetic customers in its owned localhost fixture.
+The unmodified baseline reproduces the stale-row wrong-account error; the
+candidate passes 28 checks including selected ID/account, per-customer price
+level, existing approval setting, employee/tax flags, Sales Rep, Enter handling,
+rebound account searches and empty/header selection. Production forms are never
+shown/loaded; only their grid is hosted offscreen. No save or print is executed.
+
+## Independent WPF sample startup
+
+`DVO_WORK_ORDER_V8_WPF_MODERN` is a .NET 8 sample outside the production solutions.
+Its App.xaml must specify StartupUri="MainWindow.xaml" so launching its EXE
+opens the sample window. Build its own project in Release and check that the
+process has a visible main window. Its hardcoded data and mock Save action do
+not validate production saving, printing, tax or RMS behavior.
+The corrected sample built with zero warnings/errors in `bin/Release/StartupFixed`
+and its real main window handle/title were verified after launching outside
+the restricted process environment. Earlier default-folder attempts were locked
+by existing sample processes. No production application/database was launched.
+
+## Separate UI preview
+
+`UI Preview/WorkOrderUiPreview.vbproj` is a standalone sample-data visual demo,
+not part of either production solution. Build/open its own Release EXE as
+described in `UI Preview/README.md`. Its `--check` mode renders 1366/1920 window
+widths and checks sample filtering, empty results, all four withholding tabs,
+unchanged fixed totals and visible actions. No main form, database, store
+configuration, RMS or physical printer is loaded. These checks do not validate
+production save/printing behavior; operator readability/scaling review remains
+necessary. The main application's UI has not been replaced by this preview.
+
+## Current ReportViewer 2010 deployment
+
+The October 21 main build uses installed ReportViewer 10.0.0.0, not private
+version-15 DLLs. See
+`Database Components/Tests/REPORTVIEWER_2010_MAIN_DEPLOYMENT_2026-10-21.md`.
+The latest EXE includes withholding suggestions; both Release/x86 builds, Debug,
+106 unit, 30 localhost withholding and 28 checkbox checks passed. The expanded
+EXE-only packaging probe rendered both actual preview forms for six cases;
+all 32 pages matched the accepted version-10 candidate exactly. Keep existing
+Debug/Release store configs byte-for-byte around builds. Every target PC needs
+the ReportViewer 2010 prerequisite installed once before EXE-only updates.
+
+## Suggested customer withholding amounts
+
+Work Order shows a read-only Suggested W/Tax strip above its totals when the
+selected customer has recognized enabled flags. It uses the existing displayed
+VAT-exclusive Sub Total directly, including the order's existing exemption/tax
+treatment. It does not divide every total by 1.12, deduct withholding from the
+order, combine rates, save withholding amounts, modify customer properties or
+fill RMS tender fields. These are separate estimates for cashier reference,
+not a determination that a particular tax category legally applies.
+
+The full-width pale blue strip uses 13.5-point bold amounts across one row,
+with the existing VAT-exclusive basis underneath. Only enabled rates appear;
+they pack from the left without blank slots for disabled rates, retaining their
+relative 1%, 2%, 5%, 15% order. A sole 15% suggestion occupies the first position.
+no tabs, keyboard stops or tender entry actions were added. Its 92 extra footer
+pixels are reclaimed when hidden (including quotations and untagged customers).
+The enlarged footer leaves a usable selected-item viewport at 1366x768.
+The localhost suite now also checks full-width placement above totals, bold
+font size, non-overlapping rates, large-text fit, and compact hidden states.
+October 21 display validation passed both Release/x86 builds, Debug, 106 unit,
+38 localhost withholding, 28 checkbox and 875 existing small-screen checks.
+Actual screenshots come from
+an isolated totals-panel host, not a live order or a full application login.
+October 22 left-packing validation passed 55 localhost withholding checks,
+including every enabled-rate combination and a customer switch back to all
+rates, plus both Release builds, Debug, 106 unit, 28 checkbox and 875 existing
+small-screen checks. Calculations and query/cache rules are unchanged.
+
+Confirmed RMS customer mapping (CustomCaption.Style identifies each caption):
+
+| Rate | Customer property | Required value | Caption style / caption |
+| --- | --- | --- | --- |
+| 1% | CustomNumber3 | 1 | 8 / W/Tax 1% |
+| 2% | CustomNumber4 | 2 | 9 / W/Tax 2% |
+| 5% | CustomNumber5 | 5 | 10 / W/Tax 5% |
+| 15% | CustomText2 | text 15 (surrounding spaces ignored) | 2 / W/Tax 15% |
+
+Missing, duplicate or unrelated captions do not enable estimates. Caption
+comparison ignores letter case, whitespace and a trailing colon. Other flag
+values are disabled. The customer SELECT is parameterized and runs only on
+customer changes; subtotal edits reuse flags. Clearing/resetting or selecting
+another customer reloads current flags. Optional lookup failures hide estimates
+and are logged without interrupting existing customer/save validation. No SQL
+runs during Designer construction. The panel is hidden for quotations.
+
+Run `Database Components/Tests/WithholdingSuggestions_LocalDB_UI_Test.ps1`
+after a Debug build. It creates/removes an owned localhost LocalDB fixture,
+points only its process's in-memory contexts at that fixture, and does not
+change registry or installed configuration. It never shows/loads the real
+application form; a separate test host renders only its totals panel. Thirty
+checks cover actual customer SELECTs, independent rates, exact flags/captions,
+customer switching, cached flags, actual UpdateAmt results, tax-exempt totals,
+signed/fractional/large values, tooltips, invalid/empty input, quotation hiding,
+unchanged totals, tab stops and no overlap at the two supported screen widths.
+Five unit tests cover rate detection, math, rounding and caption recognition.
+
+October 21 validation: both Release/x86 solutions and Debug built; 106 unit,
+30 localhost UI/query and 28 RecallFormatting checks passed. Debug EXE config
+was preserved byte-for-byte. Final render evidence is in ignored
+`TestResults/Withholding-8c09dbef/`. This is synthetic localhost validation, not
+live-store saves, physical printing or execution of RMS POS. No live database
+was accessed for this feature and the RMS investigation remains paused.
+The compiled customer/caption SELECT also passed a read-only check against the
+actual restored localhost DVO_STORE_DB schema (customer ID 11 returned 1%, 2%
+and 5%); no app form or configuration was loaded and no data was written.
+
+Manual acceptance: select a tagged customer, enter/edit/remove items, switch
+customers, recall/import/restore a draft, toggle Work Order/Quotation and
+refresh. Verify the applicable amounts against the displayed subtotal and check
+that existing totals, save/password checks, printing and shortcuts behave as
+before. Hover over an ellipsized large amount to read the complete value.
+
+## Cebu one-off commitment recovery
+
+`Database Components/Tests/Cebu_ZeroCommitments_Core_LocalDB_Test.ps1` tests
+the exact UPDATE/audit body of the October 21 recovery in an owned disposable
+LocalDB database. It does not execute the complete production recovery or relax
+its backup/server guards. Twelve checks cover exact target quantities, stock,
+prices, unrelated items, audits, repeat execution and failure rollback.
+See `Database Components/Recovery/CEBU_ZERO_COMMITMENTS_2026-10-21.md` for live
+authorization, scope, backup limits, regression results and execution status.
+Never use an application save or a live rollback as a rehearsal for this repair.
+
+## ReportViewer 2010 isolated candidate
+
+Historical October 20 experiment; superseded for deployment by the October 21
+main-project adoption recorded in
+`Database Components/Tests/REPORTVIEWER_2010_MAIN_DEPLOYMENT_2026-10-21.md`.
+Current builds require installed ReportViewer 2010 and deliver an EXE-only update.
+
+The October 20 compatibility experiment is documented in
+`Database Components/Tests/REPORTVIEWER_2010_COMPATIBILITY_RESULTS_2026-10-20.md`.
+The isolated Release/x86 build passed 101 candidate unit tests, EXE-only
+clean-folder and existing localhost UNC rendering checks using installed
+ReportViewer 10.0.0.0. Both actual preview forms rendered six cases, including
+real Work Order/Sales Quotation titles, empty, long-text, large-value and
+multipage fixtures. All 32 TIFF pages matched count/dimensions; 27 were exact,
+five had two differing Work Order title-edge pixels each. The strict pixel
+assertion returned false and was not weakened. Other pixels and preview page
+settings matched; operator acceptance remains required.
+All 137 code/resource files matched; only isolated dependency references differ.
+No real project reference/config, shared deployment or live database was changed.
+Affected-unit and physical printer/copy acceptance remain outstanding. This is
+not proof of the cause of the original report error. At that time the normal
+application's ReportViewer 15 package remained unchanged. The October 21 adoption
+changes the packaging contract to installed version-10 GAC loading.
+
+## Shared-folder report failure: diagnostic follow-up
+
+The October 20 failure after copying the complete Release folder remains
+unresolved pending its actual inner exception. Read-only inspection found
+matching ReportViewer DLL hashes on the supplied share. Synthetic Work Order
+and Pick List reports passed from that shared application base, including the
+actual deployed preview forms' embedded resources and page settings, on the
+development PC. These results do not certify another user's PC or real WO data.
+
+The diagnostic-only update logs synchronous preview failures and asynchronous
+ReportError exceptions through ErrorLogger; existing popups show the root cause
+when present. It leaves e.Handled, data queries, RDLC, printers, copy counts,
+page setup and printing behavior unchanged. No remote-trust switch was added.
+All four synthetic diagnostic checks passed (nested errors captured, default
+handling intact), plus both Release/x86 builds, Debug, 101 unit tests and the
+clean-folder packaging/render checks. Debug config preserved byte-for-byte.
+Ignored evidence: `TestResults/SharedReportDiagnosis/` and
+`TestResults/SharedReportValidation/`. No shared files or database were changed.
+
+The following diagnostic procedure applies to the historical version-15 build,
+not the current ReportViewer 2010 EXE. To obtain the missing evidence, deploy
+that historical diagnostic EXE only in a
+controlled maintenance/test window, retaining the branch's config and matching
+five DLLs. Repeat the failing preview on the affected PC; no new order/save is
+needed. Record the WO number, which PCs fail, and the popup's Details text.
+The full chain is appended to `Logs/Error_yyyy-MM-dd.log` beside the launched
+EXE if that user can write there. If logging is denied, supply the Details text;
+do not change shared permissions or runtime trust settings as an unverified fix.
+The diagnostic build has not been copied to the share by the assistant, and
+the actual client's inner exception has not yet been captured. RMS remains paused.
+
+## Neutral column-header selection colors
+
+All 17 addin grids use their normal header colors even when a column contains
+the current cell; selected rows remain highlighted. Designer header styles and
+the main-grid runtime formatter both set matching normal/selection colors.
+Sorting, keyboard selection, read-only flags and checkbox NullValue defaults
+are unchanged. Check Price Level, main lookup/selected items, customer, sales
+rep and recall grids after selecting rows/clicking sortable headers.
+
+The October 20 comparison passed 40 checks across 19 Designer/runtime states,
+including unchanged row colors and column/interaction settings. Price Level
+before/after renders are in ignored `TestResults/HeaderHighlightValidation/`.
+No form Load or SQL was invoked. Both Release/x86 solutions, Debug build, all
+101 unit tests and 28 RecallFormatting_UI_Test.ps1 checks passed; Debug config
+was preserved byte-for-byte. Manual application acceptance remains outstanding.
+
+## Queueing column visibility
+
+UP-STORE and PREPARED display only for work orders when the saved branch
+Queueing Mode is enabled. Save the mode in Settings and close the settings
+dialog to apply it. Both columns stay hidden for quotations. Verify off/on,
+refresh, recall and quote-to-WO conversion; hiding must not clear existing cell
+values or change save/queue behavior. No Designer checkbox defaults changed.
+
+The October 20 in-memory probe passed 85 checks over repeated off/on settings,
+formatting, Settings UI refresh, quotation and conversion, with true UP-STORE
+and prepared quantity 3 retained. It did not invoke form Load or save settings;
+the EXE configuration hash was unchanged. Both Release/x86 solutions, Debug
+build, all 101 unit tests and 28 RecallFormatting_UI_Test.ps1 checks passed.
+Ignored evidence: `TestResults/QueueColumnValidation/`. Manual acceptance of
+the actual saved Settings flow remains; no store database was accessed.
+
+## New-order preallocation validation
+
+After a Debug build, run
+`Database Components/Tests/PreallocationValidation_LocalDB_Test.ps1`.
+It creates/deletes only a uniquely named owned LocalDB fixture at compatibility
+130 and does not modify application configuration, registry or store databases.
+No form Load event is invoked. Legacy global contexts are checked closed,
+disposed and cleared before application methods are tested.
+
+The 80 checks compare 18 paired allocation-boundary cases with and without the
+compiled ValidateNewOrderRows helper. Mapped fixture header/detail procedures
+and the compiled atomic commitment method execute under a real SQL transaction.
+Cases cover malformed later/split rows, Decimal overflow, missing items,
+prepared/tax/pick conversions, fractional values, duplicate running differences,
+zero differences, Type 7 exemptions, tax exemptions, quotations and a committed
+change after prevalidation. Eleven predictable failures consume 13 IDs without
+preflight and none with it; the concurrent failure still consumes one and is
+rolled back. Successful stored values match. Evidence:
+`TestResults/Preallocation-a42d5227/Results.json` and
+`TestResults/PreallocationValidation/` (ignored).
+
+This boundary comparison bypasses the surrounding prompts and queue/history
+orchestration; it is not a full UI/store/RMS save test. Actual caller placement
+and retention of the final atomic update are also checked against source.
+Both required Release/x86 builds, Debug build and all 101 unit tests passed
+with byte-for-byte Debug configuration preservation. Required multi-user tests
+passed 39 checks normally and 39 with `-VersionedReads`; their settlement is a
+simulation. No live operations occurred. Manual localhost acceptance remains:
+normal/imported work order, quotation, price approval/Cancel and a split order
+over six rows. Existing prices, quantities, totals and resulting orders should
+match; invalid later rows must not leave partially saved orders. Do not insert
+test orders on live just to inspect numbering. SQL errors and concurrent changes
+after prevalidation may still consume IDs. RMS investigation remains paused.
+
+For the separately requested HO WO 18912 -> 18905 recovery, run
+`Database Components/Tests/HO_Renumber18912_LocalDB_Test.ps1`. Its 43 checks run
+only in a uniquely owned synthetic LocalDB instance at compatibility 100, using
+the existing synthetic HO schema/triggers. They cover absence of the backup
+check as explicitly requested, rollback/injected errors, source/reference/trigger/schema
+guards, preservation of values and stock, mapped references, commit and actual
+legacy @@IDENTITY allocation of 18913. The script does not reseed identity.
+The test substitutes only the fixture server in an in-memory
+copy; it does not weaken the distributed file's guards. No live/store execution
+is part of this test. See
+`Database Components/Recovery/RENUMBER_HO_18912_TO_18905.md` for personal SSMS
+instructions and the remaining fresh-restore/operator validation.
+
+The [paused RMS settlement investigation](Database%20Components/Tests/RMS_SETTLEMENT_TRIGGER_REVIEW_2026-10-18.md)
+consolidates the October 18 source audit, disposable trigger tests and actual
+localhost RMS results, including the confirmed original-trigger deadlock and
+partial posting. The candidate has not been tested through actual RMS. Those
+experiments are historical evidence, not part of the routine unit-test runner;
+do not rerun fault injection against a store or treat synthetic passes as POS
+certification. Investigation is paused at the user's request.
+
+The authorized October 17 localhost DVO_STORE_DB index test is recorded in
+`Database Components/Tests/DVO_RESTORED_ITEMLOG_INDEX_RESULTS.md`. The guarded
+index was committed only on that local restore; seven lookup pairs retained
+their values while median component times and logical reads improved. No live
+deployment or full application save was tested. The local restore is from an
+older June backup; rehearse current Davao data before live deployment.
+
+For the separately requested WO 18882 -> 18879 and next ID 18880 recovery, run
+`Database Components/Tests/HO_Renumber18882_LocalDB_Test.ps1`. Its 42 checks use
+only a GUID-owned synthetic LocalDB instance at compatibility 100, including
+default rollback, recovery failure after reseed, reference/trigger/source drift
+guards, preserved values and actual automatic allocation/legacy @@IDENTITY.
+Never run the production recovery script against a store as an automated test.
+Manual restore/live instructions are in
+`Database Components/Recovery/RENUMBER_HO_18882_TO_18879.md`.
+
+The prepared `Database Components/Recovery/Deploy_HO_PO_DB_ItemLogLookup_LIVE.sql`
+was checked offline with the SQL Server 2016 ScriptDom parser (zero syntax
+errors, one batch). Its embedded migration matches the separately tested source;
+one transaction wrapper and absence of GO separators were verified. This is
+static validation, not execution of the live deployment wrapper. Never run that
+target-specific file as an automated test against a store.
+
 These tests check small business rules without opening the application,
 connecting to DVO/GSC, or changing database records.
 
 ## What is tested
+
+### InterStore availability layout
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\InterStoreLayout_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+```
+
+The InterStore probe binds synthetic tables without calling the availability
+query. It explicitly detaches the production Load handler before transparent
+rendering, so no database access occurs. It checks the five original column
+ordinals/property names, ID visibility/hidden Address, read-only/null/fractional
+quantity behavior, sorting, reordering, selection, row-resize permissions,
+keyboard/tab/DialogResult settings, normal and simulated 125% bounds at 1024/1366
+widths, and repeat/empty binding. PNGs are saved to the reported ignored
+`TestResults/InterStoreLayout-*` folder.
+
+October 19 validation: 140 InterStore checks, 28 recall-formatting checks, both
+Release/x86 builds, Debug build and 101 unit tests passed. Debug store config
+was preserved byte-for-byte; synthetic renders were inspected. No actual
+availability query or live-store test was executed.
+
+Manual acceptance: select a known item and click InterStore. Compare returned
+stores and quantities with the previous version, including zero/negative/decimal
+or blank values where applicable. Check long names/codes, row selection, header
+sorting, column reordering and Close. Existing shortcuts must behave as before.
+All layout/mapping properties are serialized in frmCheckStore.Designer.vb.
+RMS investigation remains paused.
+
+### Item-grid formatting comparison
+
+Preserve a pre-change Debug EXE before building the candidate, then run:
+
+```powershell
+& '.\Database Components\Tests\GridFormatting_UI_Compare.ps1' -BaselineAssembly '.\TestResults\GridFormattingBaseline\Work Order Entry_V8.exe'
+& '.\Database Components\Tests\ItemGridReadability_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+& '.\Database Components\Tests\SmallScreenLayout_UI_Test.ps1'
+```
+
+The comparison compiles an isolated x86 STA probe and runs original/candidate
+assemblies in separate processes, without form Load, searches, editing or SQL.
+Its 16 synthetic cases combine 0/1/100/500 bound rows, 1024/1366 widths and
+normal/simulated 125% scaling. The actual GridColumnWidth method runs for seven
+trials; the first trial is excluded. Measure binding plus formatting separately
+from ten repeated formatting calls per trial. This is not an end-to-end search
+or real monitor/DPI benchmark.
+
+All 208 paired assertions must match raw DataTable hashes, row counts, column
+settings, selection, font/header/row sizes, read-only/tooltips/selection mode and
+rendered bitmap pixels. Programmatically altered row heights must still become
+44 without moving selection. Shared-row counts are recorded before indexing
+selection cells or rendering, which can materialize rows. No assertion is weakened
+to accommodate a visual difference. Timings are evidence, not a fixed speed threshold.
+
+October 18 results in `TestResults/GridFormatting-05f62b36` (ignored): all assertions
+passed. At 500 rows, shared counts were 0 -> 500. Binding/formatting medians were
+21.92 -> 8.76 ms (1024) and 41.87 -> 12.21 ms (1366); repeated formatting was
+8.34 -> 7.91 ms and 19.89 -> 15.41 ms. Both Release/x86 builds, Debug build,
+101 unit tests, 50 readability, 28 recall-formatting and 875 small-screen checks
+passed, with Debug store configuration preserved byte-for-byte.
+
+Manual acceptance: repeat item searches, scroll results, select rows, resize
+and use existing shortcuts. Appearance, result ordering, selection and row height
+must remain unchanged. Actual database search speed was not measured. RMS stays paused.
+
+### Price-level query reduction
+
+Preserve an original Debug EXE in an ignored test-results directory before
+building the candidate. The comparison requires two separate processes so the
+original and updated assemblies do not share type identities. After a Debug build:
+
+```powershell
+& '.\Database Components\Tests\PriceLevel_Queries_LocalDB_Test.ps1' -BaselineAssembly '.\TestResults\PriceLevelBaseline\Work Order Entry_V8.exe'
+& '.\Database Components\Tests\PriceLevelLayout_UI_Test.ps1'
+```
+
+The SQL runner creates only a GUID-owned `WO_Price_*` LocalDB instance/database,
+small synthetic Item/config tables and the exported price function's SELECT.
+It does not restore or connect to a store. Workers verify legacy contexts are
+closed, dispose them and redirect only their process-local endpoint fields to
+the owned fixture before any application query. No registry or app config is
+switched. Original settings and price data are read through the compiled loader.
+Fixture setup uses a separate connection, excluded from the command trace.
+
+The 125 paired cases cover five price masks, levels 0 through 4, fractional/zero/
+negative prices, missing item data, changed prices on successive loads, and the
+single-level API with display enabled/suppressed. Compare raw rows, minimum
+price, selected row/column and approval flags. Empty/unsupported-level behavior
+is preserved rather than inventing a new level. Intact Extended Events traces
+count actual application SQL batches/RPCs. This is not a password-entry test;
+the approval/password handlers are unchanged and no selected price is applied.
+
+October 18 results: 125 paired cases matched; commands 825 -> 250 overall;
+four-level dialog reads 12 -> 2; dialog median 92.89 -> 16.19 ms. The engine was
+LocalDB 17.0.4025.3 at compatibility 130, not a SQL Server 2016 engine or a live
+store. Timing includes local calls with pooling disabled and is not a network or
+multi-user benchmark. Artifacts: `TestResults/PriceLevelQueries-9f76b564` (ignored).
+The owned database was dropped and instance deleted. Both Release/x86 builds,
+Debug build, 101 unit tests and 50 existing Price Level UI checks passed; Debug
+store configuration was preserved byte-for-byte.
+
+Manual acceptance: open Price Level Selection for several customer levels and
+confirm identical rows/prices and retail top-row selection. Exercise the existing
+F9 password approval, wrong password and Cancel paths, then reopen/reload after
+an authorized test price/settings change to confirm fresh data. Test normal
+price editing and the alternate price-level dialog too. No store write is
+authorized by running this fixture; RMS investigation remains paused.
+
+### Messages inside empty lookup grids
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\GridEmptyState_UI_Test.ps1'
+```
+
+This isolated paint/binding probe constructs Customer, Sales Rep, Recall and the
+main form without showing/loading them. It checks that the actual Paint handler
+draws nothing before binding, draws guidance for empty/filtered-empty results,
+and stops drawing when rows return. Synthetic PNGs are saved under the reported
+`TestResults/GridEmptyState-*` directory; those artifacts are not tracked.
+
+The user explicitly approved leaving unsuccessful keyword searches empty instead
+of automatically restoring previous/all items. The above-grid notice is removed.
+The probe invokes the production empty-search handler on synthetic empty data
+with/without preceding keywords: the empty binding/message must remain, only the
+failed keyword is removed, and the grid must have no above-grid notice. Barcode
+empty feedback and successful rebinding are also checked. No SQL, live searches
+or real item selection executes; import-specific fallback is unchanged.
+
+Final validation passed both Release/x86 builds, Debug build, 101 unit tests,
+37 feedback checks, 28 recall-formatting and 875 small-screen checks, with Debug
+config preserved byte-for-byte. Synthetic grid renders were inspected.
+
+Manual acceptance: search for an unmatched value. Customer, Sales Rep, Recall
+and item grids should display their guidance below the headers without a popup.
+Keyword item search must stay empty, with no restored 500-item list and no notice
+above the grid. Search again to restore matching rows. Verify F4/F5, Esc, barcode
+reset/focus, successful selection and genuine errors still behave as expected.
+No live-store test is claimed; RMS investigation remains paused.
+
+### Empty Customer, Sales Rep and Recall results
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\EmptyLookup_UI_Test.ps1'
+& '.\Database Components\Tests\LookupDesign_UI_Test.ps1'
+& '.\Database Components\Tests\LookupKeyboard_UI_Test.ps1'
+```
+
+The empty-results runner compiles a separate x86 STA probe and copies only the
+application assembly, without its store config. Forms are never shown or loaded.
+Legacy globals construct data contexts on first access; the probe verifies their
+connections remain closed, then removes/disposes the contexts before callbacks.
+It invokes OK, Enter and double-click with initially empty and synthetically
+filtered-empty grids, requires no error prompt/selection/dialog close, restores
+the synthetic results and checks Esc. No SQL or actual row selection is executed.
+Windows may require execution outside the sandbox because legacy SqlClient
+initialization uses writable performance counters; do not change database or
+registry settings to bypass that restriction.
+
+The pre-fix assembly reproduced three exceptions using `-ExpectLegacyFailure`:
+Customer/Recall NullReferenceException and Sales Rep ArgumentOutOfRangeException.
+Only use that switch with the original assembly. Fixed validation passed 22
+empty-result checks, 204 lookup checks, four Escape checks, both Release/x86
+builds, Debug build and all 101 unit tests; Debug config was preserved byte-for-byte.
+
+Manual acceptance: search for an unmatched value in Customer, Sales Rep and
+Recall; try Enter, OK and a double-click in the blank grid. No error or selection
+should occur. Clear/change the search to restore results, verify normal selection
+still works, then reopen and test Esc. Recall filters and left/right shortcuts
+must retain their existing behavior. RMS investigation remains paused.
+
+### Item-grid numeric readability
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\ItemGridReadability_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+& '.\Database Components\Tests\SmallScreenLayout_UI_Test.ps1'
+```
+
+The display probe constructs the compiled main form without showing/loading it
+and sets the existing recall-loading guard before adding synthetic rows. It
+checks Designer and runtime styles: zero, fractional, negative and large
+quantities; unchanged raw price/total values and currency format; displayed-cell
+numeric sizing; edit permissions; native long-name tooltips; and retained price
+warning styles/tooltips. It does not edit through a control, run validation,
+execute SQL or save an order. The before-change probe confirmed 1.25 displaying
+as 1 and price 1,234,567.89 requiring 109 pixels versus the fixed 100-pixel column
+in the local test culture. Currency symbols/separators remain culture-dependent.
+
+October 18: both Release/x86 builds, Debug build, 101 unit tests, 50 display,
+28 recall-formatting and 875 small-screen checks passed. Debug store configuration
+was preserved byte-for-byte. For manual acceptance at 1024x768 and 1366x768,
+inspect existing fractional/negative quantities and large prices/totals, hover
+over a clipped description, and verify the active quantity/price cell remains
+clear. Wide numeric values may require horizontal scrolling; column sizing reads
+displayed rows only. Existing validation and F-key shortcuts must behave as before.
+The RMS investigation remains paused.
+
+### Customer and Sales Rep lookup Escape routing
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\LookupKeyboard_UI_Test.ps1'
+& '.\Database Components\Tests\LookupDesign_UI_Test.ps1'
+```
+
+The keyboard runner compiles a separate x86 STA process with only the application
+assembly and no store configuration. Derived forms suppress the production Load
+handlers and show transparently without a taskbar button, then send Esc through
+WinForms preprocessing from the focused OK/Cancel buttons. All four cases must
+route to the existing Cancel action and return
+Cancel, while AcceptButton remains unset. The original assembly reproduced all
+four unhandled cases with `-ExpectLegacyFailure`; use that switch only with a
+pre-fix assembly. No database, pricing, tax or selected-customer action runs.
+
+Manual acceptance: open Customers (F8) and Sales Reps (F7), search, use Down and
+arrow keys, then select with Enter. Reopen each and Tab onto OK and Cancel;
+Esc must close without applying a selection. Confirm mouse OK/Cancel still work
+and focus returns to the invoking main window. Existing tab order is unchanged.
+The RMS investigation stays paused; these tests do not exercise RMS.
+
+October 18 validation: both Release/x86 builds, Debug build, 101 unit tests,
+four keyboard cases, 204 lookup checks and 28 recall-formatting checks passed.
+The initial sandboxed VSTest attempt aborted before execution because its x86
+test host did not connect; the unrestricted local retry passed. Debug store
+configuration was preserved byte-for-byte around builds and both test attempts.
+Full manual add-in focus/selection acceptance remains pending.
+
+### Login cancellation with custom shutdown warnings
+
+After a Debug build, run:
+
+```powershell
+& '.\Database Components\Tests\LoginCancel_UI_Test.ps1'
+```
+
+The runner compiles a separate x86 STA probe using the actual frmLogin Cancel and
+completion callbacks and AppPrompt. A derived login suppresses its database Load
+handler, and a synthetic main form supplies a custom closing warning. No real
+authentication, draft write, registry/configuration change or application main-form
+load occurs. Cancel/window-close must return Cancel; completion must return OK;
+each host then closes normally with one custom warning and no collection error.
+The pre-fix callback reproduced the exact OpenForms enumeration exception in
+TestResults/LoginCancel-4ecaf03c; the fixed three cases passed in
+TestResults/LoginCancel-38271667. Those are simulated UI tests, not store tests.
+
+For manual acceptance, restart the rebuilt application and cancel initial login;
+it must close without the collection exception or proceeding to item loading.
+Repeat after Logout, cancelling the login dialog. Then verify successful initial
+login and logout/re-login still authenticate/load normally. Close with unsaved
+items and verify existing draft saving/warning behavior; no draft rule was changed.
+The existing VB AfterMainFormCloses setting remains responsible for final shutdown.
+
+### GSC timestamp ambiguity review
+
+See `Database Components/Tests/GSC_ITEMLOG_AMBIGUITY_REVIEW_2026-10-17.md` for the
+completed authorized read-only census on the existing localhost GSC restore.
+`Review_ItemLog_Ambiguity.sql` performs full source SELECT scans and uses a
+connection-scoped tempdb table; its ranking/type aggregates use MAXDOP 1 and a
+one-percent query memory grant cap. It does not create a source index, update
+history, call a correction procedure or change server settings. Run only on an
+explicitly authorized target and account for scan/sort cost. Its counts are an
+observed read-committed state, not a frozen backup under concurrent activity.
+
+The observed 84 conflicting pairs require the existing 53305 guard to remain.
+No active Order number matched, but transfer/order reference collisions and lost
+times prevent inferring a correct historical value. This audit is not an index
+before/after test or authorization to repair history or modify selection rules.
+
+### Packaged branch-neutral RMS voucher lookup migration
+
+`Improve_RMS_VoucherLookup.sql` is an optional, initially unchecked Database
+Updater selection for DVO/GSC/Portable. It adds/reuses the tested non-unique Item
+index without branch IDs, trigger/query changes or business-row DML. The original
+local-only candidate fixture retains its guards; the separately reviewed migration
+uses the updater's existing target review and caller transaction. Deployment
+instructions are in `Database Components/Migrations/RMS_VOUCHER_LOOKUP_GUIDE.md`.
+
+```powershell
+& '.\Database Components\Tests\VoucherLookup_LocalDB_Test.ps1' -CompatibilityLevel 100
+& '.\Database Components\Tests\VoucherLookup_LocalDB_Test.ps1' -CompatibilityLevel 130
+# Build the Debug updater first:
+& '.\Database Components\Tests\DatabaseUpdater_LocalDB_Test.ps1'
+```
+
+The voucher fixtures use GUID-owned synthetic LocalDB instances only. They check
+matching/nonmatching/null/inactive voucher results, unchanged Item rows including
+rowversions/ntext/fractional quantities, trigger preservation and normal atomic
+updates, caller rollback/commit, repeat/reused indexes, schema/name-conflict guards
+and reduction of logical reads. The production updater integration tests also
+check all three catalogs, packaged SQL hashes/guide, initial unchecked visibility,
+deployment history and rollback of index/history when a later script fails.
+These tests do not connect to GSC/DVO stores or certify actual RMS tendering or
+multiuser capacity. Rehearse each current branch restore before deployment.
+
+October 17 packaging validation: all **83 updater integration checks** and
+**25 voucher checks at each compatibility level 100/130** passed. Synthetic
+unchanged lookup Item reads were 756 before and 2 after. Both Release/x86
+solutions, 101 unit tests and clean-folder packaging checks also passed. Ignored
+logs are in TestResults/Voucher-Updater-Integration.log, VoucherMigration-100.log,
+VoucherMigration-130.log and Voucher-CleanFolder.log. The built updater package
+contains the same migration hash and the deployment guide. No live SQL ran.
+
+### Local Davao RMS lookup / actual save-transaction comparison
+
+See `Database Components/Tests/DVO_LOCAL_DEADLOCK_INDEX_RESULTS.md` for the
+October 17 authorized localhost reproduction, query plans, before/after timings,
+correctness checks and cleanup. The workload used a GUID-owned COPY_ONLY restore
+of DVO_STORE_DB, not automated writes against the existing restore. Six actual
+compiled recalled-order save transactions were paired with four RMS SQL lookup
+replay workers; RMS POS/QSRules and final tendering were not executed. One short
+comparison is not the planned actual-client 10/12/15-user capacity certification.
+
+`Database Components/Tests/Fixtures/RMSVoucherLookup_Index_Candidate.sql` preserves
+the exact tested index definition and intentionally permits only local GUID-owned
+test clones with a caller-supplied transaction. Do not remove its test guards or
+add it to an updater deployment without a separately reviewed deployment change.
+The candidate was removed with its disposable database; the original restore's
+previously installed item-log index was left intact. No live target was contacted.
+
+### Live read-only performance collection and 10+ client test plan
+
+`Database Components/Tests/Collect_ReadOnly_Performance.ps1` is an explicitly
+invoked diagnostic collector, not a workload test or deployment script. Usage:
+
+```powershell
+& '.\Database Components\Tests\Collect_ReadOnly_Performance.ps1' `
+    -Server '<authorized server>' -Database '<authorized database>' -SqlUser '<login>'
+```
+
+SQL authentication prompts for a SecureString; omit SqlUser for Windows login.
+Never supply a password in source, command arguments, reports or app configuration.
+The collector performs bounded SELECTs of metadata, waits, cached statements,
+sessions, requests, I/O and existing system_health deadlock data. Default sampling
+is six snapshots five seconds apart. Timeouts and deadlock priority apply only to
+its own connection; ApplicationIntent does not replace proper account permissions.
+Server-level VIEW SERVER STATE/definition visibility are needed for full coverage.
+Unavailable sections are recorded, not reported as zero activity. Server-wide
+wait/session/deadlock evidence must be distinguished from database-specific data.
+
+SQL text literals/comments are redacted before saving under ignored TestResults/
+ReadOnly-Performance-*. Keep raw host/session operational evidence private. The
+collector creates no schema, traces or server settings and does not issue saves,
+tenders, scans of full business history, DBCC cache commands or KILL.
+
+The authorized October 17 live Davao findings are documented in
+`Database Components/Tests/DVO_LIVE_READONLY_PERFORMANCE_2026-10-17.md`.
+`Database Components/Tests/DVO_MULTIUSER_RMS_TEST_PLAN.md` is a prepared plan for
+isolated 10/12/15-client runs, including actual RMS voucher lookup and settlement.
+Those load tests have NOT run. Existing MultiUser fixtures simulate settlement
+and do not prove actual RMS or 10+ user capacity. Do not run that workload on live
+or deploy a candidate index based on this read-only authorization alone.
+
+### Payment Type before Work Order price approval
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\PaymentBeforeApproval_UI_Test.ps1'
+```
+
+The 121 isolated x86 checks invoke the actual ValidateAndSave method with synthetic
+rows, without showing/loading the main form. The fixture temporarily sets all
+legacy SQL contexts to Nothing inside its own process and restores them afterward;
+it changes no registry/app configuration or store connection. Twelve cases cover
+new/recalled Work Orders with empty/whitespace payment and numeric or unconfirmed
+prices, CASH/CHARGE continuation to price confirmation, and new/recalled quotations
+with blank payment retaining their existing price-confirmation path. Checks verify
+the first prompt, early False result, unchanged line values/approval flags, no
+password window and no new legacy context. This is validation-order coverage, not
+real approval authentication or a save. Existing price-approval unit tests and both
+MultiUser_Save_LocalDB_Test.ps1 modes must also pass for save-path changes.
+
+For manual localhost acceptance, use a Work Order with a price that needs approval
+and leave Payment Type blank. Save: the payment warning must appear first, leaving
+the payment field focused and lines unchanged. Select CASH/CHARGE and save again:
+the existing price/password requirement must still apply. Cancel password entry
+and verify nothing is saved; then use valid approval to complete the existing
+flow. Repeat for a recalled Work Order. A quotation with blank payment must keep
+its existing price/approval behavior without a new payment requirement.
+
+### Compact lookup and prompt layouts
+
+The October 17 compact layouts are serialized in the Designers for Customer,
+Sales Rep, Recall, shared prompts, action confirmations, import completion,
+saved-number confirmations and Recall Selection. Customer/Sales Rep client size
+is 660x390 and Recall 860x460. Other new message dialogs use roughly 440-500 pixels
+of client width, with short prompts shrinking vertically. Lookup fonts remain
+unchanged, headings/body/buttons remain readable, saved numbers stay large, and
+long details retain scrolling or wrapping.
+
+Validation includes both Release/x86 builds, 101 unit tests, the shared-prompt,
+ownership, action-confirmation, Recall Selection, RecallFormatting and
+SmallScreenLayout UI scripts below, plus Packaging_CleanFolder_Test.ps1. The
+action-confirmation font assertion now expects the requested 14-point compact
+heading; all behavior assertions remain intact. An additional 185 geometry checks
+and synthetic renders covered the eight layouts at 1024/1366x768 and normal/
+simulated 125% scaling. Customer/Sales Rep Load delegates were removed only on
+those isolated render instances before showing sample rows offscreen; production
+data-loading handlers are unchanged. Renders are under TestResults/CompactDialogs-*.
+
+For manual localhost acceptance on the actual 1366x768 unit, check F8 Customer,
+F7 Sales Rep, F11 Recall/quotation selection, save/remove confirmations, import
+completion and saved Work Order/Quotation numbers. Confirm dates/references,
+customer names/comments, focus and OK/Cancel/Enter/Escape remain usable. Repeat
+the CHARGE credit-warning/Price Level case and window switching. For long messages
+or long names/comments confirm scrolling/wrapping keeps details accessible. No
+live-store workflow is implied by the isolated checks.
+
+### Quotation saved-number presentation
+
+Saved and updated quotations now reuse frmOrderSaved with its quotation label.
+The large number, read-only field and Close button use the same Designer layout
+as Work Orders. Existing Work Order callers retain the default Work Order mode.
+The change replaces only two post-commit notifications; it performs no save or
+print operation itself.
+
+For localhost acceptance, save a new quotation and confirm the large number
+matches the saved quotation. Close with the button or Enter/Escape on separate
+saves and confirm the existing quotation print window opens afterward. Update
+an existing quotation and confirm its number and updated heading, with no new
+print window. Check existing single/split Work Order confirmations remain the
+same. Isolated synthetic UI checks cover both quotation states, both single Work
+Order states and split Work Orders at 100% and simulated 125%, including number,
+labels, font, focus, bounds and Enter/Escape results (105 checks). These are not
+actual quotation saves or printer tests.
+
+### Shared application prompt presentation
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\AppPrompt_UI_Test.ps1'
+& '.\Database Components\Tests\PromptOwnership_UI_Test.ps1'
+```
+
+The 1,159 isolated x86 checks instantiate only frmAppPrompt and synthetic owner
+forms. They verify all six standard button sets, five icon categories, valid
+default choices, exact message/caption text, return values, Enter, Escape and
+window-close handling. Explicit ownership and background-thread marshalling are
+checked through AppPrompt itself. Long text stays complete and scrollable, with
+bounds and fonts checked at 100% and simulated 125%; renders are written under
+TestResults/AppPrompt-*. The base layout is editable in frmAppPrompt.Designer.vb.
+These checks do not open the real application forms or use a database.
+
+PromptOwnership_UI_Test.ps1 adds 577 native window checks across 76 scenarios.
+It exercises all six shared button sets with all five icon categories under
+ordinary/TopMost synthetic modal owners, then the dedicated Save changes/Remove
+item, Import complete, Work Order/Quotation saved and all three Recall Selection
+modes with ordinary/TopMost owners. GetWindow verifies that each prompt is above
+its owner in actual Windows z-order; IsWindowEnabled verifies the prompt accepts
+input while its owner is blocked, and that the owner recovers after dismissal.
+Explicit results are checked. This fixture does not run saves, imports, password
+checks, SQL or full application workflows. No application changes were required
+by the audit; manual acceptance on the actual workstation remains necessary.
+
+The nested-owner regression uses a synthetic Price Level-style modal with TopMost
+both enabled and disabled. Show, MsgBox and explicit-owner calls must keep the
+warning owned by that modal and at the same stacking level. Native Windows
+IsWindowEnabled checks verify the price/main windows stay disabled while the
+warning is open and recover after acknowledgement and closing price selection.
+Cases also set the parent's DialogResult to OK before raising the warning, matching
+the existing insertItem -> UpdateAmt -> credit-warning timing. No real price-form
+Load/insert, pricing checks or credit-limit logic is invoked in this fixture.
+
+For localhost acceptance of this fix, select CHARGE with a customer/entry that
+exceeds available credit, choose a price level, acknowledge the warning with OK,
+then confirm price selection and the main form can close normally. Repeat using
+keyboard acknowledgement and normal window switching. The same credit warning
+must still occur; this fix only changes its window ownership/stacking.
+
+AppPrompt now presents 321 standard prompt calls in 31 Work Order Entry files
+(two quotation success calls now use the large saved-number dialog).
+Keep caller arguments and result handling unchanged when adding a prompt. Existing
+save-number/import-success/action-confirmation/selection forms remain in use.
+Uncommon native MsgBox flags retain their native fallback; failure to initialize
+the custom UI also falls back to native reporting. The separate Database Updater
+and Queue application prompts are outside this change.
+
+For manual acceptance on localhost, try information, invalid-input/password and
+stock warnings, split-order details and Yes/No/Cancel confirmations as available.
+Check message completeness, keyboard choices and parent-window focus at the
+workstation's actual display scaling. Do not intentionally trigger production
+database failures. Automated validation also passed both Release/x86 builds,
+101 unit tests, the existing recall/action dialog checks, clean-folder import/PDF
+packaging and 39 multi-user checks per isolation mode in disposable fixtures.
+RMS settlement in those fixtures is simulated; these are not live-store tests.
+
+### Recall Selection presentation
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\RecallSelection_UI_Test.ps1'
+```
+
+The 106 isolated x86 checks instantiate only frmRecallSelection. They verify the
+exact choices/order/default across Recall, SaveToQuote and SaveToWorkOrder, the
+default constructor, existing keyboard/tab routing, OK, double-click, Cancel,
+Escape and the existing Enter-focus handler. All event code remains unchanged.
+They also check text/control bounds at 100% and simulated 125%, smaller-screen
+fit and return values, with offscreen renders under TestResults/RecallSelection-*.
+These checks never open the actual Recall form, convert/save orders or use SQL.
+
+For manual localhost acceptance, open F11 and try quote/work-order choices via
+OK and double-click, then Cancel/Escape. For a recalled quotation, also verify
+the Save Changes / Convert to a work order selection appears with the same
+choices/default and existing behavior. Confirm readability at actual display
+scaling. The layout is editable in frmRecallSelection.Designer.vb.
+
+### Save changes / remove item confirmation
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\ActionConfirmation_UI_Test.ps1'
+```
+
+The 53 isolated x86 checks instantiate only frmActionConfirmation and never call
+the main form's Save/Remove code or connect to a database. They verify exact
+question text, default Yes, Yes/No return values, focused/default Enter, arrow
+navigation, Y/N mnemonics, ignored Escape/user close and readable text/control
+bounds at 100% and simulated 125%. Offscreen renders are written under ignored
+TestResults/ActionConfirmation-*. The form layout is visible in the Designer.
+
+Only the two pictured prompts use this dialog. New-order/split previews, quotation
+save questions and other warnings now use the shared AppPrompt presentation;
+their text, choices and result handling are unchanged. For manual localhost acceptance,
+edit a recalled order and try both Yes and No on Save changes; separately try
+both answers on removing an item. Confirm No preserves the entry and Yes follows
+the existing save/removal flow, including existing totals and validation behavior.
+Check actual workstation display scaling. Default-locking and VersionedReads
+MultiUser_Save_LocalDB_Test.ps1 checks also passed (39 each) in disposable fixtures;
+their RMS settlement participant is simulated, not real POS execution.
+
+### Import completion message
+
+The three existing success prompts in ImportQuote, ImportPO and ImportFromWebsite
+now open frmImportComplete at the same locations, with their existing conditions
+unchanged. The form is editable in the WinForms Designer. Its larger heading,
+availability reminder and OK button are presentation only; it performs no import,
+stock refresh or save itself.
+
+Validation for this change: both Release/x86 builds and all 101 unit tests passed,
+as did Packaging_CleanFolder_Test.ps1. Twenty-four isolated x86 dialog checks
+verified readable text/bounds at 100% and simulated 125%, fit within 1024x768,
+initial OK focus and actual Enter/Escape dismissal. The two offscreen renders
+were visually reviewed. These checks did not connect to a store or run imports.
+
+For manual acceptance on localhost, import a supported file and confirm the
+larger success heading and complete availability reminder appear. Acknowledge
+with OK, Enter and Escape on separate imports. Confirm the same imported lines,
+quantities, prices and totals remain afterward, and existing invalid-item/error
+prompts still occur normally. Check the actual workstation's display scaling.
+
+### Price Level Selection presentation
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\PriceLevelLayout_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+```
+
+The 50 isolated Price Level checks instantiate frmPriceLevel without showing or
+loading it. They exercise the existing DisplayPrice and SelectTopPriceLevel
+methods with synthetic values, preserving labels/order, raw fractional prices,
+numeric/currency formats and first-row selection. They also verify fixed column
+indices, read-only behavior, existing tab/DialogResult/keyboard configuration,
+empty selection and fit within 1024x768 at normal/simulated 125% geometry.
+No SQL, OK/Enter price application, F9/password dialog or insertion runs.
+
+Manual check on the test installation:
+
+1. Open frmPriceLevel in the Designer. Verify larger item text, price-level
+   names, bold amounts, row spacing, selected row and OK/Cancel buttons.
+2. Use an existing test item/customer. Confirm the same levels and prices load,
+   with the same first-row selection, order and currency display as before.
+3. Check arrow navigation, Enter, OK, Cancel, Escape and the existing F9 password
+   route. Validate required approvals with the existing authorized test process;
+   the presentation test does not exercise password/approval behavior.
+4. Verify both inserting an item and changing an existing line's price retain
+   their original behavior, quantities, totals and approval requirements.
+5. Check long item names and the actual workstation resolution/scaling. The
+   item description retains its existing read-only multiline/scroll behavior.
+
+All pricing/approval code-behind remains unchanged; only the Designer differs.
+
+### Customer, Sales Rep and right-side button design
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\LookupDesign_UI_Test.ps1'
+& '.\Database Components\Tests\SmallScreenLayout_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+```
+
+The 204 lookup-design checks use synthetic typed DataTables without showing or
+loading the forms. They check repeated/empty binding, all customer property
+ordinals and hidden fields, Boolean/DBNull formatting, leading-zero accounts,
+unchanged price/employee/tax values, long names, selected IDs, sorting, visual
+column reordering, 125% geometry and main button dock/bounds/icons/shortcut hints.
+The existing column-presentation methods are safe to invoke after binding; the
+fixture never invokes SQL searches or customer/sales selection handlers.
+No business actions, login or store writes run; Debug configuration is checked.
+
+Manual checklist:
+
+1. Open frmCustomer, frmSalesRep and frmItemLookUp in the Designer. Confirm the
+   lookup styling/columns and right-side button colors match the runtime layout.
+2. On the test installation, press F8 and search by company/account as before.
+   Check long company names, leading-zero accounts and the selected row. Only
+   Account Number and Company should be visible, including after searching again.
+   ID and Customer Type remain hidden bound fields used by selection/pricing.
+3. Verify Down, grid arrows, Enter, double-click, OK, Cancel and Escape. Confirm
+   the intended customer is selected and existing pricing, tax exemptions,
+   approval requirements and Sales Rep assignment remain unchanged.
+4. Press F7 and repeat selection/search checks for Sales Reps, including WALK-IN.
+   The ID column is narrower and the Name column fills the remaining space.
+5. Confirm all right-side buttons retain their existing order, icons, visibility
+   and keyboard shortcuts. Save is blue, related workflow buttons pale blue,
+   Remove/Cancel pale red and lookup/Close buttons neutral. Check the dynamic
+   For Invoice count, including longer counts, on both supported screen sizes.
+   Set Tax should sit directly above Logout, which is last in the top group;
+   when Set Tax is disabled in Settings, Logout follows Check WO directly.
+
+Actual query matching, application focus and customer-selection side effects
+remain manual integration checks. The presentation revision changes neither
+query nor selection method bodies; only old fixed-width assignments moved from
+the code-behind to the Designer.
+
+### Smaller store screens
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\SmallScreenLayout_UI_Test.ps1'
+& '.\Database Components\Tests\SettingsLayout_UI_Test.ps1'
+& '.\Database Components\Tests\CheckWOLayout_UI_Test.ps1'
+& '.\Database Components\Tests\ImportLayout_UI_Test.ps1'
+& '.\Database Components\Tests\PrintLayout_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+```
+
+The 875 small-screen checks instantiate compiled forms without showing them,
+logging in or executing SQL/order actions. They cover simulated 1024x768 and
+1366x768 layouts at 100% and 125%, dialog fitting/restoring, Settings scrollable
+content, import anchors, totals boundaries, main input availability, selected
+item viewports and action-button overlap with Import and For Invoice displayed.
+One check invokes only the new Settings presentation handler to verify its
+Resize hookup. Main layout events execute naturally when the fixture resizes.
+The existing Debug store configuration is hash-checked and preserved.
+
+The fixture assumes a 40-pixel taskbar and a 704-pixel maximized client height.
+Simulated scaling does not reproduce every DPI/font/driver/taskbar combination.
+The application itself uses the actual monitor WorkingArea to fit dialogs.
+Settings scrollbars keep all existing fields reachable when scaling makes the
+contents larger than the available viewport; no fonts are automatically shrunk.
+
+Manual check on each intended unit:
+
+1. Use its actual 1024x768 or 1366x768 resolution and Windows scaling. Log in
+   normally; verify customer/sales fields, search, Barcode and Show Image remain
+   reachable. Confirm Save, Recall, Cancel, Close and the other existing actions.
+2. Check subtotal, VAT and total visibility. Add several owned test-order lines
+   and use both grids' scrolling to reach quantities, price, SOH, commitments,
+   prepared counts and the other existing columns. Values/formats must match.
+3. Open Settings, Recall, Check WO, history and shortage alerts. Confirm windows
+   fit the usable screen, long grids scroll, and existing filters/actions work.
+   At higher scaling, scroll Settings to its right/bottom sections and back.
+4. Check CSV/website import dialogs with owned test files, and restore/maximize
+   both print previews. Confirm buttons remain reachable and report contents,
+   printer choices and copy counts remain unchanged.
+5. Repeat with that unit's taskbar position/size and actual DPI settings. Report
+   any clipping with the resolution, scaling percentage and affected window.
+
+The unchanged business and integration tests remain applicable; the layout
+fixture does not replace live workstation or authorized test-order validation.
+
+### Print options and preview presentation
+
+After building Debug and Release, run:
+
+```powershell
+& '.\Database Components\Tests\PrintLayout_UI_Test.ps1'
+& '.\Database Components\Tests\Packaging_CleanFolder_Test.ps1'
+```
+
+The 91 isolated Print UI checks instantiate the three compiled forms without
+showing them. Only the safe print-options Load handler runs to verify field
+reset and existing keyboard validation; neither preview Load handler nor the
+Print button is invoked. Checks cover radio grouping/defaults, existing Enter
+action/tab order, toolbar availability, embedded report/data-source names,
+timer defaults, docking, resizing and simulated 125% geometry. No SQL lookup,
+report refresh, printer dialog or spool job runs in this UI fixture.
+
+The larger print-choice revision adds checks for 14-point choice/button text,
+24-point order digits, full-width clickable choices, separated rows and labels
+that fit. In the Designer and on the workstation, confirm that Work Order /
+Quotation and Pick List are easy to read, then enter a known order number and
+use the same existing Print/Enter action. The renamed first choice still uses
+the original order-type/template selection; it does not force a Work Order
+template for quotations.
+
+Packaging checks separately render synthetic Work Order and Pick List PDFs
+using the packaged ReportViewer DLLs. They do not prove physical printer,
+driver, actual order data or copy-count behavior. Print code-behind and RDLCs
+remain unchanged; this revision changes only outer forms and Designer layout.
+
+Manual checklist on the test workstation:
+
+1. Open frmPrintType, frmPrintWo and frmPrintPicklist in the Designer. Confirm
+   the aligned options, order-number label, Print button and preview headings.
+2. Open Print from Work Order Entry. Confirm the existing default template,
+   Tab/Shift+Tab navigation, arrow-key radio selection and Enter action. Test
+   invalid/missing order numbers and both valid report choices as before.
+3. Preview a known Work Order, Sales Quotation and Pick List. Compare customer,
+   item text, quantities, totals, VAT, dates, page count and printed layout with
+   the previous version. The new headings/help are outside the report and must
+   not appear in PDF exports or printed pages.
+4. Check the existing toolbar's page navigation, zoom, find, page setup and
+   export. Resize/restore the preview; the toolbar and page area should fill
+   the space below the heading. Existing previews still open maximized.
+5. Open the existing Print dialog, verify printer selection and copy-count
+   options, then Cancel. If physical output is needed, print an authorized test
+   report and compare it with the previous version. Verify closing/reopening
+   previews behaves as before. No automatic print action was added.
+
+Check actual workstation DPI as well; the automated scale test checks geometry
+only. Printer selection, copy counts and page settings remain controlled by
+the existing ReportViewer dialog and unchanged printing code.
+
+### Check WO presentation
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\CheckWOLayout_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+```
+
+The 180 isolated Check WO checks instantiate the compiled dialog without
+showing it or invoking Load. Synthetic DataTables and actual generated
+SOD_fntbl_CheckOpenWOResult instances exercise ten-column mapping/ordinals,
+headers, hidden item columns, nulls, fractional Double quantities (including
+0.125 and 0.375), existing date strings, repeated/empty binding, selected IDs,
+sorting, column reordering and the existing Close handler. Geometry is checked
+at default, smaller and larger window sizes, plus simulated 125% scaling.
+No SQL function, login, store lookup or save is executed. Simulated scaling
+does not substitute for actual workstation DPI validation.
+
+Manual check:
+
+1. Open frmCheckWO in Visual Studio Designer. Confirm the item heading, grid
+   styles, column headers/widths and Close button match the new layout.
+2. In the rebuilt application, select an item and click Check WO. The existing
+   caller still passes that item's code/name to SOD_fntbl_CheckOpenWO. Check WO
+   lists orders for that item; it does not add a search/filter or order action.
+3. Compare known open-order IDs, statuses, companies, accounts, quantities,
+   order takers, dates and age labels with the previous version. Verify an item
+   with no open orders too. Item lookup/description columns stay hidden; the
+   selected item description remains in the heading.
+4. Check long company/order-taker text and fractional quantities. Select rows,
+   use arrow keys, click sortable headers and reorder columns as before. Confirm
+   rows remain read-only and quantity/date values are unchanged.
+5. Resize the dialog and check display scaling. At narrow widths, horizontal
+   scrolling retains the readable column minimums. Confirm Close and the window
+   close control still dispose the dialog and it can be opened again.
+
+### Import presentation
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\ImportLayout_UI_Test.ps1'
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+& '.\Database Components\Tests\Packaging_CleanFolder_Test.ps1'
+```
+
+The 83 isolated Import checks instantiate the compiled forms without showing
+them or running their Load/import handlers. Synthetic website CSV data exercises
+the existing Show All search/grouping path (including apostrophes, long names,
+dates and blank values), repeated binding, selected order IDs, formatting and
+column order. Show All=True deliberately bypasses SQL duplicate-order checks.
+The test also exercises CSV detail presentation, retained action states and
+mnemonics, missing-item descriptions, and normal/simulated 125% geometry. It
+does not execute the Import/Finish buttons, network log writes, MySQL Refresh,
+actual file import, pricing or store saves. Shared CSV data is restored afterward.
+
+For the presentation revision, the previous executable passed the same 74
+semantic/layout assertions that apply to its older appearance. Website and
+missing-item handler source remained byte-for-byte unchanged; CSV code differs
+only in GridDesign presentation settings. These checks do not prove live
+duplicate filtering, external connectivity or actual workstation DPI behavior.
+
+Manual checklist on the intended test installation:
+
+1. Open frmWebsiteImport, frmUploader and frmImportItems in the Designer.
+   Confirm aligned controls, larger grids and the import-button styling.
+   CSV detail columns still initialize when validation starts, as before.
+2. Press F6. Confirm the standard file picker still offers Supported Import
+   Files, Excel Workbook and CSV File filters; cancellation leaves the order
+   unchanged. Confirm the branch Import visibility/enable setting still applies.
+3. For a known website test file, verify Enter in Search, Show All, Refresh,
+   arrow-key selection and Import Order retain their existing behavior. Check
+   that long customer names wrap, dates remain complete and the selected ID
+   imports the intended order. Verify already-imported orders with Show All
+   unchecked against the test database.
+4. For a known quotation CSV on an authorized test configuration, check the
+   filename, Import (Alt+I), detail messages, Total/Success/Error counts and
+   existing Finish (Alt+F), Report visibility and Close behavior. Verify valid,
+   invalid and duplicate rows still follow the established import process.
+5. For a known workbook with missing item codes, confirm the guidance list
+   retains complete descriptions and still clears when closed. No automatic
+   replacement or new search action was added.
+
+Confirm Tab navigation and display scaling on the target workstation. Use
+owned test files/orders for actual import and save validation.
+
+### Settings presentation
+
+After building Debug, run:
+
+```powershell
+& '.\Database Components\Tests\SettingsLayout_UI_Test.ps1'
+```
+
+This instantiates the compiled Settings form without showing it or executing
+its Load/save handlers. The 776 checks cover control boundaries and overlap at
+normal and simulated 125% geometry, password masks, retained Alt+O mnemonics,
+distinct Save styling, field/button focus cues and existing queue/assigned
+database dependencies. It does not connect to SQL or save settings. Simulated
+scaling does not replace testing on actual high-DPI displays.
+
+Manual check on an authorized test installation:
+
+1. Open frmSettings in Visual Studio Designer. Confirm all six existing sections
+   and the aligned password rows are visible. Layout is in the Designer file;
+   focus shading/borders are presentation-only Enter/Leave handlers.
+2. Open Settings normally. Confirm existing values and password masks remain.
+   Use Tab and Shift+Tab through fields, checkboxes and buttons; verify clear
+   focus shading/borders without changing values. Existing tab indices remain.
+3. Toggle Branch Queue and Allow Branch Selection. Confirm their existing
+   dependent controls enable/disable as before. Review every existing checkbox.
+4. On a disposable/test configuration only, check each existing save action
+   separately. Apply defaults retains its original validation/save/close action;
+   each Update password button retains its matching/nonempty confirmation
+   requirements and saves only its own password. Apply import and Apply
+   connection still save their own settings and restart the application.
+5. The blue Save branch / order options button retains the existing combined
+   branch, queue and order-option save action. It does not save the other
+   sections. Reopen Settings to verify intended test values persisted.
+
+Do not exercise password updates, connection changes or application restart
+against an operational store simply to validate appearance.
+
+After changes to grid/Designer checkbox styles, build Debug and run:
+
+```powershell
+& '.\Database Components\Tests\RecallFormatting_UI_Test.ps1'
+```
+
+This instantiates the compiled form without showing it, logging in, connecting
+to SQL or saving orders. Its 28 checks exercise actual UP-STORE FormattedValue
+for Nothing, DBNull, False and True, before/after runtime styling, plus the
+temporary new-row placeholder used while recalling. Formatting must return a
+Boolean without changing the cell's actual value or raising DataError. Preserve
+the checkbox's original Boolean NullValue=False when copying styles; an empty
+text NullValue is invalid for a two-state checkbox. The test-only error observer
+fails on any DataError and must not be copied into production as suppression.
+
+For the fix, restart the rebuilt app and recall both a quotation and a Work
+Order. Confirm there is no formatting dialog and UP-STORE checkbox states remain
+correct, along with quantities, prices and totals. Automated checks reproduce
+the formatting defect without executing a live recall or save.
+
+For the Recall presentation update, restart the rebuilt app, press **F11**, and
+open the existing Work Order or Sales Quotation list. Check bold order numbers,
+complete date/time strings, wrapped customer/comment text and the blue selected
+row. Resize the dialog: OK/Cancel should remain at the bottom right and long
+rows should grow as needed. At narrow widths, the existing horizontal scroll
+allows access to the larger columns; no all-row automatic measurement is used.
+
+Click each column header and search as before. Verify counts and matches,
+including a customer containing an apostrophe. Check Down/Left/Right, Enter,
+double-click, OK, Cancel and Escape using known disposable test orders, and
+confirm the recalled ID is the selected one. Verify the existing Work Order/
+Quotation and Show All Entries filters. The Customer field still shows the
+existing RMS customer account text; this change does not substitute a new name
+query or change date formats or search matching.
+
+Automated validation compared synthetic filters, selection IDs, sorting,
+rebinding and controls with the previous build and inspected long-text renders.
+The Recall logic source was unchanged. Live order loading, order-taker queries,
+actual Enter/double-click/OK recall execution and workstation DPI remain manual
+integration checks. Presentation defaults are in frmRecall.Designer.vb.
+
+The main form now serializes its current presentation defaults in
+`Work Order Entry/Forms/frmItemLookUp.Designer.vb`. After building, close and reopen
+`frmItemLookUp.vb [Design]` in Visual Studio to refresh the preview. Both grids
+should show the current header/row styling and column sizes; the left panel
+should show the current input fonts, spacing and inactive focus outlines.
+No login or database connection is needed to view these defaults. Actual data,
+focused outlines and warning/approval colors still depend on runtime state.
+
+The lookup's 19 Designer columns retain the existing view field names/order,
+including the hidden Boolean Inactive field. Preserve DataPropertyName, column
+order and types when editing presentation; application callers also use ordinal
+positions. Keep automatic binding enabled. Future style revisions should keep
+the Designer defaults and ApplyGridReadability/GridColumnWidth/
+ApplyLeftPanelReadability consistent, since those runtime routines still apply
+the existing presentation after initialization or data loading.
+
+Validation compared Designer-only and runtime native-control snapshots with the
+previous build at the default scale and compared synthetic binding, sorting and
+rebinding results. It did not automate Visual Studio's Designer host or a live
+RMS workflow. Manually reopen the Designer and the rebuilt app to confirm the
+appearance on the workstation's actual display scaling.
+
+For the SOH column fix, restart the rebuilt app and search for items with large,
+negative or fractional stock on hand. The full SOH value should be visible as
+the column expands for displayed rows; scroll to other results and verify the
+same behavior. The existing SOH format and actual quantities are unchanged.
+The description absorbs the width difference; buttons and keyboard shortcuts
+remain in place. Automated coverage used synthetic quantities, not store writes.
+
+For the Show Image layout fix, restart the rebuilt app and confirm the checkbox
+is fully visible below the barcode row, with no horizontal scrollbar in the
+left entry panel. Resize the main window and check the same spacing. After
+login, toggle Show Image with an item selected and confirm its existing image
+preview behavior. Button locations and Enter/F2/F4/F5 search shortcuts should
+remain unchanged. Automated checks used three simulated layout scales; actual
+workstation display scaling and image loading remain manual checks.
+
+For item search, confirm every lookup row is bold, including zero committed
+stock. Submit searches with Enter, F2 and the search button: the Searching items
+indicator should animate during SQL work, and the main form must stay unavailable
+until results are ready. Existing contains/multiple-keyword matches, TOP 500,
+F4/F5 history controls and no-match fallback remain unchanged. The SQL query can
+still take seconds on large ntext-backed store views; UI responsiveness is not
+a reduction in database execution time. No stale inventory-result cache is used.
+
+For SQL search timing, run `Database Components/Tests/ItemSearch_ReadOnly_Timing.ps1`
+with explicit `-Server` and `-Database` parameters. It performs reads only using
+Windows authentication. See [the investigation findings](Database%20Components/Tests/ITEM_SEARCH_PERFORMANCE_FINDINGS.md)
+for the measured slowdown, rejected alternatives and the remaining restored-copy
+maintenance experiment. It is a diagnostic, not a speed assertion or full UI test.
+
+Run `Database Components/Tests/ItemSearch_LocalDB_Test.ps1` after building the
+Debug x86 app. It needs Windows PowerShell, LocalDB and the existing RMS registry
+prerequisite for the legacy connection-module initializer. It replaces closed
+contexts/connection fields only in its own test process and validates the owned
+fixture target before application SQL. It verifies message-timer progress during
+a delayed SQL read, modal owner locking/restoration, prevention of early close,
+the existing result-publication contract and exact returned values. The real
+application/login is not shown; no store configuration, registry or data changes.
+
+For the left entry panel, check aligned labels/fields and readable customer,
+sales, payment and comment text before and after login. Tab/click into item
+search: its outline should turn blue, then clear when focus leaves. Enabling
+search without focusing it must not leave a highlight. Check the same outline
+behavior when using the existing barcode mode. Verify F2/F7/F8 and the existing
+tab order still work, all buttons stay in place, and customer/sales read-only
+rules and payment choices remain unchanged. Test the actual workstation's
+display scaling for clipping. This is presentation only, with no new SQL.
+
+For the grid readability changes, search items and recall an existing order.
+On initial launch, verify the empty Selected Items grid already has the updated
+headers and widths while login is open. Cancel/failed login must not gain access;
+after normal login, item loading and draft recovery should behave as before.
+Check padded headers, readable descriptions, right-aligned numeric columns,
+centered UP-STORE checkboxes and the Last Purchase Price heading. Resize the
+window: descriptions should use spare width, with horizontal scrolling available
+when the visible columns cannot fit. Check shortage/approval highlights, editable
+quantity/price/prepared cells and existing keyboard shortcuts. Stored values and
+number formats are unchanged; this is presentation only. Buttons stay in place.
+
+For Order actions/status visibility, open **Settings > Work Order and Queue
+Options** and independently toggle **Show Order actions** and **Show order
+notifications**, save, then close Settings. Verify the dropdown and the bottom
+ready/shortage notification links follow their respective checkboxes. Wait at
+least 15 seconds to confirm polling does not redisplay hidden links. Reopen
+Settings/application to check persistence, then re-enable each option. Existing
+installations without the new keys default to showing both. Notification polling
+and For Invoice button/count remain active according to their existing settings;
+pending shortage reduction reminders and recall/save/conflict/unsaved-change
+dialogs are unaffected. These choices change visibility, not permissions or
+business rules. Keep Order actions visible on units that need its reload,
+history and shortage reduction/undo commands, or re-enable it before using them.
+
+The optional item-log performance migration has a separate disposable test:
+
+```powershell
+& '.\Database Components\Tests\ItemLogLookup_LocalDB_Test.ps1'
+& '.\Database Components\Tests\ItemLogLookup_LocalDB_Test.ps1' -CompatibilityLevel 100
+```
+
+It requires Windows PowerShell and LocalDB. It verifies the unchanged legacy
+trigger's log output, fractional insert/edit/zero cases, stock preservation,
+numeric ReferenceID comparisons, original rows, transactional rollback,
+idempotency/reused indexes and rejection of incompatible/ambiguous data or index
+definitions. It compares logical reads for the same lookup before/after indexing
+in a synthetic fixture. No store database or application configuration is used.
+See [the deployment guide](Database%20Components/Migrations/WORKORDER_ITEM_LOG_LOOKUP_GUIDE.md).
 
 For the manual Set Tax availability check, open **Settings > Work Order and Queue
 Options**, clear **Enable Set Tax button**, click **Save**, and close Settings.
@@ -112,13 +2220,16 @@ For Release deployment dependencies, run:
 & '.\Database Components\Tests\Packaging_CleanFolder_Test.ps1'
 ```
 
-Build Release first. This copies only the application EXE and its five packaged
-ReportViewer DLLs into an owned `TestResults` folder, compiles an x86 probe and
-checks compilation of the actual Import entry point, CSV import, XLSX import,
-single Excel dependency loading, WO report rendering, pick-list report rendering,
-physical ReportViewer loading and the absence of extra dependency DLLs. PDFs use
-synthetic data. No store SQL, app login, screen automation or print job is involved.
-The check reproduced the old embedding failure before the DLL packaging fix.
+Build Release first with the installed ReportViewer 2010 prerequisite. This
+copies only the application EXE into an owned `TestResults` folder and compiles
+an x86 probe. It checks actual Import entry-point JIT, CSV/XLSX imports and single
+Excel dependency identity. Both actual preview forms render normal Work Order,
+quotation, empty, long-text, large-value and multipage PDF/TIFF samples without
+invoking their production Load handlers. It asserts unchanged 850x650 preview
+paper and existing zero integer margins, version-10 references/GAC loading and
+zero private DLLs/config. No store SQL, app login or physical print job is involved.
+The former five-DLL requirement belonged to the historical version-15 package;
+the changed deployment contract is explicit, not a suppressed dependency failure.
 
 Two additional disposable SQL suites cover the October 14 identity incident:
 
@@ -322,3 +2433,17 @@ LocalDB requires local registry/socket access. No store database is modified.
 The same suite now includes ten checks for the separate saved reseed script,
 bringing the total to 36: committed links, unchanged repeats, preserved data,
 actual next allocation 18871 and rejection after later activity.
+
+## Work Order Database Updater (SQL only)
+
+Since November 6 the updater handles Work Order SQL only; the CIU executable
+and PDC/SOA SQL tabs were removed. After a Release/x86 build, run
+`Database Components/Tests/DatabaseUpdater_LocalDB_Test.ps1` and
+`Database Components/Tests/Packaging_CleanFolder_Test.ps1`. Use
+`checks/WorkOrderSqlOnlyTests.cs` in the SOA workspace for the final
+resource/type/tab and 800x600 rendering checks. The separation results are
+recorded in `Database Updater/SQL_Separation_Validation.log`.
+
+The older CIU integration tests (`CIU_Updater/tests` in the PDC repository and
+`Integrate-WorkOrderUpdater.ps1`) describe the retired combined updater and are
+not the current updater test path. See CHANGELOG.md for the November 5–6 history.

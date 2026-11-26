@@ -1,3 +1,13 @@
+## Current layout — November 6, 2026
+
+This updater now handles Work Order SQL only. CIU executable updates and the embedded PDC/SOA SQL updater were removed at the user's request. Older combined packages are superseded; do not distribute them as the current updater.
+
+Project SQL is separate:
+- CIU/PDC: PDC_Monitoring-master/PDC_Monitoring-master/Database/Reviewed_SQL_2016 (8 reviewed modules plus table prerequisites and checks).
+- SOA: SOA_V7_asof_28AUG2025_with checkall/Database/Reviewed_SQL_2016 (10 reviewed modules, checks and reference-only cancelled-CM example).
+
+These are organized copies of the reviewed SQL1.4 baseline, not automatic deployment or a claim that every later source change has a new SQL migration. Existing source/migration folders were not overwritten. Read each folder's README and SOURCE_HASHES.json. Manual module scripts start in preview; review branch business rules/dependencies and take a verified backup before applying anything. The static SOA CM example must not overwrite a different branch view. No live database was updated during this reorganization.
+
 # Work Order Database Updater
 
 Start with [the step-by-step user guide](USER_GUIDE.md), or click
@@ -28,6 +38,27 @@ in memory and are not stored in settings or run logs.
 
 ## Use
 
+Portable also includes `Add_WorkOrder_Print_Address.sql` for the
+missing Address output in a compatible legacy SOD_fntbl_WoDetails function,
+regardless of database name.
+It preserves existing calculations and adds the concatenated customer address.
+Only the reviewed legacy definition (or this migration's result on repeat runs)
+is accepted; customized functions stop for review. Select and apply explicitly
+after backup/restore testing. No customer columns or business rows are added.
+
+Portable includes `Add_WorkOrder_Username_Columns.sql` as an optional
+selection for compatible store databases regardless of database name. It adds missing nullable Pass2Username and
+Pass3Username columns to the existing SOD_WO_Conf table, preserving settings.
+Select only this migration for the missing-username-column error; no manual
+SQL import is needed. Existing incompatible definitions stop for review.
+The table must already exist; missing tables and system databases are rejected.
+The older CONSIGNMENT-only script remains for recovery compatibility but is no
+longer offered in the catalog. The old CONSIGNMENT printing file also remains
+for compatibility but is replaced by the reusable entry in the Portable list.
+The printing fix accepts only the reviewed legacy function or its already-fixed
+result. Other function definitions, including branch-specific calculations or
+branch text, stop for review. Existing correct custom functions are not replaced.
+
 1. Back up the target database and test the selected scripts on a disposable
    restore. Close database maintenance tools and choose a quiet period.
 2. Open the updater. Enter the SQL server and exact database name. Select
@@ -56,6 +87,14 @@ idempotent. **No tool record** does not mean an object/index is absent: changes
 made using SSMS or earlier tools have no entry in this updater's history.
 
 ## Future migrations and function fixes
+
+For the RMS voucher lookup / Work Order Item-lock conflict, tick only
+`Improve_RMS_VoucherLookup.sql`. It is available for DVO, GSC and Portable and
+creates/reuses a non-unique `(TenderID, IsGlobalVoucher, Inactive)` Item index.
+It changes no branch IDs, business rows, triggers or queries. Read
+`Database Components/Migrations/RMS_VOUCHER_LOOKUP_GUIDE.md` in the package first:
+test each branch restore and use a maintenance window. It is separate from the
+item-log index and does not certify sustained RMS/10+ user capacity.
 
 Select **Enable_WorkOrder_History.sql** for both new installations and updates.
 This one script creates/updates the history triggers and converts the approved
@@ -120,6 +159,14 @@ warning, not as a failed database update. Treat run folders as internal database
 documentation; custom scripts must not contain passwords or other secrets.
 
 ## Verification
+
+The Address migration was applied directly to localhost CONSIGNMENT_DB on
+October 28 with explicit authorization, preserving its reviewed legacy totals
+and permissions. All 15 isolated Address migration checks passed. The restore
+had no orders: local checks verified the added column, unchanged existing column
+definitions, empty-order behavior and repeat application, not an actual print
+preview. Evidence: `TestResults/ConsignmentAddressApply-15e73095`. This does not
+indicate deployment to any live store.
 
 `Database Components/Tests/DatabaseUpdater_LocalDB_Test.ps1` creates its own
 GUID-named LocalDB instance and SQL Server 2016 compatibility database. It checks

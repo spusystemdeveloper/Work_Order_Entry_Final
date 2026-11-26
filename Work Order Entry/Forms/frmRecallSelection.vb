@@ -97,7 +97,7 @@ Public Class frmRecallSelection
             Me.DialogResult = DialogResult.OK
             Me.Close()
         Else
-            MessageBox.Show("Please select an option.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            AppPrompt.Show("Please select an option.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
 
@@ -125,7 +125,7 @@ Public Class frmRecallSelection
             Me.DialogResult = DialogResult.OK
             Me.Close()
         Else
-            MessageBox.Show("Please select an option.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            AppPrompt.Show("Please select an option.", "Selection Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         End If
     End Sub
 

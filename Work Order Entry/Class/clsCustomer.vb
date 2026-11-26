@@ -38,7 +38,7 @@
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf &
+            AppPrompt.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf &
                         "REASON : " & ex.Message,
                         "MESSAGE : ERROR 0001",
                         MessageBoxButtons.OK,
@@ -60,7 +60,7 @@
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -84,7 +84,7 @@
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -106,7 +106,7 @@
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -145,7 +145,7 @@
             End Using
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             Return Nothing
         End Try
@@ -174,7 +174,7 @@
             updateQueuingError = False
 
         Catch ex As Exception
-            MessageBox.Show("WORK ORDER NOT FOUND! " & vbCrLf & vbCrLf & "FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("WORK ORDER NOT FOUND! " & vbCrLf & vbCrLf & "FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             updateQueuingError = True
         End Try
@@ -199,7 +199,7 @@
 
 
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
             updateQueuingError = True
             Return Nothing
@@ -233,10 +233,10 @@
                 dbx.SubmitChanges()
             End Using
 
-            MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            AppPrompt.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
 
     End Sub
@@ -255,10 +255,10 @@
                 dbx.SubmitChanges()
             End Using
 
-            MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            AppPrompt.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
     End Sub
 
@@ -273,10 +273,10 @@
                 dbx.SubmitChanges()
             End Using
 
-            MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            AppPrompt.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
     End Sub
 
@@ -310,7 +310,7 @@
                 Return price
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0008", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0008", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount += 1
             Return Nothing
         End Try
@@ -343,7 +343,7 @@
                 End If
             End Using
         Catch ex As Exception
-            MessageBox.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : clsCustomer Class " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount += 1
             Return 0
         End Try

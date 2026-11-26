@@ -241,6 +241,317 @@ The guide describes RMS POS transaction processing through QSRules classes and t
 
 Direct database access is not automatically invalid, but it means this application must reproduce all RMS invariants itself. The customer-change, tax-control, fractional-quantity, and partial-save findings show several places where that parity is currently incomplete.
 
+## October 30, 2026 V8 focused review
+
+Scope: audit only, no code changed by this review. Line numbers describe the
+working tree on October 30, 2026, on branch codex/work-order-ui-testing.
+Findings come from reading the code unless stated.
+
+Reviewed: clsUser, clsImport, clsRecall, ModConnectDB, clsItemLookUp from line
+560, frmLogin, frmPassword, frmRecall filter, OrderEditGuard, and the
+frmItemLookUp save, validation, recall and import paths.
+
+Not reviewed: the rest of frmItemLookUp, the first 560 lines of clsItemLookUp,
+clsCustomer, clsWorkOrderDraft, shortage code, stored procedures, reports, V4.
+VAT rules were not reviewed; mixed-tax calculation remains the separate
+business review already noted in this file.
+
+Nothing was compiled and no application workflow was run. Two isolated checks
+ran: a PowerShell double-arithmetic calculation and an in-memory DataView
+filter test.
+
+Confirmed sound: the save transaction, order lock, stale-edit snapshot guard
+including rejection of closed orders, and repeated cancellation not releasing
+stock twice (quantities are zeroed in the transaction).
+
+### 11. High: Fractional commitments can block cancelling or editing
+
+**Location:** Work Order Entry/Class/clsItemLookUp.vb:752;
+Forms/frmItemLookUp.vb:1335
+
+QuantityCommitted is float and the guard requires the result >= 0, so rounding
+can reject a valid release with "would make QuantityCommitted negative".
+Commit 0.7 and 0.1, release 0.7 then 0.1, ends at -2.7755575615628914E-17. A
+calculation over 400 fractional pairs gave 133 below zero. This was arithmetic
+only, not an executed cancel.
+
+Any fix changes the commitment guard, so needs human approval.
+
+### 12. High: Recall truncates order remarks
+
+**Location:** Forms/frmItemLookUp.vb:3530-3532, 3561, 1438
+
+Work Order comments are split on "; " and only part 2 is kept as remarks, so
+"call first; gate 2" becomes "call first", and saving makes that permanent. A
+Type 2 comment with fewer than three parts raises an index error during recall.
+
+**Remediation:** Fixed October 30 through WorkOrderComment.Parse. Remarks keep
+any "; ". Imported "CHARGE; reference" comments, 62 of 418 open work orders on
+localhost DVO_STORE_DB, load the payment and reference. Other short text loads as
+remarks.
+
+### 13. High: Repeated items break queue rows
+
+**Location:** Forms/frmItemLookUp.vb:1632, 1686; Class/clsRecall.vb:290
+
+Applies with queueing on, when duplicates are allowed or accepted at the
+prompt. Edits use FirstOrDefault per item, so only the first queue row updates.
+Deleting one duplicate line deletes every queue row for that item, so the
+remaining line may lose its picking row. Recall also shows the first PickLoc
+for both lines.
+
+**Remediation:** Fixed October 30 in Work Order Entry through QueueLineMatcher,
+which pairs lines and queue rows per item in ID order, with no schema change.
+Open limits: the queueing app still updates every row of an item, shortage
+acceptance still rejects repeated items, and existing damaged rows are not
+repaired.
+
+### 14. High: Imports can drop lines and still report completion
+
+**Location:** Class/clsImport.vb:342, 378; Forms/frmItemLookUp.vb:3903, 4024
+
+checkIfItemCodeExist reads ImportData("Contents"), but website imports leave
+ImportData Nothing or stale, and SingleOrDefault throws on an Excel file
+repeating a missing code. The Catch shows the error and returns 0, so the
+caller shows import complete and the missing item is not on the order.
+
+**Remediation:** Fixed October 30 through ImportFileRules.FindMissingItems for
+purchase and website imports. The Excel quotation path was missed and was fixed
+under finding 29. A failed check no longer reports completion.
+
+### 15. High: Stock validation rounds availability to whole numbers
+
+**Location:** Class/clsItemLookUp.vb:659-672; Forms/frmItemLookUp.vb:2971-2976
+
+getItemQty returns Integer with Option Strict off. 0.6 rounds to 1, so 0.8
+passes; 2.5 rounds to 2, possibly raising a false shortage. New work orders
+have no atomic stock check, as requireAvailableStock applies only to quotation
+conversion. Prepared quantities are also integers (QueueingItems.QtyPre,
+Convert.ToInt32 at lines 1219 and 1581).
+
+Any fix touches stock validation and needs human approval; the existing paired
+validation comparison preserved current behavior.
+
+### 16. High: Credentials in tracked files
+
+**Location:** Module/ModConnectDB.vb:8; App.config;
+My Project/Settings.settings; Module/MySQL_DAL.vb
+
+ModConnectDB.vb:8 contains an sa password in a comment, confirmed. A pattern
+search matched Password= values in App.config (6) and Settings.settings (12);
+those values were deliberately not opened. All four files are tracked and the
+repository has a GitHub remote. User and approval passwords remain plaintext.
+This extends finding 5.
+
+Rotating credentials is an operational action for the store owner.
+
+### 17. Medium: Validation errors do not stop the save
+
+**Location:** Forms/frmItemLookUp.vb:3018-3021, 2950, 914
+
+An exception in ValidateQuantities returns Nothing with iErrCnt unchanged, so
+SaveOrder continues without that check. A "-" price returns at line 2950
+without counting an error; later conversion fails safely inside the
+transaction, but later rows are not stock-checked first.
+
+### 18. Medium: Blank approval password is conditional
+
+**Location:** Forms/frmPassword.vb:15; Class/clsItemLookUp.vb:588
+
+If Password, Password2 or Password3 in SOD_WO_Conf is an empty string, a blank
+entry passes. It guards price, Settings and cancel actions. The data was not
+inspected; verify per store.
+
+### 19. Medium: Price-approval state and approver logging
+
+**Location:** Forms/frmPassword.vb:25, 29; Forms/frmItemLookUp.vb:1681,
+5261-5266
+
+Line 29 sets ispriceApproved = 1 for every password type, including Settings
+and CancelOrder, and overwrites the assignment at line 25. Deleted lines pass
+an empty password, and VB treats Nothing as equal to an empty string, so a
+blank Password2 or Password3 can name the wrong approver.
+
+### 20. Medium: SQL failures close the application
+
+**Location:** Module/ModConnectDB.vb:188-190
+
+load_data calls Application.Exit on any error, so a failed barcode search
+(frmItemLookUp.vb:4621) or item-list load (line 2095) ends the session
+mid-order.
+
+### 21. Medium: Recall search rejects some characters
+
+**Location:** Forms/frmRecall.vb:150-165
+
+Only apostrophes are escaped. In an isolated DataView test, `[A` and `a%b`
+raised EvaluateException "Error in Like operator". The timer path has no Try,
+so the error reaches the application-level handler. Not tested in the running
+application.
+
+### 22. Low: Legacy reservation check uses a different column
+
+**Location:** Class/clsRecall.vb:617, 622
+
+Line 617 tests SOD_WOs.ID = orderid while line 622 uses OrderID. Likely a
+defect; not confirmed against data.
+
+### 23. Low: Possible doubled website shipping
+
+**Location:** Class/clsImport.vb:271-279
+
+Each import adds a shipping row to the shared ImportDataCSV table, so
+importing an order twice without refreshing may add it twice. Not executed.
+
+### 24. Low: Possible duplicate insert after a post-commit failure
+
+**Location:** Forms/frmItemLookUp.vb:1272-1303
+
+A failure after commit but before RefreshDetails returns Saved without
+clearing the screen, so saving again may insert a new order. AGENTS.md forbids
+this outcome. The caller's handling was not traced; printing has its own error
+handling, so the window appears narrow.
+
+### 25. Low: Unescaped item code in SetItemAvailable
+
+**Location:** Forms/frmItemLookUp.vb:4107-4115
+
+The code is concatenated into DataTable.Select, the error is suppressed, and
+AcceptChanges is called on dt3 although dt1 is changed.
+
+### 26. Low: Unused legacy order methods
+
+**Location:** Class/clsRecall.vb
+
+UpdateOrder, UpdateOrderEntry, DeleteOrderItem, UpdateQTYCommitted and
+CancelQuotation have no callers in this project. They use the older
+non-transactional logic and must not be reused.
+
+### Recommended order
+
+1. Fix findings 12, 13, 14 and 15 first.
+2. Then fix finding 11.
+3. Findings 11, 13 and 15 touch stock or queue rules and need human approval
+   before implementation.
+4. Finding 16's credential rotation is a store-owner action.
+
+### Remediation status
+
+Findings 12, 13 and 14 are fixed as noted above. On October 30 the user also
+approved and received fixes for the following findings. Only finding 16 remains
+open.
+
+- **11:** A 0.000000001 tolerance in OrderCommitmentRules treats float remainders
+  as zero in the atomic commitment update, and a result within it is stored as
+  exactly zero. Real shortfalls are still rejected.
+- **15:** getItemQty returns the exact Double and the out-of-stock checks use
+  `<= 0`. QueueingItems.QtyPre stays an integer column; that needs a schema change.
+- **17:** A failed quantity check and a "-" price now count as errors, so the save
+  stops.
+- **18:** ConfPass rejects blank and all-spaces passwords before SQL.
+- **19:** Only price approvals set ispriceApproved. The approving password is kept
+  separately from the dialog text, and blank passwords name no approver.
+- **20:** load_data shows the error and returns an empty table. It no longer exits.
+- **21:** Recall search reuses ShortageAlertList.EscapeSearch.
+- **22:** CommittedWO matches legacy rows by OrderID and item.
+- **23:** Website import adds shipping once per order.
+- **24:** ClearFormAfterCommittedSave clears a saved order from the screen even when
+  its refresh fails.
+- **25:** SetItemAvailable had no callers and was removed.
+- **26:** The listed methods and their now-unused helpers were removed:
+  getWOCommittedQty, setQuantityCommitted, SetQuantityCommittedToQoute,
+  getItemQtyCommitted, setQtyCommittedQuotetoWo, InsertPriceLogs and the duplicate
+  frmItemLookUp.ConfPass.
+
+Finding 16 stays open at the user's request.
+
+## October 30, 2026 V8 second review
+
+This audit covered clsCustomer, clsWorkOrderDraft, the first 560 lines of
+clsItemLookUp, the order tools, shortage, withholding and price-level forms,
+customer and sales rep pickers, frmUser, frmUploader, frmCustomerOrders, pick
+lists and the insert procedure. Not reviewed: most stored procedures, RDLC
+reports, the queueing app, frmLinqLevel, frmStoreSetup, print forms and the
+notification and history classes. "Proven" means run against a throwaway restored
+copy of localhost DVO_STORE_DB; other findings come from reading the code.
+
+### 27. High: Closing with a recalled order creates a duplicate on recovery
+
+**Location:** Forms/frmItemLookUp.vb (FormClosing, RecoverDraftIfAvailable);
+Class/clsWorkOrderDraft.vb
+
+Proven. A draft has no order number, so order 23325 recovered and saved as new
+order 23339 while the original stayed open, reserving stock twice.
+
+**Remediation:** Fixed October 30. Recalled orders no longer save a draft on
+close, and an existing draft holding order lines is removed with a message
+instead of being recovered. Unsaved edits to a recalled order are now lost on
+close, because no draft is kept.
+
+### 28. High: Customer and sales rep pickers can select the wrong row
+
+**Location:** Forms/frmCustomer.vb; Forms/frmSalesRep.vb
+
+Proven. OK used a remembered row number: highlighted customer 3265, selected 2.
+
+**Remediation:** Fixed October 30. OK and double-click use the actual row, and
+the remembered row resets on load and search.
+
+### 29. High: Excel quotation import dropped missing items
+
+**Location:** Class/clsImport.vb; Forms/frmItemLookUp.vb (ImportQuote)
+
+Proven. A two-line file loaded one line and reported complete.
+
+**Remediation:** Fixed October 30. It now uses the shared missing-item check.
+
+### 30. High: Excel quotation import used the file's item ID
+
+**Location:** Class/clsImport.vb (importOrderEntry)
+
+Proven. Item ID 24 was loaded as 70856 from the file.
+
+**Remediation:** Fixed October 30. The ID comes from the matched Item row.
+importOrder still matches customer and sales rep by the file's numeric IDs.
+
+### Findings 31-41
+
+Status as of November 18. 32, 33, 37, 38 and the repeated-item part of 36 were
+fixed on November 5 (commit cfffa1f); this list was not updated at the time.
+The rest were fixed on November 18. The website Taxable item in 41 was left
+unchanged at the user's request.
+Validation is in UNIT_TEST_GUIDE.md ("November 18: findings 31-41").
+
+- **31, Medium, fixed Nov 18:** Draft Qty was an int column and the draft code
+  parsed it as a whole number, so 2.5 recovered as 0. Drafts now save and restore
+  the exact quantity. `Ensure_Work_Order_Draft_Tables.sql` converts the column to
+  float (existing values kept). Until a store runs it, drafts still work there but
+  2.5 is stored as 2.
+- **32, Medium, fixed Nov 5:** frmUploader's gate omitted bItem.
+- **33, Medium, fixed Nov 5:** frmUploader used CInt, rounding 2.5 to 2.
+- **34, Medium, fixed Nov 18:** Uploaded quotation numbers are now recorded in
+  SOD_ImportedQuote by the save transaction that commits those lines, so the
+  duplicate upload check works. Uploading the same quotation twice into one
+  unsaved order is also rejected.
+- **35, Medium, fixed Nov 18:** The log folder is the optional `ImportLogFolder`
+  app setting (default: the original shared folder). If it cannot be reached the
+  log is saved on the PC. A log failure no longer offers Retry, which could add
+  the rows twice, or Abort, which closed the main screen.
+- **36, Medium, fixed Nov 5 and Nov 18:** Repeated items fixed Nov 5. The ordered
+  quantity is now a Double, so 2.5 prints as 2.5 and the balance column too.
+- **37, Medium, fixed Nov 5:** Logout asks before discarding an order on screen.
+- **38, Low, fixed Nov 5:** A price-level column header click no longer inserts.
+- **39, Low, fixed Nov 18:** Recall uses outer joins, so an order whose customer
+  or sales rep row is missing loads with a blank customer instead of keeping the
+  previous order's header. An order that is no longer open clears the screen.
+- **40, Low, fixed Nov 18:** Edit rejects a username used by another account
+  (case-insensitive, as at login). The Show Password option is hidden and the
+  password listing query removed.
+- **41, Low, fixed Nov 18:** Ungroup accepts only an order listed in the
+  selected group. Price approval checks read current item prices instead of the
+  copy cached since login. Website order lines saved with Taxable 0: closed
+  without change at the user's request on Nov 18.
+
 ## Suggested remediation order
 
 1. Correct customer-change pricing/recalculation and default price-level selection.

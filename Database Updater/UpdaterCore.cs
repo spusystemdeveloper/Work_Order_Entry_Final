@@ -109,18 +109,35 @@ namespace WorkOrderDatabaseUpdater
     {
         public static IList<UpdateScript> Load(string components, string profile)
         {
-            if (profile != "GSC" && profile != "DVO" && profile != "Portable") throw new ArgumentException("Unknown branch profile.");
+            if (profile != "GSC" && profile != "DVO" && profile != "Portable" && profile != "ILOILO") throw new ArgumentException("Unknown branch profile.");
             var result = new List<UpdateScript>();
+            if (profile == "Portable" || profile == "ILOILO")
+                result.Add(UpdateScript.Load(System.IO.Path.Combine(components, "Migrations",
+                    "Add_WorkOrder_Username_Columns.sql"),
+                    "Migrations/Add_WorkOrder_Username_Columns.sql", "Migration",
+                    "Adds missing Pass2Username/Pass3Username fields to an existing SOD_WO_Conf table in the selected database. Preserves settings; incompatible fields stop for review.", true));
+            if (profile == "Portable")
+                result.Add(UpdateScript.Load(System.IO.Path.Combine(components, "Migrations",
+                    "Add_WorkOrder_Print_Address.sql"),
+                    "Migrations/Add_WorkOrder_Print_Address.sql", "Migration",
+                    "Adds customer Address to the reviewed legacy printing function in a compatible store database. Retains totals and logic; customized definitions stop for review.", true));
             string[] migrations = { "Ensure_Queueing_Compatibility_Tables", "Ensure_Work_Order_Draft_Tables",
-                "Enable_WorkOrder_History", "Prepare_WorkOrder_Edit_Checks", "Improve_WorkOrder_ItemLookup" };
+                "Enable_WorkOrder_History", "Prepare_WorkOrder_Edit_Checks", "Improve_WorkOrder_ItemLookup",
+                "Improve_WorkOrder_ItemLogLookup", "Improve_RMS_VoucherLookup" };
             foreach (var name in migrations)
                 result.Add(UpdateScript.Load(System.IO.Path.Combine(components, "Migrations", name + ".sql"),
                     "Migrations/" + name + ".sql", name.Contains("Checks") || name.Contains("Lookup") ? "Index / performance" : "Migration",
                     name == "Enable_WorkOrder_History"
                         ? "Creates/updates history triggers and converts approved legacy IDENTITY history to a sequence, preserving events, IDs and permissions. Back up first; no separate history fix needed."
-                        : "Optional; existing tables are preserved. Review prerequisites in the SQL.", true));
+                        : name == "Improve_WorkOrder_ItemLogLookup"
+                            ? "Optional item-log index only; trigger and business rows are unchanged. Requires a maintenance window and restore test. Stops on incompatible references or ambiguous latest timestamps."
+                            : name == "Improve_RMS_VoucherLookup"
+                                ? "Optional RMS voucher lookup index only; reduces Item scans that conflicted with Work Order saves in the Davao restore test. No tender IDs, triggers or business rows changed. Test each branch restore and deploy in a maintenance window."
+                                : name == "Ensure_Work_Order_Draft_Tables"
+                                    ? "Creates missing draft-recovery tables. On an existing install, converts SOD_WO_DraftDetail.Qty from int to float so drafts keep 2.5; existing values and rows are kept."
+                                    : "Optional; existing tables are preserved. Review prerequisites in the SQL.", true));
             string deployment = System.IO.Path.GetFullPath(System.IO.Path.Combine(components, "Deployment"));
-            string driver = profile == "Portable" ? "Deploy_PORTABLE_REQUIRED_OBJECTS.sql" : "Deploy_" + profile + "_STORE_DB.sql";
+            string driver = profile == "Portable" ? "Deploy_PORTABLE_REQUIRED_OBJECTS.sql" : profile == "ILOILO" ? "Deploy_ILOILO_MAIN_WHSE_DB.sql" : "Deploy_" + profile + "_STORE_DB.sql";
             foreach (string line in File.ReadAllLines(System.IO.Path.Combine(deployment, driver)))
             {
                 if (!line.StartsWith(":r .\\Objects\\", StringComparison.OrdinalIgnoreCase)) continue;

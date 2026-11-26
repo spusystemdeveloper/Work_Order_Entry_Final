@@ -43,8 +43,8 @@ Partial Class frmForInvoice
         DataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control
         DataGridViewCellStyle1.Font = New System.Drawing.Font("Arial", 9.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         DataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText
-        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight
-        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText
+        DataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Control
+        DataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.WindowText
         DataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.gridCustOrder.ColumnHeadersDefaultCellStyle = DataGridViewCellStyle1
         Me.gridCustOrder.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize
@@ -58,6 +58,7 @@ Partial Class frmForInvoice
         Me.gridCustOrder.DefaultCellStyle = DataGridViewCellStyle2
         Me.gridCustOrder.Location = New System.Drawing.Point(12, 49)
         Me.gridCustOrder.Name = "gridCustOrder"
+        Me.gridCustOrder.EnableHeadersVisualStyles = False
         Me.gridCustOrder.ReadOnly = True
         Me.gridCustOrder.RowHeadersVisible = False
         Me.gridCustOrder.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]

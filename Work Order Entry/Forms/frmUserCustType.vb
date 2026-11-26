@@ -74,7 +74,7 @@
             'End Try
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmUserCustType Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmUserCustType Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -100,9 +100,9 @@
                 clsUser.AddCustTypeUsers(_custypeid, x)
             Next
 
-            MessageBox.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            AppPrompt.Show("Sucess !", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            AppPrompt.Show(ex.Message)
         End Try
 
 
@@ -114,7 +114,7 @@
     End Sub
 
     Private Sub RemoveCustTypeUser()
-        If MsgBox("Confirm removed?", MsgBoxStyle.YesNo + MsgBoxStyle.Exclamation, "Message") = vbYes Then
+        If AppPrompt.MsgBox("Confirm removed?", MsgBoxStyle.YesNo + MsgBoxStyle.Exclamation, "Message") = vbYes Then
             Dim _userid = Split(TreeView1.SelectedNode.Text, " - ")(0)
 
             TreeView1.Nodes.Remove(TreeView1.SelectedNode)

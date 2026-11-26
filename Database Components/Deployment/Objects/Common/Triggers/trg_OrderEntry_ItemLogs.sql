@@ -45,7 +45,7 @@ AS BEGIN
 
 			insert into SOD_Item_Logs(ItemID,ItemLookupCode,[Type],ReferenceID ,QuantityORIS ,LastQuantity,NewQuantity,LastCommitted,NewCommitted,Date)(
 			select i.ID,i.ItemLookupCode,''Order Update Logs'',n.orderid,x.QuantityOnOrder , i.Quantity ,i.Quantity,
-			 @lastcommitted,
+			 ISNULL(@lastcommitted, ISNULL(i.QuantityCommitted, 0)),
 			i.QuantityCommitted as ''NewCommitted'' , GEtdate()
 
 			from deleted n
@@ -59,7 +59,7 @@ AS BEGIN
 
 			insert into SOD_Item_Logs(ItemID,ItemLookupCode,[Type],ReferenceID ,QuantityORIS ,LastQuantity,NewQuantity,LastCommitted,NewCommitted,Date)
 			(
-			select i.ID,i.ItemLookupCode,''Order Entry Logs'',n.orderid,n.QuantityOnOrder , i.Quantity ,i.Quantity,i.QuantityCommitted,i.QuantityCommitted + n.QuantityOnOrder as ''NewCommitted'' , GEtdate()
+			select i.ID,i.ItemLookupCode,''Order Entry Logs'',n.orderid,n.QuantityOnOrder , i.Quantity ,i.Quantity,ISNULL(i.QuantityCommitted, 0),ISNULL(i.QuantityCommitted, 0) + n.QuantityOnOrder as ''NewCommitted'' , GEtdate()
 			from inserted n
 			inner join item i on n.ItemID = i.id
 			)
@@ -95,7 +95,7 @@ AS BEGIN
 
 			insert into SOD_Item_Logs(ItemID,ItemLookupCode,[Type],ReferenceID ,QuantityORIS ,LastQuantity,NewQuantity,LastCommitted,NewCommitted,Date)(
 			select i.ID,i.ItemLookupCode,''Order Update Logs'',n.orderid,x.QuantityOnOrder , i.Quantity ,i.Quantity,
-			 @lastcommitted,
+			 ISNULL(@lastcommitted, ISNULL(i.QuantityCommitted, 0)),
 			i.QuantityCommitted as ''NewCommitted'' , GEtdate()
 
 			from deleted n
@@ -109,7 +109,7 @@ AS BEGIN
 
 			insert into SOD_Item_Logs(ItemID,ItemLookupCode,[Type],ReferenceID ,QuantityORIS ,LastQuantity,NewQuantity,LastCommitted,NewCommitted,Date)
 			(
-			select i.ID,i.ItemLookupCode,''Order Entry Logs'',n.orderid,n.QuantityOnOrder , i.Quantity ,i.Quantity,i.QuantityCommitted,i.QuantityCommitted + n.QuantityOnOrder as ''NewCommitted'' , GEtdate()
+			select i.ID,i.ItemLookupCode,''Order Entry Logs'',n.orderid,n.QuantityOnOrder , i.Quantity ,i.Quantity,ISNULL(i.QuantityCommitted, 0),ISNULL(i.QuantityCommitted, 0) + n.QuantityOnOrder as ''NewCommitted'' , GEtdate()
 			from inserted n
 			inner join item i on n.ItemID = i.id
 			)

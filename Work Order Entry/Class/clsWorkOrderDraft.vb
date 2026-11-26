@@ -39,7 +39,9 @@ Public Class clsWorkOrderDraft
         Try
             Using db = GetDB()
                 db.SOD_WO_DraftHeaders.Take(1).ToList()
-                db.SOD_WO_DraftDetails.Take(1).ToList()
+                ' Do not load whole detail rows here: Qty is mapped as float, and a
+                ' store that has not run the draft migration still has an int column.
+                db.SOD_WO_DraftDetails.Select(Function(d) d.DraftDetailID).Take(1).ToList()
             End Using
             Return True
         Catch
@@ -61,6 +63,25 @@ Public Class clsWorkOrderDraft
             Return (From h In db.SOD_WO_DraftHeaders
                     Where h.RegisterID = registerKey AndAlso h.UserName = userKey
                     Select h.DraftID).Any()
+        End Using
+    End Function
+
+    ' A draft has no order number, so saving one built from an existing order
+    ' would insert a duplicate. Older versions saved these drafts on close.
+    Public Shared Function IsDraftOfExistingOrder(ByVal registerID As String, ByVal userName As String) As Boolean
+        If Not EnsureTables() Then Return False
+
+        Dim registerKey As String = ResolveRegisterID(registerID)
+        If registerKey = String.Empty Then Return False
+        Dim userKey As String = ResolveUserName(userName)
+        If userKey = String.Empty Then Return False
+
+        Using db = GetDB()
+            Return (From h In db.SOD_WO_DraftHeaders
+                    Where h.RegisterID = registerKey AndAlso h.UserName = userKey
+                    From d In h.SOD_WO_DraftDetails
+                    Where d.OrderEntryID > 0
+                    Select d.DraftDetailID).Any()
         End Using
     End Function
 
@@ -174,11 +195,9 @@ Public Class clsWorkOrderDraft
 
             db.SubmitChanges()
 
-            Dim existingDetails = header.SOD_WO_DraftDetails.ToList()
-            If existingDetails.Count > 0 Then
-                db.SOD_WO_DraftDetails.DeleteAllOnSubmit(existingDetails)
-                db.SubmitChanges()
-            End If
+            ' Deleted in SQL rather than loaded first, so an unmigrated int Qty column
+            ' is never read through the float mapping.
+            db.ExecuteCommand("DELETE FROM dbo.SOD_WO_DraftDetail WHERE DraftID = {0}", header.DraftID)
 
             Dim lineNo As Integer = 0
             For Each row As DataGridViewRow In form.gridSelectItem.Rows
@@ -190,7 +209,7 @@ Public Class clsWorkOrderDraft
                     .LineNo = lineNo,
                     .ItemCode = CellText(row, form.ItemCode.Index),
                     .ItemName = CellText(row, form.ItemName.Index),
-                    .Qty = CellInt(row, form.QTY.Index),
+                    .Qty = CellDouble(row, form.QTY.Index),
                     .Price = CellDecimal(row, form.Price.Index),
                     .Disc = CellDecimal(row, form.DISC.Index),
                     .TotalPrice = CellDecimal(row, form.TOTAL.Index),
@@ -274,7 +293,13 @@ Public Class clsWorkOrderDraft
 
                 form.gridSelectItem.Rows.Clear()
 
-                Dim details = header.SOD_WO_DraftDetails.OrderBy(Function(d) d.LineNo).ToList()
+                ' CAST keeps this working whether Qty is still int (store not yet
+                ' migrated) or float (migrated, keeps 2.5).
+                Dim details = db.ExecuteQuery(Of DraftLine)(
+                    "SELECT [LineNo], ItemCode, ItemName, CAST(Qty AS float) AS Qty, Price, Disc, TotalPrice, " &
+                    "LessVat, VatSales, DiscPrice, Cost, Taxable, ItemID, FullPrice, Description, " &
+                    "ExtendedDescription, DiscAmount, OrderEntryID, StoreWhse, PreparedQty, LastPurchasedPrice " &
+                    "FROM dbo.SOD_WO_DraftDetail WHERE DraftID = {0} ORDER BY [LineNo]", header.DraftID).ToList()
 
                 For Each detail In details
                     Dim rowIndex As Integer = form.gridSelectItem.Rows.Add()
@@ -282,7 +307,7 @@ Public Class clsWorkOrderDraft
 
                     row.Cells(form.ItemCode.Index).Value = SafeText(detail.ItemCode)
                     row.Cells(form.ItemName.Index).Value = SafeText(detail.ItemName)
-                    row.Cells(form.QTY.Index).Value = SafeInt(detail.Qty)
+                    row.Cells(form.QTY.Index).Value = If(detail.Qty, 0R)
                     row.Cells(form.Price.Index).Value = SafeDecimal(detail.Price)
                     row.Cells(form.DISC.Index).Value = SafeDecimal(detail.Disc)
                     row.Cells(form.TOTAL.Index).Value = SafeDecimal(detail.TotalPrice)
@@ -313,6 +338,31 @@ Public Class clsWorkOrderDraft
         End Try
     End Sub
 
+    ' One saved draft line, read with explicit SQL (see LoadDraft).
+    Public NotInheritable Class DraftLine
+        Public Property LineNo As Integer
+        Public Property ItemCode As String
+        Public Property ItemName As String
+        Public Property Qty As Double?
+        Public Property Price As Decimal?
+        Public Property Disc As Decimal?
+        Public Property TotalPrice As Decimal?
+        Public Property LessVat As Decimal?
+        Public Property VatSales As Decimal?
+        Public Property DiscPrice As Decimal?
+        Public Property Cost As Decimal?
+        Public Property Taxable As Integer?
+        Public Property ItemID As Long?
+        Public Property FullPrice As Decimal?
+        Public Property Description As String
+        Public Property ExtendedDescription As String
+        Public Property DiscAmount As Decimal?
+        Public Property OrderEntryID As Integer?
+        Public Property StoreWhse As Boolean
+        Public Property PreparedQty As Integer?
+        Public Property LastPurchasedPrice As Decimal?
+    End Class
+
     Private Shared Function CellText(ByVal row As DataGridViewRow, ByVal index As Integer) As String
         If row.Cells(index).Value Is Nothing Then Return String.Empty
         Return row.Cells(index).Value.ToString()
@@ -321,6 +371,19 @@ Public Class clsWorkOrderDraft
     Private Shared Function CellInt(ByVal row As DataGridViewRow, ByVal index As Integer) As Integer
         Dim result As Integer = 0
         Integer.TryParse(CellText(row, index), result)
+        Return result
+    End Function
+
+    ' Quantities can be fractional (2.5). Integer parsing turned 2.5 into 0.
+    Private Shared Function CellDouble(ByVal row As DataGridViewRow, ByVal index As Integer) As Double
+        Dim value = row.Cells(index).Value
+        If value Is Nothing OrElse value Is DBNull.Value Then Return 0R
+        If TypeOf value Is Double OrElse TypeOf value Is Decimal OrElse TypeOf value Is Single OrElse
+           TypeOf value Is Integer OrElse TypeOf value Is Long OrElse TypeOf value Is Short Then
+            Return Convert.ToDouble(value)
+        End If
+        Dim result As Double = 0R
+        Double.TryParse(value.ToString(), result)
         Return result
     End Function
 

@@ -1,3 +1,13 @@
+## Current layout — November 6, 2026
+
+This updater now handles Work Order SQL only. CIU executable updates and the embedded PDC/SOA SQL updater were removed at the user's request. Older combined packages are superseded; do not distribute them as the current updater.
+
+Project SQL is separate:
+- CIU/PDC: PDC_Monitoring-master/PDC_Monitoring-master/Database/Reviewed_SQL_2016 (8 reviewed modules plus table prerequisites and checks).
+- SOA: SOA_V7_asof_28AUG2025_with checkall/Database/Reviewed_SQL_2016 (10 reviewed modules, checks and reference-only cancelled-CM example).
+
+These are organized copies of the reviewed SQL1.4 baseline, not automatic deployment or a claim that every later source change has a new SQL migration. Existing source/migration folders were not overwritten. Read each folder's README and SOURCE_HASHES.json. Manual module scripts start in preview; review branch business rules/dependencies and take a verified backup before applying anything. The static SOA CM example must not overwrite a different branch view. No live database was updated during this reorganization.
+
 # Work Order Database Updater: how to use it
 
 This tool applies selected SQL changes to an existing RMS database: migrations,
@@ -7,6 +17,12 @@ more efficiently. A SQL function stores logic that an application/query can call
 
 For a quick start, read `START_HERE.txt`. Inside the updater, click
 **Help / instructions...** to read this guide offline.
+
+For the optional item-log lookup index, read
+`Database Components/Migrations/WORKORDER_ITEM_LOG_LOOKUP_GUIDE.md` first.
+It preserves trigger SQL and business rows but holds a log-table lock during
+preflight/index creation. Use a maintenance window and a restored-branch rehearsal;
+large tables may need SSMS because the updater command timeout is 120 seconds.
 
 ## 1. Install the tool on a workstation
 
@@ -77,6 +93,14 @@ Example: for the existing recall item-code optimization, tick only
 **Improve_WorkOrder_ItemLookup.sql**. It adds a non-unique item-code index if suitable
 coverage is missing. Local GSC already received it on October 14, 2026; repeating
 this particular script is supported. Other scripts may have different effects.
+
+For the tested RMS voucher lookup improvement, no import is needed: the package
+offers **Improve_RMS_VoucherLookup.sql** under **Index / performance** for DVO,
+GSC and Portable. Select only that migration to deploy just the Item lookup index.
+Read `Database Components/Migrations/RMS_VOUCHER_LOOKUP_GUIDE.md`, test a current
+branch restore first and use a maintenance window. It preserves business rows,
+triggers and branch rules, and rejects incompatible filter-column/index schemas.
+The older Davao SQL replay is not proof of actual RMS capacity at every branch.
 
 ## 4. Import a SQL script received from a developer
 

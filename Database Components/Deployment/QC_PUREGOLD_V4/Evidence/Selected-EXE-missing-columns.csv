@@ -1,0 +1,8 @@
+Object,Column,DbType,ClrType,Nullable
+dbo.SOD_ImportedQuote,ID,BigInt NOT NULL IDENTITY,System.Int64,False
+dbo.SOD_ImportedQuote,ImportDate,DateTime,"System.Nullable`1[[System.DateTime, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]",True
+dbo.SOD_ImportedQuote,QuoteID,Int,"System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]",True
+dbo.SOD_ImportedQuote,ReferenceID,Int,"System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]",True
+dbo.SOD_ImportedQuote,SalesRepID,Int,"System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]",True
+dbo.SOD_ViewItems,FULLDESCRIPTION,NVarChar(MAX) NOT NULL,System.String,False
+dbo.SOD_fntbl_SearchItem,SKULevel,Int,"System.Nullable`1[[System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]",True

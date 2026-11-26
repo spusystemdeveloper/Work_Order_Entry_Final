@@ -1,0 +1,18 @@
+[
+    {
+        "Check":  "main-build",
+        "ExitCode":  0
+    },
+    {
+        "Check":  "queue-build",
+        "ExitCode":  0
+    },
+    {
+        "Check":  "unit-tests",
+        "ExitCode":  0
+    },
+    {
+        "Check":  "packaging",
+        "ExitCode":  0
+    }
+]

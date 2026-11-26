@@ -50,6 +50,9 @@ Partial Class frmCustomerOrders
         Me.gridCustOrder.DefaultCellStyle = DataGridViewCellStyle2
         Me.gridCustOrder.Location = New System.Drawing.Point(12, 30)
         Me.gridCustOrder.Name = "gridCustOrder"
+        Me.gridCustOrder.EnableHeadersVisualStyles = False
+        Me.gridCustOrder.ColumnHeadersDefaultCellStyle.SelectionBackColor = System.Drawing.SystemColors.Control
+        Me.gridCustOrder.ColumnHeadersDefaultCellStyle.SelectionForeColor = System.Drawing.SystemColors.WindowText
         Me.gridCustOrder.ReadOnly = True
         Me.gridCustOrder.RowTemplate.DefaultCellStyle.WrapMode = System.Windows.Forms.DataGridViewTriState.[True]
         Me.gridCustOrder.RowTemplate.Height = 30

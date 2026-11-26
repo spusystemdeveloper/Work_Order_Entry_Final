@@ -89,7 +89,7 @@ Public Class frmLogin
             dbnew = New ItemLookUpDataContext(DB_Conn("constr"))
             database_location = DB_Conn("constr")
         Catch ex As Exception
-            MessageBox.Show("Cannot connect to database!" & vbCrLf & ex.Message,
+            AppPrompt.Show("Cannot connect to database!" & vbCrLf & ex.Message,
                             "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
     End Sub
@@ -110,13 +110,21 @@ Public Class frmLogin
             dbnew = New ItemLookUpDataContext(connectionString)
             database_location = connectionString
 
+            If Not clsUser.HasAnyWOUsers() Then
+                Using setup = BuildInitialUserDialog()
+                    setup.ShowDialog(Me)
+                End Using
+                txtPassword.Clear()
+                Exit Sub
+            End If
+
             If Not clsUser.verifyUsername(txtUsername.Text) Then
-                MessageBox.Show("Username not Registered!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Incorrect username or password.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
             End If
 
             If txtPassword.Text <> clsUser.getUsernamePassword(txtUsername.Text) Then
-                MessageBox.Show("Please Check your Credentials!!!!", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+                AppPrompt.Show("Incorrect username or password.", "Message!", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
                 Exit Sub
             End If
 
@@ -139,12 +147,69 @@ Public Class frmLogin
             frmItemLookUp.Show()
             Timer1.Start()
         Catch ex As Exception
-            MessageBox.Show("Database connection failed!" & vbCrLf & ex.Message,
+            AppPrompt.Show("Database connection failed!" & vbCrLf & ex.Message,
                             "ERROR", MessageBoxButtons.OK, MessageBoxIcon.Error)
             Label3.Text = "Login"
         End Try
 
     End Sub
+
+    Private Function BuildInitialUserDialog() As Form
+        Dim setup As New Form With {.Text = "Create first Work Order account",
+            .ClientSize = New Size(450, 305), .StartPosition = FormStartPosition.CenterParent,
+            .FormBorderStyle = FormBorderStyle.FixedDialog, .MaximizeBox = False, .MinimizeBox = False,
+            .Font = New Font("Segoe UI", 10.0F), .AutoScaleMode = AutoScaleMode.Font}
+        Dim target As New System.Data.SqlClient.SqlConnectionStringBuilder(DB_Conn("constr"))
+        setup.Controls.Add(New Label With {.Text = "No Work Order accounts exist." & Environment.NewLine &
+            target.DataSource & " / " & target.InitialCatalog, .Location = New Point(18, 14), .Size = New Size(414, 48)})
+        Dim username As New TextBox With {.Name = "initialUsername", .Text = If(String.IsNullOrWhiteSpace(txtUsername.Text), "admin", txtUsername.Text.Trim()),
+            .Location = New Point(180, 76), .Width = 245, .TabIndex = 0}
+        Dim password As New TextBox With {.Name = "initialPassword", .UseSystemPasswordChar = True,
+            .Location = New Point(180, 112), .Width = 245, .TabIndex = 1}
+        Dim confirmation As New TextBox With {.Name = "initialConfirmation", .UseSystemPasswordChar = True,
+            .Location = New Point(180, 148), .Width = 245, .TabIndex = 2}
+        Dim register As New NumericUpDown With {.Name = "initialRegister", .Minimum = 1, .Maximum = Integer.MaxValue,
+            .Value = 1, .Location = New Point(180, 184), .Width = 245, .TabIndex = 3}
+        Dim labels = {"Username", "Password", "Confirm password", "Register number"}
+        For index As Integer = 0 To labels.Length - 1
+            setup.Controls.Add(New Label With {.Text = labels(index), .Location = New Point(18, 80 + index * 36), .AutoSize = True})
+        Next
+        setup.Controls.AddRange(New Control() {username, password, confirmation, register})
+        Dim create As New Button With {.Name = "createInitialUser", .Text = "Create account", .Location = New Point(164, 246), .Size = New Size(140, 36), .TabIndex = 4}
+        Dim cancel As New Button With {.Name = "cancelInitialUser", .Text = "Cancel", .DialogResult = DialogResult.Cancel,
+            .Location = New Point(314, 246), .Size = New Size(110, 36), .TabIndex = 5}
+        setup.Controls.AddRange(New Control() {create, cancel})
+        setup.AcceptButton = create
+        setup.CancelButton = cancel
+        AddHandler create.Click,
+            Sub()
+                If String.IsNullOrWhiteSpace(username.Text) OrElse String.IsNullOrWhiteSpace(password.Text) Then
+                    AppPrompt.Show("Enter a username and password.", "First account", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Return
+                End If
+                If password.Text <> confirmation.Text Then
+                    AppPrompt.Show("The passwords do not match.", "First account", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    Return
+                End If
+                Try
+                    If Not clsUser.CreateInitialWOUser(username.Text, password.Text, CInt(register.Value)) Then
+                        AppPrompt.Show("An account already exists. Close setup and sign in.", "First account", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                        setup.DialogResult = DialogResult.Cancel
+                        Return
+                    End If
+                    txtUsername.Text = username.Text.Trim()
+                    AppPrompt.Show("Account created. Sign in with your new account.", "First account", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    setup.DialogResult = DialogResult.OK
+                Catch
+                    AppPrompt.Show("Could not create the account. Check the database connection and required Work Order user table.",
+                                   "First account", MessageBoxButtons.OK, MessageBoxIcon.Error)
+                Finally
+                    password.Clear()
+                    confirmation.Clear()
+                End Try
+            End Sub
+        Return setup
+    End Function
 
     ''' <summary>
     ''' Validates that the user's assigned register matches the RMS registry register number.
@@ -172,7 +237,7 @@ Public Class frmLogin
         Try
             rmsRegisterNumberNullable = ReadRmsRegisterNumber()
         Catch ex As Exception
-            MessageBox.Show(
+            AppPrompt.Show(
                 "Cannot read RMS Register Number from registry." & vbCrLf & ex.Message,
                 "Register Validation",
                 MessageBoxButtons.OK,
@@ -182,7 +247,7 @@ Public Class frmLogin
         End Try
 
         If Not rmsRegisterNumberNullable.HasValue Then
-            MessageBox.Show(
+            AppPrompt.Show(
                 "Cannot read RMS Register Number from registry." & vbCrLf &
                 "Missing key/value: HKLM\SOFTWARE\WOW6432Node\Microsoft\Retail Management System\Store Operations\POSUser\Register\Number",
                 "Register Validation",
@@ -217,7 +282,7 @@ Public Class frmLogin
                     "Please close or use the correct register PC for this account."
             End If
 
-            MessageBox.Show(
+            AppPrompt.Show(
                 messageText,
                 "Register Validation",
                 MessageBoxButtons.OK,
@@ -229,7 +294,7 @@ Public Class frmLogin
         ' RULE: RMS apps are NOT running -> allow switching if mismatch, with confirmation
         If rmsRegisterNumber <> userRegister Then
 
-            Dim result As DialogResult = MessageBox.Show(
+            Dim result As DialogResult = AppPrompt.Show(
                 "This computer is Register " & rmsRegisterNumber &
                 ", but your user is assigned to Register " & userRegister & "." & vbCrLf & vbCrLf &
                 "Click OK to update the RMS registry Register Number to " & userRegister & " and continue login.",
@@ -243,7 +308,7 @@ Public Class frmLogin
             Try
                 WriteRmsRegisterNumber(userRegister)
             Catch ex As Exception
-                MessageBox.Show(
+                AppPrompt.Show(
                     "Failed to update RMS Register Number in registry." & vbCrLf &
                     "Please run this application as Administrator (UAC prompt) and try again." & vbCrLf & vbCrLf &
                     ex.Message,
@@ -296,7 +361,11 @@ Public Class frmLogin
         End Using
     End Sub
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
-        Application.Exit()
+        ' Let the modal caller close the main form outside Application.Exit's
+        ' live OpenForms enumeration (draft warnings can open another form).
+        Timer1.Stop()
+        Me.DialogResult = DialogResult.Cancel
+        Me.Close()
     End Sub
 
     Private Sub txtUsername_KeyPress(ByVal sender As System.Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles txtUsername.KeyPress
@@ -314,6 +383,7 @@ Public Class frmLogin
     Private Sub Timer1_Tick(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Timer1.Tick
         Timer1.Stop()
         Label3.Text = "Login"
+        Me.DialogResult = DialogResult.OK
         Me.Close()
     End Sub
 

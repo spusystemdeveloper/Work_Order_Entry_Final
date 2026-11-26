@@ -5,29 +5,17 @@ Imports WorkOrderEntry
 Public Class MultiplePriceConfirmationTests
 
     <TestMethod>
-    Public Sub GivenThreeChangedItems_WhenPricesAreReset_ThenAllThreeRequireConfirmation()
-        ' Given
-        Dim prices As Object() = {"-", "-", "-"}
-
-        ' When
-        Dim remaining =
-            PriceConfirmationRules.CountUnconfirmedPrices(prices)
-
-        ' Then
-        Assert.AreEqual(3, remaining)
+    Public Sub GivenMissingOrPlaceholderPrice_WhenChecked_ThenConfirmationIsRequired()
+        For Each price As Object In New Object() {Nothing, DBNull.Value, "", "-"}
+            Assert.IsFalse(PriceConfirmationRules.IsConfirmedPrice(price))
+        Next
     End Sub
 
     <TestMethod>
-    Public Sub GivenFirstItemConfirmed_WhenAdvancing_ThenNextUnconfirmedItemIsSelected()
-        ' Given: item 1 is confirmed; items 2 and 3 are not.
-        Dim prices As Object() = {100D, "-", "-"}
-
-        ' When
-        Dim nextIndex =
-            PriceConfirmationRules.FindFirstUnconfirmedPriceIndex(prices)
-
-        ' Then: the next item is the second row (zero-based index 1).
-        Assert.AreEqual(1, nextIndex)
+    Public Sub GivenNumericPriceIncludingZero_WhenChecked_ThenPriceIsConfirmed()
+        For Each price As Object In New Object() {0D, 100D, 12.5D}
+            Assert.IsTrue(PriceConfirmationRules.IsConfirmedPrice(price))
+        Next
     End Sub
 
 End Class

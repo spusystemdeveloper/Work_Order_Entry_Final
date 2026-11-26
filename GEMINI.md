@@ -16,12 +16,23 @@ below require target verification; they are not automatic deployment instruction
 
 ## Development & Workflow Constraints
 - **Keep it Simple**: Do not overengineer solutions.
-- **Printing package**: The current ReportViewer 15 package needs its matching DLLs beside the EXE, including for its expression-processing AppDomain. Costura must exclude `Microsoft.ReportViewer.*`; memory embedding and temporary extraction alone failed clean-folder rendering. Run `Database Components/Tests/Packaging_CleanFolder_Test.ps1` after packaging/dependency changes. Preserve existing units' store-specific configuration when updating application files.
+- **Printing package**: On October 21 the user authorized adopting installed Microsoft ReportViewer 2010 (assembly 10.0.0.0) after the isolated candidate printed on the affected PC once that redistributable was installed. The main project now uses Common/WinForms version-10 references with Copy Local=False. Costura still excludes `Microsoft.ReportViewer.*`; it loads from the installed GAC, including the expression-processing AppDomain. Install the prerequisite once per PC, then distribute only the application EXE while preserving each unit's store-specific config. The older ReportViewer 15 build required five private DLLs because embedding/extraction failed; that historical package is not the current deployment contract. Run `Database Components/Tests/Packaging_CleanFolder_Test.ps1` after packaging/dependency changes.
 - **Changelog Integrity**: After each change or set of changes, encode the details into `CHANGELOG.md`.
 - **Validation**: Ensure both `Work Order Entry.sln` and `OrderProcessingQueueing.sln` compile cleanly and all unit tests in `.\Run-UnitTests.ps1` pass before finishing.
 - **RMS identity compatibility**: RMS uses `SELECT @@IDENTITY` after inserting orders, entries and transactions. Audit triggers, including nested queue triggers, must never insert into an IDENTITY table. Use sequence-backed history EventID values. `Enable_WorkOrder_History.sql` must handle both fresh creation and approved legacy IDENTITY conversion in one transaction, preserving events/IDs/permissions; no separate updater selection is needed. Keep `Fix_WorkOrder_History_Identity.sql` only for compatibility with existing recovery scripts. Test legacy identity lookup, not just `SCOPE_IDENTITY()`.
 - **Remember the October 14, 2026 incident**: The old WO history IDENTITY was a compatibility bug introduced by our history addition interacting with RMS's legacy `@@IDENTITY` lookup. It did not change RMS's identity column or real transaction number; it caused child records to use the wrong returned number. Do not describe it as a confirmed standalone RMS bug or change/reseed RMS identity columns to fix it. Preserve history with sequence-backed numbering, test direct and nested trigger paths using `HistoryIdentity_LocalDB_Test.ps1`, and handle already mislinked sales with a separate guarded recovery. Do not claim all branch-specific custom triggers are safe based only on the packaged objects reviewed.
 - **HO incident reference and closure**: See [the transaction 23266 incident record](Database%20Components/Recovery/INCIDENT_2026-10-14_HO_PO_DB_23266.md). A live rollback rehearsal still requires the verified current-day copy-only/checksum backup. Do not treat synthetic test passes, a backup in progress or rehearsal output as evidence of a committed live repair; record actual commit and RMS verification before closing the incident.
+
+## October 24 HO order-ID maintenance
+
+The human explicitly authorized WO 18947 -> 18946 and confirmed HO clients
+closed. The assistant committed and SQL-verified that exact live mapping after
+a fresh copy-only/checksum backup, passing local fixture tests and guarded live
+rollback rehearsal. No reseed, stock or commitment repair occurred; identity
+remains 18947 and next automatic allocation 18948. RMS UI acceptance is pending.
+Read [the incident record](Database%20Components/Recovery/INCIDENT_2026-10-24_HO_WO_18947_TO_18946.md)
+before any follow-up. Do not rerun the mapping or reuse its exact guard constants
+for another order. The unrelated RMS settlement investigation stays paused.
 
 ## Order Processing Queueing Business Rules
 - **Queue Tile Stages**: Orders in `OrderProcessingQueueing` remain active on screen through all 4 color stages:

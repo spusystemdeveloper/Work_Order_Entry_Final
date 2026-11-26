@@ -2,7 +2,2161 @@
 
 All notable changes to the **Work Order Entry** application are documented in this file.
 
-## [Unreleased] - 2026-10-15
+## [Unreleased] - 2026-10-17
+
+### November 24 — Malabon 2% services W/Tax markers (live data, no code change)
+
+- Malabon V4 Work Order 9828 (`SBD_MNL_RDC_DB`, customer 68 SATURN, 1% and 2%
+  enabled) showed WTax 1%_Charge 34.38 instead of 2% 68.75. Cause: item
+  `SI4691-SVC` SERVICE CHARGE had empty `Item.Notes`, so V4 treated it as GOODS.
+  Customer flags and captions were correct.
+- SQL Agent job `ITEM_SYNC` on `WIN-DVBMD8VT1L7` copies whole Item rows, Notes
+  included, from `SBD_MNL_MAIN_DB` every minute for items updated in MAIN that
+  day. It does not cover `MLB_STORE_DB`, `SOD-MNL_CITISTORE_DB`, `SOD-MNL_NBS_DB`
+  or `SBD_MNL_DR_DB`.
+- With the user's authorization, added `[WTAX:SERVICES]` to `Item.Notes` for
+  `SI4691-SVC`, `SI2378-SVC` (INSTALLATION CHARGE) and `10785PCS` (SERVICES
+  DELIVERY FEE) in 12 databases: MAIN, GIC, OFFICE_SUPPLY, PREMIUM_STOCK,
+  BAD_STOCKS_GIC, BAD_STOCKS, BULACAN, RDC, SOD-MALABON_METRO_STORE, MLB_STORE,
+  SOD-MNL_CITISTORE and SOD-MNL_NBS. One transaction, 36 rows, all previously
+  NULL. Only Notes changed (LastUpdated kept, so ITEM_SYNC did not recopy rows);
+  the Item trigger `tr_ItemValueLog` logs only Cost/Price and was unaffected.
+  `SBD_MNL_DR_DB` excluded at the user's request; `SBD_MNL_TEST_DB` untouched.
+- Rehearsal (rolled back) and commit both changed 36 of 36; fresh-connection
+  check confirmed 3 marked per target, 0 in DR/TEST, and WO 9828's line now
+  SERVICES (2% of 3,437.50 = 68.75). No full backup was taken, because the
+  change only filled empty values; an undo script restores NULL.
+- Left unmarked: `SVC00125` IP LSM SUPPORT, pending accounting's choice between
+  SERVICES and EWT15. Still to check by hand: WO 9828 on screen and printed in V4.
+
+### November 18 — remaining V8 review findings 31-41
+
+- Found that 32, 33, 37, 38 and the repeated-item part of 36 were already fixed on
+  November 5 (cfffa1f). SOURCE_CODE_REVIEW_FINDINGS.md now shows each finding's status.
+- **31 Drafts:** a saved draft now keeps 2.5 instead of recovering as 0.
+  `Ensure_Work_Order_Draft_Tables.sql` converts `SOD_WO_DraftDetail.Qty` from int to
+  float, keeping existing values; new installs create it as float. The app reads the
+  draft lines with explicit SQL, so drafts keep working at a store that has not run
+  the updater yet (there 2.5 is still stored as 2, as before the column changes).
+- **34 Quotation uploads:** the quotation numbers loaded by the CSV uploader are
+  written to `SOD_ImportedQuote` inside the same save transaction as the order, so
+  the existing "already uploaded" check now works. Uploading the same quotation
+  twice into one unsaved order is rejected. Branches without the optional table
+  save as before.
+- **35 Upload log:** the log folder comes from the optional `ImportLogFolder` app
+  setting (default: the original `\\192.168.1.2\sc_import_file\Logs`). If it cannot
+  be reached the log is saved on the PC under `%LOCALAPPDATA%\WorkOrderEntry\ImportLogs`
+  with a message. The old Abort/Retry/Ignore prompt is gone: Retry could add the
+  rows twice and Abort closed the main screen.
+- **36 Pick list:** the ordered quantity is a Double, so 2.5 prints as 2.5 and the
+  balance column subtracts exactly.
+- **39 Recall:** an order whose customer or sales rep row is missing now loads with
+  a blank customer instead of keeping the previous order's customer, tax status and
+  price level. Recalling an order that is no longer open clears the screen.
+- **40 Users:** editing a user rejects a username already used by another account
+  (case-insensitive, as at login). The Show Password option is hidden and the query
+  that listed passwords removed.
+- **41:** Ungroup accepts only an order number listed in the selected group. Price
+  approval checks read current item prices instead of the copy cached since login.
+  Website order lines saved with Taxable 0 were left unchanged at the user's request.
+- Added `Database Components/Tests/OpenFindings_LocalDB_Test.ps1` and
+  `OpenFindingsProbe.cs`, plus `OrderGroupRulesTests` (4 unit tests).
+  See UNIT_TEST_GUIDE.md for results.
+
+### November 16 — QC `MERRYMART_DB` V4 compatibility alignment
+
+- Audited live `WIN-FAK44Q929IV` (`115.147.28.122`): `PUREGOLD_DB` had the
+  October 31 V4 compatibility updates applied (`SOD_ViewItems` with `PG SKU` at
+  column 18, `SOD_fntbl_CheckQty` pointing to `QC_STORE_DB` / `QC_RDC_DB`, and
+  `SOD_ImportedQuote`), while `MERRYMART_DB` still had leading `MERRYMART SKU`
+  at column 1 in `SOD_ViewItems`, `GSC_*` store lookups in `SOD_fntbl_CheckQty`,
+  and no `SOD_ImportedQuote`. Neither database has V7.1/V8 objects (`SOD_ViewItemsWO`,
+  `Pass2Username`/`Pass3Username`, `SOD_WO_History`, `SOD_fntbl_WoDetails.Address`),
+  so live QC Consignment uses `Work Order Entry_V4.exe` (`WORK_ORDER_ENTRY_4`).
+- Added guarded `Database Components/Deployment/QC_MERRYMART_V4` scripts
+  (`01_SOD_ViewItems.sql`, `02_SOD_fntbl_CheckQty.sql`,
+  `03_Optional_QuotationImport.sql`, and `Rollback_01`/`Rollback_02`), verified
+  on a disposable LocalDB fixture (`COMPATIBILITY_LEVEL = 100`, object ID and
+  permission preservation, idempotency, and `QC_STORE_DB`/`QC_RDC_DB` stock lookup).
+- With explicit user authorization, took and verified a full copy-only checksum
+  backup on `WIN-FAK44Q929IV` (`backup_set_id = 39831`, `RESTORE VERIFYONLY WITH CHECKSUM`),
+  applied all three scripts atomically inside one transaction on live `MERRYMART_DB`,
+  and verified updated view columns (`1..18` with `MERRYMART SKU` at column 18,
+  `69,383` rows, `ExtendedDescription` converted to `nvarchar(max)`), live
+  `SOD_fntbl_CheckQty('51972PCS')` output, and `SOD_ImportedQuote` (`5` columns).
+  Application source, configs, and `PUREGOLD_DB` were unchanged; live
+  `Work Order Entry_V4.exe` UI/workflow test on `MERRYMART_DB` remains manual.
+
+### November 14 — HO Work Order 19057 -> 19056 renumber & identity reseed
+
+- Audited `HO_PO_DB` on `172.16.4.50` (`WIN-2847UGJBAV4`) for the `19055 -> 19057`
+  Work Order ID gap; confirmed `19056` left no header, line, queue, approval,
+  history, log, or posted RMS records and open Work Order `19057` (`CustomerID`
+  203, total `3,612,280.20`) was consistent.
+- Added [Renumber_HO_WO_19057_to_19056.sql](Database%20Components/Recovery/Renumber_HO_WO_19057_to_19056.sql),
+  [Verify_HO_WO_19056.sql](Database%20Components/Recovery/Verify_HO_WO_19056.sql),
+  and [HO_Renumber19057_LocalDB_Test.ps1](Database%20Components/Tests/HO_Renumber19057_LocalDB_Test.ps1)
+  (43 disposable LocalDB checks passed at compatibility level 100 before live
+  execution).
+- Following a verified copy-only checksum backup (`backup_set_id = 5977`) and a
+  guarded `@Commit = 0` rollback rehearsal, executed `@Commit = 1` with user
+  authorization and clients closed, mapping Work Order `19057 -> 19056` and
+  reseeding `dbo.[Order]` identity to `19056` (next automatic allocation `19057`).
+  Post-commit verification confirmed header, line `62152`, queue `46074`,
+  approval `388`, 6 history rows, 2 item-log rows, unchanged `Item` `59626`
+  quantities (`6000` / `6000`), and all 13 triggers enabled. Recorded details in
+  [INCIDENT_2026-11-14_HO_WO_19057_TO_19056.md](Database%20Components/Recovery/INCIDENT_2026-11-14_HO_WO_19057_TO_19056.md)
+  and updated [Database Components/Recovery/README.md](Database%20Components/Recovery/README.md).
+- Both `Work Order Entry.sln` and `OrderProcessingQueueing.sln` built in
+  `Release|x86` after NuGet package restore, and all 158 unit tests passed in
+  `./Run-UnitTests.ps1`; existing Debug/Release/Queueing EXE configs were
+  verified preserved byte-for-byte. Application source, business logic, and
+  RMS POS execution are unchanged; HO client reopen / recall UI check remains
+  pending.
+
+### November 13 — Documentation review corrections
+
+- README now states the current 158 unit tests and their November 11 result in
+  place of the October 14 count of 101.
+- Moved the November 5–6 updater entries from the end of this file into date
+  order and repaired their missing spaces. Removed the duplicated changelog
+  text from UNIT_TEST_GUIDE, which still described the retired CIU tab, and
+  replaced it with the current SQL-only updater test path.
+- Documented the Ready-for-invoicing badge in ORDER_TOOLS_GUIDE and clarified
+  the folder-map wording. No SQL changed.
+- The Ready-for-invoicing badge now reuses the status bar's single font instead
+  of creating a new font on every 15-second poll. Appearance is unchanged.
+
+### November 12 — Status bar restyle and Ready-for-invoicing badge
+
+- The bottom status bar uses one font (Tahoma 9.5 bold), thin dividers and even
+  padding. The constant **STATUS** caption was removed; its item remains as the
+  spacer. Status texts and click handlers are otherwise unchanged.
+- **Ready for invoicing** now shows as a badge: blue normally, green while newly
+  ready groups are waiting. When the check fails, the existing **Ready status
+  unavailable - retrying** text shows in orange without the badge background.
+  Appearance only; polling, eligibility and acknowledgement rules are unchanged.
+
+### November 12 — V3 source location in the workspace map
+
+- Recorded `C:\Users\ADMIN\source\repos\WORK_ORDER_ENTRY_3` as the current V3
+  source location, replacing the earlier Documents location for future V3 work.
+  Updated the README and AGENTS references to the map.
+- Verified all six listed paths exist and checked the documentation links.
+  Documentation-only change; no source files or desktop folder attachments changed.
+
+### November 11 — Connected workspace folder map
+
+- Added `WORKSPACE_FOLDERS.md` listing the five folders connected to this desktop
+  project and their roles: main Work Order source, Recon, installed RMS Store
+  Operations, RMS_SYSTEMDOCS and BIR-WITHHOLDINGTAX. Linked the map from README
+  and AGENTS so contributors can find related context.
+- Verified all five local paths and the documentation links. Documentation-only
+  change; application behavior, build dependencies and database settings are unchanged.
+
+### November 11 — Synchronize recalled order header taxability
+
+- Recalled saves now update `Order.Taxable` in the existing save transaction,
+  following the packaged insert rule (`Tax > 0`). Previously the VAT amount could
+  change while the header flag retained its old value. Item and customer
+  exemption rules are unchanged; no live records are repaired automatically.
+- Extended the actual-save LocalDB fixture to cover stale false-to-true flags,
+  customer-exempt zero VAT, returning to taxable, caller-provided line flags and
+  unchanged stock across repeated saves. Existing rollback and stale-edit checks
+  also cover the header update.
+
+### November 6 — Separate project SQL; retire combined updater integration
+
+- Removed CIU executable and PDC/SOA SQL tabs, code/resource references and generated embedded payloads from Work Order Database Updater. Kept Work Order SQL catalog, check/review/transaction logic and improved small-screen UI. Standalone tools in their own projects are retained; automatic reintegration helper scripts are retired.
+- Organized 8 PDC/CIU and 10 SOA reviewed modules under each project's Database/Reviewed_SQL_2016 with manifests, source hashes and usage guidance. All 29 copied files are byte-identical to reviewed originals; all 18 module scripts retain preview/replacement guards. Static SOA cancellation SQL is reference-only to avoid replacing branch-specific logic accidentally. This is organization, not a change to accounting or posting rules.
+- No live database or add-in configuration changes. Compiled-removal test confirms no integrated payload/code/actions remain. Required solution/unit/disposable-updater/packaging checks are recorded in Database Updater/SQL_Separation_Validation.log; copied script hashes checked independently.
+
+### November 5 — Updated updater interface (package 2026.11.05.2; superseded November 6)
+
+The window is now RMS Branch Updater. Choose Database updates for the existing SQL review workflow, or CIU application for executable updates. On the CIU tab click Choose CIU and update, then select the branch executable in the dialog. No SQL login is needed for this action. Connection fields wrap together on smaller screens; scroll the SQL page when necessary. Review notes are shown in SQL preview and tooltips. Disabled actions stay unavailable until existing checks pass. Backup/restore, branch settings and SQL transactions are unchanged.
+
+Validation: final host 39 executable checks plus real UI action/navigation/busy guards passed. 800x600/1000x720 screens and 640x400 CIU dialog visually checked. Both solution builds, 158 shared tests, 101 disposable updater checks and clean-folder package/render checks passed; final styling/catalog render passed. Debug config retained exactly. Evidence: Database Updater/CIU_UI_Validation.log and TestResults/CIUUpdaterUiRevision. No live DB or deployed CIU changes.
+
+### November 5 — CIU executable updater integration (superseded November 6)
+
+- Added an independent "Update CIU executable..." header action with embedded current CIU and shared verified backup/update/restore engine. SQL connection is not needed; button disabled during SQL operations. Existing SQL catalog/core/transaction code and Work Order business rules unchanged.
+- CIU distribution compiles sanitized generated connection defaults; source/branch configs are preserved. No runtime config or credentials are packaged. Existing filename/shortcuts/registry remain unchanged.
+- Both Release/x86 solution builds passed. All 158 shared unit tests, 101 disposable LocalDB SQL-updater checks and clean-folder dependency/report rendering passed. Integrated executable update repeated 39 file/hash/backup/restore/config checks plus real first-run UI action and header-button/busy guard. Existing Debug configuration restored byte-for-byte. No live database or deployed CIU changes. Branch UI/business workflow and actual deployment remain pending.
+
+### November 4 — Consignment Work Order 1029 renumber
+
+- Prepared a standalone SSMS recovery for branch `CONSIGNMENT_DB`, mapping Work
+  Order 1029 to 30 with its five lines, queue links and 17 history events. It
+  preserves imported-quote source references and reseeds the Order identity to
+  30 on commit so the next automatically assigned ID is 31.
+- The script checks the branch target, backup, reference counts and exact
+  write-table trigger definitions. It defaults to a rollback rehearsal. Passed
+  19 disposable database checks, including rollback after reseeding and
+  archiving the seven reviewed orphan quote links. Preserves transfer-in
+  movement 130 and the import fields used for duplicate detection.
+
+### November 4 — Consignment Work Order 1029 preflight
+
+- Added an SSMS inspection script for the requested `CONSIGNMENT_DB` Work Order
+  mapping from 1029 to 30. It inventories matching references, triggers and
+  foreign keys. It also reports reference counts across IDs 31 through 1028
+  to identify collisions before reseeding.
+
+### November 3: Davao transfer-in 0002601 recovery prepared
+
+- Prepared a single-line repair for 20 missing 11688BOX units. It uses the
+  native movement log and the existing Davao audit and integration triggers.
+- Default review performs no writes. Commit requires the reviewed row state,
+  trigger fingerprints and a verified copy-only backup. LocalDB passed 31 checks
+  covering posting, duplicate prevention and rollback. No live repair ran.
+
+### October 31: QC Puregold compatibility package for the selected V4 EXE
+
+- Re-created the copy-ready folder under `Deployment Packages/QC_BRANCH_V4_COPY_20261031`
+  after the earlier TestResults copy was no longer present. Verified all 121
+  copied source files and ZIP integrity again. Added an explicit instruction
+  that ReportParametersProbe is a developer tool and is not bundled.
+- Assembled `TestResults/QC_BRANCH_V4_COPY_20261031` and its ZIP with the reviewed
+  V4 EXE, complete Database Updater Release folder, QC fixes/rollbacks/evidence
+  and branch copy instructions. All 121 copied source files were hash-verified;
+  ZIP integrity passed. No application configs or credentials were bundled.
+  Existing branch configuration is retained; no live deployment was performed.
+- Inspected WORK_ORDER_ENTRY_4's Release/x86 EXE (SHA-256 D4572A7B...003CAA).
+  Normal search uses SOD_ViewItems by ordinal; QC's extra leading PG SKU shifts
+  item/cost/tax/ID fields. The standard print functions already match QC; the
+  earlier Documents-folder V4 decimal-function finding does not apply here.
+- Prepared QC_PUREGOLD_V4 scripts for view positions, QC store/RDC stock lookup
+  targets and optional quotation-import tracking. Scripts require the updater
+  transaction and reviewed definitions; definition rollbacks are supplied.
+  Existing calculations and permissions are preserved. No live changes applied.
+- Added a disposable LocalDB suite: 76 checks passed for layout/value preservation,
+  fractional availability, guards, permissions, repeats, rollbacks, import schema
+  and compiled V4 print/configuration reads. This is synthetic validation, not
+  QC restore acceptance, visible cashier workflow or native RMS posting.
+  Both required Release/x86 builds, 153 main units and clean-folder packaging
+  passed; five existing EXE configs were restored byte-for-byte.
+
+### October 30: duplicate drafts, picker selection and Excel import fixes
+
+- Closing with a recalled order no longer saves a draft, and an old draft holding
+  existing order lines is removed with a message instead of being recovered. This
+  prevents a duplicate order and double stock reservation. Unsaved edits to a
+  recalled order are not kept on close.
+- Customer and sales rep pickers now select the actual row, not a remembered one.
+- Excel quotation import reports missing items and uses this database's item ID.
+- The second review's findings are in SOURCE_CODE_REVIEW_FINDINGS.md. Findings 31-41
+  remain open. Validation is in UNIT_TEST_GUIDE.md.
+
+### October 30: testing on a restored copy of localhost DVO_STORE_DB
+
+- With the user's permission, tested the compiled application against a throwaway
+  copy using the real stored procedures, triggers and orders. DVO_STORE_DB was
+  verified unchanged; the copy and its copy-only backup were removed.
+- Real data corrected the recall fix: 62 open work orders store "CHARGE; reference"
+  with no release type. These failed recall before, and the first fix put the whole
+  text in remarks. WorkOrderComment now reads the payment and the reference.
+- 415 of 418 open work orders recalled correctly. The other three are local test
+  orders with CustomerID 0, so recall loads their lines but not their header. Real
+  saves require a customer, so this was left unchanged.
+- 22 of 23 checks passed; the remaining check is those three orders. No RMS POS,
+  quotation recall, import, print or live-store test was run.
+
+### October 30: maximum line quantity and order total
+
+- Each order line is limited to 999,999, checked on quantity entry and again at
+  save, for every item type and for quotations. This user-approved limit closes a
+  gap: non-inventory items and quotations had no upper quantity check.
+- Saving also rejects an order total the Order.Total money column cannot store. A
+  rejected order writes nothing. Stock exemptions for non-inventory items are unchanged.
+- Fixed ERROR 0041: the remembered quantity is now decimal, so editing a very large
+  quantity no longer overflows and a rejected edit restores fractions exactly.
+- Both Release/x86 builds, 151 unit tests, 240 paired quantity assertions plus 27
+  boundary checks and 121 approval-order checks passed. Store configurations were
+  preserved. No live-store or operator workflow test was run.
+
+### October 30: validation message wording
+
+- Revised validation wording in the order screen and login. Required-field,
+  quantity, price, repeated-item and prepared-quantity messages now use one clear
+  version each, and login shows one message for a wrong username or password.
+- The stock shortage message now names each item with its available and ordered
+  quantities. The too-many-items message is unchanged.
+- AppPrompt gives general messages one title, Work Order Entry, and puts a plain
+  sentence above unexpected errors. Technical detail and numbered error titles stay.
+- Fixed the invalid-price message showing the quantity value, the "Oder", "feature"
+  and "Quotaion" typos, and removed a debug popup showing a bare number.
+- Both Release/x86 builds, 149 unit tests, 63 multi-user checks in each read mode,
+  36 search, 121 approval-order and 35 first-account checks passed. The 240 paired
+  quantity assertions pass against an exact map of the approved wording, plus 19
+  boundary checks. Store configurations were preserved. No live-store or operator
+  workflow test was run.
+
+### October 30: remaining V8 review findings fixed
+
+- Approved stock changes: fractional releases no longer fail on float rounding,
+  and stock validation uses exact available quantities. Items with less than one
+  unit available can now be added. Real shortfalls are still rejected.
+- Saving stops when the quantity check fails or a price is unconfirmed. A saved
+  order always leaves the screen, even when its refresh fails.
+- Blank approval passwords are rejected. Settings and cancel passwords no longer
+  count as price approvals, and deleted lines no longer name an approver.
+- SQL read failures show an error instead of closing the application. Recall
+  search accepts `[`, `%` and `*`. Legacy reservations match by OrderID and item.
+  Website import adds shipping once per order.
+- Removed unused legacy order, commitment and approval methods.
+- Finding 16 (credentials) is unchanged. QtyPre remains a whole-number column.
+- Both Release/x86 builds, 145 unit tests, 63 multi-user checks in each read mode,
+  36 search checks, 240 paired quantity assertions plus 18 boundary checks, 80
+  preallocation, 99 order-tools, 125 price-level, 121 approval-order and 28 recall
+  formatting checks passed. The paired comparison intentionally
+  changes three error counters from 0 to 1. Store configurations were preserved. No
+  live-store, RMS POS or operator workflow test was run.
+
+### October 30: recall remarks, repeated-item queue rows and import checks
+
+- Recall keeps the full remarks when they contain "; ". A comment without all
+  three parts now loads as remarks instead of failing the recall.
+- A repeated item's order lines now pair with their queue rows in ID order. Recall
+  shows each line's own values, and edit, delete and add touch only that line's
+  row. Removing an item's last line still clears its rows. New orders mark only
+  the prepared line. No schema or stored-procedure change.
+- Missing website items are now listed, repeated missing Excel codes no longer
+  fail the check, and a failed check no longer reports the import as complete.
+- Limits: QueueingItems still has no order-line link. The queueing app's picker
+  and status updates still apply to every row of an item, and shortage acceptance
+  still rejects repeated items. Rows already damaged by the old code are not
+  repaired; a line with no row gets a new one on its next save.
+- Both Release/x86 builds, 138 unit tests, 60 multi-user checks in each read mode,
+  80 preallocation and 99 order-tools checks passed. Debug and Release configs were
+  preserved. No live-store, RMS POS or operator workflow test was run.
+
+### October 30: V8 focused code review documented
+
+- Recorded findings 11-26 in SOURCE_CODE_REVIEW_FINDINGS.md: six high, five
+  medium and five low priority. This was an audit only; no application code
+  changed and no finding has been fixed. No build or application workflow was
+  run for this documentation change.
+
+### October 30: apostrophes in item keyword search
+
+- Keyword search now doubles apostrophes through ItemSearchQuery.Build, matching
+  the existing barcode search. A keyword such as MEN'S no longer breaks the SQL
+  or ends the string literal. Query text without an apostrophe is unchanged, so
+  LIKE wildcards, TOP 500 and the all-keywords rule are preserved.
+- Removed the search-box apostrophe rejection from Enter and the Search button at
+  the user's request, so MEN'S now searches normally on every keyword path.
+- Both required Release/x86 builds, all 138 unit tests and 29 isolated search
+  checks passed, including the actual Enter and Search button handlers against an
+  apostrophe item. Store configurations were preserved; no live-store or operator
+  workflow test was run.
+
+### October 29: authorized live Iloilo invoice-header cleanup
+
+- Deleted only SOD_InvoiceHeader ID 1 (SCHENKER) in live ILOILO_MAIN_WHSE_DB,
+  explicitly preserving Walk-In ID 227 / CustID 56. No other exact copies were
+  found. Row count 327 -> 326; remaining duplicate CustID groups zero.
+- Verified a full table-level XML/schema backup, reference/trigger guards,
+  isolated LocalDB rollback/commit tests, unchanged retained header values and
+  transaction 9850 financial records. Custom report query now returns one
+  Walk-In row. Native preview acceptance remains pending.
+- No app/schema/function changes. Recovery evidence and scope are documented in
+  Database Components/Recovery/INCIDENT_2026-10-29_ILOILO_INVOICE_HEADER_DUPLICATES.md.
+
+### October 29: Malabon customers added to localhost consignment
+
+- With explicit authorization, widened only localhost CONSIGNMENT_DB.Customer.
+  CustomText1 from nvarchar(30) to nvarchar(50) NOT NULL. Verified existing
+  values and rowversions unchanged; no source/live schema was changed.
+- Read only the three authorized Malabon databases and inserted 12 missing
+  accounts: SOD-MNL_NBS_DB 3, SOD-MNL_CITISTORE_DB 2, and
+  SOD-MALABON_METRO_STORE_DB 7. Existing-account guard remains in place;
+  this run found no matches. Final local customer count 118, duplicates zero.
+- Verified equivalent payment terms. Preserved Sales Rep assignments by mapping
+  the NBS Walk-In rep to local ID 1 and copying only two missing related reps
+  (MALABON OFFICE and SA_NORTH_4 - TERESA CARINO) with their source settings.
+  Related reps and customers committed together. Existing customers/reps were
+  verified unchanged, and identities/rowversions were generated locally.
+- Stored customer balances and notes were preserved; linked financial history
+  was not imported. No live writes, app/config changes or financial reconciliation.
+  Evidence/backups: TestResults/MalabonCustomerField-bfe77f07 and
+  TestResults/MalabonCustomerImport-8fa54da3.
+
+### October 28: localhost consignment register setup
+
+- Created the explicitly requested local register in previously empty
+  CONSIGNMENT_DB.Register: Number 1, description Consignment Local, StoreID 100
+  from existing Configuration. SQL generated ID 1; all other fields retain
+  database defaults. No identity reseed, device/receipt configuration, registry,
+  IP mapping or live database changes. Guarded transaction verified the inserted
+  row. Evidence: TestResults/ConsignmentRegister-4819541e.
+
+### October 28: QC customer copy to localhost CONSIGNMENT_DB
+
+- With explicit authorization, read QC PUREGOLD_DB (65 customers) and MERRYMART_DB
+  (41 customers). Skipped all 65 existing Puregold accounts and inserted 41
+  Merrymart customers into localhost CONSIGNMENT_DB. Final count: 106, with no
+  duplicate accounts and all pre-existing customer values unchanged.
+- Verified all eight payment-term/finance fields for source account type 4
+  against local type 4. Local IDs were generated normally; source identity and
+  rowversion values were excluded. Stored customer balances and tax settings
+  were copied; no transaction/receivable records or customer captions were copied.
+- QC was SELECT-only. Evidence and the local pre-import customer backup:
+  TestResults/QCCustomerImport-6fd1fe19. No application/configuration changes.
+
+### October 28: localhost CONSIGNMENT_DB print Address deployment
+
+- Applied the existing guarded `Add_WorkOrder_Print_Address.sql` directly to
+  localhost CONSIGNMENT_DB with explicit user authorization. Added only the
+  function's Address output; existing calculations, columns and permissions
+  remain unchanged. No live database or application source was changed.
+- Passed all 15 isolated migration checks, local empty-order/schema/permission
+  checks and repeat application. This restore contains no orders, so existing
+  order output comparison and a real preview remain untested. Original/updated
+  definitions and verification are in TestResults/ConsignmentAddressApply-15e73095.
+
+### October 28: V8 first Work Order account setup
+
+- When Login finds an empty existing SOD_WO_User table, V8 offers a first-user
+  dialog with chosen username/password, confirmation and positive register.
+  Creation returns to Login; existing password and register rules still apply.
+  No built-in password, automatic authentication or role/schema changes.
+- Initial creation rechecks emptiness under a transactional table lock; only one
+  competing client can create the first user. Existing accounts are preserved.
+  Missing tables/connection errors propagate instead of enabling setup.
+- LocalDB tests exercise actual Login/setup callers, cancellation, invalid
+  input, existing-user behavior and competing creation. V4/V7.1 unchanged.
+  Passed 35 checks (FirstAccount-5e7ff429), both Release/x86 solutions, 119 unit
+  tests and clean-folder packaging (Packaging-01677c86). No live account created.
+
+### October 28: ILOILO branch deployment driver and updater profile
+
+- Prepared Deploy_ILOILO_MAIN_WHSE_DB.sql tailored for ILOILO_MAIN_WHSE_DB (StoreID 1600).
+  Live read-only audit confirmed existing branch functions (SOD_fn_GetQty referencing
+  Cebu StoreID 3002, SOD_fntbl_CheckQty, SOD_fntbl_CheckExQty, SOD_ViewItems)
+  which are preserved to protect multi-store stock logic.
+- Deploys all missing tables (Queueing, QueueingItems, PickerList, SOD_Item_Logs,
+  SOD_Reg, SOD_WO_CustType, SOD_WO_CustTypeUser, SOD_WO_LOGS, SOD_WO_User),
+  functions, views, and sequence-backed triggers, and updates SOD_sp_InsertQoute /
+  SOD_sp_InsertQouteEntry to modern 8/12 parameter signatures. Includes preflight
+  and post-deployment validation verifying all 41 required application objects.
+- Fixed trg_OrderEntry_ItemLogs to fallback to ISNULL(@lastcommitted, ISNULL(i.QuantityCommitted, 0))
+  when updating orders created before SOD_Item_Logs existed, and updated SOD_Item_Logs.LastCommitted
+  to allow NULLs, preventing ERROR 0017 on existing order saves.
+- Updated Database Updater (UpdaterCore.cs and UpdaterForm.cs) to add the ILOILO
+  profile. When selected, it defaults to ILOILO_MAIN_WHSE_DB, loads
+  Deploy_ILOILO_MAIN_WHSE_DB.sql, and includes Add_WorkOrder_Username_Columns.sql.
+- Built and validated in Debug and Release x86; passed all 101 updater checks in
+  DatabaseUpdater_LocalDB_Test.ps1, all 119 unit tests in Run-UnitTests.ps1, and
+  clean builds for both solutions. No live write was executed.
+
+### October 28: reusable Portable printing Address migration
+
+- Portable offers Add_WorkOrder_Print_Address.sql for compatible store database
+  names, retaining the old CONSIGNMENT-only script for recovery compatibility.
+  Only the reviewed legacy function or this migration's already-fixed output
+  is accepted. Custom calculations, branch text and literal formatting stop for
+  review; system databases and missing functions are rejected.
+- Fifteen focused LocalDB checks passed, including all existing output values,
+  VAT-exempt/fractional totals, repeat execution and transaction rollback.
+  No restored or live database was modified.
+
+### October 28: reusable Portable configuration username alignment
+
+- Portable now offers Add_WorkOrder_Username_Columns.sql for compatible store
+  databases of any name. It adds only missing Pass2Username/Pass3Username as
+  nullable nvarchar(50), preserving all configuration rows and values. Existing
+  incompatible fields, missing tables/view conflicts and system DBs stop.
+- Retained the old CONSIGNMENT-only file for compatibility, removed its catalog
+  entry to avoid duplicate selections. Printing Address migration is unchanged.
+- Validation uses owned disposable LocalDB only; no restored/live deployment.
+  Passed 11 focused migration checks, 98 updater checks, 119 unit tests, both
+  Release/x86 solutions and Debug/Release updater builds. Config preserved.
+
+### October 28: Portable CONSIGNMENT printing Address output
+
+- Added an optional target-guarded migration to the Portable updater for the
+  reviewed legacy SOD_fntbl_WoDetails. It adds Address with the existing V8
+  customer-address concatenation while preserving all previous output values,
+  totals, joins and branch text. Customized definitions stop before changes.
+- Eleven disposable LocalDB tests cover existing output equality, exempt and
+  fractional totals, NULL address components, repeat deployment, rollback and
+  custom-definition rejection. No restored-store/live migration was executed.
+
+### October 28: CONSIGNMENT approval-username migration
+
+- Included the target-guarded migration in the Portable updater selection list,
+  with explicit CONSIGNMENT_DB-only notes; GSC and DVO catalogs are unchanged.
+  Rebuilt Debug/Release updater packages. Passed 87 updater checks and nine
+  focused disposable LocalDB checks. No restored-store or live deployment.
+
+- Read-only localhost inspection confirmed missing Pass2Username/Pass3Username.
+  Prepared Add_CONSIGNMENT_WorkOrder_Username_Columns.sql for updater
+  selection. Adds only missing nullable
+  nvarchar(50) fields; existing settings are preserved. Exact target, transaction
+  and compatible-schema guards remain required. Not applied to restored/live DB.
+- Nine disposable LocalDB guard, rollback, repeat and preservation checks passed.
+
+### October 27: quotation conversion stock validation
+
+- Read-only localhost DVO inspection confirmed WO 23337 saved 100,000 pieces
+  and commitments rose from 2,692 to 102,692 against stock 71,202. Did not alter
+  that order, stock or commitment. Exact entered cell representation is not
+  recoverable from SQL; reproduced a concrete bypass with the same stock amounts:
+  Val("100,000") counted 100 while the save converted it to 100000.
+- Shared quantity validation now uses the save-compatible numeric conversion
+  for numeric inputs, including thousands separators, in both duplicate totals
+  and row checks. Keep the legacy invalid-input handling and existing messages.
+- Type-3 quotation to type-2 Work Order saves require current availability in
+  the same atomic commitment UPDATE. Limit this extra guard to the existing
+  stock-checked item types 0/3. Default commitment calls and non-inventory type-7
+  exemptions remain unchanged. A shortage rolls back the conversion transaction.
+  No new SQL objects/schema, new classes, pricing, VAT or total formulas.
+- Both Release/x86 solution builds and 119 units passed. The 24-case validator
+  comparison still passes 240 assertions; 12 further checks cover six formatted
+  quantity cases and the actual SaveOrder conversion entry point. Multi-user
+  suites passed 52 checks each under normal/versioned reads, including rejected
+  rollback, valid fractional conversion, duplicate-item rollback, non-inventory
+  exemption and two competing conversions. Preallocation regressions passed 80.
+- Only owned disposable fixtures were written. Native RMS settlement in the
+  concurrency suite is simulated; no full native recall/save/print workflow or
+  physical print. No live access or restored-store repair; configs preserved.
+  RMS investigation stays paused. Existing WO 23337 needs separate handling.
+
+### October 27: prevent duplicate release-type confirmations
+
+- Both release radios now share ReleaseType_CheckedChanged, which ignores
+  unchecked events. A switch therefore confirms once, regardless of item count.
+  Keep the queued Pick-up reminder once and the existing queue-off wording.
+- Updated both import paths' handler detach/attach references to the shared
+  handler. Release values, confirmation choices, delivery pick-location behavior,
+  quantities/prepared values, save/SQL and report code are unchanged.
+- Expanded ReleaseTypePrompt_UI_Test.ps1 to switch the actual radios with 1 and
+  6 items, Yes/No, queue-on/off, empty orders and already-selected options. The
+  earlier direct-method test missed the duplicate CheckedChanged events.
+  Passed 129 queue-off and 123 queue-on assertions, both Release/x86 builds and
+  all 119 units. No SQL, form Load, settings saves or live access; configs
+  preserved and RMS investigation remains paused.
+
+### October 27: release-type prompts respect queueing mode
+
+- The existing Pick-up release handler always asked users to recheck pick
+  location/prepared quantity even when those columns were hidden by queueing
+  settings. Gate that reminder with UseQueueingForCurrentOrder().
+- For non-queued orders, Delivery uses a plain release-type confirmation.
+  Queued Delivery retains the existing UP-STORE explanation. Existing release
+  values, forDelivery behavior, hidden values, quantities, totals and all save/
+  SQL paths are unchanged. The ordinary release confirmations remain.
+- Both required Release/x86 builds and all 119 unit tests passed. The new
+  ReleaseTypePrompt_UI_Test.ps1 passed 33 queue-off and 30 queue-on assertions,
+  including confirmation/cancellation, hidden-column visibility and unchanged
+  quantity/price/prepared/release values. It uses its own test-host config and
+  never loads the production form, connects to SQL or saves settings/orders.
+  No live access; EXE configurations preserved; RMS investigation stays paused.
+
+### October 27: V8 shared quantity validation
+
+- Keep ValidateAllQty and ValidateAllQtyForQoute as the public entry points,
+  delegating to one private ValidateQuantities method. Reduced their combined
+  block from 229 to 130 lines with the original caches, case-insensitive
+  duplicate aggregation, item-type checks, prompts, styling, totals, numeric
+  conversions and error counters intact. Only the Work Order path adds back
+  recalled reservations; quotation/conversion validation does not.
+- Local tests exposed an existing uncommitted Designer issue before reaching
+  either validator: gridSelectItem had no attached columns, and the lookup
+  PRICE/COST/DESCRIPTION fields collided with missing selected-grid fields.
+  With explicit user approval, restored only the 20-column attachment, the
+  three selected columns/styles, and distinct lookup field names. Retained
+  other UI edits and Boolean checkbox defaults; no resx edit in this step.
+- Both required Release/x86 solutions and 119 unit tests passed. Paired actual
+  validator tests passed 240 assertions across 24 cases, plus 27 fixture checks
+  per EXE. The working baseline's validator bodies were verified identical to
+  the before-change source, because the immediate baseline had the same broken
+  Designer. No behavior assertions were relaxed.
+- MultiUser_Save_LocalDB_Test.ps1 passed 43 normal and 43 versioned-read checks.
+  Checkbox (28), readability (50) and small-screen (1,344) checks passed. All
+  database writes were confined to owned disposable LocalDB fixtures; RMS
+  settlement in the concurrency suite is simulated. No live/store-restore
+  writes, actual RMS execution or physical print. Configurations preserved;
+  RMS investigation stays paused.
+
+### October 27: V8 readability cleanup
+
+- Removed 32 complete obsolete commented-out procedures from the active main
+  form (2,153 lines including their blank lines). Retained rule explanations
+  and verified all executable non-grid code against the before-change source.
+- Split GridColumnWidth into three private methods for sizing, column setup and
+  readability. All original grid assignments retain their values and order;
+  selected-grid checkbox defaults and Designer files are unchanged. Main form
+  reduced from 7,870 to 5,691 lines without adding a class or dependency.
+- Grouped the same 17 Work Order report parameters in CreateReportParameters
+  and set them together. Retained website naming, numeric formatting, template
+  type and withholding reference; removed the repeated addition of the same
+  report data source. RDLC content and paper settings are unchanged.
+- Both required Release/x86 solutions built. Passed 119 units, 120 compiled
+  parameter checks, 208 paired grid assertions (including identical pixels),
+  28 checkbox, 50 readability, 1,344 small-screen, 73 local printed-withholding,
+  284 V8 PDF checks and EXE-only packaging/render checks. No native store save
+  or physical printing; fixtures are disposable LocalDB/synthetic data.
+- Sandbox VSTest/SqlClient restrictions required local tests outside the
+  sandbox. The existing grid wrapper misread a successful helper exit status;
+  direct invocation passed the same full 16-case/208-assertion comparison.
+  App EXE configurations were preserved; no SQL or V4 changes in this cleanup.
+  RMS investigation remains paused and no live access occurred.
+
+### October 27: unmarked items default to GOODS; REVIEW retired
+
+- At the user's request, blank Notes and ordinary Notes without a WTax marker
+  now classify as GOODS for the 1% suggestion. Retired [WTAX:REVIEW] text is
+  ignored, so a line with only that old marker also defaults to GOODS.
+- Explicit GOODS, SERVICES, EWT15 and GIFT_CERT classifications keep priority.
+  Unknown/conflicting WTax markers remain excluded rather than guessed. The
+  1% rate still requires customer/order enablement; VAT bases, rounding, 5%
+  eligibility, totals and stored Notes are unchanged. No SQL update or migration.
+- All affected Release/x86 builds and both main unit suites passed (119 each).
+  Each V4/V7.1/V8 owned LocalDB item/UI/reprint suite passed 142 checks, including
+  null/blank/ordinary/retired-marker reprints and unchanged WALK-IN eligibility.
+  EXE-only packaging passed; no live connection or physical printing.
+
+
+### October 26: V4 WALK-IN Set W/Tax
+
+- Added the same per-order rate picker to active V4, using its neighboring
+  Settings button's existing icon/style. Visible only for WALK-IN Work Orders;
+  supports 1%, 2%, 5%, 15%, Cancel and an explicit all-off selection.
+- Preserve existing ShippingNotes and store the same versioned marker used by
+  V8. New headers persist it after the original GSC insert call; recalled
+  headers include it in the existing mapped header update. Recall and reprint
+  read saved selections; named customers retain their normal customer flags.
+- Old GSC SQL routines, signatures, search and legacy per-step save behavior
+  remain unchanged. No schema deployment, V8 transaction refactor, calculation,
+  total, stock, customer-setting or tender changes.
+- V4 and both required Release/x86 solutions built; 117 main unit tests passed.
+  Owned LocalDB checks: 138 V4 item/picker/recall/render, 24 V4 mapped header/tax
+  saves, 73 V4 print-reference checks; clean EXE-only V4 render/picker checks
+  passed. Required main packaging and 43 V8 concurrency checks per read mode
+  passed separately. Configs preserved. Closed-order settlement was simulated;
+  native RMS POS and physical printing remain manual acceptance.
+
+### October 26: V8 WALK-IN order withholding selections
+
+- Set W/Tax uses the existing Set Tax icon, white background, text/border
+  colors, font, height and image spacing to match adjacent action buttons.
+- Added a WALK-IN-only Set W/Tax button below the existing right-hand actions.
+  Select 1%, 2%, 5%, 15%, or no rates for the current Work Order; Cancel keeps
+  the prior selection. Identify WALK-IN by its customer AccountNumber, not a
+  hard-coded customer ID or duplicate company name.
+- Save a versioned marker in existing Order.ShippingNotes, preserving other
+  text. New/split orders write it in their existing save transaction; recalled
+  orders update it under the existing lock, snapshot and transaction. Recall
+  and reprint use those saved rates, including explicit all-off. Changing to
+  a named customer restores normal customer-rate behavior.
+- No new schema, SQL deployment, dependencies or production classes. Shared
+  customer settings, item bases, VAT exemptions, rounding, totals, commitments
+  and tender behavior are unchanged. V4 is unchanged.
+- Local validation: both required Release/x86 builds; 117 unit tests; 138
+  item/picker/recall/render checks; 73 printed-reference checks; 25 credit
+  warning checks; EXE-only packaging; 43 actual transaction/concurrency checks
+  in each of normal and versioned-read disposable LocalDB fixtures. Existing
+  EXE configs preserved. Settlement retention was simulated, not RMS POS.
+
+### October 26: V8 CHARGE credit-limit warning events
+
+- Recheck the existing available-credit comparison when payment changes to
+  CHARGE, the total changes, or customer credit loading completes (including
+  another customer with the same available balance). Ignore stale balances
+  belonging to the previous customer and avoid nested warning dialogs.
+- Keep the existing warning text, credit calculation and warning-only behavior;
+  no save blocking, SQL changes, withholding deductions or V4 changes.
+- Both required Release/x86 solutions and 114 unit tests passed. An owned
+  LocalDB fixture passed 25 compiled event/dialog checks; no live connection,
+  production form Load or save. Existing application EXE configs preserved.
+
+### October 24: authorized live HO WO 18947 to 18946 recovery
+
+- Executed only the explicitly authorized ID mapping after the user confirmed
+  HO clients closed. Created a current-day copy-only/checksum backup, verified
+  it, passed the guarded live rollback rehearsal, then committed and verified.
+- Preserved four entry IDs/values, queue/GroupTo, four approvals, eighteen old
+  audit events plus one mapping event, five order item logs, all thirteen
+  trigger states/hashes and inventory. Total 27274.67, tax 0 unchanged.
+- No reseed: identity remains 18947 and the next automatic allocation remains
+  18948. Negative pre-existing commitments/failure cause were not repaired.
+- Added exact guarded recovery, SELECT verification and a 42-check disposable
+  LocalDB fixture with real backup guards; main/queue/V4 Release builds and
+  114 unit tests passed, app configs preserved. SQL verification is complete;
+  actual RMS UI acceptance is pending. See the October 24 incident record.
+
+### October 24: customer-controlled 5% withholding suggestion
+
+- At the user's request pending accounting review, customer-enabled 5% uses the
+  whole existing VAT-exclusive subtotal when VAT applies, without an item VAT5
+  marker. Keep 1%/2%/15% item-specific bases, customer eligibility/caption guards,
+  exemptions, signed cent rounding and unchanged order subtotal/VAT/total.
+- Existing VAT5 notes do not add/double 5%. Review warnings now explicitly
+  concern income marker exclusions; the screen explains the separate 5% rule.
+- No database, SQL, RMS receipt, report layout, save or live data changes.
+- Validation: main/queue/V4 Release builds, 114 unit tests, 123 local item/UI/
+  print checks per version, 73 report checks per version, 568 PDF checks and
+  clean-folder packaging passed. Existing configs preserved. Tests used only
+  owned disposable LocalDB fixtures; no RMS POS/physical printer execution.
+
+### October 24: tighten amount spacing and align order-total colon
+
+- Move the right-aligned withholding amount column left, closer to its colons.
+  Give Sub Total/Sales Tax/Order Total a fixed shared colon column; preserve
+  totals values, fonts, report parameters and all calculation code.
+- Scope is the two RDLC templates only. No SQL, live database, receipt,
+  application configuration or business-rule changes.
+- Passed: Release main/queue/V4 builds, 112 units, 121 item checks per version,
+  73 report checks per version, 568 PDF checks and clean-folder packaging.
+  Narrow amount columns retain large values and normal/bold weights; both
+  preview and direct-print colon positions checked. Existing configs preserved.
+  Disposable LocalDB only; no physical printing or live-store testing.
+
+### October 24: tighten withholding colon spacing
+
+- Move the fixed colon column closer to WTax/Total WTax/estimated payment
+  labels in both reports. Narrow only the label box; keep right-aligned
+  amount positions, font weights, wording, arithmetic and paper unchanged.
+- RDLC-only change; no source calculation, SQL, live data or business-rule edits.
+- Passed: main/queue/V4 Release builds, 112 units, 121 item checks per version,
+  73 report checks per version, 542 PDF checks and packaging. Long CHARGE labels
+  remain unwrapped; configurations preserved. Local fixtures only; no physical
+  printer/live-store testing. Updated both EXE-only outputs.
+
+### October 24: align withholding columns (V4/V8)
+
+- Split the existing printed reference into label, colon and right-aligned
+  amount columns, matching the approved mockup. Keep individual WTax normal,
+  Total WTax/estimated payment bold, and all wording/amounts unchanged.
+- RDLC-only production change: no VB calculation, SQL, store settings, receipt,
+  business-rule or live database changes. Keep review warnings in the label
+  area and preserve original row order, zero hiding and quotation exclusion.
+- Validation passed: Release/x86 main/queue/V4 builds, 112 unit tests, 121
+  item-marker/UI/print checks per version, 73 report checks per version, 542
+  PDF checks and clean-folder packaging. Existing EXE configs preserved.
+  Only owned disposable LocalDB was used; physical printing remains manual.
+
+### October 24: compact half-sheet Work Orders (V4/V8)
+
+- Keep existing paper/printer settings (preview 8.5 x 6.5 inches; direct print
+  8.5 x 6 inches) and item table. Trim unused canvas to prevent blank overflow
+  pages; put Picked/Checked/Packed signatures on one row. Work Order totals use
+  Order Total; quotations retain their existing total label and signature rules.
+- Individual nonzero WTax lines are regular 10pt. Add bold Total WTax and bold
+  Est. Cash/Charge/Debit/Credit Due below them. Preserve CHARGE suffixes, hidden
+  zero lines, review warnings, saved totals, rounding and reference calculations.
+- Release/x86 main, queue and V4 builds passed; 112 unit tests, 121 item-marker/
+  UI/print checks per version, 71 report/helper checks per version, 386 PDF
+  checks and clean-folder packaging passed. Six ordinary and wrapped-description
+  items, four rates, large values, empty/no-rate/quotation and 60-line pagination
+  covered. Store EXE configs preserved. Only disposable LocalDB fixtures used;
+  no live database or physical printing. Initial sandbox test-host/SQL failures
+  were resolved by rerunning local validation outside AppContainer restrictions.
+
+### October 23: restore original print template and left withholding column
+
+- Revert the subsequent item VAT columns and revised totals/Amount Due layout
+  in V4/V8. Restore the original item table and Sub Total / Sales Tax / Total.
+  Print nonzero WTax amounts as one left column, with CASH/CHARGE/DEBIT/CREDIT
+  net amount at the top; retain CHARGE tender suffixes and hidden zero amounts.
+- No calculation, saved-total, main-screen, SQL or business-rule changes. Remove
+  the superseded VAT-column-only test and retain the mixed-order arithmetic tests.
+  Quotations and no-withholding layouts retain their original content/positions.
+- Local builds and 112 unit tests passed, with 121 marker/UI/render checks per
+  version, 62 print regressions per version, 224 PDF comparisons and EXE-only
+  packaging. Restored samples visually inspected; EXE configs preserved. No live
+  access or physical printing. Both EXE-only outputs refreshed.
+
+### October 23: printed Work Order VAT and Amount Due breakdown
+
+- V4/V8 Work Orders add per-line VAT-exclusive amounts and VAT, retaining the
+  existing quantity, unit price and line total. Report-only cumulative cent
+  rounding allocates the existing header VAT across line gross amounts, including
+  exempt/zero VAT, without changing saved values or assuming a new VAT rate.
+- Footer shows actual VAT-exclusive amount, VAT and Work Order Total, followed
+  by nonzero Less deductions and Amount Due for every payment type. Previous
+  payment-specific tender suffixes are replaced by neutral Goods/Services/EWT
+  labels; underlying customer eligibility and item-marker calculations unchanged.
+  Amount Due remains hidden without nonzero withholding; review warnings remain.
+- Quotations retain their original table/footer. No SQL, mapping, main-screen,
+  tender, stock or save-rule changes. Davao RMS receipt excluded; no live access.
+- Validation passed locally: main/queue/V4 Release/x86 builds, 112 unit tests,
+  127 marker/UI/render checks per version, 64 print regressions per version,
+  300 PDF layout comparisons, 90 rendered line-VAT reconciliation checks and
+  EXE-only packaging. Mixed, zero, exempt, saved-VAT-ratio and cent-rounding
+  samples verified; quotation word positions unchanged. EXE configs preserved.
+  No actual RMS POS settlement or physical printer test was performed.
+
+### October 23: hide zero main-screen withholding amounts
+
+- V4/V8 main screens hide enabled withholding labels whose rounded amount is
+  zero and pack remaining nonzero amounts to the left. The VAT-exclusive basis,
+  review warnings, customer eligibility, formulas, totals and shortcuts remain
+  unchanged. No SQL changes or live access.
+- Local validation passed: main/queue/V4 Release/x86 builds, 112 unit tests,
+  115 marker/UI/print checks per version, V8/V4 UI suites (57/59), packaging,
+  and inspected footer screenshots. Existing EXE configs preserved byte-for-byte.
+
+### October 23: hide zero printed withholding amounts
+
+- V4/V8 printed Work Orders omit WTax rows whose rounded amount is zero and
+  show the net payment row only when at least one enabled withholding amount
+  is nonzero. Missing-marker review warnings remain visible. Main-form display,
+  calculations, saved totals, VAT and tender behavior are unchanged.
+- Local checks passed: V4/main/queue Release/x86 builds, 112 unit tests,
+  79 marker/UI/print checks per version, 62 print regressions per version,
+  180 PDF comparisons and EXE-only packaging. Layouts inspected; existing EXE
+  configs preserved. No live database access or physical printing.
+
+### October 23: single-column printed payment breakdown
+
+- V4/V8 Work Order prints omit the Withholding Tax (Reference) heading and show
+  enabled WTax amounts one per line. The saved CASH/CHARGE/DEBIT/CREDIT payment
+  is printed first as saved total minus the sum of enabled item-based withholding.
+  CARD names are shortened for display. Customers with no enabled rates show
+  the full payment amount. Quotes remain excluded; missing markers retain their
+  review warning. Saved totals, VAT, item bases and tender posting are unchanged.
+- Local validation passed: V4/main/queue Release/x86 builds, 112 unit tests,
+  76 item-marker/UI/print checks per version, 62 print regressions per version,
+  160 PDF comparisons and EXE-only packaging. Rendered layouts inspected;
+  original EXE configs preserved. No live access or physical printing.
+
+### October 23: focused helper cleanup
+
+- Remove the unused whole-subtotal FormatAmounts wrapper in V4/V8 and the two
+  V8 price-confirmation list helpers that had no production callers. Update
+  their tests to check the IsConfirmedPrice function used by the application.
+- Reuse SetString when writing Boolean settings, retaining lowercase true/false,
+  existing keys, defaults and save/refresh behavior. No business-rule changes.
+- V4 and both required Release/x86 solutions built; all 112 unit tests, temporary
+  Boolean settings add/update/persistence checks, 73 item-marker/UI/print checks
+  per version and EXE-only packaging passed. Existing EXE configs preserved.
+  Only owned local fixtures used; no live access. RMS investigation stays paused.
+
+### October 23: duplicate Settings resource build fix
+
+- Give SmallScreenLayout.resx an explicit unique manifest name. Its shared VB
+  source contains a partial frmSettings class, which otherwise makes MSBuild
+  generate the same resource output as frmSettings.resx. No runtime or database
+  behavior changes.
+- Debug/x86 main project and both required Release/x86 solutions built; compiled
+  Settings/layout resource names are distinct. All 112 unit tests passed outside
+  the sandbox after its testhost connection timeout. EXE configs preserved.
+
+### October 23: item-marker withholding suggestions in V4 and V8
+
+- Main-form and printed Work Order references now scope 1%/2%/15% bases to
+  GOODS/SERVICES/EWT15 Notes markers, with separate explicitly marked VAT5 and
+  zero-contribution gift certificates. Existing customer flags/caption checks
+  still enable rates; missing/conflicting markers show review exclusions instead
+  of guessing. Actual existing VAT-exclusive subtotal is allocated by line gross;
+  totals, prices, exemptions, approvals, save/stock rules and shortcuts unchanged.
+- Printing follows the existing open OrderEntry / closed TransactionEntry paths
+  and retains CASH/CHARGE labels, font and RDLC. Zero-VAT orders do not suggest
+  VAT5; current item Notes are read for every refreshed calculation/reprint.
+- Required Release/x86 builds and 112 unit tests passed; 73 actual compiled
+  marker/UI/report checks per version passed in owned local fixtures. Existing
+  V4/V8 UI/guard/customer/recall, 62 print checks each, 91 print UI, 160 PDF
+  comparisons, 12 marker PDF cases and EXE-only packaging passed. Debug/Release
+  configs preserved; both EXE-only deliveries refreshed after validation.
+- Read-only localhost WO 23309 check returned 1%_Charge 7.95 in both builds.
+  No existing store writes, SQL object changes, live access or Davao RMS XML
+  receipt edits in this task. RMS investigation remains paused. See
+  ITEM_WITHHOLDING_REFERENCE.md for sample computation, limitations and rollout.
+
+### October 23: confirmed zero-stock non-inventory service/rebate markers
+
+- User authorized localhost MSI/DVO_STORE_DB item-marker updates only and clarified
+  that “update also” meant service/rebate items, not addin or receipt code.
+  Reviewed descriptions and appended SERVICES to 162 unmarked services and EWT15
+  to two unmarked rebate entries. Existing service, rebate and commission samples
+  were preserved; totals are 163 SERVICES and four EWT15 zero-stock non-inventory
+  items. Existing positive-stock GOODS and gift-certificate markers were retained.
+- Used an explicit 164-item ID/code/description manifest, Quantity=0 and ItemType=7
+  guards, exact append checks and full non-Notes column comparison before commit
+  (excluding automatic rowversion). All 9,864 existing marker notes were protected.
+  Stock, commitments, prices, tax settings and other item values were unchanged;
+  existing item/history triggers remained enabled. Independent read-back passed.
+- Nine ambiguous service-department entries (rental, warranty and claim/support
+  programs) remain unmarked. No blanket department/category or non-inventory
+  classification was applied. No live access or application/business-rule changes.
+  Manifest and execution audit: TestResults/DavaoWTaxZeroNonInventory-20261023.
+
+### October 23: approved localhost positive-stock GOODS markers
+
+- User explicitly confirmed treating all currently unmarked Item.Quantity > 0
+  items as GOODS in localhost MSI/DVO_STORE_DB, including the one inactive item.
+  Appended [WTAX:GOODS] to 9,859 items; all 9,860 positive-stock items are now
+  marked. Existing five sample marker notes were preserved. Zero-stock items
+  were excluded; prior services, rebates, commission and gift-certificate samples
+  remain marked as before. The separate older (TAX1%) note remains intact.
+- An initial attempt timed out and rolled back; read-back confirmed only the
+  original positive-stock sample remained marked. The retry used individual
+  audit rows and an indexed, null-safe comparison of every non-Notes item column
+  except automatic rowversion. No assertions were removed or timeout increased.
+  Verified counts and preservation before commit, then independently read back.
+- No prices, stock, commitments, VAT settings, application calculations or SQL
+  business rules changed. Existing item-history triggers ran normally. No live
+  access. Audit/scripts are in TestResults/DavaoWTaxPositiveStock-20261023.
+
+### October 23: explicitly authorized localhost item-classification samples
+
+- Appended agreed Item.Notes markers to five identified sample items in localhost
+  MSI/DVO_STORE_DB only: 55157RMS GOODS; SVC00118 SERVICES; SVC00132 and SVC00121
+  EWT15 (rebates and commission); GC00001 GIFT_CERT. All five had blank Notes.
+  No VAT5 eligibility was assumed and the existing 60976BDL (TAX1%) note remains.
+- Committed with target/identity/count guards and an exact append check; compared
+  every other item column before commit, excluding automatic rowversion. Stock,
+  commitments, prices, VAT settings and other item values remained unchanged.
+  Existing update triggers ran normally, including their item-history entries.
+- This changes sample classifications only, not application computations or
+  business rules. No live/source server, schema, report or addin code changed.
+  Local audit/script: TestResults/DavaoWTaxSamples-20261023. See the Davao receipt
+  README for sample codes and limitations; no build was needed for this data task.
+
+### October 23: Davao RMS receipt withholding reference
+
+- Runtime investigation remains open: the full-page receipt still lacks the
+  reference despite the corrected installed/stored template and enabled localhost
+  customer fields. Narrow POS WTax Tendered rows are actual payments, not proof
+  of this feature. Added a separate raw-field/condition diagnostic XML for a
+  user-run localhost preview; elevated RMS could not be controlled by the desktop
+  helper. No database records/settings changed and no further fix is claimed.
+- Follow-up: the user's preview was a Sales Receipt, so the original work-order-only
+  condition hid the entire section. Both source XML filenames now allow sales
+  receipts and work orders; quotes stay unchanged. Seven offline tests pass,
+  including total 178.00 / VAT 19.07 producing 1.59/3.18/7.95/23.84. Replacing
+  the local Program Files template was denied by Windows file permissions;
+  installed XML remains unchanged. Copy/reload the corrected source for preview.
+- Added a Suggested W/Tax (Reference) section below the wholesale work-order
+  receipt totals, using the existing Sub Total font. Shows only enabled customer
+  1/2/5/15% fields with their configured W/Tax captions. Uses actual total minus
+  sales tax, with cent rounding; receipt totals and all existing content remain
+  unchanged. This is an RMS XML template, independent of the addin reports.
+- Seven offline XML/amount contract tests passed. Syntax/fields checked against
+  the supplied Microsoft RMS customization guide. Actual RMS preview/physical
+  printing remains required; no live database or installed receipt was changed.
+  See Receipts/Davao_Receipts/README.md for setup and preview cases.
+
+### October 22: V4 recalled-order Taxable flags
+
+- Fixed two missing assignments in the existing recall update methods. Header
+  Taxable follows the original GSC insert rule (VAT amount greater than zero);
+  existing lines store the caller's customer-exemption-derived Taxable value.
+  Tax amounts, totals, pricing, quantities and old GSC SQL calls are unchanged.
+- Reproduced the stale header flag with the prior EXE in an owned localhost
+  fixture. The candidate passed 19 actual compiled V4 recall checks, including
+  taxable/exempt transitions, repeated saves, quotation and zero-VAT cases.
+  Existing V4 guard/selection/display checks and 106 main unit tests passed;
+  V4 and both production Release/x86 builds passed. Configurations preserved.
+- Required V8 concurrency regressions passed 39 checks each with normal and
+  versioned reads in separate disposable fixtures; these do not exercise RMS POS
+  or establish V4 transaction guarantees.
+- Source-only correction on future saves; no historical backfill or live database
+  change. The user's already-repaired Gensan WO 287885 was not retested on live.
+  RMS investigation remains paused.
+
+### October 22: match printed withholding font to Sub Total
+
+- Changed the withholding heading and amounts to each template's effective
+  Sub Total font: V4 8-point bold and V8 10-point bold. Retained CASH plain WTax
+  labels, CHARGE _Charge labels, enabled-rate filtering, amounts and totals.
+- Read-only review of the configured localhost DVO_STORE_DB found latest CASH
+  WOs 23311/23312 with only 1% and 15% enabled. Both delivered helpers returned
+  plain CASH labels; saved CHARGE WO 23310 returned _Charge. Missing CASH labels
+  were not reproduced in that saved-data lookup; no payment/flag rules changed.
+- V4 and both main Release/x86 builds, 106 unit tests and existing V4 regressions
+  passed. Each version passed 62 local print-reference checks; 160 PDF comparisons
+  verified actual font sizes, labels, complete amounts, unchanged totals and
+  quote/no-rate layouts. EXE-only packaging passed. Configs preserved; no live
+  database changes or physical printing. Refreshed both EXE-only builds.
+
+### October 22: match printed withholding labels to saved payment type
+
+- V4 and V8 now print CASH references as WTax 1%, WTax 2%, WTax 5% and WTax
+  15%, and CHARGE references with the corresponding _Charge suffix. Only the
+  customer's enabled rates appear. Reads the saved order comment's first
+  semicolon-delimited payment segment, ignoring payment words in later remarks.
+- Missing/other payment types keep the existing neutral percent labels. Customer
+  flags, amount computation/rounding, totals, quotation behavior and RMS tender
+  entry remain unchanged. No SQL object or schema update is required.
+- Confirmed long CHARGE labels could clip large amounts at 14 point. CHARGE
+  references now use one rate per line, and the reference textbox can grow to
+  fit. The approved 11-point heading/14-point bold amounts remain unchanged.
+- V4 and both main Release/x86 builds, 106 unit tests and existing V4 regressions
+  passed. Each version passed 62 local print-reference checks; 140 PDF checks
+  verified exact CASH/CHARGE labels, enabled rates, complete large amounts,
+  unchanged totals/no-rate/quotation layouts and signature separation. Original
+  printable-page counts matched normal and multi-page CASH/CHARGE samples.
+- Clean-folder EXE-only packaging and 91 print UI checks passed. Store configs
+  preserved and both EXE-only builds refreshed. Only owned disposable localhost
+  fixtures were used; no live database or physical printer was accessed.
+
+### October 22: enlarge printed withholding text in V4 and V8
+
+- Applied the approved sample's 11-point heading and 14-point bold withholding
+  amounts to both Work Order templates. Increased only the reference area's
+  height to 0.85 inch so both amount rows fit. Existing totals, rate lookup,
+  rounding, quotation visibility, print invocation and business rules are intact.
+- V4 and both main Release/x86 builds, 106 unit tests, existing V4 regressions,
+  91 print UI checks and EXE-only packaging passed. Each version passed 46 local
+  print-reference checks; 74 PDF comparisons confirmed full large amounts,
+  unchanged totals, no signature overlap, and unchanged hidden-reference and
+  quotation layouts. Original printable-page counts remain unchanged.
+- Updated both EXE-only builds. Store configs preserved byte-for-byte; only owned
+  disposable LocalDB fixtures used. Physical printer acceptance remains manual.
+
+### October 22: printed withholding reference in V4 and V8
+
+- Added Withholding Tax (Reference) beside existing Work Order totals in both
+  embedded templates. Each enabled customer rate is shown separately using the
+  exact VAT-exclusive subtotal already passed to the report. It never deducts
+  from totals or selects/fills an RMS tender.
+- Read the saved order's CustomerID and type rather than the main form's current
+  customer. Existing caption/flag checks and amount rounding are reused. Rates
+  reflect the customer's settings at printing time; no tax snapshot is saved.
+  Quotations and customers without applicable rates hide the section. If the
+  optional reference lookup fails, existing printing can continue without it.
+- Existing report elements/expressions, SQL functions/mappings, print invocation
+  and paper settings remain intact. Only the new textbox and parameter are added
+  to each report. Reference visibility may cause normal RDLC layout reflow.
+- V4 and both main Release/x86 builds plus 106 unit tests passed. Each compiled
+  version passed 44 owned LocalDB/helper/PDF/TIFF/EMF checks; 72 PDF comparisons
+  verified enabled amounts, no clipping into signatures, unchanged totals and
+  unchanged no-rate/quotation layouts. Actual print-extension page counts match
+  original reports after its existing blank-EMF filter. V4's original wrapping
+  of very large totals is retained, with every digit verified against baseline.
+- Existing V4 guard/customer/withholding/empty-result suites and 91 print UI
+  checks passed. Clean-folder EXE-only packaging/ReportViewer 2010 checks passed.
+  Configs preserved; no live database, RMS execution or physical printing tested.
+
+### October 22: clarify V4 empty search results
+
+- Added paint-only messages inside bound, empty Customer, Sales Rep and item
+  grids. Messages disappear when results return and do not add selectable rows,
+  tab stops, SQL calls or search/filter changes. Unbound/loading grids show no
+  false empty-results message.
+- Confirmed original V4 throws ArgumentOutOfRangeException when selecting from
+  an empty Sales Rep grid. Guarded OK/double-click selection and the existing
+  Enter path; no current Sales Rep is changed when no row exists. Customer and
+  item empty-selection guards already worked and remain unchanged.
+- Kept item search's existing No Items Found warning and previous-result/filter
+  restoration intact. No shortcut, price, calculation, save or database changes.
+- V4 and both main Release/x86 builds passed, with 106 main unit, 33 V4 empty UI,
+  54 V4 guard, 28 duplicate-customer, 57 withholding and 28 checkbox checks.
+  Configs preserved; updated the V4 EXE-only candidate. No live SQL executed.
+
+### October 22: remove V4 blank price-level prompt
+
+- Removed the empty MessageBox.Show call at the start of V4 LoadLevel. It
+  displayed a blank OK dialog before loading prices. Price queries, choices,
+  approval/password checks and cancellation behavior remain unchanged.
+- V4 and both main Release/x86 builds passed, along with 106 main unit and
+  139 V4 fixture/guard checks. Configurations preserved; updated the separate
+  V4 EXE-only build. Actual legacy GSC price-selection acceptance remains manual.
+
+### October 22: add suggested withholding display to V4
+
+- Added V4's read-only Suggested W/Tax strip above its existing totals, using
+  the same caption-checked customer flags as V8. Enabled 1/2/5/15% amounts pack
+  from the left and use V4's actual displayed VAT-exclusive subtotal. Customer
+  selection, recall/import recalculation and amount edits refresh the strip;
+  quotations and customers without applicable flags keep the compact footer.
+- Rates are fetched once per selected customer ID. Suggestions do not feed
+  saves, totals, approvals, stock, printing or RMS tendering. Old GSC SQL
+  functions/mappings and V4's existing tax calculations remain unchanged.
+- The footer adjusts selected-item space only when needed to keep customer
+  controls usable at 1366x768. V4 Release/x86 built with its existing reporting
+  warning; 57 owned LocalDB display/calculation checks, 54 V4 save-guard and
+  28 duplicate-customer checks passed. Both main Release/x86 solutions and
+  106 unit tests passed; store configurations preserved. No live SQL executed.
+
+### October 22: bring action buttons against the grids
+
+- Reduced the right gap beside lookup/selected-item grids to a thin separator.
+  Expanded the action column into that existing gap and removed its left
+  padding; buttons gain about 12 pixels while grid usable widths are retained.
+  Totals align with the same content edge. Fonts, heights, labels, icons and
+  click/keyboard behavior are unchanged.
+- Both Release/x86 solutions and Debug built; 106 unit, 55 localhost withholding,
+  28 checkbox and 1344 scoped layout checks passed. Added gap checks at normal
+  and simulated 125% scaling. Store configs unchanged; no live SQL.
+
+### October 22: give For Invoice more readable space
+
+- Widened the main form's right action column from 117 to 135 pixels, giving
+  docked buttons 129 pixels of usable width. For Invoice now uses Tahoma 9,
+  matching neighboring actions instead of its smaller 8.25-point font.
+- Its label, icon, visibility/branch settings and click handler are unchanged.
+  No queue, saving, printing or SQL behavior was changed. Withholding checks use
+  the resulting 18-pixel narrower content width.
+- Both Release/x86 solutions, Debug, 106 unit, 55 localhost withholding and 28
+  checkbox checks passed. 1332 layout checks cover 1024/1366/1600 widths and
+  simulated 125% scaling, plus the main action column at 1600x900. Configs
+  preserved byte-for-byte; no live SQL. Updated V8 EXE-only build.
+
+### October 22: pack enabled withholding suggestions from the left
+
+- Applicable W/Tax labels now occupy the first available positions rather than
+  leaving blank columns for disabled rates. A customer with only 15% starts at
+  the left; multiple rates retain their existing 1%, 2%, 5%, 15% order.
+- Layout only: customer flags, cached lookups, calculation basis, rounding,
+  tooltips, quotation hiding, totals and business rules are unchanged.
+- Both Release/x86 solutions and Debug built; 106 unit, 55 localhost withholding,
+  28 checkbox and 875 small-screen checks passed. The withholding fixture checks
+  all 16 enabled-rate combinations and restoring a previous customer layout.
+  Store configs preserved byte-for-byte; no live SQL. Updated the V8 EXE-only build.
+
+### October 21: V4 duplicate-company selection
+
+- Fixed V4's OK/double-click/Enter selection to use the actual selected row's
+  customer ID instead of a cached row index. Same-name accounts keep their own
+  account numbers, pricing flags, tax status and primary Sales Rep. Empty or
+  header selections cannot replace the current customer.
+- Removed LoadLevel's unused company-name lookup; its result had no active
+  pricing consumer. Existing price/approval rules and old GSC functions remain.
+- The unmodified baseline reproduced wrong-account selection. The candidate
+  passed 28 actual-query/selection checks with two same-name customers in an
+  owned localhost fixture. No live SQL or production app Load/save/print ran.
+
+### October 21: V4 basic validation with legacy GSC functions
+
+- Updated only the active imported V4 project with positive selected customer/
+  Sales Rep ID checks, required Work Order payment, empty-order prevention and
+  numeric checks on every row before header allocation or legacy updates.
+  Save/F12 use a common guard; quantity lookup failures stop saving.
+- Kept existing quotation requirements, GSC SQL mappings/procedure calls,
+  pricing/password checks, stock code, reporting and refresh flow. This is not
+  a V8 transaction/cancellation backport. See `Work Order Entry V4/V4_GSC_VALIDATION_UPDATE.md`
+  for scope, legacy limits, isolated checks and localhost acceptance steps.
+- All 54 compiled V4 guard checks passed. User confirmed targeting the older
+  live GSC search signature; the localhost restore's one-argument version is
+  not a matching full-workflow test target. No compatibility shim or SQL was
+  changed. Built a separate V4 EXE-only candidate; live deployment and old-GSC
+  end-to-end acceptance were not performed.
+
+### October 21: prominent withholding suggestions on the main form
+
+- Moved Suggested W/Tax into a full-width pale blue strip above the totals.
+  Shows the four enabled rates separately in 13.5-point bold text, with the
+  VAT-exclusive basis underneath. No tabs or additional keyboard stops.
+- Footer expands only when suggestions apply and collapses for quotations,
+  customers without recognized flags and reset states. Existing calculation,
+  customer lookup/cache, rounding, approval, save and printing code is unchanged.
+- Both Release/x86 solutions and Debug built; all 106 unit, 28 checkbox,
+  38 localhost withholding and 875 existing small-screen checks passed. The UI checks
+  cover strip geometry, font size, large amounts, unchanged totals and compact
+  hidden states. Debug/Release store configs preserved byte-for-byte; no live
+  database accessed. The visible strip uses about 92 more vertical pixels.
+  Updated `Work Order Entry/bin/Release/EXE-Only/Work Order Entry_V8.exe` for
+  manual acceptance; installed ReportViewer 2010 and store-specific config are
+  still required as before.
+
+### October 21: WPF sample startup
+
+- Set the independent `DVO_WORK_ORDER_V8_WPF_MODERN` sample's StartupUri to
+  MainWindow.xaml. Its generated entry point previously ran without creating
+  a window. Main application code, configuration and databases are unchanged.
+- Built a corrected copy in the sample's `bin/Release/StartupFixed` folder
+  because earlier invisible sample processes locked the default EXE. Verified
+  that the corrected copy creates its main window; no old processes were killed.
+
+### October 21: standalone Work Order UI preview
+
+- Adapted the supplied `DVO_WORK_ORDER_V8_WinForms` visual style in the preview
+  only: compact customer header, rounded white panels, blue accents, neutral
+  grids and withholding tabs. The new EXE is under `UI Preview/bin/Release/ModernBlue`;
+  the earlier teal EXE and supplied C# sample are retained. Uses standard
+  .NET 4.7.2/x86 controls without Guna, Mica or production workflow code.
+- Added an independent .NET Framework 4.7.2/x86 WinForms visual demo under
+  `UI Preview`, using a teal palette, darker text, neutral grid headers and
+  compact withholding tabs with every sample rate/amount visible in the titles.
+- Sample searching, empty results, row selection and tax tabs are interactive.
+  Save/print and other workflow buttons only show a preview notice. The project
+  has no production assembly reference, database, registry or ReportViewer use;
+  it is not included in either production solution. Main application source,
+  business rules and store configuration are unchanged. RMS remains paused.
+- See `UI Preview/README.md` for the separate EXE, build and visual checks.
+
+### October 21: adopt installed ReportViewer 2010 for EXE-only updates
+
+- After the user confirmed the isolated candidate printed with the 2010
+  redistributable, switched the main project to exact installed version-10
+  Common/WinForms references with Copy Local=False. Retained Costura exclusions,
+  .NET 4.7.2/x86 and all existing application/report code and resources; all 139
+  source/resource hashes matched the pre-switch baseline, including withholding.
+- Updated packaging checks for zero private DLLs/config, exact GAC runtime
+  loading, actual preview forms and six report scenarios. Both Release/x86
+  solutions, Debug, 106 unit tests, 30 localhost withholding checks and 28
+  formatting checks passed. All 32 rendered pages matched the accepted version-10
+  candidate exactly. Debug and Release configs preserved byte-for-byte.
+- Built the latest EXE in bin/Release/EXE-Only. Runtime installation is a one-time
+  prerequisite per PC; application updates retain each unit's config. No live
+  SQL, store share update or physical print job was performed. See
+  Tests/REPORTVIEWER_2010_MAIN_DEPLOYMENT_2026-10-21.md for evidence and limits.
+
+### October 21: suggested customer withholding amounts
+
+- Added a Designer-visible, read-only Suggested W/Tax panel beside Work Order
+  totals. Uses the existing VAT-exclusive subtotal and shows each enabled
+  customer rate separately (1%, 2%, 5%, 15%), rounded to two decimals. No totals,
+  VAT rules, pricing, approvals, saves or RMS tender records are changed.
+- Reads confirmed customer custom fields once per selected customer; verifies
+  their RMS custom captions so unrelated branch fields do not enable estimates.
+  Amount edits reuse the cached flags. Customer reset/switch clears old flags;
+  quotations, invalid totals and customers without enabled flags hide the panel.
+  Existing import, recall and draft totals callers refresh the display.
+- Both Release/x86 solutions, Debug, 106 unit tests, 30 disposable localhost
+  customer/query/UI checks and 28 checkbox-formatting checks passed. Debug config
+  was preserved byte-for-byte. Totals-panel renders checked at widths matching
+  1366x768 and 1920x1080. No live SQL or RMS testing was performed for this feature;
+  the separate RMS investigation remains paused. Manual store acceptance remains.
+  The compiled customer SELECT also passed read-only against restored localhost
+  DVO_STORE_DB with its actual custom-caption schema.
+
+### October 21: guarded Cebu missing-commitment recovery
+
+- Executed a narrowly scoped, explicitly authorized repair for 23 zero-commitment
+  inventory items on nine open Cebu work orders. Retains target, backup, preview
+  and commit guards, verifies exact source rows and triggers, serializes changes,
+  adds differences atomically and records before/after item-log entries.
+- The repair preserves physical stock and does not change order lifecycle,
+  prices, application code, triggers or the commitment comparison view. The
+  root cause remains unconfirmed. See Recovery/CEBU_ZERO_COMMITMENTS_2026-10-21.md.
+- Twelve disposable repair-core checks, both 39-check multi-user fixture modes,
+  both Release/x86 builds and 101 unit tests passed; Debug config preserved.
+  Committed October 21 at 11:26:10 server time. Independent post-check confirmed
+  exact commitments, unchanged physical stock, nine still-open orders and 23
+  audit rows. Execution evidence and backup limits are in the recovery document.
+
+### October 20: test ReportViewer 2010 for EXE-only delivery
+
+- Built an isolated Release/x86 candidate using installed ReportViewer 10.0.0.0
+  (the version referenced by V4), with Copy Local=False. The real project and
+  default ReportViewer 15 package remain unchanged. All 137 code/resource files
+  matched; no business, report, printer or copy-count code was changed.
+- Candidate unit suite passed 101 tests. EXE-only clean-folder and localhost UNC
+  synthetic report/import checks passed without report DLLs beside the EXE.
+  Both actual preview forms rendered six cases under versions 10 and 15;
+  all 32 TIFF pages matched count/dimensions and preview settings. Exact-image
+  comparison did not fully pass: 27 pages matched, five had two differing
+  Work Order title-edge pixels each; all other pixels matched. Recorded rather
+  than relaxing the assertion; manual acceptance remains required.
+- Prepared a separate manual-test EXE under ignored TestResults. Requires the
+  installed version-10 runtime; ReportViewer 2005 alone is insufficient. Actual
+  affected-client/network preview and operator printer/copy acceptance remain
+  outstanding. No shared deployment/live database changes or physical prints.
+  See REPORTVIEWER_2010_COMPATIBILITY_RESULTS_2026-10-20.md in Database Components/Tests.
+
+### October 20: expose underlying shared-folder report errors (investigation pending)
+
+- Work Order/Quotation and Pick List preview catches now log the full exception
+  chain through ErrorLogger and include the root-cause message in their existing
+  error popup. ReportViewer asynchronous ReportError events are logged without
+  setting Handled or changing default handling. Report data, RDLC, page setup,
+  printers, copies and print timing are unchanged; no trust/config switches added.
+- Read-only inspection of the supplied shared Release folder confirmed all five
+  ReportViewer DLL hashes match the local package. Both synthetic reports also
+  render successfully here with that shared application base and the actual
+  deployed preview forms/page settings. This did NOT reproduce the user's
+  client/data-specific error; the actual inner exception is still required.
+- Both Release/x86 solutions, Debug build, 101 unit tests, clean-folder report
+  packaging checks and four synthetic diagnostic checks passed. Nested errors
+  were logged and ReportViewer handling stayed unchanged. Debug config preserved.
+  Shared files were not changed; no live SQL or printer jobs. The underlying
+  deployed failure is NOT yet fixed or certified; affected-client retry pending.
+
+### October 20: remove blue column-header selection highlighting
+
+- Matched selected header colors to each grid's normal header colors across
+  all 17 addin grids, serialized in their Designers; disabled themed headers
+  where necessary so Windows does not override these colors. Main-grid runtime
+  formatting now keeps the same matching colors. No row-header/selected-row
+  styling, column data, sorting, keyboard, approval or business-rule changes.
+- All 40 comparison checks passed across 19 Designer/runtime grid states;
+  row selection colors, column settings and interaction flags matched the
+  baseline. Price Level render inspected: neutral headers and blue selected row.
+  Both Release/x86 solutions, Debug build, 101 unit tests and 28 recall checkbox
+  formatting checks passed, with Debug config preserved byte-for-byte. No SQL
+  or form Load in the UI comparison. Manual UI acceptance remains for the user.
+
+### October 20: hide queue-only item columns when Queueing Mode is off
+
+- UP-STORE and PREPARED now follow the saved branch Queueing Mode for work
+  orders at startup, after Settings, formatting/refresh and quote-to-WO
+  conversion. Quotations continue to hide both columns. Only visibility changes;
+  values, editability, Boolean checkbox styles, saving and queue rules are intact.
+- Both Release/x86 solutions, Debug build and all 101 unit tests passed with
+  Debug config preserved byte-for-byte. All 85 in-memory visibility/value checks
+  and 28 recall checkbox-formatting checks passed. No SQL/settings saves in the
+  UI probes, no live database operations; manual Settings acceptance remains.
+
+### October 19: validate new-order rows before allocating header IDs
+
+- InsertEntry now checks all selected rows, including later split orders, before
+  its first header insert: existing numeric/Decimal, prepared-count and pick-flag
+  conversions, item existence, and the existing commitment condition projected
+  in line order. Duplicate rows share a running projection. No stock is written
+  by prevalidation; no additional query or dependency was introduced.
+- Existing transaction writes/checks, atomic commitment differences, rollback,
+  pricing/approval, shortage handling, tax exemptions, non-inventory exemption,
+  zero-difference handling, quotation and existing-order paths remain intact.
+  Detectable bad lines fail sooner; later SQL/concurrent failures can still
+  consume IDs. No reseed, gap filling, SQL migration or live operation.
+- All 80 allocation-boundary checks passed across 18 paired synthetic LocalDB
+  cases. Eleven predictable failure cases consumed 13 IDs without preflight
+  and zero with it; valid saves retained exact values. A concurrent change
+  remained rejected by the final atomic check. This is a compiled helper/mapped
+  SQL boundary test, not execution of the full prompted UI or RMS.
+- Both Release/x86 solutions, Debug build and all 101 unit tests passed; Debug
+  config preserved byte-for-byte. Multi-user regression passed 39 checks normally
+  and 39 with versioned reads in disposable fixtures. RMS remains paused;
+  manual localhost addin save/quotation acceptance remains outstanding.
+
+### October 19: prepare guarded HO WO 18912 to 18905 recovery
+
+- Added a standalone personal-SSMS script and instructions for the requested
+  open-order renumber, including queue/group, line, approval, audit and
+  order-domain item-log references. Exact target/source/trigger/dependency and
+  unused-destination guards reject drift, posted sales and ambiguous references.
+- Default Commit=0 rolls back. At the user's explicit request, backup-path,
+  backup-history and checksum verification were removed. Full value comparisons preserve
+  business values; one mapping audit event is appended only on commit.
+- No identity reseed: identity stays 18912; next normal allocation is 18913
+  absent intervening activity. No application/save-rule change, live recovery,
+  backup or live rollback rehearsal was performed; RMS remains paused.
+- All 43 synthetic LocalDB recovery checks passed, including actual legacy
+  @@IDENTITY allocation, rejection guards and injected rollback failures.
+  Both Release/x86 solutions and all 101 unit tests passed; Debug EXE config
+  preserved byte-for-byte. A fresh restored-store rehearsal and operator
+  live execution/verification remain outstanding.
+
+### October 19: improve InterStore availability readability
+
+- Updated the Designer layout with larger item headings, two-line item-name
+  space, readable grid text/rows, wider fill columns for store names/codes,
+  displayed-cell quantity sizing and clear selection/Close styling. The medium
+  window fits 1024x768 and 1366x768 in normal/simulated 125% checks.
+- Serialized the existing ID/Name/StoreCode/Qty/Address mappings in the Designer;
+  ID remains visible and Address hidden. Removed only runtime presentation code.
+  The existing SOD_fntbl_CheckQty query/caller, raw/nullable/fractional quantities,
+  sorting, column reordering, row resizing, selection and keyboard routing remain
+  unchanged. No database object or business rule changed; RMS remains paused.
+- Both Release/x86 solutions, Debug build and all 101 unit tests passed with
+  Debug configuration preserved. All 140 isolated InterStore checks and 28 recall
+  checkbox-formatting checks passed. Normal/125% synthetic renders inspected;
+  actual store availability and manual UI acceptance remain for the user.
+
+### October 18: avoid unnecessary item-grid row materialization
+
+- GridColumnWidth now checks each shared row's height before accessing/updating
+  its individual row object. Rows already at the required height remain shared;
+  different heights are still normalized to 44 exactly as before. No column,
+  data, selection, shortcut, query or business-rule change.
+- Original/candidate compiled comparison passed 208 assertions across 16 cases:
+  0/1/100/500 rows, 1024/1366 widths and normal/simulated 125% scaling. Rendered
+  pixels, data hashes, column settings and selection matched. Altered heights
+  were still normalized. For 500 rows, shared-row count was 0 before and 500
+  after, measured before selection/rendering materialized visible rows.
+- Synthetic binding/formatting medians were 21.92 -> 8.76 ms at 1024 width and
+  41.87 -> 12.21 ms at 1366; repeated-formatting medians were 8.34 -> 7.91 ms
+  and 19.89 -> 15.41 ms respectively. These are isolated UI timings, not live
+  SQL/search measurements. Both Release/x86 builds, Debug build, 101 unit tests,
+  50 readability, 28 recall-formatting and 875 small-screen checks passed.
+  Debug store configuration was preserved. RMS investigation remains paused.
+
+### October 18: reduce repeated price-level reads
+
+- Price Level Selection now loads its mask and item-price rows once per load,
+  then renders all permitted levels using the existing mapping. The shared
+  single-level API delegates to the same implementation. Removed a redundant
+  settings read whose result was unused. No data is cached across openings or
+  password-triggered reloads; mappings, minimum-price assignment, row order,
+  top-row selection and approval/password handlers remain unchanged.
+- Compared original and updated compiled loaders on a GUID-owned LocalDB fixture:
+  all 125 paired cases matched (75 dialog loads and 50 single-level cases).
+  Traced SQL commands fell from 825 to 250 overall; a four-level dialog falls
+  from 12 reads to 2. Dialog median was 92.89 ms before and 16.19 ms after in
+  this synthetic fixture, not a live-store speed measurement.
+- Both Release/x86 builds, Debug build, 101 unit tests and 50 Price Level UI
+  checks passed with Debug config preserved. Fixture database was dropped and
+  instance deleted. No existing restored/live database, SQL object or business
+  row was changed; RMS investigation remains paused. Manual approval/password
+  acceptance in the actual add-in remains pending.
+
+### October 18: explain empty search results inside lookup grids
+
+- Added centered, wrapping guidance inside empty Customer, Sales Rep, Recall
+  and item-search grids. Initial unbound grids remain blank; messages disappear
+  when rows return. No placeholder rows or blocking overlays are added.
+- Removed the redundant item-search "No Items Found!" popups. After explicit user
+  approval, unsuccessful keyword search now leaves its empty result bound instead
+  of automatically restoring previous/all items. Failed-keyword cleanup remains;
+  F4/F5, barcode reset/focus, actual errors and normal search predicates are unchanged.
+- Removed the intermediate above-grid notice. The final design displays the
+  no-items guidance only inside the empty grid. Import-specific fallback is
+  unchanged. Prices, quantities, calculations, validation and order rules are unchanged.
+- Both Release/x86 builds, Debug build and 101 unit tests passed with Debug config
+  preserved. All 37 empty-state/keyword-cleanup checks, 28 recall-formatting and
+  875 small-screen checks passed. Synthetic renders were inspected; manual
+  application search acceptance remains pending. No SQL executed; RMS remains paused.
+
+### October 18: guard empty Customer, Sales Rep and Recall selection
+
+- Reproduced Customer's missing-current-row exception, Sales Rep's out-of-range
+  row read and Recall's missing-row Enter exception in a separate x86 process.
+  Added early returns for missing/out-of-range lookup selection and before the
+  Customer/Sales Rep Enter row-index helper and Recall Enter handler.
+- Empty selection leaves the dialog open without applying a customer, sales rep
+  or order. Filters, valid-row selection, keyboard shortcuts and business rules
+  are unchanged. Existing Recall OK/double-click guards remain intact.
+- Both Release/x86 solutions, Debug build and all 101 unit tests passed with
+  Debug configuration preserved byte-for-byte. All 22 isolated empty-result,
+  204 lookup and four Escape-routing checks passed. The UI probe verifies legacy
+  contexts are closed and removes them before callbacks; no SQL or real-row
+  selection runs. Manual search acceptance remains pending. RMS stays paused.
+
+### October 18: show fractional item quantities and fit numeric grid values
+
+- Confirmed selected quantity 1.25 displayed as 1 with N0 formatting, and a
+  seven-digit price exceeded its fixed column width. Selected/available quantities
+  now use grouped numbers with optional fractional digits. No stored quantity,
+  price, total, calculation, edit validation or shortcut was changed.
+- Search price/available/committed and selected quantity/price/total columns size
+  to displayed cells, retaining their previous widths as minimums. This avoids
+  scanning all search results; unusually wide values remain horizontally reachable.
+  Designer and runtime styles match. Existing clipped-description tooltips,
+  editing selection and price-warning formatting remain intact.
+- Both Release/x86 solutions, Debug build and all 101 unit tests passed with
+  Debug store configuration preserved byte-for-byte. All 50 isolated display,
+  28 recall-formatting and 875 small-screen checks passed. Manual add-in visual
+  acceptance remains pending. No SQL or database changes; RMS review stays paused.
+
+### October 18: consistent Escape cancellation in customer and sales lookup
+
+- Confirmed that Esc from either lookup's OK/Cancel button was unhandled, while
+  existing search/grid handlers already supported Esc. Assigned the existing
+  Cancel button to each form in the Designer, making cancellation consistent
+  without changing Enter, F-key shortcuts, tab order, selection or business rules.
+- Added an isolated x86 keyboard-routing regression probe and updated the lookup
+  presentation check to require the Cancel assignment. No lookup Load handler,
+  SQL query, customer selection or sales-rep selection runs in these probes.
+  The separate RMS investigation remains paused.
+- Both Release/x86 solutions and the Debug app built successfully. All 101 unit
+  tests passed on retry outside the sandbox (the first attempt could not connect
+  to its x86 test host). Four keyboard, 204 lookup and 28 recall-formatting checks
+  passed; the Debug EXE configuration was preserved byte-for-byte. Manual keyboard
+  acceptance in the running add-in remains for the user.
+
+### October 18: document paused RMS settlement investigation
+
+- Consolidated the read-only audit, disposable trigger comparison and actual
+  localhost RMS normal, timeout and deadlock results in the
+  [settlement investigation record](Database%20Components/Tests/RMS_SETTLEMENT_TRIGGER_REVIEW_2026-10-18.md).
+- Recorded partial postings after the forced original-trigger failures, cleanup,
+  retained evidence and the user's decision to pause. Candidate POS testing and
+  deployment remain unapproved/incomplete. This update changes documentation only;
+  no application code or database was changed or tested again.
+
+### Fix login-cancel collection error during shutdown
+
+- Traced the October 17 11:44:36 log to frmLogin.Button2_Click calling
+  Application.Exit while a closing-form callback can show a custom draft warning.
+  Opening/disposing that prompt changes WinForms' OpenForms collection during
+  its global exit enumeration. A separate synthetic x86 process reproduced the
+  exact InvalidOperationException with the pre-fix compiled login callback.
+- Login Cancel now returns Cancel to its modal caller; authenticated completion
+  explicitly returns OK. Both startup and logout callers close the main form and
+  stop their continuation on cancellation. Removed the redundant FormClosed
+  Application.Exit call; the existing VB AfterMainFormCloses shutdown policy
+  handles normal termination. Draft saving/warnings and authentication checks
+  remain unchanged; no save transaction or database object was modified.
+- Both Release/x86 builds and 101 unit tests passed with Debug configuration
+  preserved. New no-database UI probes pass Cancel, window close and successful
+  completion with a custom closing warning. All 1,159 shared-prompt checks and
+  577 ownership/stacking checks also passed; manual startup/logout acceptance
+  remains to be run in the actual application.
+
+### Read-only GSC item-log ambiguity review
+
+- Reviewed the existing localhost GSC_STORE_DB directly, without another restore
+  or index/data changes: 9,512,243 log rows, zero invalid integer references,
+  84 conflicting latest pairs across 73 Items and 246 tied transfer-log rows.
+  All tied latest dates were midnight. Reference numbers matched 46 closed Orders
+  and 38 missing Orders; none matched an open Order at review time.
+- Traced the unfiltered timestamp-only TOP(1) lookup and date-only insert parameter.
+  The heap has no sequence to reconstruct the original event ordering. Added a
+  capped-memory SELECT-only diagnostic (intermediates in tempdb), findings and
+  deployment guidance. The 53305 guard remains intact and the item-log index
+  remains uncertified for this dataset; no historical value was chosen or repaired.
+- No live connection was made. The earlier interrupted disposable-copy attempt
+  was cleaned up before this completed review; no index-comparison result is
+  claimed for that abandoned experiment. The voucher index remains a separate fix.
+- Both Release/x86 solutions and 101 unit tests passed, with Debug configuration
+  preserved. Final local checks found no Item-log index and no active review query.
+
+### Package the tested RMS voucher lookup index in Database Updater
+
+- Added optional Improve_RMS_VoucherLookup.sql under Index / performance for
+  DVO, GSC and Portable, initially unchecked. It creates/reuses the tested
+  non-unique Item(TenderID,IsGlobalVoucher,Inactive) index without fixed database,
+  server or tender IDs. Business rows, triggers, application queries and branch
+  rules remain unchanged; the original local-only fixture guards are retained.
+- Added caller-transaction/schema guards, serialized index installation, reuse
+  of matching differently named coverage and rejection of conflicting named
+  indexes. The existing updater target confirmation, backup/test acknowledgement,
+  transaction, timeout and history behavior are unchanged.
+- Packaged the deployment guide and added disposable migration/updater checks
+  for results, preserved data/rowversions/triggers, exact key order, index reuse,
+  schema conflicts, initial unchecked listing and atomic deployment/history.
+  No existing local restore or live database was migrated during this change.
+- Both Release/x86 solutions and all 101 unit tests passed; the current Debug
+  EXE configuration was preserved around builds/tests. All 83 updater checks,
+  25 voucher migration checks at each compatibility level 100/130, and the
+  clean-folder packaging suite passed. Synthetic Item reads fell from 756 to 2;
+  this is not new live branch or actual RMS performance certification.
+
+### Local Davao RMS lookup / Work Order save deadlock comparison
+
+- Reproduced Item page-lock deadlocks on a GUID-owned copy of localhost
+  DVO_STORE_DB with the unchanged RMS Item/Tender lookup and atomic commitment
+  update. Tested a separate Item(TenderID,IsGlobalVoucher,Inactive) index;
+  the existing item-log index remained constant in both stages.
+- Six actual compiled recalled-order save transactions plus four SQL lookup
+  replay workers: median save 9.320 -> 1.351 seconds, slowest 10.015 -> 1.693
+  seconds; reader deadlock victim errors 4 -> 0. No actual RMS POS/QSRules client
+  or production 10+ user capacity test was performed.
+- Verified fractional commitments/physical stock for 31 Items, preserved values
+  on 32 saved lines, identical nonempty/empty voucher results across 114 columns,
+  and unchanged 84 trigger definitions/states. Added the comparison report and
+  guarded test-only candidate SQL; it is not an updater/live deployment script.
+- Both Release/x86 builds, all 101 unit tests and both 39-check disposable
+  concurrency modes passed. Debug configuration was preserved. Six source-table
+  count/checksum comparisons matched the pre-test backup; the owned clone and
+  backup were removed. The original local restore received no candidate index
+  or test business writes, and no live connection was made during this task.
+
+### Read-only live Davao performance findings and mixed-user plan
+
+- With explicit read-only authorization, collected bounded metadata/DMV snapshots
+  from live DVO_STORE_DB and existing system_health deadlock summaries. Two captured
+  events show an RMS Item/Tender voucher lookup deadlocking with the atomic Item
+  commitment update. The live item-log table still lacks the tested lookup index;
+  broad item-list reads also have high cached elapsed/read costs. No sustained
+  blocker was observed in the short activity sample; this is not peak-load proof.
+- Added a credential-free collector with masked SQL password entry, 10-second
+  query/1-second session lock timeouts and SQL-text literal/comment redaction.
+  It performs no DML/DDL, full log-table scans, cache clearing, new tracing,
+  configuration changes, session killing or live workload replay. Both completed
+  collections had zero unavailable sections; the first local builder-keyword
+  attempt failed before connecting and was corrected.
+- Added DVO_LIVE_READONLY_PERFORMANCE_2026-10-17.md and a separate 10/12/15-client
+  actual-RMS test plan. It distinguishes existing two-cashier simulated settlement
+  checks from a future capacity test and prioritizes the captured deadlock path.
+  The load plan has not been executed; no live index or business rule was changed.
+- Both Release/x86 builds and all 101 unit tests passed. Debug store configuration
+  and the existing uncommitted Payment Type precheck were preserved. Credentials
+  and raw operational evidence are not added to repository documentation.
+
+### Local restored Davao item-log index verification
+
+- At the user's request, installed the unchanged guarded item-log lookup index
+  only on localhost MSI / DVO_STORE_DB. Preflight/index creation took 1.606 seconds.
+  The local index remains installed; no live target, DVO_POS_DB, trigger logic or
+  business rows were changed by this test.
+- Seven item/reference probes, three trials per stage, retained identical results.
+  Median component times fell from 21.197-23.573 ms to 0.616-0.866 ms; logical reads
+  fell from 10,639 to 3. All 84 table-trigger hashes/states, log row count/checksum
+  and compatibility level 100 matched. A separate connection verified the commit.
+- Both Release/x86 builds, 101 unit tests and 31 disposable item-log checks at
+  each compatibility level 100/130 passed. Debug configuration was preserved.
+  See Database Components/Tests/DVO_RESTORED_ITEMLOG_INDEX_RESULTS.md for evidence
+  and limits: the local backup is from June 9, and no full application save or
+  real RMS workflow was performed. Rehearse current Davao data before live rollout.
+
+### Check Work Order payment before price approval
+
+- Added a Work Order-only blank Payment Type precheck at the start of
+  ValidateAndSave. It shows the existing Payment Method warning, focuses the
+  payment field and stops before item-price lookup or approval/password prompts.
+  New and recalled Work Orders use this path. The existing later save checks
+  remain in place; quotation requirements and conversion paths are unchanged.
+- Price confirmation, minimum prices, saved-price exemptions, password/approval
+  conditions, cancellation and save/transaction/stock behavior are unchanged.
+- Both Release/x86 builds and all 101 unit tests passed. Added 121 isolated
+  validation-order checks across 12 new/recalled Work Order/quotation cases,
+  including blank/whitespace payment and CASH/CHARGE continuation. All legacy
+  SQL contexts are disabled only inside that test process. Both disposable
+  multi-user modes passed 39 checks each (RMS settlement is simulated). No live
+  database, real password authentication or live-store save was tested; Debug
+  store configuration was preserved byte-for-byte.
+
+### More compact lookup and message windows for 768-high screens
+
+- Reduced Designer client sizes: Customer/Sales Rep 780x470 -> 660x390;
+  Recall 984x540 -> 860x460; shared message base 640x300 -> 500x240;
+  action confirmation 560x210 -> 440x172; import complete 580x254 -> 460x208;
+  saved-number confirmation 520x296 -> 440x238; Recall Selection 580x266 -> 460x220.
+- Kept lookup text at its existing size while reducing row minimums and excess
+  spacing. Recall customer/comments still wrap; Date/Reference size to displayed
+  content with minimum widths. Message headings use 14-point bold text, body
+  text 11-point and buttons 10-point. Short prompts shrink vertically and long
+  details remain complete/scrollable. Saved numbers retain 42-point bold type.
+- Changed only Designer geometry/styles and shared-prompt sizing. Main-form
+  button positions, filters, selection, shortcuts, hidden customer columns,
+  Boolean NullValue defaults, owner/TopMost fix, dialog results, authentication,
+  pricing, credit limits, tax, stock, save/import/printing behavior are preserved.
+- Both Release/x86 builds and 101 unit tests passed. Passed 1,159 shared-prompt,
+  577 ownership, 53 action-confirmation, 106 Recall Selection, 28 recall-formatting,
+  875 small-screen and 185 compact-geometry checks, plus clean-folder import/PDF
+  packaging. Reviewed synthetic dialog renders at normal/simulated 125% scaling
+  for 1366x768 and 1024x768. Store-loading handlers were detached only on render
+  test instances; no live SQL or real store workflows/printers were used.
+  Debug store configuration was preserved byte-for-byte. Actual workstation DPI
+  and window-switching acceptance remains manual.
+
+### Audit the remaining redesigned prompts for window blocking
+
+- Traced the shared prompts in the other TopMost forms and the separate save/
+  remove, import-success, saved-number and Recall Selection callers. No additional
+  ownership/stacking blocker was reproduced after the shared-owner fix. Import
+  completion runs after file/customer dialogs close, or after website selection
+  hides; the other dedicated confirmations use the main form as their owner.
+- Added PromptOwnership_UI_Test.ps1: 577 native window checks in 76 scenarios
+  cover all six shared button sets and five icon categories under ordinary and
+  TopMost modal owners, plus each dedicated confirmation/selection form. Checks
+  verify actual window order, input availability, result values and parent recovery.
+- Both Release/x86 builds, 101 unit tests, 1,159 existing shared-prompt checks,
+  53 action-confirmation, 106 Recall Selection and 28 recall-formatting checks
+  passed. No additional application-code or business-rule changes were needed.
+  Tests use synthetic owners and presentation dialogs, not store workflows or SQL;
+  actual workstation window switching still needs manual acceptance. Debug store
+  configuration was preserved byte-for-byte.
+
+### Keep warnings above the active price-selection dialog
+
+- Fixed the shared prompt ownership regression: Price Level Selection uses
+  TopMost, and its credit-limit warning could appear behind it. Ownerless prompts
+  now use the current modal window on the UI thread (falling back to the active
+  visible form), and prompts match their owner's TopMost setting. Explicit caller
+  ownership is preserved. No global always-on-top setting was added.
+- Credit-limit conditions, warning timing/text, pricing, approvals, item selection
+  and dialog results are unchanged. The warning still requires acknowledgement;
+  its modal parent remains disabled until then and is restored afterward.
+- Both Release/x86 builds, 101 unit tests, 1,159 isolated shared-prompt checks and
+  50 existing Price Level checks passed. The regression covers ordinary/TopMost
+  nested windows, Show/MsgBox/explicit owners, and an item acceptance already
+  marked OK before its warning opens. Native Windows enable/disable checks verify
+  both modal levels recover. Tests use synthetic forms; no store/SQL/price action
+  was run. Debug store configuration was preserved byte-for-byte.
+
+### Large sales quotation confirmation number
+
+- Reused the Designer-backed frmOrderSaved for saved and updated sales quotations,
+  showing the quotation number in the same large bold type as a Work Order.
+  The heading identifies Sales Quotation; existing Work Order/split labels remain
+  unchanged. Close, Enter and Escape acknowledge the single confirmation.
+- Replaced only the two quotation success notifications after commit. New quotation
+  printing still opens after acknowledgement with the same type and ID; updating
+  a quotation still does not open printing. Refresh/draft cleanup and all save,
+  pricing, stock, tax, approval and transaction logic are unchanged.
+- Both Release/x86 builds, 101 unit tests, 105 isolated saved-number UI checks
+  and 39 multi-user checks per isolation mode passed. Reviewed 100% and simulated
+  125% renders. The first sandboxed unit runner could not connect to its test host;
+  rerunning outside the sandbox passed. No live saves/database access or actual
+  printing was performed; Debug store configuration was preserved byte-for-byte.
+
+### Consistent readable application prompts
+
+- Routed 323 standard MessageBox/MsgBox calls across 31 Work Order Entry files
+  through AppPrompt and the shared frmAppPrompt. The Designer shows a large
+  heading, 12-point message text, matching information/warning/error/question
+  icons and larger buttons. Long details remain complete in a scrollable area.
+- Kept the original message/caption arguments, button sets, default choices,
+  explicit parent windows and return-value checks. OK, OK/Cancel, Yes/No,
+  Yes/No/Cancel, Retry/Cancel and Abort/Retry/Ignore retain their results and
+  Enter/Escape/close behavior. Worker calls marshal to the owning UI thread;
+  native reporting remains available if the custom dialog cannot initialize.
+- Existing save-number, import-success, action-confirmation and selection forms
+  remain in use. Separate Database Updater/Queue prompts are outside this change.
+  No pricing, stock, tax, approval, save, printing, SQL or authentication logic changed.
+- Both Release/x86 builds and all 101 unit tests passed. Passed 1,075 isolated
+  shared-prompt checks, 28 recall-formatting, 106 recall-selection, 53 action-
+  confirmation and 39 multi-user checks in each isolation mode, plus clean-folder
+  import/PDF packaging checks. Reviewed 100% and simulated 125% prompt renders.
+  These use synthetic UI/disposable fixtures; RMS settlement is simulated. No
+  live database was accessed, and Debug store configuration was preserved.
+
+### Recall Selection readability
+
+- Updated only frmRecallSelection.Designer.vb: added a Choose an option heading,
+  14-point bold list text, larger 12-point OK/Cancel buttons, consistent spacing,
+  resize anchors and a minimum window size. Layout is visible in the Designer.
+- Preserved the Recall, SaveToQuote and SaveToWorkOrder strings/order, first
+  selection, tab/keyboard routing, double-click and OK/Cancel handlers. The later
+  shared-prompt update changes only presentation of its two validation warnings.
+- Both Release/x86 builds, all 101 unit tests and 106 isolated choice-dialog
+  checks passed. Reviewed 100% and simulated 125% renders. No actual recall,
+  conversion, save or SQL was run by the UI checks; Debug configuration preserved.
+
+### Save changes and remove-item confirmation readability
+
+- Replaced only the existing Save changes and Remove item Yes/No prompts with
+  frmActionConfirmation. The Designer shows 16-point bold question text and
+  large 12-point Yes/No buttons, with consistent spacing and bottom/right anchors.
+- Preserved question wording, default Yes, explicit result values, Enter on
+  focused buttons, arrow navigation and Y/N mnemonics. Escape/user close leave
+  the question unanswered, retaining the native Yes/No prompt's lack of Cancel.
+  Save/remove action branches, validation, transactions and stock logic are unchanged.
+- Both Release/x86 builds, 101 unit tests, 53 isolated dialog checks and 39
+  multi-user checks per isolation mode passed. Reviewed 100% and simulated 125%
+  renders. The multi-user fixtures are disposable simulations, including simulated
+  RMS settlement; no store saves/removals or isolation changes were performed.
+  The existing Debug store configuration and earlier import-dialog edits were preserved.
+
+### Import completion message readability
+
+- Replaced the three existing success MessageBoxes in quotation/order, purchase-
+  order and website import with a shared frmImportComplete modal dialog. Its
+  Designer contains a 16-point bold success heading, 12-point availability
+  reminder and large blue OK button. Enter/Escape acknowledge it; the reminder
+  still tells users to check available quantities before saving a Work Order.
+- Only the three success prompts and a presentation helper changed in the main
+  form. Import conditions, item validation, quantities, prices/taxes, totals,
+  layout cleanup, error paths and saving behavior are unchanged. No dependencies,
+  database migrations or business-rule changes were introduced.
+- Both Release/x86 builds, 101 unit tests, clean-folder import/reporting packaging
+  checks and 24 isolated dialog checks passed. Reviewed offscreen renders at
+  100% and simulated 125% with bounds and fonts scaled; Enter/Escape both close
+  the modal dialog. Debug store configuration was preserved byte-for-byte.
+  No real import or store database operation was performed during validation.
+
+### Requested one-order HO renumber and reseed script
+
+- User reported the live commit; subsequent SELECT-only verification confirmed
+  WO 18879 and mapped lines/queue/approvals/history/order logs, no remaining old
+  references in the reviewed tables, 13 unchanged/enabled triggers, and current
+  identity/max 18879 with increment 1 (next allocation 18880 absent new activity).
+  Recorded evidence and historical-text/external-reference limits in the recovery
+  guide. The assistant did not execute the live renumber/reseed or create a test order.
+- Prepared Recovery/Renumber_HO_WO_18882_to_18879_And_Reseed.sql for personal SSMS
+  execution. Default rehearsal rolls back without reseeding; explicit commit
+  maps reviewed references from 18882 to 18879 and reseeds to 18879 in the same
+  transaction, making the next allocation 18880 if no intervening allocation occurs.
+- Removed the backup-path setting, backup-history/checksum requirement and
+  RESTORE VERIFYONLY from this one-order recovery file at the user's request.
+  Older recovery files are unchanged; no live SQL was executed for this revision.
+- Kept exact target verification, audited header/
+  line/identity checks, orphan/unknown-reference guards, trigger fingerprints,
+  full mapped-value verification and error rollback. Stops on later activity or
+  new posted links; preserves stock, amounts and unrelated reference domains.
+- Added usage instructions and 42 passing synthetic LocalDB checks at compatibility
+  100, including rollback after reseed and actual next ID/legacy @@IDENTITY.
+  No live recovery/reseed or restored-store write was performed by the assistant.
+  Offline SQL Server 2016 syntax validation, both Release/x86 builds and all 101
+  unit tests pass. The Debug store EXE configuration was preserved byte-for-byte.
+
+### Item-log migration compatibility and restored HO testing
+
+- Prepared Recovery/Deploy_HO_PO_DB_ItemLogLookup_LIVE.sql for personal SSMS
+  execution. It embeds the reviewed migration unchanged, selects HO_PO_DB,
+  commits only after migration safeguards pass,
+  and rolls back/rethrows SQL errors. Includes backup, maintenance, query-timeout
+  and cancellation instructions. File preparation does not deploy to live.
+  Offline SQL Server 2016 parsing reports zero errors in one batch; the embedded
+  migration matches the tested source and transaction/batch structure checks pass.
+- Removed the standalone file's explicit server-name, database-name and ambient
+  transaction checks at the user's request. Kept USE HO_PO_DB, migration guards,
+  transaction/rollback behavior and updater files unchanged. The operator must
+  verify the connection and begin without an existing transaction. No SQL ran.
+- The localhost HO_PO_DB restore retains compatibility level 100 on SQL Server
+  2016. Replaced only the optional index migration's three TRY_CONVERT integer
+  checks with TRY_CAST so its existing reference/timestamp safeguards run there.
+  No compatibility setting, trigger, numeric comparison or business rule changed.
+- Added an optional CompatibilityLevel=100/130 fixture parameter (default 130).
+  All 31 item-log checks pass at each level, including malformed/overflow
+  references, latest-value ties, rollback and unchanged legacy logging values.
+  Both Release/x86 solutions build; 101 unit tests and 71 updater checks pass.
+  The Debug store configuration was preserved byte-for-byte. Live SQL was not
+  accessed during this local test; restored-store results are recorded separately.
+- Committed IX_SOD_WO_ItemLogLookup on the explicitly authorized localhost MSI /
+  restored HO_PO_DB only, retaining compatibility 100. The 71.74-million-row
+  preflight/build took 654.371 seconds. Two unchanged lookup results improved
+  from 6,706.538/7,294.833 ms to 3.472/5.192 ms, with logical reads 806,300 to 5
+  each. All table trigger hashes matched. These are component timings, not app
+  save or live-store tests. See Database Components/Tests/HO_RESTORED_ITEMLOG_INDEX_RESULTS.md
+  for evidence, limits and remaining manual save/import verification.
+
+### Top action-button order
+
+- Placed Set Tax directly above Logout, making Logout the last button in the
+  top group. Updated Designer docking order/positions only; handlers, shortcuts,
+  tab indices and Set Tax visibility settings are unchanged. Extended the
+  existing lookup/button check to cover both shown and hidden Set Tax layouts.
+- Both Release/x86 builds, 101 unit tests, 204 lookup/button checks, 875 screen
+  checks and 28 Recall formatting checks pass. No live actions or SQL ran;
+  the Debug store configuration was preserved.
+
+### Price Level Selection readability
+
+- Enlarged the item heading/description, price-level grid and OK/Cancel buttons
+  in frmPriceLevel.Designer.vb. Added 11-point row text, bold right-aligned prices,
+  taller rows, clearer headers, alternate shading and blue selected rows.
+- Preserved the two column indices, price values/formats, read-only permissions,
+  tab order, DialogResults and keyboard routing. frmPriceLevel.vb is unchanged,
+  including top-row default selection, price loading, approval/password paths
+  and applying prices. No business-rule or other Price Level form changes.
+- Both Release/x86 solutions build; all 101 unit tests, 50 isolated Price Level
+  checks and 28 Recall formatting checks pass. Checked raw fractional prices,
+  existing numeric/currency formats, default selection, empty rows and geometry
+  at normal/simulated 125% scaling. Inspected a synthetic preview. No SQL, live
+  price application or password approval ran; Debug configuration was preserved.
+
+### Hide internal customer-search columns
+
+- Hid ID and Customer Type in both the Designer and the post-search visibility
+  settings. Customer search now shows only Account Number and Company; the
+  hidden columns, ordinal mappings and values remain available to selection,
+  pricing and tax logic. Updated the existing lookup visibility regression check.
+- Both Release/x86 solutions build; all 101 unit tests, 202 lookup checks and
+  28 Recall formatting checks pass. No live customer selection or SQL ran;
+  the Debug store configuration was preserved byte-for-byte.
+
+### Customer, Sales Rep and action-button design
+
+- Matched Customer and Sales Rep lookup layouts with larger search fields,
+  11-point grid text, 42-pixel minimum rows, clearer headers, wrapped names,
+  alternating shading and blue selected rows. Widened the name columns and
+  reduced the Sales Rep ID width. Both dialogs fit 1024x768 at simulated 125%.
+- Serialized column presentation in the Designer. Preserved all nine customer
+  properties/ordinals, existing visible/hidden fields, leading-zero accounts,
+  pricing/employee/tax data and selection handlers. Hidden Boolean fields remain
+  checkbox columns with Boolean False display defaults for blank cells. The
+  CustomText4 heading now reads Customer Type; its mapping/value is unchanged.
+- Standardized right-side button text/icon layout and border/font styling.
+  Emphasized Save in blue, related workflow actions in pale blue, and Remove/
+  Cancel in pale red. Preserved icon resources, dock order, bounds, enabled/
+  visibility rules, tab indices and shortcut hints; removed caption space padding.
+- Both Release/x86 solutions build; all 101 unit tests, 202 lookup-design checks,
+  875 small-screen checks and 28 Recall formatting checks pass. Inspected
+  synthetic-data renders. Search queries, pricing/tax selection logic and main
+  action handlers were not changed. No live search, customer selection or order
+  action ran; store configuration was preserved. Manual checks are documented
+  in UNIT_TEST_GUIDE.md.
+
+### Layout for smaller store screens
+
+- Compacted Settings to a 984x660 client area without removing settings or
+  reducing fonts. Enabled scrolling when larger display scaling requires it.
+  Reduced default Recall, Check WO, history/shortage and restored preview widths;
+  kept existing column minimums and horizontal grid scrolling.
+- Added one presentation-only SmallScreenLayout file to constrain affected
+  dialogs to their monitor's working area on opening and subsequent resizing.
+  Preview maximization, toolbar/report configuration and all action handlers
+  remain unchanged. Import controls now anchor to their existing window edges.
+- Main-window panel heights adapt to leave room for the left inputs; totals
+  widths fit the available panel without changing values or fonts. Enabled
+  horizontal item-lookup scrolling and aligned the image overlay with its grid.
+  No authentication, SQL, calculation, save, recall, stock or lifecycle rules
+  were changed. Static layout adjustments remain visible in the Designer.
+- Both Release/x86 solutions build; all 101 unit tests pass. Isolated checks
+  pass: 875 small-screen, 776 Settings, 180 Check WO, 83 Import, 91 Print and
+  28 Recall checkbox checks. Clean-folder PDF/ReportViewer packaging checks pass.
+  Inspected 1024-width Settings/main-window renders. The screen fixture uses
+  1024x768 and 1366x768 with simulated 125% scaling; real workstation DPI/taskbar
+  verification remains manual. No live order actions or store writes ran and
+  the Debug EXE configuration was preserved byte-for-byte.
+
+### Larger print-choice dialog for readability
+
+- Enlarged the print-input dialog with stacked, full-width 14-point template
+  choices, a 24-point order-number field and a larger 14-point Print button.
+  Increased spacing and contrast; renamed the existing Order Number choice to
+  Work Order / Quotation to describe the same report route more clearly.
+- Layout is serialized in frmPrintType.Designer.vb. Default selection, radio
+  grouping, tab order, Enter action, input validation and print code are unchanged;
+  no report templates, preview code, printer/copy settings or business rules changed.
+- Both Release/x86 solutions build, all 101 unit tests and 91 isolated Print
+  checks pass, including larger click targets and label-fit checks. Clean-folder
+  PDF/ReportViewer packaging checks also pass. Inspected the rendered layout;
+  no SQL lookup, printer dialog or print job was executed. Debug configuration
+  was preserved; actual eyesight/workstation-scale feedback remains manual.
+
+### Print options and preview presentation
+
+- Aligned template choices, order-number entry and the Print button; added an
+  explicit order-number label and a distinct blue Print action. Preserved the
+  selected template default, radio grouping, tab order and Enter-to-Print action.
+- Added descriptive headings and toolbar guidance to Work Order/Sales Quotation
+  and Pick List previews, with consistent outer spacing and a larger restored
+  window size. The existing ReportViewer still fills the remaining space; its
+  toolbar and maximized opening behavior are preserved. All layout is serialized
+  in the three Designer files.
+- Print/template validation, data loading, calculations, page settings, printer
+  selection, copy-count handling, report templates and printing handlers are
+  unchanged. All three code-behind files were verified byte-for-byte unchanged;
+  no RDLC or dependency changes were made. Long text inside printed reports was
+  deliberately left as defined by the existing templates.
+- Both Release/x86 solutions build and all 101 unit tests plus 85 isolated Print
+  UI checks pass. Clean-folder packaging checks render both report PDFs and
+  verify packaged ReportViewer loading. Inspected empty-viewer/outer-layout
+  previews; no live order lookup, printer dialog or print job was executed.
+  Debug store configuration was preserved. Workstation printer/copy verification
+  remains manual; see UNIT_TEST_GUIDE.md.
+
+### Check WO presentation
+
+- Improved the selected-item heading and enlarged the Check Open Work Orders
+  grid, with bold order numbers, wrapped customer text, dedicated date/status
+  widths, alternating row shading and clear blue selected rows. Quantity values
+  are right-aligned without adding a rounding/number format. Close remains at
+  the bottom right; the existing resizable window now has a usable minimum size.
+- Moved column headers, widths and existing hidden-item-column settings into
+  frmCheckWO.Designer.vb, alongside the layout/styles. Preserved all ten property
+  mappings/ordinals, read-only permissions, multiple selection, column reordering,
+  tab indices and the existing SQL call using the selected item code. No search,
+  order-edit action, queue stage or new filtering rule was added.
+- Both Release/x86 solutions build; all 101 unit tests, 180 isolated Check WO
+  checks and 28 Recall checkbox formatting checks pass. Checked synthetic-data
+  rendering, generated LINQ result binding, nulls, fractional quantities, sorting,
+  reordering, resize/simulated scaling and the existing Close handler. Debug
+  store configuration was restored byte-for-byte; no store query or write was
+  executed. Actual store lookup and workstation DPI testing remain manual.
+
+### Import dialog presentation
+
+- Enlarged and aligned the custom F6 website-order chooser, quotation CSV
+  uploader and missing-item guidance window. Added consistent grid typography,
+  alternating row shading, wrapped long text and blue selection/import actions.
+  Website order numbers are bold; customer names and dates have dedicated space.
+- Serialized layout and styles in the three Designer files. Website columns
+  keep the same OrderID/CustomerName/DateOrder property order; their underlying
+  values and date format are preserved. CSV detail columns still initialize
+  when verification starts, with compact row/column numbers and wider messages.
+- Kept the Windows file picker, file filters, search/Show All logic, import
+  selection, keyboard mnemonics/tab indices, duplicate checks, validation,
+  pricing, logging and Import/Finish behavior unchanged. Website/missing-item
+  handler source is unchanged byte-for-byte; CSV source changes are confined
+  to GridDesign presentation settings.
+- Both Release/x86 solutions build; all 101 unit tests, 83 isolated Import
+  checks, 28 Recall formatting checks and clean-folder packaging checks pass.
+  The prior executable also passes the 74 shared semantic checks. Inspected
+  synthetic-data previews and preserved the local Debug EXE configuration.
+  No live import, SQL duplicate lookup, MySQL refresh or import-button execution
+  was performed. See UNIT_TEST_GUIDE.md for workstation validation.
+
+### Settings layout and keyboard focus
+
+- Reorganized the existing Settings groups into aligned two-column sections,
+  with consistent field spacing and readable fonts. Layout, labels and button
+  styles are serialized in frmSettings.Designer.vb for Visual Studio preview.
+- Distinguished the blue "Save branch / order options" button from individual
+  password Update buttons and separate Apply buttons for defaults, website
+  import and connection settings. Existing Alt+O mnemonics and tab indices remain.
+- Added presentation-only field/checkbox focus shading and button focus borders
+  in frmSettings.Presentation.vb. Existing settings loading, validation, password
+  requirements, persistence, restart behavior and business rules are unchanged;
+  frmSettings.vb was verified unchanged byte-for-byte for this revision.
+- Both Release/x86 solutions build; all 101 unit tests, 776 isolated Settings
+  presentation checks and 28 Recall checkbox formatting checks pass. Inspected
+  an empty-field rendered preview. Store configuration was preserved; no store
+  settings were loaded/saved, and actual Designer/high-DPI hardware testing
+  remains manual. See UNIT_TEST_GUIDE.md for the Settings checklist.
+
+### Restore blank UP-STORE checkbox formatting during recall
+
+- Fixed a regression introduced by copying runtime styles into the Designer:
+  the selected-item UP-STORE checkbox style inherited a text NullValue instead
+  of its original Boolean False. Blank/DBNull cells could therefore raise
+  "Formatted value of the cell has a wrong type" during recall while the list
+  dialog remained visible. Restored the original Boolean display default;
+  actual null/true/false values, recall logic and business rules are unchanged.
+- Added RecallFormatting_UI_Test.ps1, which fails on the old compiled build
+  and passes 28 checks after the fix, including null/DBNull/false/true formatting
+  before/after runtime styling and the temporary new-row placeholder. It observes
+  DataErrors only inside the test; no production error suppression was added.
+- Both Release/x86 solutions build and all 101 unit tests pass. The exact
+  formatter reproduction now reports zero DataErrors; all 32 synthetic Recall
+  presentation checks and previous-build filter/selection comparisons still pass.
+  No store writes or live recall execution were performed; configuration was
+  preserved byte-for-byte. Retest both quotation and Work Order recall in the app.
+
+### Recall window readability
+
+- Made the Recall dialog wider and resizable, retaining the action buttons at
+  the same distances from the bottom/right edges. Larger fonts, bold order
+  numbers, a dedicated date/time width, larger wrapped Customer/Comment columns,
+  subtle alternate rows and a blue/white selection highlight improve readability.
+  Wrapped rows grow only for displayed entries, with a 44-pixel minimum; native
+  cell tooltips remain available. Defaults are visible in the Designer.
+- Kept all five bound fields, headers and their order. Dates/order IDs remain
+  the original strings; customer account text and comments are unchanged.
+  frmRecall.vb, clsRecall queries, filters, debounce, selection handlers, key
+  handling and actual recall logic were not edited.
+- Both Release/x86 solutions build and all 101 unit tests pass. A 32-check
+  synthetic Recall probe and comparison with the previous build preserve all
+  header-based filters (including apostrophes), row IDs, counts, sorting,
+  selection, rebinding, control shortcuts/tab indexes and button edge offsets.
+  Resizing and long-text renders were checked. This did not execute live recall
+  or quotation/order-taker SQL paths. The Debug EXE configuration was preserved.
+
+### Show the current UI defaults in the form Designer
+
+- Serialized the existing grid fonts, colors, spacing, row heights, column
+  widths/alignment and left-panel defaults in frmItemLookUp.Designer.vb. The
+  lookup grid now declares the same 19 bound columns in their existing order,
+  including the hidden Boolean Inactive column and the expanding SOH column.
+  The Designer can show headers/layout without loading a database or logging in.
+- Retained automatic binding and runtime styling/focus behavior. Compared the
+  previous build against both the new runtime and Designer-only native control
+  style/layout snapshots at the default scale. Binding, nulls, decimal/negative
+  stock, column types, sorting, empty results, rebinding, button bounds/captions,
+  tab indexes and KeyPreview also matched in a synthetic fixture. Authentication,
+  SQL, keyboard handlers and business rules were not edited.
+- Both Release/x86 solutions build and all 101 unit tests pass. Existing isolated
+  probes pass 405 grid checks, 136 focus/layout checks, 408 Show Image layout
+  checks and 21 LocalDB search checks. Configuration was preserved exactly.
+  Visual Studio itself and live-store workflows were not automated in these checks.
+
+### Show full SOH quantities
+
+- Replaced the fixed 64-pixel lookup SOH width with a 110-pixel minimum and
+  sizing to displayed cells. Large and fractional values can expand the column;
+  the item description uses the remaining space. No all-row measurement is used.
+  Existing SOH number formatting, stored quantities, button positions, shortcuts
+  and business rules remain unchanged.
+- Both Release/x86 solutions build and all 101 unit tests pass. A synthetic grid
+  probe passed 405 value/style/layout checks, including large, negative and long
+  fractional SOH values, text fitting after scrolling, unchanged cell values and
+  button geometry/captions. Rendered grids were inspected; no live-store writes
+  were performed. The local Debug EXE configuration was preserved exactly.
+
+### Keep Show Image below the barcode row
+
+- Disabled automatic scrolling on the fixed entry panel and anchored Show Image
+  to the top/left. A scrollbar can no longer shift the checkbox upward into the
+  barcode field. Its designed position and the existing button geometry, tab
+  order, shortcuts, image behavior and business rules remain unchanged.
+- Both Release/x86 solutions build and all 101 unit tests pass. An isolated
+  native-control probe passed 408 layout checks across three simulated scales,
+  including full control bounds, no scrollbars and unchanged button positions
+  and tab indexes. This is layout validation, not a live-store workflow test.
+  The local Debug EXE configuration was preserved byte-for-byte.
+
+### SQL item-search investigation and repeatable timing
+
+- Reproduced the BOOK + PAPER SQL delay on local GSC (382 matches). Compared
+  query rewrites and an indexed search-text prototype on disposable copies.
+  Rejected faster variants that slowed broad searches or changed the original
+  unordered TOP 500 cutoff. Removed the experimental application query builder;
+  the original search SQL and all business rules remain in use.
+- Added a read-only timing script recording SQL durations, row counts, result
+  hashes and IO/time statistics without exporting item rows or credentials.
+  See Database Components/Tests/ITEM_SEARCH_PERFORMANCE_FINDINGS.md for measured
+  limits and the proposed restored-copy maintenance investigation. No search
+  index, store view, timeout or database setting was changed; this is not a
+  deployed SQL speed fix.
+
+### Bold lookup rows and responsive item search
+
+- Restored bold text for every lookup row using cached fonts, removing the
+  per-cell committed-quantity check and repeated row-style mutation on paint.
+- Kept the exact existing contains-search SQL, TOP 500 limit, keyword history,
+  fallback behavior and synchronous caller contract. The filtered SQL read now
+  runs on an owned background connection while a modal Searching items indicator
+  keeps UI messages pumping and prevents actions against unfinished results.
+- Read-only local GSC diagnostics found the query scans Item and reads its
+  legacy ntext descriptions (216,723 LOB logical reads for the sampled search).
+  This UI change does not remove that database scan or promise faster SQL.
+  No schema, search matching, stock freshness or business rule changed.
+- Both Release/x86 solutions build and all 101 unit tests pass. The actual
+  compiled search helper passes 21 disposable LocalDB checks for UI message
+  progress, modal locking/restoration, early-close prevention and identical
+  returned values. Synthetic grid checks confirm bold rows without changing
+  values, warning colors or button geometry. Store configuration was preserved.
+
+### Left entry panel spacing and focus indication
+
+- Standardized left-panel input fonts and label alignment, with consistent gaps
+  and fields centered beside the existing lookup buttons. Button positions,
+  tab order, shortcut handlers, field values and read-only/enabled rules are retained.
+- Replaced the salmon search/barcode outline with blue only while the enabled
+  field actually has focus; inactive/disabled fields use the panel background.
+  Outline bounds follow field sizing. Apply presentation before login without
+  changing authentication, database loading or business rules.
+- Both Release/x86 solutions build and all 101 unit tests pass. An isolated
+  probe passes 136 layout/state/focus checks using simulated focus without
+  taking keyboard focus or accessing SQL; native input layout was rendered.
+  Existing store configuration was preserved byte-for-byte.
+
+### Apply grid presentation before login
+
+- Moved the existing FormatGrid call immediately before the login dialog so
+  the empty grids already show the updated headers, spacing and column layout.
+  Store configuration still runs first; authentication, registry/register reads,
+  store queries, refresh and draft recovery retain their existing sequence.
+  No data loads, login checks or business rules moved into grid formatting.
+- Both Release/x86 solutions build and all 101 unit tests pass. The isolated
+  grid probe passes 373 checks, including empty/unbound grid presentation without
+  login or SQL access; the local store configuration was preserved byte-for-byte.
+
+### Grid readability and spacing
+
+- Standardized the lookup and Selected Items grids on cached Tahoma fonts,
+  padded headers/cells, subtle alternate rows and clearer grid lines. Lookup
+  rows use a compact fixed height with wrapped descriptions; selected lines have
+  more vertical space. No automatic all-cell sizing or per-paint font allocation.
+- Right-aligned numeric headers/cells, centered UP-STORE checkboxes and gave
+  Selected Items descriptions the remaining width with bounded numeric columns.
+  Spaced the Last Purchase Price heading for readability. Button positions,
+  shortcuts, stored values, numeric formats, editability and warning colors remain.
+- Both Release/x86 solutions build and all 101 unit tests pass. Populated-grid
+  renders were inspected; 372 synthetic value/style/layout checks cover three
+  client widths, inherited numeric alignment, warning colors, editability and
+  unchanged button geometry/captions. Store configuration was preserved.
+
+### Align totals with Selected Items
+
+- Inset the totals panel border by the same horizontal padding as the Selected
+  Items grid, using a docked wrapper so both edges stay aligned during resize.
+  Kept totals right-aligned and preserved their sizes, values and calculation rules.
+- Both Release/x86 solutions build and all 101 unit tests pass. An isolated
+  layout probe passes 16 alignment/overlap/value checks across four client widths;
+  the lower panel was rendered for inspection. Existing store config was preserved.
+
+### Optional Order actions and status notification visibility
+
+- Added independent Show Order actions and Show order notifications checkboxes
+  under Settings > Work Order and Queue Options. Both default to visible when
+  configuration keys are absent and persist in the existing installation config.
+- Apply the choices when Settings closes and during notification updates, so
+  polling cannot redisplay hidden ready/shortage status links. The For Invoice
+  button/count, notification monitoring, pending reduction reminders and critical
+  recall/save/conflict/unsaved-change dialogs retain their existing behavior.
+- No database migration, order lifecycle, pricing, tax or commitment rule change.
+- Both solutions build Release/x86 and all 101 unit tests pass. An isolated
+  temporary-config WinForms probe passes 36 checks across fresh AppDomains for
+  defaults, independent toggles, persisted off/on state, repeated status updates,
+  failure-state visibility and unchanged other settings. Checkbox layout was
+  rendered and inspected; the installed Debug configuration was preserved.
+
+### Optional item-log lookup performance index
+
+- Added an optional SQL Server 2016 migration for a covering ItemID/Date index
+  on SOD_Item_Logs, preserving the trigger and its numeric comparison against
+  varchar ReferenceID. No business rows, stock rules or RMS identities change.
+- Added schema/index/reference guards and a locked preflight for conflicting
+  latest timestamp ties. Reuses suitable existing indexes and requires the
+  updater's or SSMS caller's transaction; no automatic store installation.
+- Added the optional updater catalog entry, packaged deployment/rollback guide
+  and disposable LocalDB tests for identical log output, caller rollback,
+  unsafe-state rejection and synthetic logical-read reduction.
+- Validation: 31 item-log checks, 71 updater checks, 39 existing multi-user
+  checks in each isolation mode and all 101 unit tests pass. Both solutions
+  build Release/x86; Debug/Release updater packages contain the exact SQL/guide.
+  Synthetic lookup reads fall from 5,883 to 4. Store configuration was preserved
+  byte-for-byte; no migration was applied to a store database.
 
 ### Shared contributor and AI guidance
 

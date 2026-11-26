@@ -33,7 +33,7 @@ Public Class frmStoreSetup
             End If
 
         Catch ex As Exception
-            MessageBox.Show("Cannot load database locations!" & vbCrLf & ex.Message,
+            AppPrompt.Show("Cannot load database locations!" & vbCrLf & ex.Message,
                             "Database Selection", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
 
@@ -42,7 +42,7 @@ Public Class frmStoreSetup
     Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
 
         If cmbDatabases.SelectedItem Is Nothing Then
-            MessageBox.Show("Please select a database location.", "Database Selection",
+            AppPrompt.Show("Please select a database location.", "Database Selection",
                             MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
             Exit Sub
         End If

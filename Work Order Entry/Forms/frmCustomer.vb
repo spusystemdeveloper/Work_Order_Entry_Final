@@ -1,33 +1,38 @@
 ﻿Public Class frmCustomer
 
+    Private Sub gridCustomer_Paint(sender As Object, e As PaintEventArgs) Handles gridCustomer.Paint
+        GridEmptyState.Draw(gridCustomer, e, "No matches found. Try another search.")
+    End Sub
+
     Private Sub frmCustomer_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
         Try
             Me.gridCustomer.DataSource = clsCustomer.SearchCustomer(txtCompany.Text)
+            iRowCust = 0
             gridCustomerWidth()
             txtCompany.Focus()
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0001", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
     End Sub
 
     Private Sub gridCustomerWidth()
+        ' Column widths are serialized in the Designer.
 
         Try
 
-            gridCustomer.Columns(0).Width = 100
-            gridCustomer.Columns(1).Width = 369
             gridCustomer.Columns(2).Visible = False
             gridCustomer.Columns(3).Visible = False
             gridCustomer.Columns(4).Visible = False
             gridCustomer.Columns(5).Visible = False
-            gridCustomer.Columns(6).Visible = True
+            gridCustomer.Columns(6).Visible = False
             gridCustomer.Columns(7).Visible = False
+            gridCustomer.Columns(8).Visible = False
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0002", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -35,6 +40,8 @@
     End Sub
 
     Private Sub GetCustomerInfo(ByVal iRow As Integer)
+
+        If gridCustomer.CurrentRow Is Nothing OrElse iRow < 0 OrElse iRow >= gridCustomer.RowCount Then Exit Sub
 
         Dim pricebound
         Dim i = gridCustomer.CurrentRow.Index
@@ -98,7 +105,7 @@
             Me.Close()
             frmItemLookUp.txtSearch.Focus()
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0003", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -119,7 +126,7 @@
             End If
 
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0004", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -131,13 +138,14 @@
         Try
             If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
                 Me.gridCustomer.DataSource = clsCustomer.SearchCustomer(txtCompany.Text)
+                iRowCust = 0
                 gridCustomerWidth()
                 gridCustomer.Focus()
             ElseIf e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Escape) Then
                 Me.Dispose()
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0005", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -148,9 +156,9 @@
     Private Sub cmdOk_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdOk.Click
         Try
 
-            GetCustomerInfo(iRowCust)
+            If gridCustomer.CurrentRow IsNot Nothing Then GetCustomerInfo(gridCustomer.CurrentRow.Index)
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0006", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -160,9 +168,9 @@
     Private Sub gridCustomer_CellDoubleClick(ByVal sender As Object, ByVal e As System.Windows.Forms.DataGridViewCellEventArgs) Handles gridCustomer.CellDoubleClick
         'comment
         Try
-            GetCustomerInfo(iRowCust)
+            If e.RowIndex >= 0 Then GetCustomerInfo(e.RowIndex)
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0007", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -179,7 +187,7 @@
 
             iRowCust = clsItemLookUp.RowIndex(gridCustomer)
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0008", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0008", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -192,7 +200,7 @@
         Try
             CallIndex()
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0009", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -204,7 +212,7 @@
         Try
             CallIndex()
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0010", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 
@@ -217,6 +225,7 @@
         Try
             If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
 
+                If gridCustomer.CurrentRow Is Nothing Then Exit Sub
                 iRowCust = clsItemLookUp.RowIndexEnter(gridCustomer, iRowCust)
                 GetCustomerInfo(iRowCust)
 
@@ -225,7 +234,7 @@
 
             End If
         Catch ex As Exception
-            MessageBox.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            AppPrompt.Show("FROM : frmCustomer Form " & vbCrLf & vbCrLf & "REASON : " & ex.Message, "MESSAGE : ERROR 0011", MessageBoxButtons.OK, MessageBoxIcon.Error)
             ErrorCount = ErrorCount + 1
         End Try
 

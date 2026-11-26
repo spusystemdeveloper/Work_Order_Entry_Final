@@ -1,5 +1,43 @@
 # HO_PO_DB transaction 23266 recovery
 
+## Consignment Work Order 1029 to 30
+
+Open [the renumber script](Renumber_CONSIGNMENT_WO_1029_to_30.sql) in a fresh SSMS
+query on `WIN-63HGUF2272P` with `CONSIGNMENT_DB` selected. Close RMS, Work Order,
+queue and integration clients. Take a new full copy-only backup with checksums
+to a unique SQL Server path. Enter that path in `@BackupPath` and set
+`@MaintenanceConfirmed = 1`. Run the whole batch with `@Commit = 0`.
+
+Review the `REHEARSAL ONLY` result and the proposed order and row counts. If
+they match, rerun the whole batch with `@Commit = 1` while clients remain closed.
+After `COMMITTED`, use the [read-only preflight](Inspect_CONSIGNMENT_WO_1029_to_30.sql)
+to confirm the header, five lines, queue links and 18 history events under ID 30.
+The four imported-quote source references to 30 are expected. The rehearsal
+leaves the identity at 1029. Commit reseeds it to 30, and the next ordinary
+allocation is 31. The script stops if another order at or above 30 or a checked
+work-order reference would conflict with the mapping or reused ID range.
+Inventory movement 130 is allowed only while it still matches the reviewed
+transfer-in 30, line 135, and item 20888.
+Commit preserves the seven original orphan quote links in
+`dbo.SOD_ImportedQuoteLinkArchive_WO1029` and clears only their active `QuoteID`
+values. The rehearsal lists the seven links and rolls back the archive as well.
+
+## Head Office recovery scripts
+
+For the November 14 HO request (**WO 19057 to 19056** with identity reseeded to
+`19056` so the next normal allocation is `19057`), see
+[the November 14 incident record](INCIDENT_2026-11-14_HO_WO_19057_TO_19056.md). That
+authorized mapping was committed and verified via
+[Verify_HO_WO_19056.sql](Verify_HO_WO_19056.sql); do not rerun
+[Renumber_HO_WO_19057_to_19056.sql](Renumber_HO_WO_19057_to_19056.sql) or reuse its
+order-specific guard constants.
+
+For the separate October 16 request to move **WO 18882 to 18879** and make the
+next Order allocation **18880**, use
+[the new one-order recovery guide](RENUMBER_HO_18882_TO_18879.md). Its standalone
+script combines renumber and reseed with a default rollback rehearsal. Do not
+use the older pair-renumber or separate 18870 reseed file for that request.
+
 For the separately requested **18870 -> 18869 / 18879 -> 18870** Order ID change,
 see [the manual renumber instructions](RENUMBER_HO_WORKORDERS.md) and its linked
 standalone script. It defaults to rollback, requires a current verified backup,

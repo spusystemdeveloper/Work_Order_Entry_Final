@@ -615,7 +615,7 @@
       <Column Name="[LineNo]" Member="LineNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
       <Column Name="ItemCode" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
       <Column Name="ItemName" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
-      <Column Name="Qty" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Qty" Type="System.Double" DbType="Float" CanBeNull="true" />
       <Column Name="Price" Type="System.Decimal" DbType="Money" CanBeNull="true" />
       <Column Name="Disc" Type="System.Decimal" DbType="Money" CanBeNull="true" />
       <Column Name="TotalPrice" Type="System.Decimal" DbType="Money" CanBeNull="true" />

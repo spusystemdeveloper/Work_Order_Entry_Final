@@ -1,16 +1,20 @@
 ﻿Public Class frmSalesRep
 
+    Private Sub gridSalesRep_Paint(sender As Object, e As PaintEventArgs) Handles gridSalesRep.Paint
+        GridEmptyState.Draw(gridSalesRep, e, "No matches found. Try another search.")
+    End Sub
+
     Private Sub frmSalesRep_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
 
         gridSalesRep.DataSource = clsSalesRep.SearchSalesRep(txtSales.Text)
+        iRowSales = 0
         gridCustomerWidth()
 
     End Sub
 
     Private Sub gridCustomerWidth()
+        ' Column widths are serialized in the Designer.
 
-        gridSalesRep.Columns(0).Width = 100
-        gridSalesRep.Columns(1).Width = 369
 
     End Sub
 
@@ -27,6 +31,7 @@
         If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
             gridSalesRep.Focus()
             Me.gridSalesRep.DataSource = clsSalesRep.SearchSalesRep(txtSales.Text)
+            iRowSales = 0
             gridCustomerWidth()
         ElseIf e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Escape) Then
             Me.Dispose()
@@ -34,6 +39,8 @@
 
     End Sub
     Private Sub GetSalesRepInfo(ByVal iRow As Integer)
+
+        If gridSalesRep.CurrentRow Is Nothing OrElse iRow < 0 OrElse iRow >= gridSalesRep.RowCount Then Exit Sub
 
         iSalesID = gridSalesRep.Item(0, iRow).Value
         frmItemLookUp.txtSales.Text = gridSalesRep.Item(1, iRow).Value
@@ -44,7 +51,7 @@
 
     Private Sub cmdOk_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmdOk.Click
 
-        GetSalesRepInfo(iRowSales)
+        If gridSalesRep.CurrentRow IsNot Nothing Then GetSalesRepInfo(gridSalesRep.CurrentRow.Index)
 
     End Sub
 
@@ -66,7 +73,7 @@
 
     Private Sub gridSalesRep_DoubleClick(ByVal sender As Object, ByVal e As System.EventArgs) Handles gridSalesRep.DoubleClick
 
-        GetSalesRepInfo(iRowSales)
+        If gridSalesRep.CurrentRow IsNot Nothing Then GetSalesRepInfo(gridSalesRep.CurrentRow.Index)
 
     End Sub
 
@@ -80,6 +87,7 @@
 
         If e.KeyChar = Microsoft.VisualBasic.ChrW(Keys.Enter) Then
 
+            If gridSalesRep.CurrentRow Is Nothing Then Exit Sub
             iRowSales = clsItemLookUp.RowIndexEnter(gridSalesRep, iRowSales)
             GetSalesRepInfo(iRowSales)
 

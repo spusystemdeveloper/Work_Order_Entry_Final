@@ -6,6 +6,11 @@ for retained RMS incident knowledge and [UNIT_TEST_GUIDE.md](UNIT_TEST_GUIDE.md)
 for validation details. Tool-specific instruction files should reference these
 rules instead of maintaining competing copies.
 
+See [WORKSPACE_FOLDERS.md](WORKSPACE_FOLDERS.md) for this desktop project's
+connected folders, current V3 source location and their roles. Consult the related folder when the task
+needs its RMS installation, reconciliation, system documentation or withholding
+tax context.
+
 ## Scope and working process
 
 - Preserve existing Work Order business rules unless the human explicitly asks
@@ -99,6 +104,10 @@ rules instead of maintaining competing copies.
 - Preserve the existing Debug EXE configuration byte-for-byte around builds/tests;
   a test-project build can overwrite the local store's configuration. Do not
   include store configuration changes accidentally in a deployment or commit.
+- For grid styling or Designer checkbox changes, preserve Boolean checkbox
+  NullValue defaults and run `Database Components/Tests/RecallFormatting_UI_Test.ps1`
+  after a Debug build. A text NullValue can break blank checkbox formatting during
+  recall. Fix the style/type mismatch; do not suppress production DataErrors.
 - For save, cancellation, settlement, locking or commitment changes, run
   `Database Components/Tests/MultiUser_Save_LocalDB_Test.ps1` both normally and
   with `-VersionedReads`. Versioned reads belong only to that disposable fixture;
@@ -108,10 +117,13 @@ rules instead of maintaining competing copies.
   for updater changes, run `DatabaseUpdater_LocalDB_Test.ps1`. These scripts are
   in `Database Components/Tests`. Run other relevant checks from the test guide.
 - For packaging, dependency, import or reporting changes, run
-  `Database Components/Tests/Packaging_CleanFolder_Test.ps1`. ReportViewer 15
-  requires its matching five DLLs beside the EXE; keep `Microsoft.ReportViewer.*`
-  excluded from Costura embedding. Deploy the complete output folder while
-  retaining the target unit's store-specific EXE config. The updater is a separate
+  `Database Components/Tests/Packaging_CleanFolder_Test.ps1`. The main application
+  now uses installed Microsoft ReportViewer 2010 (assembly 10.0.0.0), with Copy
+  Local=False; keep `Microsoft.ReportViewer.*` excluded from Costura embedding.
+  Install the runtime once per PC, then deploy the application EXE while retaining
+  the target unit's store-specific EXE config. The older ReportViewer 15 build
+  required five matching private DLLs; do not mix its package into this build.
+  The updater is a separate
   executable; copying application files does not migrate the database.
 - If a check cannot run, report the exact missing prerequisite and remaining
   validation. Do not remove safeguards, weaken assertions or invent pass results.

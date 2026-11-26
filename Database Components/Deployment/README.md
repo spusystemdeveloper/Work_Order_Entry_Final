@@ -36,6 +36,14 @@ Unrelated SOD_ objects used by other add-ins are intentionally excluded.
 
 ## Layout
 
+The optional item-log index is in
+`../Migrations/Improve_WorkOrder_ItemLogLookup.sql`; see
+[its deployment guide](../Migrations/WORKORDER_ITEM_LOG_LOOKUP_GUIDE.md).
+It preserves trigger SQL and legacy numeric-reference comparisons. It is an
+optional updater selection, outside the audited-object manifest and branch
+drivers. Test a branch restore and use a maintenance window: its preflight and
+index creation hold an exclusive log-table lock. No store change is automatic.
+
 The optional item lookup index is in
 `../Migrations/Improve_WorkOrder_ItemLookup.sql`, with deployment notes in
 `../Migrations/WORKORDER_ITEM_LOOKUP_GUIDE.md`. It is outside the audited-object

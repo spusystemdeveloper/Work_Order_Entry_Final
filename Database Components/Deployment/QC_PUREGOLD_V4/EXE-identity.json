@@ -1,0 +1,10 @@
+{
+    "Exe":  "C:\\Users\\ADMIN\\source\\repos\\WORK_ORDER_ENTRY_4\\Work Order Entry_4\\Work Order Entry\\bin\\Release\\Work Order Entry_V4.exe",
+    "SHA256":  "D4572A7B1C3B0671824498E058547AF88FE340B59E5535426A89068D36003CAA",
+    "Bytes":  2652672,
+    "Assembly":  "Work Order Entry_V4, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null",
+    "Architecture":  "X86",
+    "Framework":  ".NETFramework,Version=v4.7.2",
+    "Functions":  13,
+    "Columns":  480
+}

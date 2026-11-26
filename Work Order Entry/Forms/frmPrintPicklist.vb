@@ -20,6 +20,7 @@ Public Class frmPrintPicklist
             rptviewer.Clear()
             ItemOrderedList.Clear()
 
+            Dim preparedByEntry = clsPickList.getQtyPrepByEntry(wo)
             For Each x In clsPickList.getPickList(wo)
 
                 Dim item As clsPickList = New clsPickList
@@ -35,8 +36,8 @@ Public Class frmPrintPicklist
                 item.itemCode = x.Itemcode
                 item.picker = ""
                 item.wokrOrder = x.OrderID
-                item.qtyOrder = x.QtyOrder
-                item.qtyPrep = clsPickList.getQtyPrep(x.ItemID, x.OrderID)
+                item.qtyOrder = Math.Round(x.QtyOrder, 4)
+                item.qtyPrep = If(preparedByEntry.ContainsKey(x.EntryID), preparedByEntry(x.EntryID), 0)
                 item.printDate = DateTime.Now.ToString("dd/MM/yyyy")
                 item.printTime = DateTime.Now.ToString("HH:mm:ss tt")
                 'item.branch = (From a In db.Configurations Select a.StoreCity).SingleOrDefault
@@ -59,12 +60,22 @@ Public Class frmPrintPicklist
 
 
         Catch ex As Exception
-            MessageBox.Show(ex.Message)
+            ErrorLogger.LogError(ex, "Pick List preview; OrderID=" & wo.ToString())
+            Dim message As String = ex.Message
+            If ex.InnerException IsNot Nothing Then
+                message &= vbCrLf & vbCrLf & "Details: " & ex.GetBaseException().Message
+            End If
+            AppPrompt.Show(message)
         End Try
 
 
 
     End Sub
+    Private Sub rptviewer_ReportError(sender As Object, e As Microsoft.Reporting.WinForms.ReportErrorEventArgs) Handles rptviewer.ReportError
+        ' Capture asynchronous processing errors without changing ReportViewer handling.
+        ErrorLogger.LogError(e.Exception, "Pick List rendering; OrderID=" & wo.ToString())
+    End Sub
+
     Private Function getLoc() As String
         Dim f = (From a In db.Configurations Select a.StoreID).FirstOrDefault
 

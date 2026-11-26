@@ -39,7 +39,7 @@ BEGIN TRY
             [LineNo] int NOT NULL,
             ItemCode nvarchar(50) NOT NULL,
             ItemName nvarchar(500) NULL,
-            Qty int NULL,
+            Qty float NULL,
             Price money NULL,
             Disc money NULL,
             TotalPrice money NULL,
@@ -62,6 +62,21 @@ BEGIN TRY
             CONSTRAINT FK_SOD_WO_DraftDetail_SOD_WO_DraftHeader
                 FOREIGN KEY (DraftID) REFERENCES dbo.SOD_WO_DraftHeader(DraftID) ON DELETE CASCADE
         );
+    END;
+
+    -- Draft quantities can be fractional (for example 2.5). Older installs created
+    -- Qty as int, which stored 2.5 as 2. float matches OrderEntry.QuantityOnOrder;
+    -- converting int to float keeps every existing value.
+    IF EXISTS
+    (
+        SELECT 1
+        FROM sys.columns
+        WHERE object_id = OBJECT_ID(N'dbo.SOD_WO_DraftDetail')
+          AND name = N'Qty'
+          AND system_type_id = TYPE_ID(N'int')
+    )
+    BEGIN
+        ALTER TABLE dbo.SOD_WO_DraftDetail ALTER COLUMN Qty float NULL;
     END;
 
     IF NOT EXISTS

@@ -49,7 +49,7 @@ Partial Public Class frmItemLookUp
             shortageAlertStatus.Text = "Shortage check unavailable - retrying"
             shortageAlertStatus.IsLink = False
             shortageAlertStatus.ForeColor = Color.DarkOrange
-            shortageAlertStatus.Visible = True
+            shortageAlertStatus.Visible = StoreProcessingSettings.ShowOrderNotifications
             If Not shortageAlertFailureLogged Then
                 ErrorLogger.LogError(ex, "Warehouse shortage notification")
                 shortageAlertFailureLogged = True
@@ -70,7 +70,9 @@ Partial Public Class frmItemLookUp
         shortageAlertStatus.ToolTipText = String.Join(vbCrLf, orders.Take(10).Select(Function(id)
             Return "WO #" & id & " - " & currentShortageAlerts.First(Function(line) line.OrderID = id).Customer
         End Function))
-        shortageAlertStatus.Visible = orders.Count > 0 AndAlso StoreProcessingSettings.EnableShortageNotifications
+        shortageAlertStatus.Visible = orders.Count > 0 AndAlso
+            StoreProcessingSettings.EnableShortageNotifications AndAlso
+            StoreProcessingSettings.ShowOrderNotifications
     End Sub
 
     Private Sub AcknowledgeShortageAlert(orderID As Integer)
@@ -94,7 +96,7 @@ Partial Public Class frmItemLookUp
             If orderToolsClosing OrElse IsDisposed OrElse shortageAlertFailureLogged OrElse
                 Not StoreProcessingSettings.EnableShortageNotifications Then Return
             If currentShortageAlerts.Count = 0 Then
-                MessageBox.Show(Me, "There are no current warehouse shortages.", "Shortage alerts",
+                AppPrompt.Show(Me, "There are no current warehouse shortages.", "Shortage alerts",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information)
                 Return
             End If
@@ -105,7 +107,7 @@ Partial Public Class frmItemLookUp
             End Using
             If gridSelectItem.Rows.Cast(Of DataGridViewRow)().Any(Function(row) Not row.IsNewRow) OrElse
                 activeRecallOrderID > 0 OrElse Not String.IsNullOrWhiteSpace(txtRemarks.Text) Then
-                If MessageBox.Show(Me, "Open Work Order #" & orderID & "? Unsaved changes on this screen, including pending shortage reductions, will be discarded.",
+                If AppPrompt.Show(Me, "Open Work Order #" & orderID & "? Unsaved changes on this screen, including pending shortage reductions, will be discarded.",
                     "Open shortage order", MessageBoxButtons.YesNo, MessageBoxIcon.Question) <> DialogResult.Yes Then Return
             End If
             ' Check eligibility before replacing the screen; RecallQuote validates it again.
@@ -118,7 +120,7 @@ Partial Public Class frmItemLookUp
         Catch ex As OrderEditConflictException
             ShowOrderConflict(ex)
         Catch ex As Exception
-            MessageBox.Show(Me, ex.Message, "Shortage alerts", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            AppPrompt.Show(Me, ex.Message, "Shortage alerts", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         Finally
             shortageAlertWindowOpen = False
         End Try

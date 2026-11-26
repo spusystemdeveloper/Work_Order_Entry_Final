@@ -20,7 +20,7 @@ Public Class frmOrderHistory
         databaseConnectionString = connectionString
         Text = "Order history"
         StartPosition = FormStartPosition.CenterParent
-        Size = New Size(1100, 580)
+        Size = New Size(1000, 580)
         MinimumSize = New Size(850, 400)
         Font = New Font("Segoe UI", 9)
         Dim header As New Panel With {.Dock = DockStyle.Top, .Height = 92}
@@ -73,10 +73,22 @@ Public Class frmOrderHistory
             If IsDisposed OrElse Disposing Then Return
             eventsGrid.DataSource = Nothing
             message.Text = "History could not be loaded."
-            MessageBox.Show(Me, ex.Message, "Order history", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            AppPrompt.Show(Me, ex.Message, "Order history", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Finally
             loading = False
             If Not IsDisposed AndAlso Not Disposing Then loadButton.Enabled = True
         End Try
     End Sub
+
+    Private Sub InitializeComponent()
+        Me.SuspendLayout()
+        '
+        'frmOrderHistory
+        '
+        Me.ClientSize = New System.Drawing.Size(284, 261)
+        Me.Name = "frmOrderHistory"
+        Me.ResumeLayout(False)
+
+    End Sub
+
 End Class
